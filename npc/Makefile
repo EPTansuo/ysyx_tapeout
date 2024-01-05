@@ -10,7 +10,6 @@ VCD_WAVE = wave.vcd
 
 
 all: $(CPP_SRC) $(VERILOG_SRC)
-	#@echo "Write this Makefile by your self."
 	$(VERILATOR) $(VERILATOR_FLAGS) $(VERILOG_SRC) --build --Mdir $(SIM_BUILD_DIR) $(CPP_SRC)
 	@echo "Build successfully!"
 
@@ -18,7 +17,6 @@ all: $(CPP_SRC) $(VERILOG_SRC)
 
 sim:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
-	#@echo "Write this Makefile by your self."
 	@$(SIM_EXECUTABLE)
 	@$(VCD_VIEWER) $(VCD_WAVE)
 	
