@@ -10,5 +10,5 @@
 !README.md
 !.gitignore
 !init.sh
-obj_dir/
 /nvboard
+/npc/obj_dir/
