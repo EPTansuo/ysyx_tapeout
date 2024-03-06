@@ -10,5 +10,7 @@
 !README.md
 !.gitignore
 !init.sh
-obj_dir/
 /nvboard
+/npc/obj_dir/
+/fceux-am
+/am-kernels
