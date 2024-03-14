@@ -25,9 +25,8 @@ const char *regs[] = {
 };
 
 void isa_reg_display() {
-	printf("func: isa_reg_display");
-  uint32_t reg_num = sizeof(regs) / sizeof(regs[0]);
-  printf("%ld",sizeof(cpu.gpr)/sizeof(cpu.gpr[0]));
+	printf("func: isa_reg_display\n");
+  uint32_t reg_num = MUXDEF(CONFIG_RVE, 16, 32);
   for (int i = 0; i < reg_num; i++) {
         printf("reg$%s = 0x%ld\n", regs[i], gpr(i));
   }
