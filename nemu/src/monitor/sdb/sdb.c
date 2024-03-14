@@ -68,7 +68,7 @@ static int cmd_info(char *args){
     isa_reg_display();
   }
   else{
-
+    
   }
   return 0;
 }
