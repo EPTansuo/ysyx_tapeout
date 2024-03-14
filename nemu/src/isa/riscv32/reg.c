@@ -32,6 +32,7 @@ void isa_reg_display() {
         if((i+1)%4 == 0)
           putchar('\n');
   }
+  printf("$pc = 0x%08lx\n", cpu.pc);
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
