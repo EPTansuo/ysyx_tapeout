@@ -28,7 +28,7 @@ void isa_reg_display() {
 	printf("func: isa_reg_display\n");
   uint32_t reg_num = MUXDEF(CONFIG_RVE, 16, 32);
   for (int i = 0; i < reg_num; i++) {
-        printf("reg $%s = 0x%ld\t", regs[i], gpr(i));
+        printf("reg $%s = 0x%lx\t", regs[i], gpr(i));
         if((i+1)%4 == 0)
           putchar('\n');
   }
