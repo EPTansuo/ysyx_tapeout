@@ -90,7 +90,7 @@ static int cmd_x(char *args){
   for(int i=0; i<size; i++){
     word_t data = vaddr_read(addr + i * __WORDSIZE/8, __WORDSIZE/8);
     printf("0x%08lx\t", addr + i * __WORDSIZE/8);
-    printf("0x%16lx\n",data);
+    printf("0x%016lx\n",data);
     for(int j=0; j<__WORDSIZE/8; j++){
       printf("0x%02x  ", (unsigned char)(data << j*8 >> (__WORDSIZE/8-1-j)* 8));
     }
