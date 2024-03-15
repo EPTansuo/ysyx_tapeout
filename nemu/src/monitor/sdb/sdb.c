@@ -53,7 +53,24 @@ static int cmd_q(char *args) {
   return -1;
 }
 
+/*表达式求值*/
+static int cmd_p(char *args){
+  return 0;
+}
 
+/*设置监视点*/
+static int cmd_w(char* args){
+  return 0; 
+}
+
+/*扫描内存*/
+static int cmd_x(char *args){
+
+  return 0;
+}
+
+
+/*单步执行*/
 static int cmd_si(char * args){
   int step =  0;
   if(args == NULL)
@@ -64,6 +81,7 @@ static int cmd_si(char * args){
   return 0;
 }
 
+/*打印程序状态*/
 static int cmd_info(char *args){
   if(args == NULL){
     printf("No Input arguments!\n");
@@ -84,6 +102,12 @@ static int cmd_info(char *args){
   return 0;
 }
 
+/*删除监视点*/
+static int cmd_d(char *args){
+  return 0;
+}
+
+
 static int cmd_help(char *args);
 
 
@@ -98,12 +122,14 @@ static struct {
   { "help", "Display information about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
-  {"info", "Print the information", cmd_info},
 
   /* TODO: Add more commands */
-  {"si","Single step", cmd_si},
-
-
+  {"si", "Single step", cmd_si},
+  {"info", "Print the status of program", cmd_info},
+  {"x", "Scan the memory",cmd_x},
+  {"p", "Get the value of an expression",cmd_p},
+  {"w", "Set up monitoring point", cmd_w},
+  {"d", "Deleting monitoring point", cmd_d},
 };
 
 #define NR_CMD ARRLEN(cmd_table)
