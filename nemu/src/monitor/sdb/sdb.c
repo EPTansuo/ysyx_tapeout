@@ -49,6 +49,7 @@ static int cmd_c(char *args) {
 
 
 static int cmd_q(char *args) {
+  nemu_state.state = NEMU_QUIT;
   return -1;
 }
 
@@ -65,10 +66,20 @@ static int cmd_si(char * args){
 
 static int cmd_info(char *args){
   if(args == NULL){
-    isa_reg_display();
+    printf("No Input arguments!\n");
   }
   else{
-    
+    if(!strcmp(args,"r"))
+    {
+        isa_reg_display();
+    }
+    else if (!strcmp(args,"w"))
+    {
+      
+    }
+    else{
+      printf("Un recognized option: %s", args);
+    }
   }
   return 0;
 }
