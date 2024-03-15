@@ -75,14 +75,17 @@ static int cmd_x(char *args){
 
   int size = atoi(arg);
 
-  char *expr = strtok(arg, " ");
-  if(expr == NULL){
+  char *expr_str;
+  expr_str = strtok(NULL, " ");
+
+  if(expr_str == NULL){
     printf("Too few parameters!\n");
     return 1;
   }
 
-  char* endptr;
-  word_t addr = strtol(expr, &endptr, 16);
+  char *end;
+
+  word_t addr = strtoull(expr_str, &end, 16);
 
   for(int i=0; i<size; i++){
     word_t data = vaddr_read(addr + i * __WORDSIZE/8, __WORDSIZE/8);
@@ -136,7 +139,7 @@ static int cmd_info(char *args){
 
   }
   else{
-    printf("Un recognized option: %s", args);
+    printf("Unrecognized option: %s\n", args);
   }
   
   return 0;
