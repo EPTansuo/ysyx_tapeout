@@ -18,6 +18,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
+#include <memory/vaddr.h>
 
 static int is_batch_mode = false;
 
@@ -65,6 +66,39 @@ static int cmd_w(char* args){
 
 /*扫描内存*/
 static int cmd_x(char *args){
+  if(args == NULL){
+    printf("No parameter!\n");
+    return 1;
+  }
+
+  char *arg = strtok(args, " ");
+
+  int size = atoi(arg);
+
+  char *expr = strtok(arg, " ");
+  if(expr == NULL){
+    printf("Too few parameters!\n");
+    return 1;
+  }
+
+  char* endptr;
+  word_t addr = strtol(expr, &endptr, 16);
+
+  for(int i=0; i<size; i++){
+    word_t data = vaddr_read(addr + i * __WORDSIZE/8, __WORDSIZE/8);
+    printf("0x%08lx\t", addr + i * __WORDSIZE/8);
+    printf("0x%16lx\n",data);
+    for(int j=0; j<__WORDSIZE/8; j++){
+      printf("0x%02x  ", (unsigned char)(data << j*8 >> (__WORDSIZE/8-1-j)* 8));
+    }
+    putchar('\n');
+    
+  }
+
+
+
+  arg = strtok(arg, " ");
+
 
   return 0;
 }
@@ -81,25 +115,30 @@ static int cmd_si(char * args){
   return 0;
 }
 
+
 /*打印程序状态*/
 static int cmd_info(char *args){
-  printf("%s",args);
   if(args == NULL){
-    printf("No Input arguments!\n");
+    printf("No parameter!\n");
+    return 1;
+  }
+
+  char *arg = strtok(args," ");
+  if(!strcmp(arg,"r"))
+  {
+    //打印寄存器信息
+    isa_reg_display();
+  }
+  else if (!strcmp(arg,"w"))
+  {
+    //打印监视点信息
+    // TODO:
+
   }
   else{
-    if(!strcmp(args,"r"))
-    {
-      isa_reg_display();
-    }
-    else if (!strcmp(args,"w"))
-    {
-      //sdb_watchpoint_display();  
-    }
-    else{
-      printf("Un recognized option: %s", args);
-    }
+    printf("Un recognized option: %s", args);
   }
+  
   return 0;
 }
 
