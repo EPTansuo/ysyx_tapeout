@@ -89,11 +89,11 @@ static int cmd_info(char *args){
   else{
     if(!strcmp(args,"r"))
     {
-        isa_reg_display();
+      isa_reg_display();
     }
     else if (!strcmp(args,"w"))
     {
-      
+      //sdb_watchpoint_display();  
     }
     else{
       printf("Un recognized option: %s", args);
