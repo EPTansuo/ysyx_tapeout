@@ -85,11 +85,12 @@ static int cmd_x(char *args){
 
   char *end;
 
-  word_t addr = strtoull(expr_str, &end, 16);
+  vaddr_t addr = strtoull(expr_str, &end, 16);
 
+  
   for(int i=0; i<size; i++){
-    word_t data = vaddr_read(addr + i * __WORDSIZE/8, __WORDSIZE/8);
-    printf("0x%08lx\t", addr + i * __WORDSIZE/8);
+    vaddr_t data = vaddr_read(addr + i * sizeof(vaddr_t)/8, sizeof(vaddr_t)/8);
+    printf("0x%08lx\t", addr + i * sizeof(vaddr_t)/8);
     printf("0x%016lx\n",data);
     //putchar('\n');
     
