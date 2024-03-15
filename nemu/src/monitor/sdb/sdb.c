@@ -83,6 +83,7 @@ static int cmd_si(char * args){
 
 /*打印程序状态*/
 static int cmd_info(char *args){
+  printf("%s",args);
   if(args == NULL){
     printf("No Input arguments!\n");
   }
