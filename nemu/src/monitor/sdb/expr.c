@@ -76,7 +76,7 @@ static struct rule {
   {"\\$[a-zA-Z]*[0-9]*", TK_REG}, //寄存器，以$开头
   {"<=", TK_LE},        //小于等于
   {">=", TK_GE},        //大于等于
-  
+
  // 大于和小于必须放在大于等于和小于等于后面，否则">="会被先识别为">"" 
   {">", TK_GT},         //大于   
   {"<", TK_LT},         //小于
@@ -269,7 +269,18 @@ uint32_t eval(int p, int q) {
      * Return the value of the number.
      */
     assert(p>=0 && p<nr_token);
-    return atoi(tokens[p].str);
+    if(tokens[p].type == TK_NUM)
+      return atoi(tokens[p].str);
+    else if (tokens[p].type == TK_HEX){
+      uint32_t num;
+      sscanf(tokens[p].str, "%x", &num);
+      return num;
+    }
+    else{
+      // ........
+      // 还需要补充完整 
+      assert(0);
+    }
   }
   else if (check_parentheses(p, q) == true) {
     /* The expression is surrounded by a matched pair of parentheses.
