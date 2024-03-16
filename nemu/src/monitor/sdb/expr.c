@@ -42,6 +42,10 @@ enum {
   TK_NOT,       //非 !
   TK_REG,       //寄存器，以$开头
   TK_HEX,       //十六进制数
+  TK_LE,        //小于等于 less equal
+  TK_GE,        //大于等于 greater equal
+  TK_GT,        //大于
+  TK_LT,        //小于
 };
 
 static struct rule {
@@ -65,11 +69,15 @@ static struct rule {
   {"[0-9]+", TK_NUM},   //数字
 
   {"!=", TK_NEQ},       //不等于
-  {"&&", TK_AND},         //与
-  {"\\|\\|", TK_OR},     //或
-  {"!", TK_NOT,},         //非
+  {"&&", TK_AND},       //与
+  {"\\|\\|", TK_OR},    //或
+  {"!", TK_NOT,},       //非
   {"0[xX][0-9a-fA-F]+", TK_HEX},  //十六进制
   {"\\$[a-zA-Z]*[0-9]*", TK_REG}, //寄存器，以$开头
+  {">", TK_GT},         //大于 
+  {"<", TK_LT},         //小于
+  {"<=", TK_LE},        //小于等于
+  {">=", TK_GE},        //大于等于
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -171,6 +179,11 @@ static bool make_token(char *e) {
           case TK_AND:   tokens[nr_token++].type = TK_AND;   break;
           case TK_OR:    tokens[nr_token++].type = TK_OR;    break;
           case TK_NOT:   tokens[nr_token++].type = TK_NOT;   break;
+          case TK_GT:   tokens[nr_token++].type = TK_GT;   break;
+          case TK_LT:   tokens[nr_token++].type = TK_LT;   break;
+          case TK_LE:    tokens[nr_token++].type = TK_LE;    break;
+          case TK_GE:   tokens[nr_token++].type = TK_GE;   break;
+
           case TK_HEX: 
             tokens[nr_token].type = TK_HEX; 
             //把匹配到的十六进制字符串复制到到str中
@@ -221,27 +234,13 @@ static inline int order_map(int type)
   //返回数值依照：https://blog.csdn.net/DZRYWYBL/article/details/90679557 
   switch (type)
   {
-    case TK_NOT:
-    case TK_PNT:
-      return 2;
-
-    case TK_MUL:
-    case TK_DIV:
-      return 3;
-
-    case TK_MINUS:
-    case TK_PLUS:
-      return 4; 
-
-    case TK_NEQ:
-    case TK_EQ:
-      return 7;
-
-    case TK_AND:
-      return 11;
-    
-    case TK_OR:
-      return 12;
+    case TK_NOT:   case TK_PNT:  return 2;
+    case TK_MUL:   case TK_DIV:  return 3;
+    case TK_MINUS: case TK_PLUS: return 4; 
+    case TK_LT:    case TK_GT:   case TK_LE: case TK_GE: return 6;
+    case TK_NEQ:   case TK_EQ:   return 7;
+    case TK_AND:   return 11;
+    case TK_OR:    return 12;
 
     default:
       return -1;
@@ -295,15 +294,10 @@ uint32_t eval(int p, int q) {
         
         case TK_NUM:  break;
 
-        case TK_PLUS:
-        case TK_MINUS: 
-        case TK_MUL:
-        case TK_DIV: 
-        case TK_OR:
-        case TK_AND:
-        case TK_NOT:
-        case TK_EQ:
-        case TK_NEQ:
+        case TK_PLUS: case TK_MINUS: case TK_MUL:  case TK_DIV: 
+        case TK_OR:   case TK_AND:   case TK_NOT:  case TK_EQ:
+        case TK_NEQ:  case TK_LE:    case TK_GE:   case TK_LT:
+        case TK_GT:
           if(op < 0){
             op = i;
             break;
@@ -331,6 +325,10 @@ uint32_t eval(int p, int q) {
       case TK_OR:  return (val1 || val2);
       case TK_NOT: return (!val2);
       case TK_NEQ: return (val1 != val2);
+      case TK_LE:  return (val1 <= val2);
+      case TK_GE:  return (val1 >= val2);
+      case TK_LT:  return (val1 < val2);
+      case TK_GT:  return (val1 > val2);
       default: assert(0);
     }
   }
