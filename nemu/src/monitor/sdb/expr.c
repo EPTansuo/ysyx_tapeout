@@ -193,12 +193,14 @@ static bool make_token(char *e) {
             tokens[nr_token].type = TK_HEX; 
             //把匹配到的十六进制字符串复制到到str中
             strncpy(tokens[nr_token].str, &e[position-substr_len], substr_len);
+            tokens[nr_token].str[substr_len] = '\0';
             nr_token++; 
             break;
           case TK_REG: 
             tokens[nr_token].type = TK_REG; 
             //把匹配到的寄存器名称复制到到str中
             strncpy(tokens[nr_token].str, &e[position-substr_len], substr_len);
+            tokens[nr_token].str[substr_len] = '\0';
             nr_token++; 
             break;
 
@@ -280,8 +282,6 @@ word_t eval(int p, int q) {
       return num;
     }
     else{
-      // ........
-      // 还需要补充完整 
       assert(0);
     }
   }
