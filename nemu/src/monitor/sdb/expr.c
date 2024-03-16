@@ -259,7 +259,7 @@ bool higher_order(int type1, int type2)
 }
 
 //函数的主体从文档中复制过来
-uint32_t eval(int p, int q) {
+uint64_t eval(int p, int q) {
   if (p > q) {
     /* Bad expression */
     printf("Bad Expression!\n");
@@ -273,10 +273,10 @@ uint32_t eval(int p, int q) {
      */
     assert(p>=0 && p<nr_token);
     if(tokens[p].type == TK_NUM)
-      return atoi(tokens[p].str);
+      return strtol(tokens[p].str, NULL, 10);
     else if (tokens[p].type == TK_HEX){
-      uint32_t num;
-      sscanf(tokens[p].str, "%x", &num);
+      uint64_t num;
+      sscanf(tokens[p].str, "%lx", &num);
       return num;
     }
     else{
@@ -326,8 +326,8 @@ uint32_t eval(int p, int q) {
       }
     }
 
-    uint32_t val1 = eval(p, op - 1);
-    uint32_t val2 = eval(op + 1, q);
+    uint64_t val1 = eval(p, op - 1);
+    uint64_t val2 = eval(op + 1, q);
 
     assert(op>0 && op<nr_token);
 
