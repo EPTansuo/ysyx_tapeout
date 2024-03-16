@@ -2,6 +2,7 @@
 #define __WATCHPOINT_H_
 
 #include <common.h>
+#include <utils.h>
 
 #define NR_WP 32
 
