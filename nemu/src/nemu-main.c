@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
   {
     if(line[strlen(line)-1] == '\n')
        line[strlen(line)-1] = '\0'; //删除换行
-    puts(line);
+    //puts(line);
     arg = strtok(line, " ");
     //puts(arg);
     result = atoi(arg);
