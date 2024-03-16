@@ -47,11 +47,12 @@ static struct rule {
   {"\\+", TK_PLUS},        // plus
   {"==", TK_EQ},           // equal
 
-  {"\\-", TK_MINUS},       // 减
-  {"\\*", TK_MUL},         // 乘
-  {"\\/", TK_DIV},         // 除
-  {"\\(", TK_LP},          //左括号
-  {"\\)", TK_RP},          //右括号
+  {"-", TK_MINUS},      // 减
+  {"\\*", TK_MUL},      // 乘
+  {"/", TK_DIV},        // 除
+  {"\\(", TK_LP},       //左括号
+  {"\\)", TK_RP},       //右括号
+  {"[0-9]+"},           //数字
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -60,8 +61,8 @@ static regex_t re[NR_REGEX] = {};
 
 /* Rules are used for many times.
  * Therefore we compile them only once before any usage.
- */
-void init_regex() {
+ */ 
+void init_regex() {   //在init_sdb中调用
   int i;
   char error_msg[128];
   int ret;
@@ -119,6 +120,9 @@ static bool make_token(char *e) {
     /* Try all rules one by one. */
     for (i = 0; i < NR_REGEX; i++) {
       //匹配成功 && 匹配的字符串正好是当前开始的位置
+      //int  ret1 ;
+      //ret1 = regexec(&re[i], e + position, 1, &pmatch, 0);
+      //if(ret1 == 0 && pmatch.rm_so == 0);
       if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
         char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
