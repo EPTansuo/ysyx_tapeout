@@ -166,7 +166,7 @@ static bool make_token(char *e) {
       return false;
     }
   }
-  printf("nr_token= %d \n",nr_token);
+  //printf("nr_token= %d \n",nr_token);
   return true;
 }
 
