@@ -100,7 +100,7 @@ void set_watchpoint(char *e)
   uint64_t result = expr(wp->expr, &succ);
   assert(succ == true);
   wp->value_old = result;
-  printf("Set watchpoint: %d: %s", wp->NO, wp->expr);
+  printf("Set watchpoint: %d: %s\n", wp->NO, wp->expr);
 }
 void del_watchpoint(int NO)
 {
@@ -116,10 +116,10 @@ void del_watchpoint(int NO)
 
 void print_watchpoint()
 {
-  printf("Num\t\tType\t\tWhat\n");
+  printf("Num\t Value\t What\n");
   for (WP* p = head; p!=NULL; p=p->next)
   {
-    printf("%d\t\texpr watchpoint\t\t%s\n",p->NO,p->expr);
+    printf("%d\t %lult %s\n",p->NO,p->value_old,p->expr);
   }
 }
 void scan_watchpoint(){
