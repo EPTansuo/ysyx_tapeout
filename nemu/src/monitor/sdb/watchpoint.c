@@ -131,8 +131,8 @@ void scan_watchpoint(){
      if(result != p->value_old){
       nemu_state.state = NEMU_STOP;
       printf("Watchpoint %d: %s\n", p->NO, p->expr);
-      printf("Old value = %lu\n", p->value_old);
-      printf("New value = %lu\n", p->value);
+      printf("Old value = %lu  %016lx\n", p->value_old,p->value_old);
+      printf("New value = %lu  %016lx\n", p->value,p->value_old);
      }
   }
 }
