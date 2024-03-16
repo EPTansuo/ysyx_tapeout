@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
     
   }
   
-  return 0;
+  exit(0);
 #else
    /* Start engine. */
   engine_start();
