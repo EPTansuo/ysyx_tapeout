@@ -36,7 +36,7 @@ void isa_reg_display() {
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
-  if(strcmp(s, "$pc"))
+  if(!strcmp(s, "$pc"))
   {
     return cpu.pc;
   }
