@@ -64,7 +64,7 @@ static int cmd_p(char *args){
     printf("No parameter!\n");
     return 1;
   }
-  puts(args);
+  //puts(args);
   bool success=true;
   word_t result = expr(args, &success);
   printf("%ld\n",result);
