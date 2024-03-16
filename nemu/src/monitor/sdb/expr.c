@@ -206,6 +206,14 @@ static bool make_token(char *e) {
   return true;
 }
 
+void print_tokens()
+{
+  for(int i=0; i<nr_token; i++)
+  {
+    printf("%d: type: %d (%c), str: %s\n", i, tokens[i].type, (char)tokens[i].type, tokens[i].str);
+  }
+}
+
 //运算符优先级到整数的映射，优先级越高，映射得到的数值越小
 static inline int order_map(int type)
 {
@@ -327,7 +335,7 @@ word_t expr(char *e, bool *success) {
     *success = false;
     return 0;
   }
-
+  print_tokens();
   /* TODO: Insert codes to evaluate the expression. */
 
   // for (int i = 0; i < nr_token; i ++) {
