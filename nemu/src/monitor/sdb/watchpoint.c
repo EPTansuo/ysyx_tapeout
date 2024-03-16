@@ -100,6 +100,7 @@ void set_watchpoint(char *e)
   uint64_t result = expr(wp->expr, &succ);
   assert(succ == true);
   wp->value_old = result;
+  wp->value =result;
   printf("Set watchpoint: %d: %s\n", wp->NO, wp->expr);
 }
 void del_watchpoint(int NO)
