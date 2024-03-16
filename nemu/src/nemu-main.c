@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
     printf("%d > Result: %u, output: %u\n",i++, result, output);
   }
   
-  
+  return 0;
 #else
    /* Start engine. */
   engine_start();
