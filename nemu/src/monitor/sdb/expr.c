@@ -167,7 +167,7 @@ static bool make_token(char *e) {
           case TK_MUL:   tokens[nr_token++].type = TK_MUL;   break;
           case TK_DIV:   tokens[nr_token++].type = TK_DIV;   break;
           
-          case TK_NEQ:   tokens[nr_token++].type = TK_DIV;   break;
+          case TK_NEQ:   tokens[nr_token++].type = TK_NEQ;   break;
           case TK_AND:   tokens[nr_token++].type = TK_AND;   break;
           case TK_OR:    tokens[nr_token++].type = TK_OR;    break;
           case TK_NOT:   tokens[nr_token++].type = TK_NOT;   break;
