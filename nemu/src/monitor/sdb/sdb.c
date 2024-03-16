@@ -20,7 +20,7 @@
 #include "sdb.h"
 #include <memory/vaddr.h>
 #include <stdbool.h>
-
+#include <watchpoint.h>
 
 static int is_batch_mode = false;
 
@@ -67,12 +67,17 @@ static int cmd_p(char *args){
   //puts(args);
   bool success=true;
   word_t result = expr(args, &success);
-  printf("%ld\n",result);
+  printf("%lu\n",result);
   return 0;
 }
 
 /*设置监视点*/
 static int cmd_w(char* args){
+  if(args == NULL){
+    printf("No parameter!\n");
+    return 1;
+  }
+  set_watchpoint(args);
   return 0; 
 }
 
@@ -107,8 +112,6 @@ static int cmd_x(char *args){
     //putchar('\n');
     
   }
-
-
 
   arg = strtok(arg, " ");
 
@@ -145,7 +148,7 @@ static int cmd_info(char *args){
   else if (!strcmp(arg,"w"))
   {
     //打印监视点信息
-    // TODO:
+    print_watchpoint();
 
   }
   else{
@@ -157,6 +160,11 @@ static int cmd_info(char *args){
 
 /*删除监视点*/
 static int cmd_d(char *args){
+  if(args == NULL){
+    printf("No parameter!\n");
+    return 1;
+  }
+  del_watchpoint(atoi(args));
   return 0;
 }
 

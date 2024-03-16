@@ -14,19 +14,17 @@
 ***************************************************************************************/
 
 #include "sdb.h"
+#include <watchpoint.h>
 
-#define NR_WP 32
 
-typedef struct watchpoint {
-  int NO;
-  struct watchpoint *next;
 
-  /* TODO: Add more members if necessary */
-
-} WP;
 
 static WP wp_pool[NR_WP] = {};
 static WP *head = NULL, *free_ = NULL;
+
+WP* new_wp();
+void free_wp(WP *wp);
+
 
 void init_wp_pool() {
   int i;
@@ -40,4 +38,106 @@ void init_wp_pool() {
 }
 
 /* TODO: Implement the functionality of watchpoint */
+
+
+WP* new_wp()
+{
+  if (free_ == NULL){
+    printf("Ther is no free watchpoint!\n");
+    return NULL;
+  }
+
+  //static int number = 0;
+
+  WP* tmp = free_;
+  free_ = free_->next;  //从空闲链表中取出
+  tmp->next = head; 
+  head = tmp;           //将添加的监视点添加到在使用的链表中
+  
+  head->expr[0] = '\0';
+  head->value = 0;
+  head->value_old = 0;
+  //head->NO = number++;
+
+  return head;
+}
+void free_wp(WP *wp)
+{
+  if(wp == NULL){
+    printf("Ther is no used watchpoint!\n");
+    assert(0);
+    return;
+  }
+
+  WP* tmp = NULL;
+
+  if(head == wp){
+    tmp =  free_;
+    free_ = head;
+    free_->next = tmp;
+    head = head->next;
+  } else {
+    for(WP* p = head->next; p!=NULL; tmp = p, p = p->next){
+      if(p == wp){
+        tmp->next = p->next;
+        p->next = free_;
+        free_ = p;
+        return;
+      }
+    }
+  }
+}
+
+
+
+
+void set_watchpoint(char *e)
+{
+  WP* wp = new_wp();
+  assert(wp != NULL);
+  strcpy(wp->expr, e);
+  bool succ = true;
+  uint64_t result = expr(wp->expr, &succ);
+  assert(succ == true);
+  wp->value_old = result;
+  wp->value =result;
+  printf("Set watchpoint: %d: %s\n", wp->NO, wp->expr);
+}
+void del_watchpoint(int NO)
+{
+  for (WP* p = head; p!=NULL; p=p->next)
+  {
+    if(p->NO == NO){
+      free_wp(p);      
+      return;
+    }
+  }
+  printf("Can not find watchpoint: NO. %d\n",NO);
+  
+}
+
+void print_watchpoint()
+{
+  printf("Num\t Value\t What\n");
+  for (WP* p = head; p!=NULL; p=p->next)
+  {
+    printf("%d\t %lu\t %s\n",p->NO,p->value_old,p->expr);
+  }
+}
+void scan_watchpoint(){
+  for(WP* p = head; p!=NULL; p=p->next){
+    bool succ=true;
+     uint64_t result = expr(p->expr, &succ);
+     assert(succ);
+     if(result != p->value_old){
+      p->value = result;
+      nemu_state.state = NEMU_STOP;
+      printf("Watchpoint %d: %s\n", p->NO, p->expr);
+      printf("Old value = %lu  0x%016lx\n", p->value_old,p->value_old);
+      printf("New value = %lu  0x%016lx\n",p->value,p->value);
+
+      p->value_old = p->value;
+     }
+  }
+}
 
