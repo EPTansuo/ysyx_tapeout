@@ -22,7 +22,7 @@ typedef struct watchpoint {
 void set_watchpoint(char *e);
 void del_watchpoint(int NO);
 void print_watchpoint();
-
+void scan_watchpoint();
 
 #endif // !__WATCHPOINT_H_
 
