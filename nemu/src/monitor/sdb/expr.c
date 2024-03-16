@@ -124,12 +124,12 @@ static bool make_token(char *e) {
       //ret1 = regexec(&re[i], e + position, 1, &pmatch, 0);
       //if(ret1 == 0 && pmatch.rm_so == 0);
       if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
-        char *substr_start = e + position;
+        //char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
 
         //printf("ENTER IF\n");
-        Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
-            i, rules[i].regex, position, substr_len, substr_len, substr_start);
+        //Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
+        //    i, rules[i].regex, position, substr_len, substr_len, substr_start);
 
         position += substr_len;
 
