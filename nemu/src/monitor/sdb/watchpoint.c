@@ -73,6 +73,7 @@ void free_wp(WP *wp)
 {
   if(wp == NULL){
     printf("Ther is no used watchpoint!\n");
+    assert(0);
     return;
   }
 
