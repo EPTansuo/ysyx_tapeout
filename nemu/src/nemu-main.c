@@ -51,6 +51,7 @@ int main(int argc, char *argv[]) {
     arg = strtok(line, " ");
     result = atoi(arg);
     arg = strtok(line, "");
+    arg[strlen(arg)-1] = '\0';
     output = expr(arg,&succ);
     printf("Result: %u, output: %u", result, output);
   }
