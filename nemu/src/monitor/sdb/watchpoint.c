@@ -119,7 +119,7 @@ void print_watchpoint()
   printf("Num\t Value\t What\n");
   for (WP* p = head; p!=NULL; p=p->next)
   {
-    printf("%d\t %lult %s\n",p->NO,p->value_old,p->expr);
+    printf("%d\t %lu\t %s\n",p->NO,p->value_old,p->expr);
   }
 }
 void scan_watchpoint(){
