@@ -18,6 +18,9 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
+#include <memory/vaddr.h>
+#include <stdbool.h>
+
 
 static int is_batch_mode = false;
 
@@ -54,6 +57,67 @@ static int cmd_q(char *args) {
 }
 
 
+
+/*表达式求值*/
+static int cmd_p(char *args){
+  if(args == NULL){
+    printf("No parameter!\n");
+    return 1;
+  }
+  //puts(args);
+  bool success=true;
+  word_t result = expr(args, &success);
+  printf("%ld\n",result);
+  return 0;
+}
+
+/*设置监视点*/
+static int cmd_w(char* args){
+  return 0; 
+}
+
+/*扫描内存*/
+static int cmd_x(char *args){
+  if(args == NULL){
+    printf("No parameter!\n");
+    return 1;
+  }
+
+  char *arg = strtok(args, " ");
+
+  int size = atoi(arg);
+
+  char *expr_str;
+  expr_str = strtok(NULL, " ");
+
+  if(expr_str == NULL){
+    printf("Too few parameters!\n");
+    return 1;
+  }
+
+  char *end;
+
+  vaddr_t addr = strtoull(expr_str, &end, 16);
+
+  
+  for(int i=0; i<size; i++){
+    vaddr_t data = vaddr_read(addr + i * sizeof(vaddr_t)/8, sizeof(vaddr_t)/8);
+    printf("0x%08lx\t", addr + i * sizeof(vaddr_t)/8);
+    printf("0x%016lx\n",data);
+    //putchar('\n');
+    
+  }
+
+
+
+  arg = strtok(arg, " ");
+
+
+  return 0;
+}
+
+
+/*单步执行*/
 static int cmd_si(char * args){
   int step =  0;
   if(args == NULL)
@@ -64,25 +128,38 @@ static int cmd_si(char * args){
   return 0;
 }
 
+
+/*打印程序状态*/
 static int cmd_info(char *args){
   if(args == NULL){
-    printf("No Input arguments!\n");
+    printf("No parameter!\n");
+    return 1;
+  }
+
+  char *arg = strtok(args," ");
+  if(!strcmp(arg,"r"))
+  {
+    //打印寄存器信息
+    isa_reg_display();
+  }
+  else if (!strcmp(arg,"w"))
+  {
+    //打印监视点信息
+    // TODO:
+
   }
   else{
-    if(!strcmp(args,"r"))
-    {
-        isa_reg_display();
-    }
-    else if (!strcmp(args,"w"))
-    {
-      
-    }
-    else{
-      printf("Un recognized option: %s", args);
-    }
+    printf("Unrecognized option: %s\n", args);
   }
+  
   return 0;
 }
+
+/*删除监视点*/
+static int cmd_d(char *args){
+  return 0;
+}
+
 
 static int cmd_help(char *args);
 
@@ -98,12 +175,14 @@ static struct {
   { "help", "Display information about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
-  {"info", "Print the information", cmd_info},
 
   /* TODO: Add more commands */
-  {"si","Single step", cmd_si},
-
-
+  {"si", "Single step", cmd_si},
+  {"info", "Print the status of program", cmd_info},
+  {"x", "Scan the memory",cmd_x},
+  {"p", "Get the value of an expression",cmd_p},
+  {"w", "Set up monitoring point", cmd_w},
+  {"d", "Deleting monitoring point", cmd_d},
 };
 
 #define NR_CMD ARRLEN(cmd_table)
