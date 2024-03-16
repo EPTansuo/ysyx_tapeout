@@ -389,7 +389,7 @@ word_t expr(char *e, bool *success) {
       bool succ = false;
       word_t value = isa_reg_str2val(tokens[i].str, &succ);
       if(!succ)
-        printf("Can not get value of: %s.  Default set to ZERO!!\n", tokens[i].str);
+        printf("Can not get value of: %s.  Default set to ZERO!\n", tokens[i].str);
       sprintf(tokens[i].str, "%lu", value);
       tokens[i].type = TK_NUM;  //可以把寄存器取值后，当作数字来处理
     }
