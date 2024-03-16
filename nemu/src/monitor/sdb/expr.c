@@ -159,18 +159,18 @@ static bool make_token(char *e) {
          */ //TODO FINISHED 
         switch (rules[i].token_type) {
           case TK_NOTYPE: break; //tokens[nr_token++].type = TK_NOTYPE; break;
-          case TK_EQ: tokens[nr_token++].type = TK_EQ; break;
-          case TK_LP: tokens[nr_token++].type = TK_LP; break;
-          case TK_RP: tokens[nr_token++].type = TK_RP; break;
-          case TK_PLUS: tokens[nr_token++].type = TK_PLUS; break;
+          case TK_EQ:    tokens[nr_token++].type = TK_EQ;    break;
+          case TK_LP:    tokens[nr_token++].type = TK_LP;    break;
+          case TK_RP:    tokens[nr_token++].type = TK_RP;    break;
+          case TK_PLUS:  tokens[nr_token++].type = TK_PLUS;  break;
           case TK_MINUS: tokens[nr_token++].type = TK_MINUS; break;
-          case TK_MUL: tokens[nr_token++].type = TK_MUL; break;
-          case TK_DIV: tokens[nr_token++].type = TK_DIV; break;
+          case TK_MUL:   tokens[nr_token++].type = TK_MUL;   break;
+          case TK_DIV:   tokens[nr_token++].type = TK_DIV;   break;
           
-          case TK_NEQ: tokens[nr_token++].type = TK_DIV; break;
-          case TK_AND: tokens[nr_token++].type = TK_AND; break;
-          case TK_OR: tokens[nr_token++].type = TK_OR; break;
-          case TK_NOT: tokens[nr_token++].type = TK_NOT; break;
+          case TK_NEQ:   tokens[nr_token++].type = TK_DIV;   break;
+          case TK_AND:   tokens[nr_token++].type = TK_AND;   break;
+          case TK_OR:    tokens[nr_token++].type = TK_OR;    break;
+          case TK_NOT:   tokens[nr_token++].type = TK_NOT;   break;
           case TK_HEX: 
             tokens[nr_token].type = TK_HEX; 
             //把匹配到的十六进制字符串复制到到str中
@@ -302,6 +302,7 @@ uint32_t eval(int p, int q) {
         case TK_OR:
         case TK_AND:
         case TK_NOT:
+        case TK_EQ:
           if(op < 0){
             op = i;
             break;
