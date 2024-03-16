@@ -329,9 +329,18 @@ uint32_t eval(int p, int q) {
   }
 }
 
+void tokens_clear()
+{
+  for(int i=0; i<sizeof(tokens)/sizeof(tokens[0]); i++)
+  {
+    tokens[i].str[0] = '\0';
+    tokens[i].type = 0;
+  }
+}
 
 
 word_t expr(char *e, bool *success) {
+  tokens_clear();
   if (!make_token(e)) {
     *success = false;
     return 0;
@@ -346,6 +355,6 @@ word_t expr(char *e, bool *success) {
   //   }
   // }
 
-
+  
   return  eval(0,nr_token-1);
 }
