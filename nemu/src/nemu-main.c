@@ -15,10 +15,19 @@
 
 #include <common.h>
 
+
+#define TEST_EXPR   //测试expr（表达式求值）使用
+
+#ifdef TEST_EXPR
+#include</home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/nemu/src/monitor/sdb/sdb.h>
+#endif // TEST_EXPR
+
+
 void init_monitor(int, char *[]);
 void am_init_monitor();
 void engine_start();
 int is_exit_status_bad();
+
 
 int main(int argc, char *argv[]) {
   /* Initialize the monitor. */
@@ -28,8 +37,29 @@ int main(int argc, char *argv[]) {
   init_monitor(argc, argv);
 #endif
 
-  /* Start engine. */
+  /* 如果测试表达式求值的话 */
+#ifdef TEST_EXPR
+  char line[65535];
+  char *arg;
+  uint32_t result, output;
+  bool succ;
+  FILE *fp = fopen("./tools/gen-expr/build/input", "r");
+  assert(fp != NULL);
+  while(fgets(line, 65535,fp) != NULL)
+  {
+    arg = strtok(line, " ");
+    result = atoi(arg);
+    arg = strtok(line, "");
+    output = expr(arg,&succ);
+    printf("Result: %u, output: %u", result, output);
+  }
+  
+  
+#else
+   /* Start engine. */
   engine_start();
+#endif // TEST_EXPR
+  
 
   return is_exit_status_bad();
 }

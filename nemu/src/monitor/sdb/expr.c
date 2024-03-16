@@ -81,7 +81,7 @@ typedef struct token {
   char str[32];
 } Token;
 
-static Token tokens[32] __attribute__((used)) = {};
+static Token tokens[65535] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
 
@@ -203,6 +203,7 @@ uint32_t eval(int p, int q) {
      * For now this token should be a number.
      * Return the value of the number.
      */
+    assert(p>0 && p<nr_token);
     return atoi(tokens[p].str);
   }
   else if (check_parentheses(p, q) == true) {
@@ -250,7 +251,7 @@ uint32_t eval(int p, int q) {
     uint32_t val1 = eval(p, op - 1);
     uint32_t val2 = eval(op + 1, q);
 
-    assert(op>0 && op<32);
+    assert(op>0 && op<nr_token);
 
     switch (tokens[op].type) {
       case '+': return val1 + val2;
