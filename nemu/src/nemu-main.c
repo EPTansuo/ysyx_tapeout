@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
   char line[65535];
   char *arg;
   uint32_t result, output;
-  bool succ;
+  bool succ = true;
   FILE *fp = fopen("tools/gen-expr/build/input", "r");
   assert(fp != NULL);
   int i=1;
