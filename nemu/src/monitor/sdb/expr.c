@@ -341,11 +341,14 @@ void tokens_clear()
 
 word_t expr(char *e, bool *success) {
   tokens_clear();
+  
   if (!make_token(e)) {
     *success = false;
     return 0;
   }
-  print_tokens();
+  
+  //print_tokens();
+
   /* TODO: Insert codes to evaluate the expression. */
 
   // for (int i = 0; i < nr_token; i ++) {
