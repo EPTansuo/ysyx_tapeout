@@ -20,6 +20,8 @@
  */
 #include <regex.h>
 
+#define LOG 
+
 enum {
   TK_NOTYPE = 256, TK_EQ,
 
@@ -129,10 +131,11 @@ static bool make_token(char *e) {
 
         //printf("ENTER IF\n");
 
-        /*char *substr_start = e + position;
+#ifdef LOG
+        char *substr_start = e + position;
         Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
             i, rules[i].regex, position, substr_len, substr_len, substr_start);
-        */
+#endif
         position += substr_len;
 
         /* TODO: Now a new token is recognized with rules[i]. Add codes
