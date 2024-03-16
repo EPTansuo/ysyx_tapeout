@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
   char *arg;
   uint32_t result, output;
   bool succ;
-  FILE *fp = fopen("./tools/gen-expr/build/input", "r");
+  FILE *fp = fopen("tools/gen-expr/build/input", "r");
   assert(fp != NULL);
   while(fgets(line, 65535,fp) != NULL)
   {

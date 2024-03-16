@@ -203,7 +203,7 @@ uint32_t eval(int p, int q) {
      * For now this token should be a number.
      * Return the value of the number.
      */
-    assert(p>0 && p<nr_token);
+    assert(p>=0 && p<nr_token);
     return atoi(tokens[p].str);
   }
   else if (check_parentheses(p, q) == true) {
