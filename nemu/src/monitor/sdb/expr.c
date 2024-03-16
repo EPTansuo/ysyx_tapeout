@@ -207,7 +207,7 @@ static bool make_token(char *e) {
 }
 
 //运算符优先级到整数的映射，优先级越高，映射得到的数值越小
-int order_map(int type)
+static inline int order_map(int type)
 {
   //返回数值依照：https://blog.csdn.net/DZRYWYBL/article/details/90679557 
   switch (type)
