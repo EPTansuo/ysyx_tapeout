@@ -16,10 +16,10 @@
 #include <common.h>
 
 
-#define TEST_EXPR   //测试expr（表达式求值）使用
+//#define TEST_EXPR   //测试expr（表达式求值）使用
 
 #ifdef TEST_EXPR
-#include<../src/monitor/sdb/sdb.h>
+#include <../src/monitor/sdb/sdb.h>
 #endif // TEST_EXPR
 
 
