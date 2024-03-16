@@ -39,13 +39,13 @@ enum {
   TK_NEQ,       //不等于!=
   TK_AND,       //与&& 
   TK_OR,        //或||
-  TK_NOT,       //非 !
+  TK_NOT = '!', //非 !
   TK_REG,       //寄存器，以$开头
   TK_HEX,       //十六进制数
   TK_LE,        //小于等于 less equal
   TK_GE,        //大于等于 greater equal
-  TK_GT,        //大于
-  TK_LT,        //小于
+  TK_GT = '>',  //大于
+  TK_LT = '<',  //小于
 };
 
 static struct rule {
