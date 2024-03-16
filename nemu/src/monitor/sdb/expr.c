@@ -210,7 +210,7 @@ void print_tokens()
 {
   for(int i=0; i<nr_token; i++)
   {
-    printf("%d: type: %d (%c), str: %s\n", i, tokens[i].type, (char)tokens[i].type, tokens[i].str);
+    printf("%d: type: %d ( %c ),\t str: %s\n", i, tokens[i].type, (char)tokens[i].type, tokens[i].str);
   }
 }
 
