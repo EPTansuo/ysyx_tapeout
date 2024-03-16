@@ -353,7 +353,7 @@ word_t expr(char *e, bool *success) {
     return 0;
   }
   
-  //print_tokens();
+  print_tokens();
 
   /* TODO: Insert codes to evaluate the expression. */
 
