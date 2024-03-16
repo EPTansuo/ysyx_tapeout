@@ -188,6 +188,7 @@ static bool make_token(char *e) {
             tokens[nr_token].type = TK_NUM; 
             //把匹配到的数字字符串复制到到str中
             strncpy(tokens[nr_token].str, &e[position-substr_len], substr_len);
+            tokens[nr_token].str[substr_len] = '\0';
             nr_token++; 
             break;
           default: printf("Un recognized rules: %d", rules[i].token_type);
