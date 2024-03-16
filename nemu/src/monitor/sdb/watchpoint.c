@@ -17,16 +17,24 @@
 
 #define NR_WP 32
 
+
+
 typedef struct watchpoint {
   int NO;
   struct watchpoint *next;
 
   /* TODO: Add more members if necessary */
-
+  char expr[256];
+  word_t value;
+  word_t value_old;
 } WP;
 
 static WP wp_pool[NR_WP] = {};
 static WP *head = NULL, *free_ = NULL;
+
+WP* new_wp();
+void free_wp(WP *wp);
+
 
 void init_wp_pool() {
   int i;
@@ -40,4 +48,49 @@ void init_wp_pool() {
 }
 
 /* TODO: Implement the functionality of watchpoint */
+WP* new_wp()
+{
+  if (free_ == NULL){
+    printf("Ther is no free watchpoint!\n");
+    return NULL;
+  }
 
+  //static int number = 0;
+
+  WP* tmp = free_;
+  free_ = free_->next;  //从空闲链表中取出
+  tmp->next = head; 
+  head = tmp;           //将添加的监视点添加到在使用的链表中
+  
+  head->expr[0] = '\0';
+  head->value = 0;
+  head->value_old = 0;
+  //head->NO = number++;
+
+  return head;
+}
+void free_wp(WP *wp)
+{
+  if(wp == NULL){
+    printf("Ther is no used watchpoint!\n");
+    return;
+  }
+
+  WP* tmp = NULL;
+
+  if(head == wp){
+    tmp =  free_;
+    free_ = head;
+    free_->next = tmp;
+    head = head->next;
+  } else {
+    for(WP* p = head->next; p!=NULL; tmp = p, p = p->next){
+      if(p == wp){
+        tmp->next = p->next;
+        p->next = free_;
+        free_ = p;
+        return;
+      }
+    }
+  }
+}
