@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
     arg = strtok(line, " ");
     puts(arg);
     result = atoi(arg);
-    arg = strtok(line, "");
+    arg = strtok(NULL, "");
     puts(arg);
     output = expr(arg,&succ);
     printf("Result: %u, output: %u", result, output);
