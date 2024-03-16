@@ -52,7 +52,7 @@ static struct rule {
   {"/", TK_DIV},        // 除
   {"\\(", TK_LP},       //左括号
   {"\\)", TK_RP},       //右括号
-  {"[0-9]+"},           //数字
+  {"[0-9]+", TK_NUM},   //数字
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -127,7 +127,7 @@ static bool make_token(char *e) {
         char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
 
-        printf("ENTER IF\n");
+        //printf("ENTER IF\n");
         Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
             i, rules[i].regex, position, substr_len, substr_len, substr_start);
 
