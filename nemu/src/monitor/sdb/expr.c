@@ -20,7 +20,7 @@
  */
 #include <regex.h>
 
-#define LOG 
+//#define LOG 
 
 enum {
   TK_NOTYPE = 256, TK_EQ,
