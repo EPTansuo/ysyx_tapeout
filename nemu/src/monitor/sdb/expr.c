@@ -257,8 +257,8 @@ uint32_t eval(int p, int q) {
       }
     }
 
-    uint32_t val1 = eval(p, op - 1);
-    uint32_t val2 = eval(op + 1, q);
+    int32_t val1 = eval(p, op - 1);
+    int32_t val2 = eval(op + 1, q);
 
     assert(op>0 && op<nr_token);
 
