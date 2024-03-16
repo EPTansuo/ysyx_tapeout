@@ -45,6 +45,7 @@ int main(int argc, char *argv[]) {
   bool succ;
   FILE *fp = fopen("tools/gen-expr/build/input", "r");
   assert(fp != NULL);
+  int i=1;
   while(fgets(line, 65535,fp) != NULL)
   {
     if(line[strlen(line)-1] == '\n')
@@ -56,7 +57,7 @@ int main(int argc, char *argv[]) {
     arg = strtok(NULL, "");
     //puts(arg);
     output = expr(arg,&succ);
-    printf("Result: %u, output: %u", result, output);
+    printf("%d > Result: %u, output: %u\n",i++, result, output);
   }
   
   
