@@ -19,6 +19,8 @@
 #include <readline/history.h>
 #include "sdb.h"
 #include <memory/vaddr.h>
+#include <stdbool.h>
+
 
 static int is_batch_mode = false;
 
@@ -54,8 +56,17 @@ static int cmd_q(char *args) {
   return -1;
 }
 
+
+
 /*表达式求值*/
 static int cmd_p(char *args){
+  if(args == NULL){
+    printf("No parameter!\n");
+    return 1;
+  }
+  bool success;
+  word_t result = expr(args, &success);
+  printf("%ld",result);
   return 0;
 }
 
