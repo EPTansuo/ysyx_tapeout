@@ -100,7 +100,7 @@ void set_watchpoint(char *e)
   uint64_t result = expr(wp->expr, &succ);
   assert(succ == true);
   wp->value_old = result;
-  printf("Expression watchpoint: %d: %s", wp->NO, wp->expr);
+  printf("Set watchpoint: %d: %s", wp->NO, wp->expr);
 }
 void del_watchpoint(int NO)
 {
@@ -122,5 +122,17 @@ void print_watchpoint()
     printf("%d\t\texpr watchpoint\t\t%s\n",p->NO,p->expr);
   }
 }
-//WP* scan_watchpoint();      //扫描所有使用中的监视点，返回触发的监视点指针，若无触发返回NULL
+void scan_watchpoint(){
+  for(WP* p = head; p!=NULL; p=p->next){
+    bool succ=true;
+     uint64_t result = expr(p->expr, &succ);
+     assert(succ);
+     if(result != p->value_old){
+      nemu_state.state = NEMU_STOP;
+      printf("Watchpoint %d: %s\n", p->NO, p->expr);
+      printf("Old value = %lu\n", p->value_old);
+      printf("New value = %lu\n", p->value);
+     }
+  }
+}
 
