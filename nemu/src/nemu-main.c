@@ -47,6 +47,7 @@ int main(int argc, char *argv[]) {
   assert(fp != NULL);
   while(fgets(line, 65535,fp) != NULL)
   {
+    puts(line);
     arg = strtok(line, " ");
     result = atoi(arg);
     arg = strtok(line, "");
