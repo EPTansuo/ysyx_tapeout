@@ -215,12 +215,19 @@ uint32_t eval(int p, int q) {
   else {
 
     int op = -1; //op = the position of 主运算符 in the token expression;
-
+    int lp_num = 0; //没配对的左括号的数量
     for(int i=p; i<=q; i++)
     {
       switch (tokens[i].type)
       {
-        case TK_LP: while(tokens[++i].type != TK_RP);  //不要break
+        case TK_LP: 
+        lp_num++;
+        while(lp_num != 0 && i<=q){
+          if(tokens[++i].type == TK_LP)
+            lp_num++;
+          else if(tokens[i].type == TK_RP)
+            lp_num--;
+        }
         
         case TK_NUM:  break;
 
