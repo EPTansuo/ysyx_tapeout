@@ -138,7 +138,7 @@ static bool make_token(char *e) {
          * of tokens, some extra actions should be performed.
          */ //TODO FINISHED 
         switch (rules[i].token_type) {
-          case TK_NOTYPE: tokens[nr_token++].type = TK_NOTYPE; break;
+          case TK_NOTYPE: break; //tokens[nr_token++].type = TK_NOTYPE; break;
           case TK_EQ: tokens[nr_token++].type = TK_EQ; break;
           case TK_LP: tokens[nr_token++].type = TK_LP; break;
           case TK_RP: tokens[nr_token++].type = TK_RP; break;
