@@ -160,6 +160,11 @@ static int cmd_info(char *args){
 
 /*删除监视点*/
 static int cmd_d(char *args){
+  if(args == NULL){
+    printf("No parameter!\n");
+    return 1;
+  }
+  del_watchpoint(atoi(args));
   return 0;
 }
 
