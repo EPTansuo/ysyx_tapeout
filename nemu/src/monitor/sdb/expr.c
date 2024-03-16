@@ -303,6 +303,7 @@ uint32_t eval(int p, int q) {
         case TK_AND:
         case TK_NOT:
         case TK_EQ:
+        case TK_NEQ:
           if(op < 0){
             op = i;
             break;
