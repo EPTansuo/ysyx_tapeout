@@ -371,7 +371,8 @@ word_t expr(char *e, bool *success) {
   //print_tokens();
 
   /* TODO: Insert codes to evaluate the expression. */
-
+  
+  //指针解引用判断
   for (int i = 0; i < nr_token; i ++) {
     if (tokens[i].type == TK_MUL && 
         (i == 0 || tokens[i - 1].type == TK_LP || tokens[i-1].type == TK_EQ   ||
@@ -381,6 +382,17 @@ word_t expr(char *e, bool *success) {
       tokens[i].type = TK_PNT;
     }
   }
+
+  //寄存器取值
+  for (int i = 0; i < nr_token; i++){
+    if(tokens[i].type == TK_REG){
+      bool succ;
+      word_t value = isa_reg_str2val(tokens[i].str, &succ);
+      sprintf(tokens[i].str, "%lu", value);
+      tokens[i].type = TK_NUM;  //可以把寄存器取值后，当作数字来处理
+    }
+  }
+  
 
   
   return  eval(0,nr_token-1);

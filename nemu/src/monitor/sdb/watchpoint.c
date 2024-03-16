@@ -111,7 +111,7 @@ void del_watchpoint(int NO)
       return;
     }
   }
-  printf("Can not find watchpoint: NO. %d",NO);
+  printf("Can not find watchpoint: NO. %d\n",NO);
   
 }
 
