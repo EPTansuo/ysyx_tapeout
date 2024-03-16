@@ -34,6 +34,14 @@ enum {
   TK_MINUS = '-',//减
   TK_MUL = '*',  //乘
   TK_DIV = '/',  //除
+
+  TK_PNT,       //指针解引用
+  TK_NEQ,       //不等于!=
+  TK_AND,       //与&& 
+  TK_OR,        //或||
+  TK_NOT,       //非 !
+  TK_REG,       //寄存器，以$开头
+  TK_HEX,       //十六进制数
 };
 
 static struct rule {
@@ -55,6 +63,13 @@ static struct rule {
   {"\\(", TK_LP},       //左括号
   {"\\)", TK_RP},       //右括号
   {"[0-9]+", TK_NUM},   //数字
+
+  {"!=", TK_NEQ},       //不等于
+  {"&&", TK_AND},         //与
+  {"\\|\\|", TK_OR},     //或
+  {"!", TK_NOT,},         //非
+  {"0[xX][0-9a-fA-F]+", TK_HEX},  //十六进制
+  {"\\$[a-zA-Z]*[0-9]*", TK_REG}, //寄存器，以$开头
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -151,6 +166,24 @@ static bool make_token(char *e) {
           case TK_MINUS: tokens[nr_token++].type = TK_MINUS; break;
           case TK_MUL: tokens[nr_token++].type = TK_MUL; break;
           case TK_DIV: tokens[nr_token++].type = TK_DIV; break;
+          
+          case TK_NEQ: tokens[nr_token++].type = TK_DIV; break;
+          case TK_AND: tokens[nr_token++].type = TK_AND; break;
+          case TK_OR: tokens[nr_token++].type = TK_OR; break;
+          case TK_NOT: tokens[nr_token++].type = TK_NOT; break;
+          case TK_HEX: 
+            tokens[nr_token].type = TK_HEX; 
+            //把匹配到的十六进制字符串复制到到str中
+            strncpy(tokens[nr_token].str, &e[position-substr_len], substr_len);
+            nr_token++; 
+            break;
+          case TK_REG: 
+            tokens[nr_token].type = TK_REG; 
+            //把匹配到的寄存器名称复制到到str中
+            strncpy(tokens[nr_token].str, &e[position-substr_len], substr_len);
+            nr_token++; 
+            break;
+
           case TK_NUM: 
             tokens[nr_token].type = TK_NUM; 
             //把匹配到的数字字符串复制到到str中
@@ -173,26 +206,43 @@ static bool make_token(char *e) {
   return true;
 }
 
-//运算符优先级到整数的映射，优先级越高，映射得到的数值越大
+//运算符优先级到整数的映射，优先级越高，映射得到的数值越小
 int order_map(int type)
 {
+  //返回数值依照：https://blog.csdn.net/DZRYWYBL/article/details/90679557 
   switch (type)
   {
-  case TK_MINUS:
-  case TK_PLUS:
-    return 1; 
-  case TK_MUL:
-  case TK_DIV:
-    return 2;
-  default:
-    return 0;
+    case TK_NOT:
+    case TK_PNT:
+      return 2;
+
+    case TK_MUL:
+    case TK_DIV:
+      return 3;
+
+    case TK_MINUS:
+    case TK_PLUS:
+      return 4; 
+
+    case TK_NEQ:
+    case TK_EQ:
+      return 7;
+
+    case TK_AND:
+      return 11;
+    
+    case TK_OR:
+      return 12;
+
+    default:
+      return -1;
   }
 }
 
 //type1的运算符优先级是否高于type2
 bool higher_order(int type1, int type2)
 {
-  return order_map(type1) - order_map(type2) > 0;
+  return order_map(type1) - order_map(type2) < 0;
 }
 
 //函数的主体从文档中复制过来
@@ -238,16 +288,11 @@ uint32_t eval(int p, int q) {
 
         case TK_PLUS:
         case TK_MINUS: 
-          if(op < 0){
-            op = i;
-            break;
-          }
-          if(higher_order(tokens[op].type,tokens[i].type))
-            op = i; 
-          break;
-        
         case TK_MUL:
         case TK_DIV: 
+        case TK_OR:
+        case TK_AND:
+        case TK_NOT:
           if(op < 0){
             op = i;
             break;
@@ -284,5 +329,14 @@ word_t expr(char *e, bool *success) {
   }
 
   /* TODO: Insert codes to evaluate the expression. */
+
+  // for (int i = 0; i < nr_token; i ++) {
+  //   if (tokens[i].type == TK_MUL && 
+  //       (i == 0 || tokens[i - 1].type ==  ) ) {
+  //     tokens[i].type = DEREF;
+  //   }
+  // }
+
+
   return  eval(0,nr_token-1);
 }
