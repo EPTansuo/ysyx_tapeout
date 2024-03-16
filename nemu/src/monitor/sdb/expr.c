@@ -43,15 +43,15 @@ static struct rule {
    * Pay attention to the precedence level of different rules.
    */
   //TODO FINISHED
-  {" +", TK_NOTYPE},    // spaces
-  {"\\+", '+'},         // plus
-  {"==", TK_EQ},        // equal
+  {" +", TK_NOTYPE},       // spaces
+  {"\\+", TK_PLUS},        // plus
+  {"==", TK_EQ},           // equal
 
-  {"\\-", '-'},         // 减
-  {"\\*", '*'},         // 乘
-  {"\\/", '/'},         // 除
-  {"\\(", TK_LP},         //左括号
-  {"\\)", TK_RP},         //右括号
+  {"\\-", TK_MINUS},       // 减
+  {"\\*", TK_MUL},         // 乘
+  {"\\/", TK_DIV},         // 除
+  {"\\(", TK_LP},          //左括号
+  {"\\)", TK_RP},          //右括号
 };
 
 #define NR_REGEX ARRLEN(rules)
