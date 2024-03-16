@@ -47,12 +47,14 @@ int main(int argc, char *argv[]) {
   assert(fp != NULL);
   while(fgets(line, 65535,fp) != NULL)
   {
-    line[strlen(line)-1] = '\0';
+    if(line[strlen(line)-1] == '\n')
+       line[strlen(line)-1] = '\0'; //删除换行
     puts(line);
     arg = strtok(line, " ");
+    puts(arg);
     result = atoi(arg);
     arg = strtok(line, "");
-    
+    puts(arg);
     output = expr(arg,&succ);
     printf("Result: %u, output: %u", result, output);
   }
