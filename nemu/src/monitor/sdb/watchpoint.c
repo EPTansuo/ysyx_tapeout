@@ -14,6 +14,9 @@
 ***************************************************************************************/
 
 #include "sdb.h"
+#include <watchpoint.h>
+
+
 
 #define NR_WP 32
 
@@ -48,6 +51,8 @@ void init_wp_pool() {
 }
 
 /* TODO: Implement the functionality of watchpoint */
+
+
 WP* new_wp()
 {
   if (free_ == NULL){
@@ -95,3 +100,40 @@ void free_wp(WP *wp)
     }
   }
 }
+
+
+
+
+void set_watchpoint(char *e)
+{
+  WP* wp = new_wp();
+  assert(wp != NULL);
+  strcpy(wp->expr, e);
+  bool succ = true;
+  uint64_t result = expr(wp->expr, &succ);
+  assert(succ == true);
+  wp->value_old = result;
+  printf("Expression watchpoint: %d: %s", wp->NO, wp->expr);
+}
+void del_watchpoint(int NO)
+{
+  for (WP* p = head; p!=NULL; p=p->next)
+  {
+    if(p->NO == NO){
+      free_wp(p);      
+      return;
+    }
+  }
+  
+}
+
+void print_watchpoint()
+{
+  printf("Num\t\tType\t\tWhat\n");
+  for (WP* p = head; p!=NULL; p=p->next)
+  {
+    printf("%d\t\texpr watchpoint\t\t%s\n",p->NO,p->expr);
+  }
+}
+//WP* scan_watchpoint();      //扫描所有使用中的监视点，返回触发的监视点指针，若无触发返回NULL
+
