@@ -57,7 +57,9 @@ int main(int argc, char *argv[]) {
     arg = strtok(NULL, "");
     //puts(arg);
     output = expr(arg,&succ);
+    assert(result == output);
     printf("%d > Result: %u, output: %u\n",i++, result, output);
+    
   }
   
   return 0;
