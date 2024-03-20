@@ -376,7 +376,7 @@ word_t expr(char *e, bool *success) {
     return 0;
   }
   
-  print_tokens();
+  
 
   /* TODO: Insert codes to evaluate the expression. */
   
@@ -404,7 +404,7 @@ word_t expr(char *e, bool *success) {
   }
 
 
-
+  print_tokens();
   
   return  eval(0,nr_token-1);
 }
