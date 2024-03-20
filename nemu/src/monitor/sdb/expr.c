@@ -14,11 +14,12 @@
 ***************************************************************************************/
 
 #include <isa.h>
-
+#include <memory/vaddr.h>
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.
  */
 #include <regex.h>
+
 
 //#define LOG 
 
@@ -326,11 +327,16 @@ word_t eval(int p, int q) {
       }
     }
 
-    word_t val1 = eval(p, op - 1);
-    word_t val2 = eval(op + 1, q);
-
+    word_t val1 = 0, val2;
+    
     assert(op>0 && op<nr_token);
 
+    if( tokens[op].type != TK_PNT){
+      val1 = eval(p, op - 1);
+    }
+    val2 = eval(op + 1, q);
+
+  
     switch (tokens[op].type) {
       case '+': return val1 + val2;
       case '-': return val1 - val2;
@@ -345,6 +351,8 @@ word_t eval(int p, int q) {
       case TK_GE:  return (val1 >= val2);
       case TK_LT:  return (val1 < val2);
       case TK_GT:  return (val1 > val2);
+      case TK_PNT: 
+        return vaddr_read(val2, 4);
       default: assert(0);
     }
   }
@@ -394,7 +402,8 @@ word_t expr(char *e, bool *success) {
       tokens[i].type = TK_NUM;  //可以把寄存器取值后，当作数字来处理
     }
   }
-  
+
+
 
   
   return  eval(0,nr_token-1);
