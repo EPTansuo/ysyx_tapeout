@@ -314,7 +314,7 @@ word_t eval(int p, int q) {
         case TK_PLUS: case TK_MINUS: case TK_MUL:  case TK_DIV: 
         case TK_OR:   case TK_AND:   case TK_NOT:  case TK_EQ:
         case TK_NEQ:  case TK_LE:    case TK_GE:   case TK_LT:
-        case TK_GT:
+        case TK_GT:   case TK_PNT:
           if(op < 0){
             op = i;
             break;
@@ -379,7 +379,8 @@ word_t expr(char *e, bool *success) {
   
 
   /* TODO: Insert codes to evaluate the expression. */
-  
+
+
   //指针解引用判断
   for (int i = 0; i < nr_token; i ++) {
     if (tokens[i].type == TK_MUL && 
