@@ -329,7 +329,7 @@ word_t eval(int p, int q) {
 
     word_t val1 = 0, val2;
     
-    assert(op>0 && op<nr_token);
+    assert(op>=0 && op<nr_token);
 
     if( tokens[op].type != TK_PNT){
       val1 = eval(p, op - 1);
