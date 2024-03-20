@@ -100,10 +100,12 @@ static int cmd_x(char *args){
     return 1;
   }
 
-  char *end;
+  //char *end;
 
-  vaddr_t addr = strtoull(expr_str, &end, 16);
+  //vaddr_t addr = strtoull(expr_str, &end, 16);
 
+  vaddr_t addr;
+  sscanf(expr_str, "%lx", &addr);
   
   for(int i=0; i<size; i++){
     vaddr_t data = vaddr_read(addr + i * sizeof(vaddr_t)/8, sizeof(vaddr_t)/8);

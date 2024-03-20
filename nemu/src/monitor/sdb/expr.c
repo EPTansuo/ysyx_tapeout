@@ -14,11 +14,12 @@
 ***************************************************************************************/
 
 #include <isa.h>
-
+#include <memory/vaddr.h>
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.
  */
 #include <regex.h>
+
 
 //#define LOG 
 
@@ -76,7 +77,7 @@ static struct rule {
 
   // 数字必须放在十六进制后面，否则"0xa1"会被先识别为"0"" 
   {"[0-9]+", TK_NUM},   //数字
-  {"\\$[a-zA-Z]*[0-9]*", TK_REG}, //寄存器，以$开头
+  {"\\$\\$?[a-zA-Z0-9]*", TK_REG}, //寄存器，以$开头, 两个$用于匹配$$0
   {"<=", TK_LE},        //小于等于
   {">=", TK_GE},        //大于等于
 
@@ -313,7 +314,7 @@ word_t eval(int p, int q) {
         case TK_PLUS: case TK_MINUS: case TK_MUL:  case TK_DIV: 
         case TK_OR:   case TK_AND:   case TK_NOT:  case TK_EQ:
         case TK_NEQ:  case TK_LE:    case TK_GE:   case TK_LT:
-        case TK_GT:
+        case TK_GT:   case TK_PNT:
           if(op < 0){
             op = i;
             break;
@@ -326,11 +327,17 @@ word_t eval(int p, int q) {
       }
     }
 
-    word_t val1 = eval(p, op - 1);
-    word_t val2 = eval(op + 1, q);
+    word_t val1 = 0, val2;
+    
+    assert(op>=0 && op<nr_token);
 
-    assert(op>0 && op<nr_token);
+    //如果表达式只有右值的话，就不用计算val1
+    if( tokens[op].type != TK_PNT){   
+      val1 = eval(p, op - 1);
+    }
+    val2 = eval(op + 1, q);
 
+  
     switch (tokens[op].type) {
       case '+': return val1 + val2;
       case '-': return val1 - val2;
@@ -345,6 +352,8 @@ word_t eval(int p, int q) {
       case TK_GE:  return (val1 >= val2);
       case TK_LT:  return (val1 < val2);
       case TK_GT:  return (val1 > val2);
+      case TK_PNT: 
+        return vaddr_read(val2, 1);
       default: assert(0);
     }
   }
@@ -368,10 +377,11 @@ word_t expr(char *e, bool *success) {
     return 0;
   }
   
-  //print_tokens();
+  
 
   /* TODO: Insert codes to evaluate the expression. */
-  
+
+
   //指针解引用判断
   for (int i = 0; i < nr_token; i ++) {
     if (tokens[i].type == TK_MUL && 
@@ -394,8 +404,9 @@ word_t expr(char *e, bool *success) {
       tokens[i].type = TK_NUM;  //可以把寄存器取值后，当作数字来处理
     }
   }
-  
 
+
+  print_tokens();
   
   return  eval(0,nr_token-1);
 }
