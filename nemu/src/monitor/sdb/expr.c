@@ -352,7 +352,7 @@ word_t eval(int p, int q) {
       case TK_LT:  return (val1 < val2);
       case TK_GT:  return (val1 > val2);
       case TK_PNT: 
-        return vaddr_read(val2, 4);
+        return vaddr_read(val2, 1);
       default: assert(0);
     }
   }
