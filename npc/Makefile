@@ -10,8 +10,8 @@ VERILATOR_CFLAGS += -MMD --build -cc --trace \
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
 BIN = $(BUILD_DIR)/$(TOPNAME)
-SIM_EXECUTABLE = $(SIM_BUILD_DIR)/V$(SIM_TOP)
 
+default: $(BIN)
 
 $(shell mkdir -p $(BUILD_DIR))
 
@@ -43,7 +43,7 @@ $(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 		--top-module $(TOPNAME) $^ \
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
-all: $(BIN)
+all: default
 
 run: $(BIN)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
