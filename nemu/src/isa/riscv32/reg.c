@@ -50,7 +50,7 @@ word_t isa_reg_str2val(const char *s, bool *success) {
 
   int len = MUXDEF(CONFIG_RVE, 16, 32);
   for(int i=0; i<len; i++){
-    if(strcmp(s+1, regs[i])==0){   //$s0 去匹配 s0, 所以这里地址+1
+    if(strcmp(s+1, regs[i])==0){   //这里地址+1, 例如： $s0 去匹配 s0，要去掉前面的$
       *success = true;
       return gpr(i);
     }

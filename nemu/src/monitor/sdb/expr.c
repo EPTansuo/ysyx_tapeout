@@ -331,7 +331,8 @@ word_t eval(int p, int q) {
     
     assert(op>=0 && op<nr_token);
 
-    if( tokens[op].type != TK_PNT){
+    //如果表达式只有右值的话，就不用计算val1
+    if( tokens[op].type != TK_PNT){   
       val1 = eval(p, op - 1);
     }
     val2 = eval(op + 1, q);
