@@ -1,30 +1,64 @@
+TOPNAME = example
+NXDC_FILES = constr/example.nxdc
+INC_PATH ?=
+
+
 VERILATOR = verilator
-SIM_TOP = example
-SIM_BUILD_DIR = obj_dir
-SIM_EXECUTABLE = $(SIM_BUILD_DIR)/V$(SIM_TOP)
-CPP_SRC = csrc/main.cpp
-VERILOG_SRC = vsrc/$(SIM_TOP).v
-VERILATOR_FLAGS = --cc --exe --trace
-VCD_VIEWER = gtkwave
+VERILATOR_CFLAGS += -MMD --build -cc  \
+				-O3 --x-assign fast --x-initial fast --noassert
+
+BUILD_DIR = ./build
+OBJ_DIR = $(BUILD_DIR)/obj_dir
+BIN = $(BUILD_DIR)/$(TOPNAME)
 VCD_WAVE = wave.vcd
 
+default: $(BIN)
 
-all: $(CPP_SRC) $(VERILOG_SRC)
-	$(VERILATOR) $(VERILATOR_FLAGS) $(VERILOG_SRC) --build --Mdir $(SIM_BUILD_DIR) $(CPP_SRC)
-	@echo "Build successfully!"
+$(shell mkdir -p $(BUILD_DIR))
+
+# constraint file
+SRC_AUTO_BIND = $(abspath $(BUILD_DIR)/auto_bind.cpp)
+$(SRC_AUTO_BIND): $(NXDC_FILES)
+	python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
+
+# project source
+VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
+CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
+CSRCS += $(SRC_AUTO_BIND)
 
 
 
-sim:
+# rules for verilator
+INCFLAGS = $(addprefix -I, $(INC_PATH))
+CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
+
+
+# rules for NVBoard
+include $(NVBOARD_HOME)/scripts/nvboard.mk
+
+
+
+$(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
+	@rm -rf $(OBJ_DIR)
+	$(VERILATOR) $(VERILATOR_CFLAGS) \
+		--top-module $(TOPNAME) $^ \
+		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
+		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
+all: default
+
+run: $(BIN)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
-	@$(SIM_EXECUTABLE)
-	@$(VCD_VIEWER) $(VCD_WAVE)
-	
+	@$^
+#	@$(SIM_EXECUTABLE)
+#	@$(VCD_VIEWER) $(VCD_WAVE)
 	
 
-clean:
-	rm -rf obj_dir
 	
+clean:
+	rm -rf $(BUILD_DIR) $(VCD_WAVE)
+
+.PHONY: default all clean run
+
 include ../Makefile
 
 
