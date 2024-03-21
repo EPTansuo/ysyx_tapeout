@@ -1,10 +1,17 @@
+TOPNAME = example
+NXDC_FILES = constr/example.nxdc
+INC_PATH ?=
+
+
 VERILATOR = verilator
-SIM_TOP = example
+VERILATOR_CFLAGS += -MMD --build -cc --trace \
+				-O3 --x-assign fast --x-initial fast --noassert
+
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
 BIN = $(BUILD_DIR)/$(TOPNAME)
 SIM_EXECUTABLE = $(SIM_BUILD_DIR)/V$(SIM_TOP)
-NXDC_FILES = constr/example.nxdc
+
 
 $(shell mkdir -p $(BUILD_DIR))
 
@@ -18,8 +25,7 @@ VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
 CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
 CSRCS += $(SRC_AUTO_BIND)
 
-VERILATOR_CFLAGS += -MMD --build -cc  \
-				-O3 --x-assign fast --x-initial fast --noassert
+
 
 # rules for verilator
 INCFLAGS = $(addprefix -I, $(INC_PATH))
@@ -37,11 +43,10 @@ $(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 		--top-module $(TOPNAME) $^ \
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
-
+all: $(BIN)
 
 run: $(BIN)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
-	
 	@$^
 #	@$(SIM_EXECUTABLE)
 #	@$(VCD_VIEWER) $(VCD_WAVE)
