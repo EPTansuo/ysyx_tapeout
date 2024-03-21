@@ -15,7 +15,7 @@ int main(int argc, char**argv)
 	top->trace(tfp,0);
 	tfp->open("wave.vcd");
 
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 10; i++) {
 		top->a = i & 1;                
 		top->b = (i >> 1) & 1;         
 
