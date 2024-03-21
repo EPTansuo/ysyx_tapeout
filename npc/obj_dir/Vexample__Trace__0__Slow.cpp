@@ -5,7 +5,7 @@
 
 
 VL_ATTR_COLD void Vexample___024root__trace_init_sub__TOP__0(Vexample___024root* vlSelf, VerilatedVcd* tracep) {
-    if (false && vlSelf) {}  // Prevent unused
+    (void)vlSelf;  // Prevent unused variable warning
     Vexample__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vexample___024root__trace_init_sub__TOP__0\n"); );
     // Init
@@ -22,7 +22,7 @@ VL_ATTR_COLD void Vexample___024root__trace_init_sub__TOP__0(Vexample___024root*
 }
 
 VL_ATTR_COLD void Vexample___024root__trace_init_top(Vexample___024root* vlSelf, VerilatedVcd* tracep) {
-    if (false && vlSelf) {}  // Prevent unused
+    (void)vlSelf;  // Prevent unused variable warning
     Vexample__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vexample___024root__trace_init_top\n"); );
     // Body
@@ -35,7 +35,7 @@ void Vexample___024root__trace_chg_0(void* voidSelf, VerilatedVcd::Buffer* bufp)
 void Vexample___024root__trace_cleanup(void* voidSelf, VerilatedVcd* /*unused*/);
 
 VL_ATTR_COLD void Vexample___024root__trace_register(Vexample___024root* vlSelf, VerilatedVcd* tracep) {
-    if (false && vlSelf) {}  // Prevent unused
+    (void)vlSelf;  // Prevent unused variable warning
     Vexample__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vexample___024root__trace_register\n"); );
     // Body
@@ -64,7 +64,7 @@ VL_ATTR_COLD void Vexample___024root__trace_full_0(void* voidSelf, VerilatedVcd:
 }
 
 VL_ATTR_COLD void Vexample___024root__trace_full_0_sub_0(Vexample___024root* vlSelf, VerilatedVcd::Buffer* bufp) {
-    if (false && vlSelf) {}  // Prevent unused
+    (void)vlSelf;  // Prevent unused variable warning
     Vexample__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vexample___024root__trace_full_0_sub_0\n"); );
     // Init

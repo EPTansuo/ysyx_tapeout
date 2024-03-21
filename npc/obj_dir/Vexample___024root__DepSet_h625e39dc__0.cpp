@@ -11,7 +11,7 @@ VL_ATTR_COLD void Vexample___024root___dump_triggers__ico(Vexample___024root* vl
 #endif  // VL_DEBUG
 
 void Vexample___024root___eval_triggers__ico(Vexample___024root* vlSelf) {
-    if (false && vlSelf) {}  // Prevent unused
+    (void)vlSelf;  // Prevent unused variable warning
     Vexample__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vexample___024root___eval_triggers__ico\n"); );
     // Body
@@ -28,7 +28,7 @@ VL_ATTR_COLD void Vexample___024root___dump_triggers__act(Vexample___024root* vl
 #endif  // VL_DEBUG
 
 void Vexample___024root___eval_triggers__act(Vexample___024root* vlSelf) {
-    if (false && vlSelf) {}  // Prevent unused
+    (void)vlSelf;  // Prevent unused variable warning
     Vexample__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vexample___024root___eval_triggers__act\n"); );
     // Body

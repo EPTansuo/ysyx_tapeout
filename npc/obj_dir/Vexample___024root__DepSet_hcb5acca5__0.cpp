@@ -6,7 +6,7 @@
 #include "Vexample___024root.h"
 
 VL_INLINE_OPT void Vexample___024root___ico_sequent__TOP__0(Vexample___024root* vlSelf) {
-    if (false && vlSelf) {}  // Prevent unused
+    (void)vlSelf;  // Prevent unused variable warning
     Vexample__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vexample___024root___ico_sequent__TOP__0\n"); );
     // Body
@@ -14,7 +14,7 @@ VL_INLINE_OPT void Vexample___024root___ico_sequent__TOP__0(Vexample___024root* 
 }
 
 void Vexample___024root___eval_ico(Vexample___024root* vlSelf) {
-    if (false && vlSelf) {}  // Prevent unused
+    (void)vlSelf;  // Prevent unused variable warning
     Vexample__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vexample___024root___eval_ico\n"); );
     // Body
@@ -26,7 +26,7 @@ void Vexample___024root___eval_ico(Vexample___024root* vlSelf) {
 void Vexample___024root___eval_triggers__ico(Vexample___024root* vlSelf);
 
 bool Vexample___024root___eval_phase__ico(Vexample___024root* vlSelf) {
-    if (false && vlSelf) {}  // Prevent unused
+    (void)vlSelf;  // Prevent unused variable warning
     Vexample__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vexample___024root___eval_phase__ico\n"); );
     // Init
@@ -41,13 +41,13 @@ bool Vexample___024root___eval_phase__ico(Vexample___024root* vlSelf) {
 }
 
 void Vexample___024root___eval_act(Vexample___024root* vlSelf) {
-    if (false && vlSelf) {}  // Prevent unused
+    (void)vlSelf;  // Prevent unused variable warning
     Vexample__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vexample___024root___eval_act\n"); );
 }
 
 void Vexample___024root___eval_nba(Vexample___024root* vlSelf) {
-    if (false && vlSelf) {}  // Prevent unused
+    (void)vlSelf;  // Prevent unused variable warning
     Vexample__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vexample___024root___eval_nba\n"); );
 }
@@ -55,7 +55,7 @@ void Vexample___024root___eval_nba(Vexample___024root* vlSelf) {
 void Vexample___024root___eval_triggers__act(Vexample___024root* vlSelf);
 
 bool Vexample___024root___eval_phase__act(Vexample___024root* vlSelf) {
-    if (false && vlSelf) {}  // Prevent unused
+    (void)vlSelf;  // Prevent unused variable warning
     Vexample__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vexample___024root___eval_phase__act\n"); );
     // Init
@@ -73,7 +73,7 @@ bool Vexample___024root___eval_phase__act(Vexample___024root* vlSelf) {
 }
 
 bool Vexample___024root___eval_phase__nba(Vexample___024root* vlSelf) {
-    if (false && vlSelf) {}  // Prevent unused
+    (void)vlSelf;  // Prevent unused variable warning
     Vexample__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vexample___024root___eval_phase__nba\n"); );
     // Init
@@ -98,7 +98,7 @@ VL_ATTR_COLD void Vexample___024root___dump_triggers__act(Vexample___024root* vl
 #endif  // VL_DEBUG
 
 void Vexample___024root___eval(Vexample___024root* vlSelf) {
-    if (false && vlSelf) {}  // Prevent unused
+    (void)vlSelf;  // Prevent unused variable warning
     Vexample__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vexample___024root___eval\n"); );
     // Init
@@ -159,7 +159,7 @@ void Vexample___024root___eval(Vexample___024root* vlSelf) {
 
 #ifdef VL_DEBUG
 void Vexample___024root___eval_debug_assertions(Vexample___024root* vlSelf) {
-    if (false && vlSelf) {}  // Prevent unused
+    (void)vlSelf;  // Prevent unused variable warning
     Vexample__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vexample___024root___eval_debug_assertions\n"); );
     // Body

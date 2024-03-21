@@ -41,6 +41,7 @@ VM_SUPPORT_FAST += \
 VM_SUPPORT_SLOW += \
 	Vexample__Syms \
 	Vexample__Trace__0__Slow \
+	Vexample__TraceDecls__0__Slow \
 
 # Global classes, need linked once per executable, fast-path, compile with highest optimization
 VM_GLOBAL_FAST += \

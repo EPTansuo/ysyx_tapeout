@@ -105,6 +105,8 @@ std::unique_ptr<VerilatedTraceConfig> Vexample::traceConfig() const {
 //============================================================
 // Trace configuration
 
+void Vexample___024root__trace_decl_types(VerilatedVcd* tracep);
+
 void Vexample___024root__trace_init_top(Vexample___024root* vlSelf, VerilatedVcd* tracep);
 
 VL_ATTR_COLD static void trace_init(void* voidSelf, VerilatedVcd* tracep, uint32_t code) {
@@ -117,6 +119,7 @@ VL_ATTR_COLD static void trace_init(void* voidSelf, VerilatedVcd* tracep, uint32
     }
     vlSymsp->__Vm_baseCode = code;
     tracep->pushPrefix(std::string{vlSymsp->name()}, VerilatedTracePrefixType::SCOPE_MODULE);
+    Vexample___024root__trace_decl_types(tracep);
     Vexample___024root__trace_init_top(vlSelf, tracep);
     tracep->popPrefix();
 }
@@ -127,7 +130,7 @@ VL_ATTR_COLD void Vexample::trace(VerilatedVcdC* tfp, int levels, int options) {
     if (tfp->isOpen()) {
         vl_fatal(__FILE__, __LINE__, __FILE__,"'Vexample::trace()' shall not be called after 'VerilatedVcdC::open()'.");
     }
-    if (false && levels && options) {}  // Prevent unused
+    (void)levels; (void)options; // Prevent unused variable warning
     tfp->spTrace()->addModel(this);
     tfp->spTrace()->addInitCb(&trace_init, &(vlSymsp->TOP));
     Vexample___024root__trace_register(&(vlSymsp->TOP), tfp->spTrace());

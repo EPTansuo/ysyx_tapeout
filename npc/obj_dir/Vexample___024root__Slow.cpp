@@ -17,7 +17,7 @@ Vexample___024root::Vexample___024root(Vexample__Syms* symsp, const char* v__nam
 }
 
 void Vexample___024root::__Vconfigure(bool first) {
-    if (false && first) {}  // Prevent unused
+    (void)first;  // Prevent unused variable warning
 }
 
 Vexample___024root::~Vexample___024root() {

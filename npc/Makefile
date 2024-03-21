@@ -23,7 +23,7 @@ sim:
 	
 
 clean:
-	rm -rf obj_dir
+	rm -rf obj_dir $(VCD_WAVE)
 	
 include ../Makefile
 
