@@ -77,9 +77,10 @@ void free_wp(WP *wp)
     free_->next = tmp;
     head = head->next;
   } else {
-    for(WP* p = head->next; p!=NULL; tmp = p, p = p->next){
+    for(WP* p = head; p!=NULL; tmp = p, p = p->next){
       if(p == wp){
-        tmp->next = p->next;
+        tmp->next = p->next;  //第一次循环，p肯定不等于wp，因为head!=wp, p==head,
+                              //故在tmp赋值前必定不会执行这个语句
         p->next = free_;
         free_ = p;
         return;
