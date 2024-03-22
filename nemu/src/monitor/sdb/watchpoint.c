@@ -118,10 +118,10 @@ void del_watchpoint(int NO)
 
 void print_watchpoint()
 {
-  printf("Num\t Value\t What\n");
+  printf("Num\t Value\t\t What\n");
   for (WP* p = head; p!=NULL; p=p->next)
   {
-    printf("%d\t 0x%lx\t %s\n",p->NO,p->value_old,p->expr);
+    printf("%d\t 0x%lx\t\t %s\n",p->NO,p->value_old,p->expr);
   }
 }
 void scan_watchpoint(){
