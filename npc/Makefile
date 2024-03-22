@@ -4,12 +4,13 @@ INC_PATH ?=
 
 
 VERILATOR = verilator
-VERILATOR_CFLAGS += -MMD --build -cc --trace \
+VERILATOR_CFLAGS += -MMD --build -cc  \
 				-O3 --x-assign fast --x-initial fast --noassert
 
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
 BIN = $(BUILD_DIR)/$(TOPNAME)
+VCD_WAVE = wave.vcd
 
 default: $(BIN)
 
@@ -54,7 +55,7 @@ run: $(BIN)
 
 	
 clean:
-	rm -rf $(BUILD_DIR)
+	rm -rf $(BUILD_DIR) $(VCD_WAVE)
 
 .PHONY: default all clean run
 

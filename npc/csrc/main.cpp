@@ -23,10 +23,10 @@ void verilator_sim(int argc, char **argv)
 	Verilated::traceEverOn(true);
 	Vexample *top = new Vexample;
 
-	VerilatedVcdC *tfp = new VerilatedVcdC;
+	//VerilatedVcdC *tfp = new VerilatedVcdC;
 
-	top->trace(tfp, 0);
-	tfp->open("wave.vcd");
+	//top->trace(tfp, 0);
+	//tfp->open("wave.vcd");
 
 	for (int i = 0; i < 10; i++)
 	{
@@ -34,7 +34,7 @@ void verilator_sim(int argc, char **argv)
 		top->b = (i >> 1) & 1;
 
 		top->eval();
-		tfp->dump(i);
+		//tfp->dump(i);
 
 		std::cout << "a = " << (top->a ? "1" : "0")
 			  << ", b = " << (top->b ? "1" : "0")
@@ -42,7 +42,7 @@ void verilator_sim(int argc, char **argv)
 	}
 
 	top->final();
-	tfp->close();
+	//tfp->close();
 
 	delete top;
 }
