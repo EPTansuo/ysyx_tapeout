@@ -406,7 +406,7 @@ word_t expr(char *e, bool *success) {
   }
 
 
-  print_tokens();
+ // print_tokens();
   
   return  eval(0,nr_token-1);
 }

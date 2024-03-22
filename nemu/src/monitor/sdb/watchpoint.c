@@ -74,12 +74,13 @@ void free_wp(WP *wp)
   if(head == wp){
     tmp =  free_;
     free_ = head;
-    free_->next = tmp;
     head = head->next;
+    free_->next = tmp;
   } else {
-    for(WP* p = head->next; p!=NULL; tmp = p, p = p->next){
+    for(WP* p = head; p!=NULL; tmp = p, p = p->next){
       if(p == wp){
-        tmp->next = p->next;
+        tmp->next = p->next;  //第一次循环，p肯定不等于wp，因为head!=wp, p==head,
+                              //故在tmp赋值前必定不会执行这个语句
         p->next = free_;
         free_ = p;
         return;
@@ -118,10 +119,10 @@ void del_watchpoint(int NO)
 
 void print_watchpoint()
 {
-  printf("Num\t Value\t What\n");
+  printf("Num\t Value\t\t\t What\n");
   for (WP* p = head; p!=NULL; p=p->next)
   {
-    printf("%d\t %lu\t %s\n",p->NO,p->value_old,p->expr);
+    printf("%d\t 0x%lx\t\t %s\n",p->NO,p->value_old,p->expr);
   }
 }
 void scan_watchpoint(){
