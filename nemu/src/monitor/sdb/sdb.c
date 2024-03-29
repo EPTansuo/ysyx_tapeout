@@ -111,9 +111,9 @@ static int cmd_x(char *args){
   assert(success == true);
 
   for(int i=0; i<size; i++){
-    vaddr_t data = vaddr_read(addr + i * sizeof(vaddr_t)/8, sizeof(vaddr_t)/8);
-    printf("0x%08lx\t", addr + i * sizeof(vaddr_t)/8);
-    printf("0x%016lx\n",data);
+    vaddr_t data = vaddr_read(addr + i * 4, 4);
+    printf("0x%016lx\t", addr + i * 4);
+    printf("0x%08lx\n",data);
     //putchar('\n');
     
   }
