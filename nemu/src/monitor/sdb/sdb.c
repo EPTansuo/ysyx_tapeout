@@ -93,7 +93,7 @@ static int cmd_x(char *args){
   int size = atoi(arg);
 
   char *expr_str;
-  expr_str = strtok(NULL, " ");
+  expr_str = strtok(NULL, "");
 
   if(expr_str == NULL){
     printf("Too few parameters!\n");
