@@ -59,7 +59,7 @@ static int decode_exec(Decode *s) {
   __VA_ARGS__ ; \
 }
 
-  printf("s->pc: %ld\n",s->pc);
+  printf("s->pc: 0x%lx\n",s->pc);
 
   INSTPAT_START();
   INSTPAT("??????? ????? ????? ??? ????? 00101 11", auipc  , U, R(rd) = s->pc + imm);
