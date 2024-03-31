@@ -120,7 +120,7 @@ static int decode_exec(Decode *s) {
   
   INSTPAT_END();
 
-  printf("s->dnpc:0x%016lx, s->snpc:0x%010lx, s->pc:0x%016lx\n",s->dnpc,s->snpc,s->pc);
+  //printf("s->dnpc:0x%016lx, s->snpc:0x%010lx, s->pc:0x%016lx\n",s->dnpc,s->snpc,s->pc);
   R(0) = 0; // reset $zero to 0
 
   return 0;
