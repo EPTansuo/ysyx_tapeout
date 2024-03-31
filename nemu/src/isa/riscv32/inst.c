@@ -41,6 +41,12 @@ enum {
 
 #define SHAMT (BITS(s->isa.inst.val, 24, 20))
 
+#ifdef CONFIG_RV64
+#define SHAMT_LONG (BITS(s->isa.inst.val, 24, 20))
+#else
+#define SHAMT_LONG SHAMT
+#endif
+
 //该函数在INSTPAT宏内被调用
 static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_t *imm, int type) {
   uint32_t i = s->isa.inst.val;
@@ -123,11 +129,8 @@ static int decode_exec(Decode *s) {
   INSTPAT("0000000 ????? ????? 011 ????? 01100 11", sltu   , R, R(rd) = ((uint32_t)src1 < (uint32_t)src2 ? 1 : 0));
   INSTPAT("0000000 ????? ????? 101 ????? 00110 11", srliw  , R, R(rd) = SEXT(BITS(src1, 31, 0) >> (uint32_t)SHAMT, 32));
   INSTPAT("0100000 ????? ????? 101 ????? 01110 11", sraw   , R, R(rd) = SEXT(BITS(src1, 31, 0) >> (int32_t)BITS(src2, 4, 0),32));
-  #ifdef CONFIG_RV64
-  INSTPAT("010000? ????? ????? 101 ????? 00100 11", srai   , R, R(rd) = src1 >> SEXT(BITS(s->isa.inst.val,25,20),6) );
-  #endif 
-  
-  
+  INSTPAT("010000? ????? ????? 101 ????? 00100 11", srai   , R, R(rd) = src1 >> SEXT(SHAMT,32));
+  INSTPAT("000000? ????? ????? 001 ????? 00100 11", slli   , R, R(rd) = src1 >> SHAMT_LONG);
   
   INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak , N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
   INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv    , N, INV(s->pc));
