@@ -13,9 +13,6 @@
 # See the Mulan PSL v2 for more details.
 #**************************************************************************************/
 
-#使用AM，无需按c手动执行程序
-define CONFIG_TARGET_AM 
-endef
 
 # Sanity check
 ifeq ($(wildcard $(NEMU_HOME)/src/nemu-main.c),)
