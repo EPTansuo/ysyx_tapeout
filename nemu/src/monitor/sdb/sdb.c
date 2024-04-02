@@ -93,7 +93,7 @@ static int cmd_x(char *args){
   int size = atoi(arg);
 
   char *expr_str;
-  expr_str = strtok(NULL, " ");
+  expr_str = strtok(NULL, "");
 
   if(expr_str == NULL){
     printf("Too few parameters!\n");
@@ -105,12 +105,15 @@ static int cmd_x(char *args){
   //vaddr_t addr = strtoull(expr_str, &end, 16);
 
   vaddr_t addr;
-  sscanf(expr_str, "%lx", &addr);
-  
+  //sscanf(expr_str, "%lx", &addr);
+  bool success = false;
+  addr = expr(expr_str, &success);
+  assert(success == true);
+
   for(int i=0; i<size; i++){
-    vaddr_t data = vaddr_read(addr + i * sizeof(vaddr_t)/8, sizeof(vaddr_t)/8);
-    printf("0x%08lx\t", addr + i * sizeof(vaddr_t)/8);
-    printf("0x%016lx\n",data);
+    vaddr_t data = vaddr_read(addr + i * 4, 4);
+    printf("0x%016lx\t", addr + i * 4);
+    printf("0x%08lx\n",data);
     //putchar('\n');
     
   }
@@ -121,7 +124,7 @@ static int cmd_x(char *args){
   return 0;
 }
 
-
+static int cmd_info(char *args);
 /*单步执行*/
 static int cmd_si(char * args){
   int step =  0;
@@ -130,6 +133,7 @@ static int cmd_si(char * args){
   else
     step = atoi(args);
   cpu_exec(step);
+  cmd_info("r");
   return 0;
 }
 
