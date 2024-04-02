@@ -40,10 +40,14 @@ struct{
 
 
 void device_update();
+void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
 
 void print_iringbuf(){
-  for(int i = 0; i < IRINGBUF_SIZE; i++){
-    printf("0x%08x\n", iringbuf.inst[i]);
+  char logbuf[128];
+  for(int i = 0; i < IRINGBUF_SIZE && iringbuf.inst[i] != 0; i++){
+    //printf("0x%08x\n", iringbuf.inst[i]);
+    disassemble(logbuf, 128, iringbuf.pc[i] , (uint8_t*)(&(iringbuf.inst[i])), 4);
+    printf("%s\n", logbuf);
   }
 }
 
@@ -84,7 +88,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
   p += space_len;
 
 #ifndef CONFIG_ISA_loongarch32r
-  void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
+  
   disassemble(p, s->logbuf + sizeof(s->logbuf) - p,
       MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc), (uint8_t *)&s->isa.inst.val, ilen);
 #else
