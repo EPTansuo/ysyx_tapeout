@@ -25,11 +25,18 @@
  * You can modify this value as you want.
  */
 #define MAX_INST_TO_PRINT 1001
+#define IRINGBUF_SIZE 16
 
 CPU_state cpu = {};
 uint64_t g_nr_guest_inst = 0;
 static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
+
+struct{
+  uint32_t inst[IRINGBUF_SIZE];
+  uint32_t head;
+}iringbuf = {{0} ,0};
+
 
 void device_update();
 
@@ -48,6 +55,10 @@ static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
   s->snpc = pc;
   isa_exec_once(s);
+  
+  iringbuf.inst[iringbuf.head++] = s->isa.inst.val;
+  iringbuf.head = iringbuf.head % IRINGBUF_SIZE;
+
   cpu.pc = s->dnpc;
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
