@@ -51,9 +51,9 @@ void print_iringbuf(){
     else
       printf("    ");
     printf("0x%016lx: ", iringbuf.pc[i]);
-    for(int j=0; i<4; i++){
-      printf("%02x ", (iringbuf.inst[i] >> (8 * j)) & 0xff);
-    }
+    //for(int j=0; i<4; i++){
+   //   printf("%02x ", (iringbuf.inst[i] >> (8 * j)) & 0xff);
+    //}
     disassemble(logbuf, 128, iringbuf.pc[i] , (uint8_t*)(&(iringbuf.inst[i])), 4);
     printf("%s\n", logbuf);
   }
