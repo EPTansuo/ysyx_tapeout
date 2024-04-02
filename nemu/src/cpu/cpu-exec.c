@@ -55,7 +55,7 @@ void print_iringbuf(){
     printf("0x%016lx: ", iringbuf.pc[i]);
     
     for(int j = 3; j >= 0; j--){
-      printf("%02x ", ((uint8_t*)&iringbuf.inst[i])[i]);
+      printf("%02x ", ((uint8_t*)&iringbuf.inst[i])[j]);
     }
    
     
