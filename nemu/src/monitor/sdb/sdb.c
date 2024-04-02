@@ -124,7 +124,7 @@ static int cmd_x(char *args){
   return 0;
 }
 
-
+static int cmd_info(char *args);
 /*单步执行*/
 static int cmd_si(char * args){
   int step =  0;
@@ -133,6 +133,7 @@ static int cmd_si(char * args){
   else
     step = atoi(args);
   cpu_exec(step);
+  cmd_info("r");
   return 0;
 }
 
