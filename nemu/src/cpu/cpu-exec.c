@@ -34,12 +34,18 @@ static bool g_print_step = false;
 
 struct{
   uint32_t inst[IRINGBUF_SIZE];
+  word_t pc[IRINGBUF_SIZE];
   uint32_t head;
-}iringbuf = {{0} ,0};
+}iringbuf = {{0}, {0} ,0};
 
 
 void device_update();
 
+void print_iringbuf(){
+  for(int i = 0; i < IRINGBUF_SIZE; i++){
+    printf("0x%08x\n", iringbuf.inst[i]);
+  }
+}
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
@@ -56,7 +62,8 @@ static void exec_once(Decode *s, vaddr_t pc) {
   s->snpc = pc;
   isa_exec_once(s);
   
-  iringbuf.inst[iringbuf.head++] = s->isa.inst.val;
+  iringbuf.inst[iringbuf.head] = s->isa.inst.val;
+  iringbuf.pc[iringbuf.head++] = s->pc;
   iringbuf.head = iringbuf.head % IRINGBUF_SIZE;
 
   cpu.pc = s->dnpc;
@@ -137,6 +144,7 @@ void cpu_exec(uint64_t n) {
            (nemu_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) :
             ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED))),
           nemu_state.halt_pc);
+      print_iringbuf();
       // fall through
     case NEMU_QUIT: statistic();
   }
