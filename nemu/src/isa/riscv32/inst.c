@@ -79,7 +79,7 @@ static int decode_exec(Decode *s) {
 }
 
   //printf("s->pc: 0x%lx\n",s->pc);
-
+  printf("XLEN:%d",XLEN);
   INSTPAT_START();
 
   //U-type 长立即数
