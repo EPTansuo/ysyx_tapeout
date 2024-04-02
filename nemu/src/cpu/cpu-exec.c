@@ -46,6 +46,11 @@ void print_iringbuf(){
   char logbuf[128];
   for(int i = 0; i < IRINGBUF_SIZE && iringbuf.inst[i] != 0; i++){
     //printf("0x%08x\n", iringbuf.inst[i]);
+    if( iringbuf.head == 0 ? i == IRINGBUF_SIZE - 1 : i == iringbuf.head - 1)
+      printf("    ");
+    else
+      printf("--> ");
+    printf("0x%016lx: ", iringbuf.pc[i]);
     disassemble(logbuf, 128, iringbuf.pc[i] , (uint8_t*)(&(iringbuf.inst[i])), 4);
     printf("%s\n", logbuf);
   }
