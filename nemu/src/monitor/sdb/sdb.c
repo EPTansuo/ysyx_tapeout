@@ -133,7 +133,7 @@ static int cmd_si(char * args){
   else
     step = atoi(args);
   cpu_exec(step);
-  cmd_info("r");
+  //cmd_info("r");
   return 0;
 }
 
