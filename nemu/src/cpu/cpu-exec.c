@@ -54,7 +54,7 @@ void print_iringbuf(){
       printf("    ");
     printf("0x%016lx: ", iringbuf.pc[i]);
     
-
+    printf("%08x", iringbuf.inst[i]);
     
 
     printf("%s\n", logbuf);
