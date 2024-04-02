@@ -42,7 +42,7 @@ enum {
 #define SHAMT (BITS(s->isa.inst.val, 24, 20))
 
 #ifdef CONFIG_RV64
-#define SHAMT_LONG (BITS(s->isa.inst.val, 24, 20))
+#define SHAMT_LONG (BITS(s->isa.inst.val, 25, 20))
 #else
 #define SHAMT_LONG SHAMT
 #endif
