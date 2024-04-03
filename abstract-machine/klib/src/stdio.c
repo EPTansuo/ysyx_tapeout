@@ -35,7 +35,7 @@ int itoa(char* dst, int num){
     }
   }
   dst[digits+bits] = '\0';
-  printf("iota:dst:%s\n",dst);
+  //printf("iota:dst:%s\n",dst);
   return digits+bits;
 }
 
