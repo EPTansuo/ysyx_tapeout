@@ -89,7 +89,7 @@ void verilator_sim(int argc, char **argv)
 	//std::cout<<top->rootp->inst;
 	//top->inst_rom1->insts = init_insts();
 	tfp->dump(contextp->time());
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 9; i++)
 	{
 		single_cycle();
 		contextp->timeInc(1);
