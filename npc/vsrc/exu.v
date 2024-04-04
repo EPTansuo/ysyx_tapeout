@@ -1,0 +1,38 @@
+`include "defines.v"
+
+module exu(
+        input clk,
+        input rst,
+
+        //从IDU传来的数据
+        input [`RegDataBus] src1,
+        input [`RegDataBus] src2,
+        input [`RegDataBus] imm,
+        input [7:0] inst_type,
+        input [`RegAddrBus] rd,
+
+        //写入寄存器
+        output reg [`RegDataBus] w_data,
+        output reg [`RegAddrBus] w_addr,
+        output reg we
+);
+
+
+always @(posedge clk) begin
+        case (inst_type)
+                `Inst_addi:begin
+                        w_data <= src1 + imm;
+                        w_addr <= rd;
+                        we <= `WriteEnable;
+                end
+                default:begin
+                        w_data <= 0;
+                        w_addr <= 0;
+                        we <= `WriteDisable;
+                end
+        endcase
+end
+
+
+endmodule
+
