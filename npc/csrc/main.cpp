@@ -15,9 +15,9 @@
 #define RESET_ENABLE 1
 #define RESET_DISABLE 0
 
-Vcpu *top = new Vcpu; 
-VerilatedVcdC *tfp = new VerilatedVcdC;
-VerilatedContext *contextp = new VerilatedContext;
+static Vcpu *top = new Vcpu; 
+static VerilatedVcdC *tfp = new VerilatedVcdC;
+static VerilatedContext *contextp = new VerilatedContext;
 
 // addi x1 x0 1  ; x1 = 1
 // addi x2 x0 2  ; x2 = 2 
