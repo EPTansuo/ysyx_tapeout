@@ -18,17 +18,17 @@ module exu(
 );
 
 
-always @(posedge clk) begin
+always @(*) begin
         case (inst_type)
                 `Inst_addi:begin
-                        w_data <= src1 + imm;
-                        w_addr <= rd;
-                        we <= `WriteEnable;
+                        w_data = src1 + imm;
+                        w_addr = rd;
+                        we = `WriteEnable;
                 end
                 default:begin
-                        w_data <= 0;
-                        w_addr <= 0;
-                        we <= `WriteDisable;
+                        w_data = 0;
+                        w_addr = 0;
+                        we = `WriteDisable;
                 end
         endcase
 end
