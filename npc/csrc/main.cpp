@@ -55,6 +55,7 @@ void reset(int n){
 }
 
 
+
 void verilator_sim(int argc, char **argv)
 {
 	Verilated::commandArgs(argc, argv);
@@ -71,6 +72,9 @@ void verilator_sim(int argc, char **argv)
 	tfp->open("wave.vcd");
 	reset(10);
 
+	
+
+
 	Vcpu_ifu* ifu1 = top->cpu->ifu1;
 	Vcpu_inst_rom* inst_rom1 = ifu1->inst_rom1;
 	uint8_t* new_insts = init_insts();
@@ -78,6 +82,15 @@ void verilator_sim(int argc, char **argv)
 	// 获取对 inst_rom1 实例的 insts 数组的引用
 	VlUnpacked<unsigned char, 131072>& insts = inst_rom1->insts;
 	size_t inst_num = sizeof(img)/sizeof(uint32_t);
+	
+	printf("inst_num: %lud\n", inst_num);
+	for(size_t i=0; i< inst_num; i++)
+	{
+		printf("0x%08x\n", img[i]);
+	}
+	printf("-----------------");
+
+	
 	// 使用循环来复制数据
 	for (size_t i = 0; i < inst_num * 4; ++i) {
 	insts[i] = new_insts[i];
