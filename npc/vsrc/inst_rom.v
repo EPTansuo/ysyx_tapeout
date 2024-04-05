@@ -23,6 +23,6 @@ wire [16:0]index = actual_addr[16:0];  //目前只需要17位地址
 
 
 wire [6:0]opcode = inst[6:0];
-assign inst = rst == `RstEnable ? 32'b0 : {insts[index+3],insts[index+2],insts[index+1],insts[index]};
+assign inst =  {insts[index+3],insts[index+2],insts[index+1],insts[index]};
 
 endmodule
