@@ -82,6 +82,18 @@ void verilator_sim(int argc, char **argv)
 	init_insts(inst_rom1->insts);
 	
 
+	size_t inst_num = sizeof(img)/sizeof(uint32_t);
+
+	std::cout<<"------------------";
+	for(size_t i = 0; i < inst_num; i++){
+		std::cout<<std::hex<<img[i]<<std::endl;
+	}
+	std::cout<<"------------------";
+
+	for(size_t i = 0; i < inst_num; i++){
+		std::cout<<std::hex<<inst_rom1->insts[i*4]<<inst_rom1->insts[i*4+1]<<inst_rom1->insts[i*4+2]<<inst_rom1->insts[i*4+3]<<std::endl;
+	}
+
 	//std::cout<<top->rootp->inst;
 	//top->inst_rom1->insts = init_insts();
 	tfp->dump(contextp->time());
