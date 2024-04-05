@@ -17,6 +17,7 @@
 
 Vcpu *top = new Vcpu; 
 VerilatedVcdC *tfp = new VerilatedVcdC;
+VerilatedContext *contextp = new VerilatedContext;
 
 // addi x1 x0 1  ; x1 = 1
 // addi x2 x0 2  ; x2 = 2 
@@ -60,6 +61,8 @@ void reset(int n){
 
 void npc_ebreak()
 {
+	contextp->timeInc(1);
+	tfp->dump(contextp->time());
 	top->final();
 	tfp->close();
 
@@ -76,7 +79,7 @@ void verilator_sim(int argc, char **argv)
 
 	Verilated::traceEverOn(true);
 
-	VerilatedContext *contextp = new VerilatedContext;
+	
 
 	
 
