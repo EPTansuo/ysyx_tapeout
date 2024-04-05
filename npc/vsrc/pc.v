@@ -5,7 +5,7 @@ module pc(
         input wire rst,
 
         
-        output reg[`InstAddrBus] npc //下一条指令地址
+        output reg[`InstAddrBus] npc/* verilator public */ //下一条指令地址
 );
 
 reg[`InstAddrBus] pc; //当前的指令地址
