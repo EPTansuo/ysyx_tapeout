@@ -110,12 +110,13 @@ void verilator_sim(int argc, char **argv)
 	//std::cout<<top->rootp->inst;
 	//top->inst_rom1->insts = init_insts();
 	reset(10);
-	
+	tfp->dump(contextp->time());
 	for (int i = 0; i < 9 && ! stop; i++)
 	{
-		tfp->dump(contextp->time());
+		
 		single_cycle();
 		contextp->timeInc(1);
+		tfp->dump(contextp->time());
 		//contextp->timeInc(1);
 	}
 
