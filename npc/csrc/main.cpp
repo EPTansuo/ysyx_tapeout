@@ -119,7 +119,8 @@ void verilator_sim(int argc, char **argv)
 		tfp->dump(contextp->time());
 		//contextp->timeInc(1);
 	}
-
+	contextp->timeInc(1);
+	tfp->dump(contextp->time());
 	top->final();
 	tfp->close();
 
