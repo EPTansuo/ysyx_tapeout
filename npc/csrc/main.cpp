@@ -53,6 +53,7 @@ void reset(int n){
 		single_cycle();
 	}
 	top->rst = RESET_DISABLE;
+	single_cycle();
 }
 
 
