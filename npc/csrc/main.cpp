@@ -8,17 +8,20 @@
 #include "Vcpu_inst_rom.h"
 #include "Vcpu_ifu.h"
 #include "Vcpu_cpu.h"
-#include <iomanip> // 引入 std::setw 和 std::setfill
+#include "Vcpu__Dpi.h"
+#include <iomanip> 
+
 
 #define RESET_ENABLE 1
 #define RESET_DISABLE 0
 
 Vcpu *top = new Vcpu; 
+VerilatedVcdC *tfp = new VerilatedVcdC;
 
 // addi x1 x0 1  ; x1 = 1
 // addi x2 x0 2  ; x2 = 2 
 // addi x2 x1 9  ; x2 = x1 + 9
-static uint32_t img[] = {               //    imm          rs1       rd   opcode
+static uint32_t img[] = {                   //    imm          rs1       rd   opcode
 	0b00000000000100000000000010010011, // 0b000000000001 00000 000 00001 0010011,
 	0b00000000001000000000000100010011, // 0b000000000010 00000 000 00010 0010011
 	0b00000000100100001000000100010011, // 0b000000001001 00001 000 00010 0010011
@@ -54,6 +57,17 @@ void reset(int n){
 }
 
 
+void npc_ebreak()
+{
+	top->final();
+	tfp->close();
+
+	delete top;
+
+	//std::cout<<"ebreak: a0 = "<<a0<<std::endl;
+
+	exit(0);
+}
 
 void verilator_sim(int argc, char **argv)
 {
@@ -65,7 +79,7 @@ void verilator_sim(int argc, char **argv)
 
 	
 
-	VerilatedVcdC *tfp = new VerilatedVcdC;
+	
 
 	top->trace(tfp, 0);
 	tfp->open("wave.vcd");

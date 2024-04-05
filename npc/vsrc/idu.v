@@ -32,6 +32,14 @@ assign rd = inst[11:7];
 
 wire [63:0] immI = { {52{inst[31]}}, inst[31:20] };
 
+import "DPI-C" function void npc_ebreak();
+
+always @(*) begin
+        if(inst == `EBREAK)begin
+                npc_ebreak();
+        end
+end
+
 
 always @(*)begin
         case(opcode)
