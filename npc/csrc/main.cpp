@@ -2,7 +2,8 @@
 #include <iostream>
 #include <verilated_vcd_c.h>
 //#include <nvboard.h>
-#include <stdlib.h>
+#include <cstdlib>
+#include <cstdint>
 #include "../build/obj_dir/Vcpu.h"
 #include "Vcpu___024root.h"
 #include "Vcpu_inst_rom.h"
@@ -19,6 +20,7 @@ Vcpu *top = new Vcpu;
 
 
 bool stop = false;
+uint64_t ret_val = 0;
 
 // addi x1 x0 1  ; x1 = 1
 // addi x2 x0 2  ; x2 = 2 
