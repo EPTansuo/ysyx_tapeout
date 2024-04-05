@@ -8,6 +8,7 @@
 #include "Vcpu_inst_rom.h"
 #include "Vcpu_ifu.h"
 #include "Vcpu_cpu.h"
+#include <iomanip> // 引入 std::setw 和 std::setfill
 
 #define RESET_ENABLE 1
 #define RESET_DISABLE 0
@@ -90,12 +91,16 @@ void verilator_sim(int argc, char **argv)
 	}
 	std::cout<<"------------------"<<std::endl;
 
-	for(size_t i = 0; i < inst_num; i++){
-		std::cout<<std::hex<<inst_rom1->insts[i*4]<<
-			   std::hex<<inst_rom1->insts[i*4+1]<<
-			   std::hex<<inst_rom1->insts[i*4+2]<<
-			   std::hex<<inst_rom1->insts[i*4+3]<<std::endl;
+	// 假设你有一个循环来遍历 insts 数组
+	for (size_t i = 0; i < inst_num; ++i) {
+	std::cout << std::hex << std::setw(2) << std::setfill('0')
+		<< static_cast<int>(inst_rom1->insts[i*4]) << " "
+		<< std::setw(2) << static_cast<int>(inst_rom1->insts[i*4+1]) << " "
+		<< std::setw(2) << static_cast<int>(inst_rom1->insts[i*4+2]) << " "
+		<< std::setw(2) << static_cast<int>(inst_rom1->insts[i*4+3])
+		<< std::endl;
 	}
+
 
 	//std::cout<<top->rootp->inst;
 	//top->inst_rom1->insts = init_insts();
