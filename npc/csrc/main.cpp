@@ -84,11 +84,11 @@ void verilator_sim(int argc, char **argv)
 
 	size_t inst_num = sizeof(img)/sizeof(uint32_t);
 
-	std::cout<<"------------------";
+	std::cout<<"------------------"<<std::endl;
 	for(size_t i = 0; i < inst_num; i++){
 		std::cout<<std::hex<<img[i]<<std::endl;
 	}
-	std::cout<<"------------------";
+	std::cout<<"------------------"<<std::endl;
 
 	for(size_t i = 0; i < inst_num; i++){
 		std::cout<<std::hex<<inst_rom1->insts[i*4]<<inst_rom1->insts[i*4+1]<<inst_rom1->insts[i*4+2]<<inst_rom1->insts[i*4+3]<<std::endl;
