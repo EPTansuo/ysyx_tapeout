@@ -61,7 +61,9 @@ void reset(int n){
 
 void npc_ebreak()
 {
+	Verilated::traceEverOn(true);
 	contextp->timeInc(1);
+	
 	tfp->dump(contextp->time());
 	top->final();
 	tfp->close();
