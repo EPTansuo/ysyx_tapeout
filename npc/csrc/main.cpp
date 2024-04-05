@@ -69,7 +69,7 @@ void verilator_sim(int argc, char **argv)
 
 	top->trace(tfp, 0);
 	tfp->open("wave.vcd");
-	reset(10);
+	
 
 	
 
@@ -102,6 +102,7 @@ void verilator_sim(int argc, char **argv)
 
 	//std::cout<<top->rootp->inst;
 	//top->inst_rom1->insts = init_insts();
+	reset(10);
 	tfp->dump(contextp->time());
 	for (int i = 0; i < 9; i++)
 	{
