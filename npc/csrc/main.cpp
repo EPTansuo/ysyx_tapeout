@@ -49,6 +49,17 @@ void init_insts(VlUnpacked<unsigned char, 131072>& insts){
 	//return insts;
 }
 
+void print_inst(const VlUnpacked<unsigned char, 131072>& insts, size_t pc)
+{
+	size_t index = pc - 0x80000000;
+	std::cout << std::hex << std::setw(2) << std::setfill('0')
+		<< static_cast<int>(insts[index*4+3]) << " "
+		<< std::setw(2) << static_cast<int>(insts[index*4+2]) << " "
+		<< std::setw(2) << static_cast<int>(insts[index*4+1]) << " "
+		<< std::setw(2) << static_cast<int>(insts[index*4+0])
+		<< std::endl;
+}
+
 void single_cycle(){
 	top->clk = 0;
 	top->eval();
@@ -98,12 +109,7 @@ void verilator_sim(int argc, char **argv)
 
 	// 假设你有一个循环来遍历 insts 数组
 	for (size_t i = 0; i < inst_num; ++i) {
-	std::cout << std::hex << std::setw(2) << std::setfill('0')
-		<< static_cast<int>(inst_rom1->insts[i*4+3]) << " "
-		<< std::setw(2) << static_cast<int>(inst_rom1->insts[i*4+2]) << " "
-		<< std::setw(2) << static_cast<int>(inst_rom1->insts[i*4+1]) << " "
-		<< std::setw(2) << static_cast<int>(inst_rom1->insts[i*4+0])
-		<< std::endl;
+		print_inst(inst_rom1->insts, 0x80000000 + i*4);
 	}
 
 
@@ -124,7 +130,8 @@ void verilator_sim(int argc, char **argv)
 
 	Vcpu_pc *pc = top->cpu->pc1;
 
-	std::cout<< "Ebreak at pc: "<<pc->npc<<std::endl;
+	std::cout<< "Ebreak at pc: "<<pc->npc<<"\t Inst: ";
+	print_inst(inst_rom1->insts, pc->npc);
 	top->final();
 	tfp->close();
 
