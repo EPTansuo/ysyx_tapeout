@@ -33,19 +33,19 @@ assign rd = inst[11:7];
 wire [63:0] immI = { {52{inst[31]}}, inst[31:20] };
 
 
-always @(posedge clk)begin
+always @(*)begin
         case(opcode)
                 `OP_I_TYPE:begin
-                        inst_type <= `Inst_addi;
-                        src1 <= r_data1;
-                        src2 <= r_data2;
-                        imm <= immI;
+                        inst_type = `Inst_addi;
+                        src1 = r_data1;
+                        src2 = r_data2;
+                        imm = immI;
                 end
                 default:begin
-                        inst_type <= 8'b0;
-                        src1 <= 0;
-                        src2 <= 0;
-                        imm <= 0;
+                        inst_type = 8'b0;
+                        src1 = 0;
+                        src2 = 0;
+                        imm = 0;
                 end
         endcase
 end
