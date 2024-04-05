@@ -15,9 +15,11 @@
 #define RESET_ENABLE 1
 #define RESET_DISABLE 0
 
-static Vcpu *top = new Vcpu; 
-static VerilatedVcdC *tfp = new VerilatedVcdC;
-static VerilatedContext *contextp = new VerilatedContext;
+Vcpu *top = new Vcpu; 
+VerilatedVcdC *tfp = new VerilatedVcdC;
+VerilatedContext *contextp = new VerilatedContext;
+
+bool stop = false;
 
 // addi x1 x0 1  ; x1 = 1
 // addi x2 x0 2  ; x2 = 2 
@@ -61,18 +63,7 @@ void reset(int n){
 
 void npc_ebreak()
 {
-	//Verilated::traceEverOn(true);
-	contextp->timeInc(1);
-	
-	tfp->dump(contextp->time());
-	top->final();
-	tfp->close();
-
-	delete top;
-
-	//std::cout<<"ebreak: a0 = "<<a0<<std::endl;
-
-	exit(0);
+	stop = true;
 }
 
 void verilator_sim(int argc, char **argv)
@@ -124,7 +115,7 @@ void verilator_sim(int argc, char **argv)
 	//top->inst_rom1->insts = init_insts();
 	reset(10);
 	
-	for (int i = 0; i < 9; i++)
+	for (int i = 0; i < 9 && ! stop; i++)
 	{
 		tfp->dump(contextp->time());
 		single_cycle();
