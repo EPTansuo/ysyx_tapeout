@@ -13,7 +13,7 @@ reg[`InstAddrBus] pc; //当前的指令地址
 always @(posedge clk) begin
         if(rst == `RstEnable)begin
                 //pc <= `Init_Addr;
-                npc <= `Init_Addr;
+                npc <= `Init_Addr - 4;
         end
         else begin
                 //pc <= npc;
