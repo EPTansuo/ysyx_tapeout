@@ -87,7 +87,7 @@ void verilator_sim(int argc, char **argv)
 
 	std::cout<<"------------------"<<std::endl;
 	for(size_t i = 0; i < inst_num; i++){
-		std::cout<<std::hex<<img[i]<<std::endl;
+		std::cout<<std::hex<< std::setw(8) << std::setfill('0')<<img[i]<<std::endl;
 	}
 	std::cout<<"------------------"<<std::endl;
 
