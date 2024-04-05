@@ -7,6 +7,7 @@
 #include "../build/obj_dir/Vcpu.h"
 #include "Vcpu___024root.h"
 #include "Vcpu_inst_rom.h"
+#include "Vcpu_pc.h"
 #include "Vcpu_ifu.h"
 #include "Vcpu_cpu.h"
 #include "Vcpu__Dpi.h"
@@ -80,11 +81,8 @@ void verilator_sim(int argc, char **argv)
 	tfp->open("wave.vcd");
 	
 
-	
 
-
-	Vcpu_ifu* ifu1 = top->cpu->ifu1;
-	Vcpu_inst_rom* inst_rom1 = ifu1->inst_rom1;
+	Vcpu_inst_rom* inst_rom1 = top->cpu->ifu1->inst_rom1;
 
 
 	init_insts(inst_rom1->insts);
@@ -123,6 +121,10 @@ void verilator_sim(int argc, char **argv)
 	}
 	contextp->timeInc(1);
 	tfp->dump(contextp->time());
+
+	Vcpu_pc *pc = top->cpu->pc1;
+
+	std::cout<< "Ebreak at pc: "<<pc->npc<<std::endl;
 	top->final();
 	tfp->close();
 
