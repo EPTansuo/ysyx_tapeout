@@ -49,11 +49,8 @@ void single_cycle(){
 
 void reset(int n){
 	top->rst = RESET_ENABLE;
-	for (int i = 0; i < n; i++){
-		single_cycle();
-	}
+	while(--n)single_cycle();	
 	top->rst = RESET_DISABLE;
-	single_cycle();
 }
 
 
