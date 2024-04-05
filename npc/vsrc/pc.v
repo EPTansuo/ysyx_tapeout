@@ -17,7 +17,7 @@ always @(posedge clk) begin
         end
         else begin
                 //pc <= npc;
-                npc <= npc + 8;
+                npc <= npc + 4;
         end
 end
 
