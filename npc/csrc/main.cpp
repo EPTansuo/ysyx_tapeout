@@ -79,7 +79,7 @@ void verilator_sim(int argc, char **argv)
 	VlUnpacked<unsigned char, 131072>& insts = inst_rom1->insts;
 	size_t inst_num = sizeof(img)/sizeof(uint32_t);
 	// 使用循环来复制数据
-	for (size_t i = 0; i < inst_num; ++i) {
+	for (size_t i = 0; i < inst_num * 4; ++i) {
 	insts[i] = new_insts[i];
 	//std::cout<<insts[i]<<std::endl;
 	printf("0x%02x\n", insts[i]);
