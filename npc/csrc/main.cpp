@@ -53,10 +53,10 @@ void print_inst(const VlUnpacked<unsigned char, 131072>& insts, size_t pc)
 {
 	size_t index = pc - 0x80000000;
 	std::cout << std::hex << std::setw(2) << std::setfill('0')
-		<< static_cast<int>(insts[index*4+3]) << " "
-		<< std::setw(2) << static_cast<int>(insts[index*4+2]) << " "
-		<< std::setw(2) << static_cast<int>(insts[index*4+1]) << " "
-		<< std::setw(2) << static_cast<int>(insts[index*4+0])
+		<< static_cast<int>(insts[index+3]) << " "
+		<< std::setw(2) << static_cast<int>(insts[index+2]) << " "
+		<< std::setw(2) << static_cast<int>(insts[index+1]) << " "
+		<< std::setw(2) << static_cast<int>(insts[index+0])
 		<< std::endl;
 }
 
