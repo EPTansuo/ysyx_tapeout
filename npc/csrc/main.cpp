@@ -91,7 +91,10 @@ void verilator_sim(int argc, char **argv)
 	std::cout<<"------------------"<<std::endl;
 
 	for(size_t i = 0; i < inst_num; i++){
-		std::cout<<std::hex<<inst_rom1->insts[i*4]<<inst_rom1->insts[i*4+1]<<inst_rom1->insts[i*4+2]<<inst_rom1->insts[i*4+3]<<std::endl;
+		std::cout<<std::hex<<inst_rom1->insts[i*4]<<
+			   std::hex<<inst_rom1->insts[i*4+1]<<
+			   std::hex<<inst_rom1->insts[i*4+2]<<
+			   std::hex<<inst_rom1->insts[i*4+3]<<std::endl;
 	}
 
 	//std::cout<<top->rootp->inst;
