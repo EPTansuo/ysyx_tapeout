@@ -1,11 +1,12 @@
-TOPNAME = example
-NXDC_FILES = constr/example.nxdc
+TOPNAME = cpu
+NXDC_FILES = constr/cpu.nxdc
 INC_PATH ?=
 
 
 VERILATOR = verilator
-VERILATOR_CFLAGS += -MMD --build -cc  \
-				-O3 --x-assign fast --x-initial fast --noassert
+VERILATOR_CFLAGS += -MMD --build -cc --public --trace \
+				-O3 --x-assign fast --x-initial fast --noassert \
+				-I$(YSYX_HOME)/npc/vsrc 
 
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
