@@ -94,10 +94,10 @@ void verilator_sim(int argc, char **argv)
 	// 假设你有一个循环来遍历 insts 数组
 	for (size_t i = 0; i < inst_num; ++i) {
 	std::cout << std::hex << std::setw(2) << std::setfill('0')
-		<< static_cast<int>(inst_rom1->insts[i*4]) << " "
-		<< std::setw(2) << static_cast<int>(inst_rom1->insts[i*4+1]) << " "
+		<< static_cast<int>(inst_rom1->insts[i*4+3]) << " "
 		<< std::setw(2) << static_cast<int>(inst_rom1->insts[i*4+2]) << " "
-		<< std::setw(2) << static_cast<int>(inst_rom1->insts[i*4+3])
+		<< std::setw(2) << static_cast<int>(inst_rom1->insts[i*4+1]) << " "
+		<< std::setw(2) << static_cast<int>(inst_rom1->insts[i*4+0])
 		<< std::endl;
 	}
 
