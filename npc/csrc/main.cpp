@@ -23,9 +23,9 @@ static uint32_t img[] = {
 	0b0000000100100010000000010010011, // 0b00000 001001 00010 000 00001 0010011
 };
 
-uint8_t *init_insts(){
+void init_insts(VlUnpacked<unsigned char, 131072>& insts){
 	
-	uint8_t *insts = new uint8_t[sizeof(img)];
+	//uint8_t *insts = new uint8_t[sizeof(img)];
 
 	size_t inst_num = sizeof(img)/sizeof(uint32_t);
 
@@ -36,7 +36,7 @@ uint8_t *init_insts(){
 		}
 	}
 	
-	return insts;
+	//return insts;
 }
 
 void single_cycle(){
@@ -77,29 +77,10 @@ void verilator_sim(int argc, char **argv)
 
 	Vcpu_ifu* ifu1 = top->cpu->ifu1;
 	Vcpu_inst_rom* inst_rom1 = ifu1->inst_rom1;
-	uint8_t* new_insts = init_insts();
 
-	// 获取对 inst_rom1 实例的 insts 数组的引用
-	VlUnpacked<unsigned char, 131072>& insts = inst_rom1->insts;
-	size_t inst_num = sizeof(img)/sizeof(uint32_t);
+
+	init_insts(inst_rom1->insts);
 	
-	printf("inst_num: %lud\n", inst_num);
-	for(size_t i=0; i< inst_num; i++)
-	{
-		printf("0x%08x\n", img[i]);
-	}
-	printf("-----------------");
-
-	
-	// 使用循环来复制数据
-	for (size_t i = 0; i < inst_num * 4; ++i) {
-		insts[i] = new_insts[i];
-		//std::cout<<insts[i]<<std::endl;
-		printf("0x%02x\n", insts[i]);
-	}
-
-	// 释放 new_insts 数组，如果它是动态分配的
-	delete[] new_insts;
 
 	//std::cout<<top->rootp->inst;
 	//top->inst_rom1->insts = init_insts();
