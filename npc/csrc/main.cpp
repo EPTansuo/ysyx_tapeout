@@ -16,8 +16,7 @@
 #define RESET_DISABLE 0
 
 Vcpu *top = new Vcpu; 
-VerilatedVcdC *tfp = new VerilatedVcdC;
-VerilatedContext *contextp = new VerilatedContext;
+
 
 bool stop = false;
 
@@ -72,11 +71,8 @@ void verilator_sim(int argc, char **argv)
 
 	Verilated::traceEverOn(true);
 
-	
-
-	
-
-	
+	VerilatedVcdC *tfp = new VerilatedVcdC;
+	VerilatedContext *contextp = new VerilatedContext;
 
 	top->trace(tfp, 0);
 	tfp->open("wave.vcd");
