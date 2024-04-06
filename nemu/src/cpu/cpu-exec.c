@@ -25,7 +25,7 @@
  * You can modify this value as you want.
  */
 #define MAX_INST_TO_PRINT 10001
-#define IRINGBUF_SIZE 20
+#define IRINGBUF_SIZE 45
 
 CPU_state cpu = {};
 uint64_t g_nr_guest_inst = 0;
