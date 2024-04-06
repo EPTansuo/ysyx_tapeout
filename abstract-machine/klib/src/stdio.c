@@ -8,7 +8,7 @@
 
 static inline int _pow(int base, int exp)
 {
-  int ret = 0;
+  int ret = 1;
   for(int i=0; i<exp; i++)
   {
       ret *= base;
@@ -20,7 +20,7 @@ int _print_itoa(int num){
   int digits = 0;
   int bits = 0;
   if (num == 0) {
-    putch(0);
+    putch('0');
     bits = 1;
   }
   else {
@@ -36,7 +36,7 @@ int _print_itoa(int num){
     }
     temp = num;
     while (bits--) {
-      putch(temp/_pow(10,bits));
+      putch('0' + (temp/_pow(10,bits) % 10));
     }
   }
   return digits;
@@ -83,6 +83,9 @@ int printf(const char *fmt, ...) {
   va_end(args);
   return ret;
 }
+
+
+
 
 int _itoa(char* dst, int num){
   int digits = 0;
