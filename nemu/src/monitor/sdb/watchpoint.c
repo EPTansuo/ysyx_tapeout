@@ -128,7 +128,7 @@ void print_watchpoint()
 void scan_watchpoint(){
   for(WP* p = head; p!=NULL; p=p->next){
     bool succ=true;
-     uint64_t result = expr(p->expr, &succ);
+     word_t result = expr(p->expr, &succ);
      assert(succ);
      if(result != p->value_old){
       p->value = result;
