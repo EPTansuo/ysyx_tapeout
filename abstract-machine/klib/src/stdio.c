@@ -6,11 +6,89 @@
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
-int printf(const char *fmt, ...) {
-  panic("Not implemented");
+static inline int _pow(int base, int exp)
+{
+  int ret = 0;
+  for(int i=0; i<exp; i++)
+  {
+      ret *= base;
+  }
+  return ret;
 }
 
-int itoa(char* dst, int num){
+int _print_itoa(int num){
+  int digits = 0;
+  int bits = 0;
+  if (num == 0) {
+    //dst[digits++] = '0';
+    putch(0);
+    bits = 1;
+  }
+  else {
+    if (num < 0) {
+      //dst[digits++] = '-';
+      putch(0);
+      num = -num;
+    }
+    int temp = num;
+    while (temp != 0) {   //判断有几位数
+      temp /= 10;
+      bits++;
+      digits++;
+    }
+    temp = num;
+    while (bits--) {
+      putch(temp/_pow(10,bits));
+    }
+  }
+  return digits;
+}
+
+
+int vprintf( const char *fmt, va_list ap) {
+  int len = 0;
+  //char buf[256];
+
+  while (*fmt) {
+    if (*fmt == '%') {
+      fmt++; // 跳过 '%'
+      if (*fmt == 'd') {
+        int num = va_arg(ap, int);
+        len += _print_itoa(num);
+
+      } else if (*fmt == 's') {
+        const char *str = va_arg(ap, const char *);
+        int str_len = strlen(str);
+        for (int i = 0; i < str_len; i++) {
+          //*out++ = str[i];
+          putch(str[i]);
+          len++;
+        }
+      }
+    } else {
+      //*out++ = *fmt;
+      putch(*fmt);
+      len++;
+    }
+    fmt++;
+  }
+
+  //*out = '\0';
+  return len;
+}
+
+
+
+int printf(const char *fmt, ...) {
+  //panic("Not implemented");
+  va_list args;
+  va_start(args, fmt);
+  int ret = vprintf( fmt, args);
+  va_end(args);
+  return ret;
+}
+
+int _itoa(char* dst, int num){
   int digits = 0;
   int bits = 0;
   if (num == 0) {
@@ -48,7 +126,7 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
       fmt++; // 跳过 '%'
       if (*fmt == 'd') {
         int num = va_arg(ap, int);
-        int digits = itoa(buf, num);
+        int digits = _itoa(buf, num);
         for (int i = 0; i < digits; i++) {
           *out++ = buf[i];
           len++;
