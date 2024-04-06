@@ -20,14 +20,12 @@ int _print_itoa(int num){
   int digits = 0;
   int bits = 0;
   if (num == 0) {
-    //dst[digits++] = '0';
     putch(0);
     bits = 1;
   }
   else {
     if (num < 0) {
-      //dst[digits++] = '-';
-      putch(0);
+      putch('-');
       num = -num;
     }
     int temp = num;
@@ -42,12 +40,12 @@ int _print_itoa(int num){
     }
   }
   return digits;
+
 }
 
 
 int vprintf( const char *fmt, va_list ap) {
   int len = 0;
-  //char buf[256];
 
   while (*fmt) {
     if (*fmt == '%') {
@@ -60,22 +58,20 @@ int vprintf( const char *fmt, va_list ap) {
         const char *str = va_arg(ap, const char *);
         int str_len = strlen(str);
         for (int i = 0; i < str_len; i++) {
-          //*out++ = str[i];
           putch(str[i]);
           len++;
         }
       }
     } else {
-      //*out++ = *fmt;
       putch(*fmt);
       len++;
     }
     fmt++;
   }
 
-  //*out = '\0';
   return len;
 }
+
 
 
 
