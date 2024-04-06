@@ -19,22 +19,23 @@ static inline int _pow(int base, int exp)
 int _print_itoa(int num){
   int digits = 0;
   int bits = 0;
-  if (num == 0) {
+  int long _num = num;
+  if (_num == 0) {
     putch('0');
     bits = 1;
   }
   else {
-    if (num < 0) {
+    if (_num < 0) {
       putch('-');
-      num = -num;
+      _num = -_num;
     }
-    int temp = num;
+    int long temp = _num;
     while (temp != 0) {   //判断有几位数
       temp /= 10;
       bits++;
       digits++;
     }
-    temp = num;
+    temp = _num;
     while (bits--) {
       putch('0' + (temp/_pow(10,bits) % 10));
     }
@@ -42,6 +43,7 @@ int _print_itoa(int num){
   return digits;
 
 }
+
 
 
 int vprintf( const char *fmt, va_list ap) {
@@ -90,22 +92,23 @@ int printf(const char *fmt, ...) {
 int _itoa(char* dst, int num){
   int digits = 0;
   int bits = 0;
-  if (num == 0) {
+  int long _num = num;
+  if (_num == 0) {
     dst[digits++] = '0';
         bits = 1;
   } 
   else {
-    if (num < 0) {
+    if (_num < 0) {
       dst[digits++] = '-';
-      num = -num;
+      _num = -_num;
     }
-    int temp = num;
+    int temp = _num;
     while (temp != 0) {   //判断有几位数
       temp /= 10;
       bits++;
           digits++;
     }
-    temp = num;   
+    temp = _num;
     while (temp != 0) {   
       dst[--digits] = '0' + (temp % 10);
       temp /= 10;
