@@ -400,8 +400,8 @@ word_t expr(char *e, bool *success) {
       word_t value = isa_reg_str2val(tokens[i].str, &succ);
       if(!succ)
         printf("Can not get value of: %s.  Default set to ZERO!\n", tokens[i].str);
-      sprintf(tokens[i].str, "%lu", value);
-      tokens[i].type = TK_NUM;  //可以把寄存器取值后，当作数字来处理
+      sprintf(tokens[i].str, "%lx", value);
+      tokens[i].type = TK_HEX;  //可以把寄存器取值后，当作十六进制来处理
     }
   }
 

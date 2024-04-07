@@ -24,8 +24,13 @@
  * This is useful when you use the `si' command.
  * You can modify this value as you want.
  */
+<<<<<<< HEAD
 #define MAX_INST_TO_PRINT 1001
 #define IRINGBUF_SIZE 20
+=======
+#define MAX_INST_TO_PRINT 10001
+#define IRINGBUF_SIZE 45
+>>>>>>> tracer-ysyx
 
 CPU_state cpu = {};
 uint64_t g_nr_guest_inst = 0;

@@ -6,8 +6,117 @@
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
+static inline int _pow(int base, int exp)
+{
+  int ret = 1;
+  for(int i=0; i<exp; i++)
+  {
+      ret *= base;
+  }
+  return ret;
+}
+
+int _print_itoa(int num){
+  int digits = 0;
+  int bits = 0;
+  int long _num = num;
+  if (_num == 0) {
+    putch('0');
+    bits = 1;
+  }
+  else {
+    if (_num < 0) {
+      putch('-');
+      _num = -_num;
+    }
+    int long temp = _num;
+    while (temp != 0) {   //判断有几位数
+      temp /= 10;
+      bits++;
+      digits++;
+    }
+    temp = _num;
+    while (bits--) {
+      putch('0' + (temp/_pow(10,bits) % 10));
+    }
+  }
+  return digits;
+
+}
+
+
+
+int vprintf( const char *fmt, va_list ap) {
+  int len = 0;
+
+  while (*fmt) {
+    if (*fmt == '%') {
+      fmt++; // 跳过 '%'
+      if (*fmt == 'd') {
+        int num = va_arg(ap, int);
+        len += _print_itoa(num);
+
+      } else if (*fmt == 's') {
+        const char *str = va_arg(ap, const char *);
+        int str_len = strlen(str);
+        for (int i = 0; i < str_len; i++) {
+          putch(str[i]);
+          len++;
+        }
+      }
+    } else {
+      putch(*fmt);
+      len++;
+    }
+    fmt++;
+  }
+
+  return len;
+}
+
+
+
+
 int printf(const char *fmt, ...) {
-  panic("Not implemented");
+  //panic("Not implemented");
+  va_list args;
+  va_start(args, fmt);
+  int ret = vprintf( fmt, args);
+  va_end(args);
+  return ret;
+}
+
+
+
+
+int _itoa(char* dst, int num){
+  int digits = 0;
+  int bits = 0;
+  int long _num = num;
+  if (_num == 0) {
+    dst[digits++] = '0';
+        bits = 1;
+  } 
+  else {
+    if (_num < 0) {
+      dst[digits++] = '-';
+      _num = -_num;
+    }
+    int temp = _num;
+    while (temp != 0) {   //判断有几位数
+      temp /= 10;
+      bits++;
+          digits++;
+    }
+    temp = _num;
+    while (temp != 0) {   
+      dst[--digits] = '0' + (temp % 10);
+      temp /= 10;
+    }
+  }
+  dst[digits+bits] = '\0';
+  //printf("iota:dst:%s\n",dst);
+  return digits+bits;
 }
 
 int itoa(char* dst, int num){
@@ -48,7 +157,7 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
       fmt++; // 跳过 '%'
       if (*fmt == 'd') {
         int num = va_arg(ap, int);
-        int digits = itoa(buf, num);
+        int digits = _itoa(buf, num);
         for (int i = 0; i < digits; i++) {
           *out++ = buf[i];
           len++;
