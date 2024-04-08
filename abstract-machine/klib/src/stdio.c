@@ -119,6 +119,35 @@ int _itoa(char* dst, int num){
   return digits+bits;
 }
 
+int itoa(char* dst, int num){
+  int digits = 0;
+  int bits = 0;
+  if (num == 0) {
+    dst[digits++] = '0';
+        bits = 1;
+  } 
+  else {
+    if (num < 0) {
+      dst[digits++] = '-';
+      num = -num;
+    }
+    int temp = num;
+    while (temp != 0) {   //判断有几位数
+      temp /= 10;
+      bits++;
+          digits++;
+    }
+    temp = num;   
+    while (temp != 0) {   
+      dst[--digits] = '0' + (temp % 10);
+      temp /= 10;
+    }
+  }
+  dst[digits+bits] = '\0';
+  //printf("iota:dst:%s\n",dst);
+  return digits+bits;
+}
+
 int vsprintf(char *out, const char *fmt, va_list ap) {
   int len = 0;
   char buf[256]; 

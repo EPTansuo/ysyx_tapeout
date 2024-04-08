@@ -107,7 +107,6 @@ void verilator_sim(int argc, char **argv)
 	}
 	std::cout<<"------------------"<<std::endl;
 
-	// 假设你有一个循环来遍历 insts 数组
 	for (size_t i = 0; i < inst_num; ++i) {
 		print_inst(inst_rom1->insts, 0x80000000 + i*4);
 	}
