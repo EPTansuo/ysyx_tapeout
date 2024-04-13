@@ -51,8 +51,9 @@ static void out_of_bound(paddr_t addr) {
 // 必须要在写入内存前调用
 void print_memwrite(paddr_t addr, int len, word_t data){
   word_t origin_mem = 0;
+  printf("\nmemwrite:\n");
   for(int i = len-1; i >= 0; i--){
-    printf("\nmemwrite: 0x%08x:    ", (paddr_t)addr + i);
+    printf("0x%08x:    ", (paddr_t)addr + i);
     if (likely(in_pmem(addr))) 
       origin_mem=  pmem_read(addr, len);
     else
@@ -80,8 +81,9 @@ word_t paddr_read(paddr_t addr, int len) {
   if (likely(in_pmem(addr))) {
     mem_read = pmem_read(addr, len);
 #ifdef CONFIG_MTRACE
+    printf("\nmemread:\n");
     for(int i = len-1; i>=0; i--){
-      printf("\nmemread: 0x%08x:    ", (paddr_t)addr + i);
+      printf("0x%08x:    ", (paddr_t)addr + i);
       printf("0x%02x\n", (unsigned int)mem_read >> (i * 8) & 0xff);
     }
     return mem_read;
