@@ -64,7 +64,7 @@ void print_memwrite(paddr_t addr, int len, word_t data){
     //out_of_bound(addr);
     printf("0x%02x  =>  ", (unsigned int)origin_mem);
 
-    printf("0x%02x\n", (unsigned int)data >> (i * 8) & 0xff);
+    printf("0x%02x\n", (unsigned int)(data >> (i * 8) & 0xff));
   }
 }
 
@@ -90,7 +90,7 @@ word_t paddr_read(paddr_t addr, int len) {
     printf("\nmemread:\n");
     for(int i = len-1; i>=0; i--){
       printf("0x%08x:    ", (paddr_t)addr + i);
-      printf("0x%02x\n", (unsigned int)mem_read >> (i * 8) & 0xff);
+      printf("0x%02x\n", (unsigned int)(mem_read >> (i * 8) & 0xff));
     }
     return mem_read;
   }
