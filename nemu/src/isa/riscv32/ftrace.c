@@ -181,8 +181,11 @@ void ftrace_func_call(word_t pc, word_t dnpc,  uint32_t inst){
                         }
                         else if((inst & 0x7f) == 0x67) //jalr指令
                         {
-                                
-                                f.type = FUNC_RET; // 标记为返回
+                                uint32_t rd = (inst >> 7) & 0x1f;
+                                //uint32_t rs1 = (inst >> 15) & 0x1f;
+                              
+                                if(rd ==0)
+                                        f.type = FUNC_RET; // 标记为返回
                                 
                         }
 
@@ -219,7 +222,7 @@ void ftrace_func_call_list_print()
         while(p != NULL){
                 depth = p->depth;
                 printf("0x%lx:  ", p->addr1);
-                while(depth--) printf("  ");
+                while(depth++ > 0) printf("  ");
                 if(p->type == FUNC_CALL){
                         printf("call ");
                 } 
