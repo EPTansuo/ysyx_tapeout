@@ -18,8 +18,9 @@ typedef struct {
 } Func_List;
 
 typedef struct Func_Call{
-        word_t pc;
-        uint32_t func_index; //dnpc和function name都在函数列表中。
+        word_t addr1; //源地址
+        word_t addr2; //跳转的地址
+        uint32_t func_index; //function name在函数列表中。
         uint8_t type;    //call or ret
         uint32_t depth;
         struct Func_Call* prev;
@@ -28,7 +29,7 @@ typedef struct Func_Call{
 void ftrace_phase_elf(const char* _elf_file);
 void ftrace_print_func_list();
 void ftrace_init(const char* _img_file);
-void ftrace_func_call_list_append(word_t pc, uint32_t func_index, uint32_t depth, uint8_t type);
+void ftrace_func_call_list_append(const Func_Call* f);
 
 bool ftrace_enabled = false;
 char* elf_file = NULL;
@@ -168,7 +169,8 @@ void _get_func_name(word_t addr, char** name, uint32_t* index){
 void ftrace_func_call(word_t pc, word_t dnpc,  uint32_t inst){
         if(!ftrace_enabled)
                 return;
-        uint8_t type = FUNC_CALL;
+        Func_Call f;
+        f.type = FUNC_CALL;
         for(int i = 0; i < func_num; i++){
                 if(dnpc == func_list[i].value){
                         if((inst & 0x7f) == 0x6f){ //jal指令
@@ -177,12 +179,17 @@ void ftrace_func_call(word_t pc, word_t dnpc,  uint32_t inst){
                         else if((inst & 0x7f) == 0x67 && ((inst >> 12) & 0x7) == 0) //jalr指令
                         {
                                 if(((inst >> 7)& 0x1f) == 0  && (inst >> 15) == 1)   // jalr x0, ra, 0, rd为x0，rs为ra时为返回
-                                        type = FUNC_RET;
+                                        f.type = FUNC_RET;
                         }
                         printf("Call function: %s: %lx -> %lx\n", func_list[i].name, pc , dnpc);
                         
-                        ftrace_func_call_list_append(pc, i, stack_depth, FUNC_CALL);
-                        if( type == FUNC_CALL) stack_depth++; else stack_depth--;
+                        f.addr1 = pc;
+                        f.addr2 = dnpc;
+                        f.func_index = i;
+                        f.depth = stack_depth;
+                        ftrace_func_call_list_append(&f);
+
+                        if( f.type == FUNC_CALL) stack_depth++; else stack_depth--;
                         return;
                 }
         }
@@ -194,23 +201,24 @@ void ftrace_func_call_list_print()
         int depth;
         while(p != NULL){
                 depth = p->depth;
+                printf("0x%lx\n", p->addr1);
                 while(depth--) putchar(' ');
-                printf("%s: 0x%016lx\n", func_list[p->func_index].name, p->pc);
+                printf("%s: 0x%lx\n", func_list[p->func_index].name, p->addr2);
                 p = p->prev;
         }
 }
 
-
-void ftrace_func_call_list_append(word_t pc, uint32_t func_index, uint32_t depth, uint8_t type)
+void ftrace_func_call_list_append(const Func_Call* f)
 {
         if(!ftrace_enabled)
                 return;
         //printf("Push: %s: 0x%016lx\n", func_list[func_index].name, pc);
         Func_Call *item = (Func_Call*)malloc(sizeof(Func_Call));
-        item->pc = pc;
-        item->func_index = func_index;
+        item->addr1 = f->addr1;
+        item->addr2 = f->addr2;
+        item->func_index = f->func_index;
+        item->type = f->type;
         item->prev = func_call_list;
-        item->type = type;
         func_call_list = item;
         ftrace_func_call_list_print();
 }
