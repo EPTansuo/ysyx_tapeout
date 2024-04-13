@@ -17,7 +17,7 @@ void ftrace_init(const char* _img_file)
                 return;
         size_t len =  strlen(_img_file);
         elf_file = (char*)malloc(len+1);
-
+        strncpy(elf_file,_img_file, len-3);
         strcpy(elf_file + len -3 , "elf");
         printf("%s: %s\n",__func__,elf_file);
         ftrace_enabled = true;
