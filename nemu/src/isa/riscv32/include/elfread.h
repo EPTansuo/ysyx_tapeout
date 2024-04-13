@@ -22,19 +22,19 @@ typedef Elf64_Half ElfN_Half;
 #define ELFN_ST_VISIBILITY ELF32_ST_VISIBILITY
 
 ElfN_Ehdr* read_elf_header(FILE* fp, ElfN_Ehdr* dest);
-ElfN_Shdr* read_section_header(FILE* fp,  ElfN_Shdr* dest, const ElfN_Ehdr elf_header, int index);
-ElfN_Sym* read_symtab(FILE* fp, ElfN_Sym* dest, const ElfN_Shdr symtab_hdr);
+ElfN_Shdr* read_section_header(FILE* fp,  ElfN_Shdr* dest, const ElfN_Ehdr* elf_header, int index);
+ElfN_Sym* read_symtab(FILE* fp, ElfN_Sym* dest, const ElfN_Shdr* symtab_hdr);
 
 
 void print_elf_header(Elf64_Ehdr elf_header);
-void print_section_headers(FILE* fp, const ElfN_Ehdr elf_header, const ElfN_Shdr* section_headers, int sh_num);
+void print_section_headers(FILE* fp, const ElfN_Ehdr* elf_header, const ElfN_Shdr* section_headers, int sh_num);
 void print_symtab(FILE* fp, const ElfN_Sym* symtab, const ElfN_Shdr* strtab_hdr, int symtab_size);
 
 
-char* get_section_header_name(FILE *fp, char *dest, const ElfN_Ehdr elf_header, const ElfN_Shdr *section_headers, int index);
+char* get_section_header_name(FILE *fp, char *dest, const ElfN_Ehdr* elf_header, const ElfN_Shdr *section_headers, int index);
 char* get_section_flag_name(char *dest, uintN_t sh_flags);
 char* get_symtab_entry_name(FILE *fp, char *dest, const ElfN_Shdr *strtab_hdr, const ElfN_Sym *symtab);
-char * get_symtab_entry_ndx_name(char* buf, uint16_t st_shndx);
+char* get_symtab_entry_ndx_name(char* buf, uint16_t st_shndx);
 
 
 const char* get_elf_type(ElfN_Half e_type);

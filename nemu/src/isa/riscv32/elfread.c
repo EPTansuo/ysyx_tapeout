@@ -124,10 +124,10 @@ inline const char* get_section_type_name(ElfN_Word sh_type) {
 }
 
 
-char* get_section_header_name(FILE *fp, char *dest, const ElfN_Ehdr elf_header, const ElfN_Shdr *section_headers, int index){
+char* get_section_header_name(FILE *fp, char *dest, const ElfN_Ehdr* elf_header, const ElfN_Shdr *section_headers, int index){
 	int idx = 0;
 	char ch;
-	const ElfN_Shdr *strtab_hdr = &section_headers[elf_header.e_shstrndx];
+	const ElfN_Shdr *strtab_hdr = &section_headers[elf_header->e_shstrndx];
 	fseek(fp, strtab_hdr->sh_offset + section_headers[index].sh_name, SEEK_SET);
 	do
 	{
@@ -148,7 +148,7 @@ char* get_section_flag_name(char *dest, uintN_t sh_flags) {
 	return dest;
 }
 
-void print_section_headers(FILE* fp, const ElfN_Ehdr elf_header, const ElfN_Shdr* section_headers, int sh_num) {
+void print_section_headers(FILE* fp, const ElfN_Ehdr* elf_header, const ElfN_Shdr* section_headers, int sh_num) {
 	char buf[100];
 	printf("Section Headers:\n");
 	
@@ -158,7 +158,7 @@ void print_section_headers(FILE* fp, const ElfN_Ehdr elf_header, const ElfN_Shdr
 	if(NBIT == 32){
 		printf("  [Nr]  Name              Type                Addr   Off    Size   ES Flg Lk Inf Al\n");
 		for (int i = 0; i < sh_num; i++) {
-			get_section_header_name(fp, buf, elf_header, section_headers, i);
+			get_section_header_name(fp, buf, elf_header, &section_headers[i], i);
 			printf("  [%2d] ", i);
 			printf("%-18s ", buf);
 			printf("%-17s ", get_section_type_name(section_headers[i].sh_type));
@@ -178,7 +178,7 @@ void print_section_headers(FILE* fp, const ElfN_Ehdr elf_header, const ElfN_Shdr
 		for (int i = 0; i < sh_num; i++) {
 			
 			printf("  [%2d] ", i);
-			printf("%-17s ", get_section_header_name(fp, buf, elf_header, section_headers, i));
+			printf("%-17s ", get_section_header_name(fp, buf, elf_header, &section_headers[i], i));
 			printf("%-17s ", get_section_type_name(section_headers[i].sh_type));
 			printf("%016lx ", section_headers[i].sh_addr);
 			printf("%08lx\n ", section_headers[i].sh_offset);
@@ -281,15 +281,15 @@ ElfN_Ehdr* read_elf_header(FILE* fp, ElfN_Ehdr* dest) {
 	return dest;
 }
 
-ElfN_Shdr* read_section_header(FILE* fp,  ElfN_Shdr* dest, const ElfN_Ehdr elf_header, int index) {
-	fseek(fp, elf_header.e_shoff + index * sizeof(ElfN_Shdr), SEEK_SET);
+ElfN_Shdr* read_section_header(FILE* fp,  ElfN_Shdr* dest, const ElfN_Ehdr* elf_header, int index) {
+	fseek(fp, elf_header->e_shoff + index * sizeof(ElfN_Shdr), SEEK_SET);
 	fread(dest, sizeof(ElfN_Shdr), 1, fp);
 	return dest;
 }
 
-ElfN_Sym* read_symtab(FILE* fp, ElfN_Sym* dest, const ElfN_Shdr symtab_hdr) {
-	fseek(fp, symtab_hdr.sh_offset ,SEEK_SET);
-	fread(dest, sizeof(ElfN_Sym), symtab_hdr.sh_size / symtab_hdr.sh_entsize, fp);
+ElfN_Sym* read_symtab(FILE* fp, ElfN_Sym* dest, const ElfN_Shdr* symtab_hdr) {
+	fseek(fp, symtab_hdr->sh_offset ,SEEK_SET);
+	fread(dest, sizeof(ElfN_Sym), symtab_hdr->sh_size / symtab_hdr->sh_entsize, fp);
 	return dest;
 }
 
