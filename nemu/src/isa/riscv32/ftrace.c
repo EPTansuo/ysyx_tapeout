@@ -116,8 +116,9 @@ void phase_elf(const char* _elf_file)
                 {
                         func_list[index].pc = symtab[i].st_value;
                         get_symtab_entry_name(fp, buf, strtab_hdr, &symtab[i]);
-		        func_list[index++].name = (char*)malloc(strlen(buf)+1);
+		        func_list[index].name = (char*)malloc(strlen(buf)+1);
                         strcpy(func_list[i].name, buf);
+                        index++;
                 }		
 	}       
 
