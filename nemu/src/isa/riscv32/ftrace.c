@@ -222,7 +222,7 @@ void ftrace_func_call_list_print()
         while(p != NULL){
                 depth = p->depth;
                 printf("0x%lx:  ", p->addr1);
-                while(depth++ > 0) printf("  ");
+                while(depth-- > 0) printf("  ");
                 if(p->type == FUNC_CALL){
                         printf("call ");
                 } 
