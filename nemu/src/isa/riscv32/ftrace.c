@@ -201,8 +201,7 @@ void ftrace_func_call_list_print()
         int depth;
         while(p != NULL){
                 depth = p->depth;
-                printf("depth:%u\n",p->depth);
-                printf("0x%lx\n", p->addr1);
+                printf("0x%lx:  ", p->addr1);
                 while(depth--) putchar(' ');
                 printf("%s: 0x%lx\n", func_list[p->func_index].name, p->addr2);
                 p = p->prev;
