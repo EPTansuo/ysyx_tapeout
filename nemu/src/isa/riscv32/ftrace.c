@@ -111,12 +111,13 @@ void phase_elf(const char* _elf_file)
 	
         char buf[100];
 	for(int i = 0; i < syms_num; i++){
-                if(ELFN_ST_TYPE(symtab[i].st_info) != STT_FUNC)
-                        continue;
-		func_list[i].pc = symtab[i].st_value;
-                get_symtab_entry_name(fp, buf, strtab_hdr, &symtab[i]);
-		func_list[i].name = (char*)malloc(strlen(buf)+1);
-                strcpy(func_list[i].name, buf);
+                if(ELFN_ST_TYPE(symtab[i].st_info) == STT_FUNC)
+                {
+                        func_list[i].pc = symtab[i].st_value;
+                        get_symtab_entry_name(fp, buf, strtab_hdr, &symtab[i]);
+		        func_list[i].name = (char*)malloc(strlen(buf)+1);
+                        strcpy(func_list[i].name, buf);
+                }		
 	}       
         print_func_list();
 }
