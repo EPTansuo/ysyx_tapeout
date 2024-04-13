@@ -83,6 +83,7 @@ word_t paddr_read(paddr_t addr, int len) {
       printf("memread: 0x%016lx:    ", (word_t)addr + i);
       printf("0x%02x\n", (unsigned int)mem_read >> (i * 8) & 0xff);
     }
+    return mem_read;
   }
 #endif
   else
