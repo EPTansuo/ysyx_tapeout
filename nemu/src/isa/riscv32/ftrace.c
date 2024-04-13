@@ -179,7 +179,7 @@ void ftrace_func_call(word_t pc, word_t dnpc,  uint32_t inst){
                                 if(((inst >> 7)& 0x1f) == 0  && (inst >> 15) == 1)   // jalr x0, ra, 0, rd为x0，rs为ra时为返回
                                         type = FUNC_RET;
                         }
-                        //printf("Call function: %s: %lx -> %lx\n", func_list[i].name, pc , dnpc);
+                        printf("Call function: %s: %lx -> %lx\n", func_list[i].name, pc , dnpc);
                         
                         ftrace_func_call_list_append(pc, i, stack_depth, FUNC_CALL);
                         if( type == FUNC_CALL) stack_depth++; else stack_depth--;
@@ -188,6 +188,17 @@ void ftrace_func_call(word_t pc, word_t dnpc,  uint32_t inst){
         }
 }
 
+void ftrace_func_call_list_print()
+{
+        Func_Call* p = func_call_list;
+        int depth;
+        while(p != NULL){
+                depth = p->depth;
+                while(depth--) putchar(' ');
+                printf("%s: 0x%016lx\n", func_list[p->func_index].name, p->pc);
+                p = p->prev;
+        }
+}
 
 
 void ftrace_func_call_list_append(word_t pc, uint32_t func_index, uint32_t depth, uint8_t type)
@@ -201,17 +212,7 @@ void ftrace_func_call_list_append(word_t pc, uint32_t func_index, uint32_t depth
         item->prev = func_call_list;
         item->type = type;
         func_call_list = item;
+        ftrace_func_call_list_print();
 }
 
 
-void ftrace_func_call_list_print()
-{
-        Func_Call* p = func_call_list;
-        int depth;
-        while(p != NULL){
-                depth = p->depth;
-                while(depth--) putchar(' ');
-                printf("%s: 0x%016lx\n", func_list[p->func_index].name, p->pc);
-                p = p->prev;
-        }
-}
