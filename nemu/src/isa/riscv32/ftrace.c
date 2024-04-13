@@ -219,6 +219,7 @@ void ftrace_func_call_list_append(const Func_Call* f)
         item->addr2 = f->addr2;
         item->func_index = f->func_index;
         item->type = f->type;
+        item->depth = f->depth;
         item->prev = func_call_list;
         func_call_list = item;
         ftrace_func_call_list_print();
