@@ -181,14 +181,9 @@ void ftrace_func_call(word_t pc, word_t dnpc,  uint32_t inst){
                         }
                         else if((inst & 0x7f) == 0x67) //jalr指令
                         {
-                                uint32_t rd = (inst >> 7) & 0x1f;
-                                uint32_t rs1 = (inst >> 15) & 0x1f;
-                                int32_t offset = (int32_t)(inst & 0xfff00000) >> 20; // 正确地提取符号扩展的 offset
-
-                                // 检查是否为 `jalr x0, 0(ra)` 指令，rd 为 x0 并且 rs1 为 ra，offset 为 0
-                                if (rd == 0 && rs1 == 1 && offset == 0) {
-                                        f.type = FUNC_RET; // 标记为返回
-                                }
+                                
+                                f.type = FUNC_RET; // 标记为返回
+                                
                         }
 
                         if(pre_func_index == i){
