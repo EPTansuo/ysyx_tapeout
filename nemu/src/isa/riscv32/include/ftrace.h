@@ -3,6 +3,6 @@
 
 #include <stdbool.h>
 
-void ftrace_enable(bool enable);
+void ftrace_init(const char* _elf_file);
 
 #endif
