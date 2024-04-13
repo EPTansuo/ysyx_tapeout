@@ -179,10 +179,14 @@ void ftrace_func_call(word_t pc, word_t dnpc,  uint32_t inst){
                         if((inst & 0x7f) == 0x6f){ //jal指令
 
                         }
-                        else if((inst & 0x7f) == 0x67 && ((inst >> 12) & 0x7) == 0) //jalr指令
+                        else if((inst & 0x7f) == 0x67) //jalr指令
                         {
-                                if(((inst >> 7)& 0x1f) == 0  && (inst >> 0x1f) == 1)   // jalr x0, ra, 0, rd为x0，rs为ra时为返回
-                                        f.type = FUNC_RET;
+                                 // 提取 rd 和 rs1 字段
+                                uint32_t rd = (inst >> 7) & 0x1f;
+                                uint32_t rs1 = (inst >> 15) & 0x1f;
+                                if (rd == 0 && rs1 == 1) { // 检查 rd 是否为 x0 且 rs1 是否为 ra
+                                        f.type = FUNC_RET; // 标记为返回
+                                }
                         }
 
                         if(pre_func_index == i){
