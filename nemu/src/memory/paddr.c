@@ -58,7 +58,7 @@ void print_memwrite(paddr_t addr, int len, word_t data){
   for(int i = len-1; i >= 0; i--){
     printf("0x%08x:    ", (paddr_t)addr + i);
     if (likely(in_pmem(addr))) 
-      origin_mem=  pmem_read(addr, len);
+      origin_mem=  pmem_read(addr+i, 1);
     else
       IFDEF(CONFIG_DEVICE, origin_mem = mmio_read(addr, len));
     //out_of_bound(addr);
