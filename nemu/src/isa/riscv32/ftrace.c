@@ -90,7 +90,7 @@ void phase_elf(const char* _elf_file)
 	int syms_num = symtab_hdr->sh_size / symtab_hdr->sh_entsize;
 	 symtab = (ElfN_Sym*)malloc(syms_num * sizeof(ElfN_Sym));
 	read_symtab(fp, symtab, symtab_hdr);
-	//print_symtab(fp, symtab, strtab_hdr, syms_num);
+	print_symtab(fp, symtab, strtab_hdr, syms_num);
 
         if(func_list != NULL){
                 for (int i = 0; i < func_num; i++){
