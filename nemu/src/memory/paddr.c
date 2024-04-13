@@ -56,7 +56,7 @@ void print_memwrite(paddr_t addr, int len, word_t data){
     if (likely(in_pmem(addr))) 
       origin_mem=  pmem_read(addr, len);
     IFDEF(CONFIG_DEVICE, origin_mem = mmio_read(addr, len));
-    out_of_bound(addr);
+    //out_of_bound(addr);
     printf("0x%02x  =>  ", (unsigned int)origin_mem);
 
     printf("0x%02x\n", (unsigned int)data >> (i * 8) & 0xff);
