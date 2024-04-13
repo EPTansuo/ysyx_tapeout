@@ -11,8 +11,14 @@ typedef struct {
         word_t pc;
 } Func_List;
 
-void phase_elf(const char* _elf_file);
-void print_func_list();
+typedef struct {
+        uint32_t* func_index;
+        uint32_t* next;
+} Func_Stack;
+
+void ftrace_phase_elf(const char* _elf_file);
+void ftrace_print_func_list();
+void ftrace_init(const char* _img_file);
 
 
 bool ftrace_enabled = false;
@@ -25,7 +31,7 @@ ElfN_Shdr *strtab_hdr = NULL;
 ElfN_Sym *symtab = NULL;
 Func_List *func_list = NULL;
 int func_num = 0;
-
+int stack_depth = 0;
 
 
 
@@ -46,10 +52,10 @@ void ftrace_init(const char* _img_file)
         //printf("%s: %s\n",__func__,elf_file);
         ftrace_enabled = true;
         //printf("%s: %d\n",__func__,ftrace_enabled);
-        phase_elf(elf_file);
+        ftrace_phase_elf(elf_file);
 }
 
-void phase_elf(const char* _elf_file)
+void ftrace_phase_elf(const char* _elf_file)
 {
         FILE* fp = fopen(_elf_file, "r");
 
@@ -122,14 +128,26 @@ void phase_elf(const char* _elf_file)
                 }		
 	}       
 
-        print_func_list();
+        ftrace_print_func_list();
 }
 
-void print_func_list()
+void ftrace_print_func_list()
 {
         if(func_list != NULL){
                 for(int i = 0; i < func_num; i++){
                         printf("%s: 0x%016lx\n", func_list[i].name, func_list[i].pc);
+                }
+        }
+}
+
+void ftrace_func_call(word_t pc, word_t dnpc,  uint32_t inst){
+        if(!ftrace_enabled)
+                return;
+        for(int i = 0; i < func_num; i++){
+                if(pc == func_list[i].pc){
+                        printf("Call function: %s: %lx -> %lx\n", func_list[i].name, pc , dnpc);
+                        stack_depth++;
+                        return;
                 }
         }
 }
