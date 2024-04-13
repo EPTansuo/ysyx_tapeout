@@ -67,7 +67,7 @@ static int cmd_p(char *args){
   //puts(args);
   bool success=true;
   word_t result = expr(args, &success);
-  printf("%lu\n",result);
+  printf("%lu    0x%lx\n",result, result);
   return 0;
 }
 
