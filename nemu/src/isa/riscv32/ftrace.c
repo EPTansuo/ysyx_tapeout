@@ -15,14 +15,19 @@ void ftrace_init(const char* _img_file)
         //printf("%s: %d\n",__func__,ftrace_enabled);
         if(_img_file == NULL)
                 return;
+
+        //xxxx.bin --> xxxx.elf
+        if(elf_file != NULL)
+                free(elf_file);
         size_t len =  strlen(_img_file);
         elf_file = (char*)malloc(len+1);
         strncpy(elf_file,_img_file, len-3);
         strcpy(elf_file + len -3 , "elf");
-        printf("%s: %s\n",__func__,elf_file);
+        
+        //printf("%s: %s\n",__func__,elf_file);
         ftrace_enabled = true;
         //printf("%s: %d\n",__func__,ftrace_enabled);
-        //phase_elf(_elf_file);
+        phase_elf(elf_file);
 }
 
 void phase_elf(const char* _elf_file)
