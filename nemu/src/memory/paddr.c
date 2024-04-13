@@ -52,10 +52,11 @@ static void out_of_bound(paddr_t addr) {
 void print_memwrite(paddr_t addr, int len, word_t data){
   word_t origin_mem = 0;
   for(int i = len-1; i >= 0; i--){
-    printf("memwrite: 0x%08x:    ", (paddr_t)addr + i);
+    printf("\nmemwrite: 0x%08x:    ", (paddr_t)addr + i);
     if (likely(in_pmem(addr))) 
       origin_mem=  pmem_read(addr, len);
-    IFDEF(CONFIG_DEVICE, origin_mem = mmio_read(addr, len));
+    else
+      IFDEF(CONFIG_DEVICE, origin_mem = mmio_read(addr, len));
     //out_of_bound(addr);
     printf("0x%02x  =>  ", (unsigned int)origin_mem);
 
@@ -80,7 +81,7 @@ word_t paddr_read(paddr_t addr, int len) {
     mem_read = pmem_read(addr, len);
 #ifdef CONFIG_MTRACE
     for(int i = len-1; i>=0; i--){
-      printf("memread: 0x%08x:    ", (paddr_t)addr + i);
+      printf("\nmemread: 0x%08x:    ", (paddr_t)addr + i);
       printf("0x%02x\n", (unsigned int)mem_read >> (i * 8) & 0xff);
     }
     return mem_read;
