@@ -27,6 +27,10 @@ static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
 paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 
+void print_memread(paddr_t addr, int len);
+void print_memwrite(paddr_t addr, int len, word_t data);
+
+
 static word_t pmem_read(paddr_t addr, int len) {
   word_t ret = host_read(guest_to_host(addr), len);
   return ret;
@@ -41,6 +45,31 @@ static void out_of_bound(paddr_t addr) {
       addr, PMEM_LEFT, PMEM_RIGHT, cpu.pc);
 }
 
+
+#ifdef CONFIG_MTRACE
+// 必须要在写入内存前调用
+void print_memwrite(paddr_t addr, int len, word_t data){
+  word_t origin_mem = 0;
+  for(int i = len-1; i >= 0; i++){
+    printf("memwrite: 0x%016lx:    ", (word_t)addr + i);
+    if (likely(in_pmem(addr))) 
+      origin_mem=  pmem_read(addr, len);
+    IFDEF(CONFIG_DEVICE, origin_mem = mmio_read(addr, len));
+    out_of_bound(addr);
+    printf("0x%02x  =>  ", (unsigned int)origin_mem);
+
+    printf("0x%02x\n", (unsigned int)data >> (i * 8) & 0xff);
+  }
+}
+
+void print_memread(paddr_t addr, int len){
+  for(int i = 0; i < len; i++){
+    printf("memread: 0x%016lx:    ", (word_t)addr + i);
+    printf("0x%02x\n", (unsigned int)paddr_read(addr + i, 1));
+  }
+}
+#endif
+
 void init_mem() {
 #if   defined(CONFIG_PMEM_MALLOC)
   pmem = malloc(CONFIG_MSIZE);
@@ -51,6 +80,9 @@ void init_mem() {
 }
 
 word_t paddr_read(paddr_t addr, int len) {
+#ifdef CONFIG_MTRACE
+  print_memread(addr, len);
+#endif
   if (likely(in_pmem(addr))) return pmem_read(addr, len);
   IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
   out_of_bound(addr);
@@ -58,6 +90,9 @@ word_t paddr_read(paddr_t addr, int len) {
 }
 
 void paddr_write(paddr_t addr, int len, word_t data) {
+#ifdef CONFIG_MTRACE
+  print_memwrite(addr, len, data);
+#endif
   if (likely(in_pmem(addr))) { pmem_write(addr, len, data); return; }
   IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
   out_of_bound(addr);

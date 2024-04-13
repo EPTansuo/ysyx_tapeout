@@ -26,6 +26,7 @@
  */
 #define MAX_INST_TO_PRINT 10001
 #define IRINGBUF_SIZE 45
+#define MTRACER_SIZE 1000
 
 CPU_state cpu = {};
 uint64_t g_nr_guest_inst = 0;
@@ -39,9 +40,11 @@ struct{
 }iringbuf = {{0}, {0} ,0};
 
 
+
+
 void device_update();
 void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
-
+void print_iringbuf();
 
 #ifdef CONFIG_ITRACE
 void print_iringbuf(){
