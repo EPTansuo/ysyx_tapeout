@@ -13,7 +13,8 @@ enum {
 
 typedef struct {
         char* name;
-        word_t pc;
+        word_t value;
+        word_t size;
 } Func_List;
 
 typedef struct Func_Call{
@@ -129,7 +130,8 @@ void ftrace_phase_elf(const char* _elf_file)
 	for(int i = 0; i < syms_num; i++){
                 if(ELFN_ST_TYPE(symtab[i].st_info) == STT_FUNC)
                 {
-                        func_list[index].pc = symtab[i].st_value;
+                        func_list[index].value = symtab[i].st_value;
+                        func_list[index].size = symtab[i].st_size;
                         get_symtab_entry_name(fp, buf, strtab_hdr, &symtab[i]);
 		        func_list[index].name = (char*)malloc(strlen(buf)+1);
                         strcpy(func_list[index].name, buf);
@@ -144,27 +146,43 @@ void ftrace_print_func_list()
 {
         if(func_list != NULL){
                 for(int i = 0; i < func_num; i++){
-                        printf("%s: 0x%016lx\n", func_list[i].name, func_list[i].pc);
+                        printf("%s: 0x%016lx\n", func_list[i].name, func_list[i].value);
                 }
         }
+}
+
+void _get_func_name(word_t addr, char** name, uint32_t* index){
+        for(int i=0; i<func_num; i++)
+        {
+                if(addr >= func_list[i].value && addr < func_list[i].value + func_list[i].size)
+                {
+                        *name = func_list[i].name;
+                        *index = i;
+                        return;
+                }
+        }
+        *name = NULL;
+        *index = -1;
 }
 
 void ftrace_func_call(word_t pc, word_t dnpc,  uint32_t inst){
         if(!ftrace_enabled)
                 return;
+        uint8_t type = FUNC_CALL;
         for(int i = 0; i < func_num; i++){
-                if(dnpc == func_list[i].pc){
+                if(dnpc == func_list[i].value){
                         if((inst & 0x7f) == 0x6f){ //jal指令
-                        
+
                         }
                         else if((inst & 0x7f) == 0x67 && ((inst >> 12) & 0x7) == 0) //jalr指令
                         {
-
+                                if(((inst >> 7)& 0x1f) == 0  && (inst >> 15) == 1)   // jalr x0, ra, 0, rd为x0，rs为ra时为返回
+                                        type = FUNC_RET;
                         }
                         //printf("Call function: %s: %lx -> %lx\n", func_list[i].name, pc , dnpc);
                         
                         ftrace_func_call_list_append(pc, i, stack_depth, FUNC_CALL);
-                        stack_depth++;
+                        if( type == FUNC_CALL) stack_depth++; else stack_depth--;
                         return;
                 }
         }
