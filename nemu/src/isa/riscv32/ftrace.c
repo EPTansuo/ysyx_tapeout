@@ -171,6 +171,7 @@ void _get_func_name(word_t addr, char** name, uint32_t* index){
 void ftrace_func_call(word_t pc, word_t dnpc,  uint32_t inst){
         if(!ftrace_enabled)
                 return;
+        static int32_t pre_func_index = -1;
         Func_Call f;
         f.type = FUNC_CALL;
         for(int i = 0; i < func_num; i++){
@@ -183,6 +184,10 @@ void ftrace_func_call(word_t pc, word_t dnpc,  uint32_t inst){
                                 if(((inst >> 7)& 0x1f) == 0  && (inst >> 15) == 1)   // jalr x0, ra, 0, rd为x0，rs为ra时为返回
                                         f.type = FUNC_RET;
                         }
+
+                        if(pre_func_index == i){
+                                f.type = FUNC_RET;
+                        }
                         printf("Call function: %s: %lx -> %lx\n", func_list[i].name, pc , dnpc);
                         
                         f.addr1 = pc;
@@ -192,6 +197,8 @@ void ftrace_func_call(word_t pc, word_t dnpc,  uint32_t inst){
                         ftrace_func_call_list_append(&f);
 
                         if( f.type == FUNC_CALL) stack_depth++; else stack_depth--;
+
+                        pre_func_index = i;
                         return;
                 }
         }
