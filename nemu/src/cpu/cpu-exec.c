@@ -26,6 +26,7 @@
  */
 #define MAX_INST_TO_PRINT 10001
 #define IRINGBUF_SIZE 45
+#define MTRACER_SIZE 1000
 
 CPU_state cpu = {};
 uint64_t g_nr_guest_inst = 0;
@@ -39,9 +40,13 @@ struct{
 }iringbuf = {{0}, {0} ,0};
 
 
+
+
 void device_update();
 void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
+void print_iringbuf();
 
+#ifdef CONFIG_ITRACE
 void print_iringbuf(){
   char logbuf[64];
   for(int i = 0; i < IRINGBUF_SIZE && iringbuf.inst[i] != 0; i++){
@@ -64,6 +69,8 @@ void print_iringbuf(){
   }
 }
 
+#endif
+
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
   if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
@@ -79,9 +86,11 @@ static void exec_once(Decode *s, vaddr_t pc) {
   s->snpc = pc;
   isa_exec_once(s);
   
+#ifdef CONFIG_ITRACE
   iringbuf.inst[iringbuf.head] = s->isa.inst.val;
   iringbuf.pc[iringbuf.head++] = s->pc;
   iringbuf.head = iringbuf.head % IRINGBUF_SIZE;
+#endif 
 
   cpu.pc = s->dnpc;
 #ifdef CONFIG_ITRACE
@@ -161,7 +170,10 @@ void cpu_exec(uint64_t n) {
            (nemu_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) :
             ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED))),
           nemu_state.halt_pc);
-      if(nemu_state.state == NEMU_END && nemu_state.halt_ret != 0) print_iringbuf();
+#ifdef CONFIG_ITRACE
+        if(nemu_state.state == NEMU_END && nemu_state.halt_ret != 0) print_iringbuf();
+#endif // CONFIG_ITRACE
+    
       // fall through
     case NEMU_QUIT: statistic();
   }
