@@ -116,4 +116,11 @@ void phase_elf(const char* _elf_file)
 	}
 }
 
-
+void print_func_list()
+{
+        if(func_list != NULL){
+                for(int i = 0; i < func_num; i++){
+                        printf("%s: 0x%016lx\n", func_list[i].name, func_list[i].pc);
+                }
+        }
+}
