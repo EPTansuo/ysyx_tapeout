@@ -24,6 +24,7 @@ typedef struct Func_Call{
         uint8_t type;    //call or ret
         uint32_t depth;
         struct Func_Call* prev;
+        struct Func_Call* next;
 } Func_Call;
 
 void ftrace_phase_elf(const char* _elf_file);
@@ -41,6 +42,7 @@ ElfN_Shdr *strtab_hdr = NULL;
 ElfN_Sym *symtab = NULL;
 Func_List *func_list = NULL;
 Func_Call *func_call_list = NULL;
+
 int func_num = 0;
 int stack_depth = 0;
 
@@ -199,6 +201,13 @@ void ftrace_func_call_list_print()
 {
         Func_Call* p = func_call_list;
         int depth;
+        Func_Call* p_next = NULL;
+        while(p != NULL){
+                
+                p_next = p;
+                p = p->prev;
+        }
+        p = p_next;
         while(p != NULL){
                 depth = p->depth;
                 printf("0x%lx:  ", p->addr1);
@@ -210,7 +219,7 @@ void ftrace_func_call_list_print()
                         printf("ret  ");
                 }
                 printf("[%s@0x%lx]\n", func_list[p->func_index].name, p->addr2);
-                p = p->prev;
+                p = p->next;
         }
 }
 
@@ -225,6 +234,7 @@ void ftrace_func_call_list_append(const Func_Call* f)
         item->func_index = f->func_index;
         item->type = f->type;
         item->depth = f->depth;
+        func_call_list->next = item;
         item->prev = func_call_list;
         func_call_list = item;
         ftrace_func_call_list_print();
