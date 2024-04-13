@@ -5,6 +5,9 @@
 bool ftrace_enabled = false;
 bool elf_file = NULL;
 
+void phase_elf(const char* _elf_file);
+
+
 void ftrace_init(const char* _elf_file)
 {
         //printf("%s: %d\n",__func__,ftrace_enabled);
@@ -13,6 +16,7 @@ void ftrace_init(const char* _elf_file)
         ftrace_enabled = true;
         elf_file = _elf_file;
         //printf("%s: %d\n",__func__,ftrace_enabled);
+        phase_elf(_elf_file);
 }
 
 void phase_elf(const char* _elf_file)
