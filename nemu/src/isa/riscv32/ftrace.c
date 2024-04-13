@@ -145,6 +145,13 @@ void ftrace_func_call(word_t pc, word_t dnpc,  uint32_t inst){
                 return;
         for(int i = 0; i < func_num; i++){
                 if(pc == func_list[i].pc){
+                        if((inst & 0x7f) == 0x6f){ //jal指令
+                        
+                        }
+                        else if((inst & 0x7f) == 0x67 && ((inst >> 12) & 0x7) == 0) //jalr指令
+                        {
+
+                        }
                         printf("Call function: %s: %lx -> %lx\n", func_list[i].name, pc , dnpc);
                         stack_depth++;
                         return;
