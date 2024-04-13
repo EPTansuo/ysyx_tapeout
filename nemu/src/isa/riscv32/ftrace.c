@@ -181,7 +181,7 @@ void ftrace_func_call(word_t pc, word_t dnpc,  uint32_t inst){
                         }
                         else if((inst & 0x7f) == 0x67 && ((inst >> 12) & 0x7) == 0) //jalr指令
                         {
-                                if(((inst >> 7)& 0x1f) == 0  && (inst >> 15) == 1)   // jalr x0, ra, 0, rd为x0，rs为ra时为返回
+                                if(((inst >> 7)& 0x1f) == 0  && (inst >> 0x1f) == 1)   // jalr x0, ra, 0, rd为x0，rs为ra时为返回
                                         f.type = FUNC_RET;
                         }
 
