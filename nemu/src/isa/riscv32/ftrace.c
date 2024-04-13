@@ -144,7 +144,7 @@ void ftrace_func_call(word_t pc, word_t dnpc,  uint32_t inst){
         if(!ftrace_enabled)
                 return;
         for(int i = 0; i < func_num; i++){
-                if(pc == func_list[i].pc){
+                if(dnpc == func_list[i].pc){
                         if((inst & 0x7f) == 0x6f){ //jal指令
                         
                         }
