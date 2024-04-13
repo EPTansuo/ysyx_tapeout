@@ -246,7 +246,7 @@ void ftrace_func_call_list_append(const Func_Call* f)
                 func_call_list->next = item;
         item->prev = func_call_list;
         func_call_list = item;
-        //ftrace_func_call_list_print();
+        ftrace_func_call_list_print();
 }
 
 
