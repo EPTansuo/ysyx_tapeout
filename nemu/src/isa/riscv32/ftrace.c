@@ -1,22 +1,28 @@
 #include "./include/ftrace.h"
 #include <stdio.h>
+#include <string.h>
 #include "./include/elfread.h"
+#include <stdlib.h>
 
 bool ftrace_enabled = false;
-bool elf_file = NULL;
+char* elf_file = NULL;
 
 void phase_elf(const char* _elf_file);
 
 
-void ftrace_init(const char* _elf_file)
+void ftrace_init(const char* _img_file)
 {
         //printf("%s: %d\n",__func__,ftrace_enabled);
-        if(_elf_file == NULL)
+        if(_img_file == NULL)
                 return;
+        size_t len =  strlen(_img_file);
+        elf_file = (char*)malloc(len+1);
+
+        strcpy(elf_file + len -3 , "elf");
+        printf("%s: %s\n",__func__,elf_file);
         ftrace_enabled = true;
-        elf_file = _elf_file;
         //printf("%s: %d\n",__func__,ftrace_enabled);
-        phase_elf(_elf_file);
+        //phase_elf(_elf_file);
 }
 
 void phase_elf(const char* _elf_file)

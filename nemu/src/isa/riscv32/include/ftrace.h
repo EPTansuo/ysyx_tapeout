@@ -3,6 +3,6 @@
 
 #include <stdbool.h>
 
-void ftrace_init(const char* _elf_file);
+void ftrace_init(const char* _img_file);
 
 #endif
