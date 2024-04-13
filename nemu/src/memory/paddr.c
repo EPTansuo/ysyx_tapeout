@@ -51,7 +51,7 @@ static void out_of_bound(paddr_t addr) {
 // 必须要在写入内存前调用
 void print_memwrite(paddr_t addr, int len, word_t data){
 #ifdef CONFIG_MTRACE_RANGE_COND
-  if (addr < CONFIG_MTRACE_RANGE_MIN && addr + len > CONFIG_MTRACE_RANGE_MAX) return;
+  if (addr < CONFIG_MTRACE_RANGE_MIN || addr + len > CONFIG_MTRACE_RANGE_MAX) return;
 #endif
   word_t origin_mem = 0;
   printf("\nmemwrite:\n");
@@ -85,7 +85,7 @@ word_t paddr_read(paddr_t addr, int len) {
     mem_read = pmem_read(addr, len);
 #ifdef CONFIG_MTRACE
 #ifdef CONFIG_MTRACE_RANGE_COND
-    if (addr < CONFIG_MTRACE_RANGE_MIN && addr + len > CONFIG_MTRACE_RANGE_MAX) return mem_read;
+    if (addr < CONFIG_MTRACE_RANGE_MIN || addr + len > CONFIG_MTRACE_RANGE_MAX) return mem_read;
 #endif
     printf("\nmemread:\n");
     for(int i = len-1; i>=0; i--){
