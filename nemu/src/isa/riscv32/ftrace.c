@@ -202,3 +202,16 @@ void ftrace_func_call_list_append(word_t pc, uint32_t func_index, uint32_t depth
         item->type = type;
         func_call_list = item;
 }
+
+
+void ftrace_func_call_list_print()
+{
+        Func_Call* p = func_call_list;
+        int depth;
+        while(p != NULL){
+                depth = p->depth;
+                while(depth--) putchar(' ');
+                printf("%s: 0x%016lx\n", func_list[p->func_index].name, p->pc);
+                p = p->prev;
+        }
+}
