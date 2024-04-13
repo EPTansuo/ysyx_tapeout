@@ -33,6 +33,7 @@ wire [7:0] inst_type;
 wire [`RegAddrBus] gpr_raddr_1;
 wire [`RegAddrBus] gpr_raddr_2;
 
+
 idu idu1(
         .rst(rst),
         .clk(clk),
