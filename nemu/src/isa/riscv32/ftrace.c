@@ -3,6 +3,15 @@
 #include <string.h>
 #include "./include/elfread.h"
 #include <stdlib.h>
+#include <common.h>
+
+
+typedef struct {
+        char* name;
+        word_t pc;
+} Func_List;
+
+void phase_elf(const char* _elf_file);
 
 bool ftrace_enabled = false;
 char* elf_file = NULL;
@@ -12,8 +21,10 @@ ElfN_Shdr *section_headers = NULL;
 ElfN_Shdr *symtab_hdr = NULL;
 ElfN_Shdr *strtab_hdr = NULL;
 ElfN_Sym *symtab = NULL;
+Func_List *func_list = NULL;
+int func_num = 0;
 
-void phase_elf(const char* _elf_file);
+
 
 
 void ftrace_init(const char* _img_file)
@@ -50,7 +61,7 @@ void phase_elf(const char* _elf_file)
                 free(elf_header);
 	elf_header = (ElfN_Ehdr *)malloc(sizeof(ElfN_Ehdr));
 	read_elf_header(fp, elf_header);
-	print_elf_header(*elf_header);
+	//print_elf_header(*elf_header);
 
 	//读取Section Header Table
 	fseek(fp, elf_header->e_shoff, SEEK_SET);
@@ -60,7 +71,7 @@ void phase_elf(const char* _elf_file)
 	for (int i = 0; i < elf_header->e_shnum; i++) {
         	read_section_header(fp, &section_headers[i], elf_header, i);
    	}
-	print_section_headers(fp, elf_header, section_headers, elf_header->e_shnum);
+	//print_section_headers(fp, elf_header, section_headers, elf_header->e_shnum);
 
 
 	//找到符号表和字符串表
@@ -77,8 +88,32 @@ void phase_elf(const char* _elf_file)
 	int syms_num = symtab_hdr->sh_size / symtab_hdr->sh_entsize;
 	 symtab = (ElfN_Sym*)malloc(syms_num * sizeof(ElfN_Sym));
 	read_symtab(fp, symtab, symtab_hdr);
-	print_symtab(fp, symtab, strtab_hdr, syms_num);
+	//print_symtab(fp, symtab, strtab_hdr, syms_num);
 
+        if(func_list != NULL){
+                for (int i = 0; i < func_num; i++){
+                        free(func_list[i].name);
+                }
+        }
+
+        if(func_num != 0) 
+                func_num = 0;
+
+        for(int i = 0; i< syms_num; i++){
+                if(ELFN_ST_TYPE(symtab[i].st_info) == STT_FUNC){
+                        func_num++;
+                }
+        }
+        
+        func_list = (Func_List*)malloc(sizeof(Func_List)*func_num);
+	
+        char buf[100];
+	for(int i = 0; i < syms_num; i++){
+		func_list[i].pc = symtab[i].st_value;
+                get_symtab_entry_name(fp, buf, strtab_hdr, &symtab[i]);
+		func_list[i].name = (char*)malloc(strlen(buf)+1);
+                strcpy(func_list[i].name, buf);
+	}
 }
 
 
