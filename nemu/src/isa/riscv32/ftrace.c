@@ -5,21 +5,29 @@
 #include <stdlib.h>
 #include <common.h>
 
+enum {
+        FUNC_NONE = 0,
+        FUNC_CALL,
+        FUNC_RET
+}FUNC_TYPE;
 
 typedef struct {
         char* name;
         word_t pc;
 } Func_List;
 
-typedef struct {
-        uint32_t* func_index;
-        uint32_t* next;
-} Func_Stack;
+typedef struct Func_Call{
+        word_t pc;
+        uint32_t func_index; //dnpc和function name都在函数列表中。
+        uint8_t type;    //call or ret
+        uint32_t depth;
+        struct Func_Call* prev;
+} Func_Call;
 
 void ftrace_phase_elf(const char* _elf_file);
 void ftrace_print_func_list();
 void ftrace_init(const char* _img_file);
-
+void ftrace_func_call_list_append(word_t pc, uint32_t func_index, uint32_t depth, uint8_t type);
 
 bool ftrace_enabled = false;
 char* elf_file = NULL;
@@ -30,6 +38,7 @@ ElfN_Shdr *symtab_hdr = NULL;
 ElfN_Shdr *strtab_hdr = NULL;
 ElfN_Sym *symtab = NULL;
 Func_List *func_list = NULL;
+Func_Call *func_call_list = NULL;
 int func_num = 0;
 int stack_depth = 0;
 
@@ -152,9 +161,26 @@ void ftrace_func_call(word_t pc, word_t dnpc,  uint32_t inst){
                         {
 
                         }
-                        printf("Call function: %s: %lx -> %lx\n", func_list[i].name, pc , dnpc);
+                        //printf("Call function: %s: %lx -> %lx\n", func_list[i].name, pc , dnpc);
+                        
+                        ftrace_func_call_list_append(pc, i, stack_depth, FUNC_CALL);
                         stack_depth++;
                         return;
                 }
         }
+}
+
+
+
+void ftrace_func_call_list_append(word_t pc, uint32_t func_index, uint32_t depth, uint8_t type)
+{
+        if(!ftrace_enabled)
+                return;
+        //printf("Push: %s: 0x%016lx\n", func_list[func_index].name, pc);
+        Func_Call *item = (Func_Call*)malloc(sizeof(Func_Call));
+        item->pc = pc;
+        item->func_index = func_index;
+        item->prev = func_call_list;
+        item->type = type;
+        func_call_list = item;
 }
