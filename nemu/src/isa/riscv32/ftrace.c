@@ -203,7 +203,13 @@ void ftrace_func_call_list_print()
                 depth = p->depth;
                 printf("0x%lx:  ", p->addr1);
                 while(depth--) puts("  ");
-                printf("%s: 0x%lx\n", func_list[p->func_index].name, p->addr2);
+                if(p->type == FUNC_CALL){
+                        puts("call ");
+                } 
+                else if( p-> type == FUNC_RET){
+                        puts("ret  ");
+                }
+                printf("[%s@0x%lx]\n", func_list[p->func_index].name, p->addr2);
                 p = p->prev;
         }
 }
