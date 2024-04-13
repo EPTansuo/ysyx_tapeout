@@ -21,6 +21,8 @@
 #include <memory/vaddr.h>
 #include <stdbool.h>
 #include <watchpoint.h>
+#include <ftrace.h>
+
 
 static int is_batch_mode = false;
 
@@ -156,6 +158,11 @@ static int cmd_info(char *args){
     //打印监视点信息
     print_watchpoint();
 
+  }
+  else if(!strcmp(arg, "f"))
+  {
+    //打印ftrace信息
+    ftrace_func_call_list_print();
   }
   else{
     printf("Unrecognized option: %s\n", args);

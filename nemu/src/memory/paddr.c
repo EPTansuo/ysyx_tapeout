@@ -92,9 +92,9 @@ word_t paddr_read(paddr_t addr, int len) {
       printf("0x%08x:    ", (paddr_t)addr + i);
       printf("0x%02x\n", (unsigned int)(mem_read >> (i * 8) & 0xff));
     }
+#endif
     return mem_read;
   }
-#endif
   else
     IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
   out_of_bound(addr);

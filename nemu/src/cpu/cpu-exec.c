@@ -18,6 +18,7 @@
 #include <cpu/difftest.h>
 #include <locale.h>
 #include <watchpoint.h>
+#include <ftrace.h>
 
 /* The assembly code of instructions executed is only output to the screen
  * when the number of instructions executed is less than this value.
@@ -85,7 +86,8 @@ static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
   s->snpc = pc;
   isa_exec_once(s);
-  
+  ftrace_func_call(s->pc,s->dnpc, s->isa.inst.val);
+
 #ifdef CONFIG_ITRACE
   iringbuf.inst[iringbuf.head] = s->isa.inst.val;
   iringbuf.pc[iringbuf.head++] = s->pc;
