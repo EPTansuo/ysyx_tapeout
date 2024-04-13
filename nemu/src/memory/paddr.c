@@ -78,7 +78,7 @@ word_t paddr_read(paddr_t addr, int len) {
   word_t mem_read = 0;
   if (likely(in_pmem(addr))) mem_read = pmem_read(addr, len);
   IFDEF(CONFIG_DEVICE, mem_read = mmio_read(addr, len));
-  out_of_bound(addr);
+  //out_of_bound(addr);
 #ifdef CONFIG_MTRACE
   for(int i = len-1; i>=0; i--){
     printf("memread: 0x%016lx:    ", (word_t)addr + i);
