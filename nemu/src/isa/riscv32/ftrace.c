@@ -12,6 +12,8 @@ typedef struct {
 } Func_List;
 
 void phase_elf(const char* _elf_file);
+void print_func_list();
+
 
 bool ftrace_enabled = false;
 char* elf_file = NULL;
@@ -113,7 +115,8 @@ void phase_elf(const char* _elf_file)
                 get_symtab_entry_name(fp, buf, strtab_hdr, &symtab[i]);
 		func_list[i].name = (char*)malloc(strlen(buf)+1);
                 strcpy(func_list[i].name, buf);
-	}
+	}       
+        print_func_list();
 }
 
 void print_func_list()
