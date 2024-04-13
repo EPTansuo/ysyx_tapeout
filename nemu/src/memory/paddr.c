@@ -75,21 +75,20 @@ void init_mem() {
 }
 
 word_t paddr_read(paddr_t addr, int len) {
-//   word_t mem_read = 0;
-//   if (likely(in_pmem(addr))) mem_read = pmem_read(addr, len);
-//   IFDEF(CONFIG_DEVICE, mem_read = mmio_read(addr, len));
-//   out_of_bound(addr);
-// #ifdef CONFIG_MTRACE
-//   for(int i = len-1; i>=0; i--){
-//     printf("memread: 0x%016lx:    ", (word_t)addr + i);
-//     printf("0x%02x\n", (unsigned int)mem_read >> (i * 8) & 0xff);
-//   }
-// #endif
-//   return 0;
-
-  if (likely(in_pmem(addr))) return pmem_read(addr, len);
-  IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
+  word_t mem_read = 0;
+  if (likely(in_pmem(addr))) {
+    mem_read = pmem_read(addr, len);
+#ifdef CONFIG_MTRACE
+    for(int i = len-1; i>=0; i--){
+      printf("memread: 0x%016lx:    ", (word_t)addr + i);
+      printf("0x%02x\n", (unsigned int)mem_read >> (i * 8) & 0xff);
+    }
+  }
+#endif
+  else
+    IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
   out_of_bound(addr);
+
   return 0;
 }
 
