@@ -1,7 +1,7 @@
 TOPNAME = cpu
 NXDC_FILES = constr/cpu.nxdc
 INC_PATH ?=$(abspath csrc/include)
-IMG = "/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/dummy-riscv32e-npc.bin
+IMG = "/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/dummy-riscv32e-npc.bin"
 
 VERILATOR = verilator
 VERILATOR_CFLAGS += -MMD --build -cc --public --trace \
