@@ -162,7 +162,7 @@ void verilator_sim(int argc, char **argv)
 
 	//std::cout<< "Ebreak at pc: "<<pc->pc<<"\t Inst: ";
 	//print_inst(inst_rom1->insts, pc->pc);
-	if(gpr1->regs[10] == 0)
+	if(gpr1->regs[10] == 0 && stop)
 		std::cout<<L_GREEN "HIT GOO TRAP " NONE;
 	else 
 		std::cout<<L_RED "HIT BAD TRAP " NONE;
