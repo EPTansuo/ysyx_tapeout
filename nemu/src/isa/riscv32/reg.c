@@ -16,6 +16,7 @@
 #include <isa.h>
 #include "local-include/reg.h"
 #include <stdio.h>
+#include <fmt-def.h>
 
 const char *regs[] = {
   "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
@@ -28,11 +29,11 @@ void isa_reg_display() {
 	printf("reg info:\n");
   int reg_num = MUXDEF(CONFIG_RVE, 16, 32);
   for (int i = 0; i < reg_num; i++) {
-        printf("$%s = 0x%016lx\t", regs[i], gpr(i));
+        printf("$%s = 0x"FMT_WORD_HEX_WIDTH"\t", regs[i], gpr(i));
         if((i+1)%4 == 0)
           putchar('\n');
   }
-  printf("$pc = 0x%016lx\n", cpu.pc);
+  printf("$pc = 0x" FMT_WORD_HEX_WIDTH "lx\n", cpu.pc);
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {

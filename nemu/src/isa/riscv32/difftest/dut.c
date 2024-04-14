@@ -17,6 +17,7 @@
 #include <cpu/difftest.h>
 #include "../local-include/reg.h"
 #include <cpu/cpu.h>
+#include <fmt-def.h>
 
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   bool succ = true;
@@ -33,7 +34,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   if(succ)
     return true;
   
-  printf("\e[1;31mDifftest ERROR!\e[0m\n  pc: 0x%lx\n", pc);
+  printf("\e[1;31mDifftest ERROR!\e[0m\n  pc: 0x"FMT_WORD_HEX"\n", pc);
   print_iringbuf();
   return false;
 }

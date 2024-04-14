@@ -15,7 +15,7 @@
 
 #include "sdb.h"
 #include <watchpoint.h>
-
+#include <fmt-def.h>
 
 
 
@@ -122,7 +122,7 @@ void print_watchpoint()
   printf("Num\t Value\t\t\t What\n");
   for (WP* p = head; p!=NULL; p=p->next)
   {
-    printf("%d\t 0x%lx\t\t %s\n",p->NO,p->value_old,p->expr);
+    printf("%d\t 0x" FMT_WORD_HEX "\t\t %s\n",p->NO,p->value_old,p->expr);
   }
 }
 void scan_watchpoint(){
@@ -134,8 +134,8 @@ void scan_watchpoint(){
       p->value = result;
       nemu_state.state = NEMU_STOP;
       printf("Watchpoint %d: %s\n", p->NO, p->expr);
-      printf("Old value = %lu  0x%016lx\n", p->value_old,p->value_old);
-      printf("New value = %lu  0x%016lx\n",p->value,p->value);
+      printf("Old value = " FMT_WORD_UINT "  0x" FMT_WORD_HEX_WIDTH "\n", p->value_old,p->value_old);
+      printf("New value = " FMT_WORD_UINT "  0x" FMT_WORD_HEX_WIDTH "\n",p->value,p->value);
 
       p->value_old = p->value;
      }

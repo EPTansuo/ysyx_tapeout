@@ -19,7 +19,7 @@
  * Type 'man regex' for more information about POSIX regex functions.
  */
 #include <regex.h>
-
+#include <fmt-def.h>
 
 //#define LOG 
 
@@ -279,7 +279,7 @@ word_t eval(int p, int q) {
       return strtol(tokens[p].str, NULL, 10);
     else if (tokens[p].type == TK_HEX){
       word_t num;
-      sscanf(tokens[p].str, "%lx", &num);
+      sscanf(tokens[p].str, "" FMT_WORD_HEX "", &num);
       return num;
     }
     else{
@@ -400,7 +400,7 @@ word_t expr(char *e, bool *success) {
       word_t value = isa_reg_str2val(tokens[i].str, &succ);
       if(!succ)
         printf("Can not get value of: %s.  Default set to ZERO!\n", tokens[i].str);
-      sprintf(tokens[i].str, "%lx", value);
+      sprintf(tokens[i].str, "" FMT_WORD_HEX "", value);
       tokens[i].type = TK_HEX;  //可以把寄存器取值后，当作十六进制来处理
     }
   }

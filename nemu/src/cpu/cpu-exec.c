@@ -19,6 +19,7 @@
 #include <locale.h>
 #include <watchpoint.h>
 #include <ftrace.h>
+#include <fmt-def.h>
 
 /* The assembly code of instructions executed is only output to the screen
  * when the number of instructions executed is less than this value.
@@ -59,7 +60,7 @@ void print_iringbuf(){
       printf("--> ");
     else
       printf("    ");
-    printf("0x%016lx:    ", iringbuf.pc[i]);
+    printf("0x" FMT_WORD_HEX_WIDTH ":    ", iringbuf.pc[i]);
     
     for(int j = 3; j >= 0; j--){
       printf("%02x ", ((uint8_t*)&iringbuf.inst[i])[j]);

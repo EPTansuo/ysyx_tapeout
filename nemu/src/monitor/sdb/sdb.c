@@ -22,7 +22,7 @@
 #include <stdbool.h>
 #include <watchpoint.h>
 #include <ftrace.h>
-
+#include <fmt-def.h>
 
 static int is_batch_mode = false;
 
@@ -69,7 +69,7 @@ static int cmd_p(char *args){
   //puts(args);
   bool success=true;
   word_t result = expr(args, &success);
-  printf("%lu    0x%lx\n",result, result);
+  printf(FMT_WORD_UINT"    0x" FMT_WORD_HEX "\n",result, result);
   return 0;
 }
 
@@ -107,15 +107,19 @@ static int cmd_x(char *args){
   //vaddr_t addr = strtoull(expr_str, &end, 16);
 
   vaddr_t addr;
-  //sscanf(expr_str, "%lx", &addr);
+  //sscanf(expr_str, "" FMT_WORD_HEX "", &addr);
   bool success = false;
   addr = expr(expr_str, &success);
   assert(success == true);
 
   for(int i=0; i<size; i++){
     vaddr_t data = vaddr_read(addr + i * 4, 4);
-    printf("0x%016lx\t", addr + i * 4);
+    printf("0x" FMT_WORD_HEX_WIDTH "\t", addr + i * 4);
+#ifdef RV64
     printf("0x%08lx\n",data);
+#else
+    printf("0x%08x\n",data);
+#endif 
     //putchar('\n');
     
   }

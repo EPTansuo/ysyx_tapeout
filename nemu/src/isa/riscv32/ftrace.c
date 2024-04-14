@@ -4,6 +4,8 @@
 #include "./include/elfread.h"
 #include <stdlib.h>
 #include <common.h>
+#include <fmt-def.h>
+
 
 enum {
         FUNC_NONE = 0,
@@ -149,7 +151,8 @@ void ftrace_print_func_list()
 {
         if(func_list != NULL){
                 for(int i = 0; i < func_num; i++){
-                        printf("%s: 0x%016lx\n", func_list[i].name, func_list[i].value);
+                        printf("%s: 0x" FMT_WORD_HEX_WIDTH "\n", func_list[i].name, func_list[i].value);
+
                 }
         }
 }
@@ -192,7 +195,8 @@ void ftrace_func_call(word_t pc, word_t dnpc,  uint32_t inst){
                         if(pre_func_index == i){
                                 f.type = FUNC_RET;
                         }
-                        printf("Call function: %s: %lx -> %lx\n", func_list[i].name, pc , dnpc);
+                        printf("Call function: %s: " FMT_WORD_HEX " -> " FMT_WORD_HEX "\n", func_list[i].name, pc , dnpc);
+
                         
                         f.addr1 = pc;
                         f.addr2 = dnpc;
@@ -221,7 +225,9 @@ void ftrace_func_call_list_print()
         p = p_next;
         while(p != NULL){
                 depth = p->depth;
-                printf("0x%lx:  ", p->addr1);
+
+                printf("0x" FMT_WORD_HEX ":  ", p->addr1);   
+
                 while(depth-- > 0) printf("  ");
                 if(p->type == FUNC_CALL){
                         printf("call ");
@@ -229,7 +235,9 @@ void ftrace_func_call_list_print()
                 else if( p-> type == FUNC_RET){
                         printf("ret  ");
                 }
-                printf("[%s@0x%lx]\n", func_list[p->func_index].name, p->addr2);
+
+                printf("[%s@0x" FMT_WORD_HEX "]\n", func_list[p->func_index].name, p->addr2);
+
                 p = p->next;
         }
 }
@@ -238,7 +246,7 @@ void ftrace_func_call_list_append(const Func_Call* f)
 {
         if(!ftrace_enabled)
                 return;
-        //printf("Push: %s: 0x%016lx\n", func_list[func_index].name, pc);
+        //printf("Push: %s: 0x" FMT_WORD_HEX_WIDTH "\n", func_list[func_index].name, pc);
         Func_Call *item = (Func_Call*)malloc(sizeof(Func_Call));
         item->addr1 = f->addr1;
         item->addr2 = f->addr2;
