@@ -78,7 +78,7 @@ void print_inst(const VlUnpacked<unsigned char, 131072>& insts, size_t pc)
 {
 	size_t index = pc - 0x80000000;
 	std::cout << std::hex << std::setw(8) << std::setfill('0')
-		<< pc << " : ";
+		<< pc << ":    ";
 	std::cout << std::hex << std::setw(2) << std::setfill('0')
 		<< static_cast<int>(insts[index+3]) << " "
 		<< std::setw(2) << static_cast<int>(insts[index+2]) << " "
