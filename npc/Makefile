@@ -2,7 +2,7 @@ TOPNAME = cpu
 NXDC_FILES = constr/cpu.nxdc
 INC_PATH ?=$(abspath csrc/include)
 IMG = "/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/dummy-riscv32e-npc.bin"
-ARGS = "-v"
+ARGS = -v
 
 VERILATOR = verilator
 VERILATOR_CFLAGS += -MMD --build -cc --public --trace \
@@ -50,7 +50,7 @@ all: default
 
 run: $(BIN)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
-	@$^ $(IMG) $(ARGS)
+	$^ $(IMG) $(ARGS)
 #	@$(SIM_EXECUTABLE)
 #	@$(VCD_VIEWER) $(VCD_WAVE)
 	
