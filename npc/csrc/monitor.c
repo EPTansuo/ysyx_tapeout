@@ -17,12 +17,11 @@ const char *get_img_file(){
 
 static int parse_args(int argc, char *argv[]) {
   const struct option table[] = {
-    {"help"     , no_argument      , NULL, 'h'},
     {"verbose"  , no_argument      , NULL, 'v'},
     {0          , 0                , NULL,  0 },
   };
   int o;
-  while ( (o = getopt_long(argc, argv, "-hv", table, NULL)) != -1) {
+  while ( (o = getopt_long(argc, argv, "-v", table, NULL)) != -1) {
     switch (o) {
       case 'v': verbose = true; break; 
       case 1: img_file = optarg; return 0;
