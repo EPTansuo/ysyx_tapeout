@@ -1,6 +1,7 @@
 `include "defines.v"
 `include "inst_def.v"
 
+
 module idu(
         input clk,
         input rst,

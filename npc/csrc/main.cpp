@@ -13,9 +13,10 @@
 #include "Vcpu__Dpi.h"
 #include "Vcpu_gpr.h"
 #include <iomanip> 
-#include "fmt-def.h"
-#include "color.h"
-#include "reg.h"
+#include <fmt-def.h>
+#include <color.h>
+#include <reg.h>
+#include <unistd.h>
 
 
 #define RESET_ENABLE 1

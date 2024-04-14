@@ -1,6 +1,6 @@
 TOPNAME = cpu
 NXDC_FILES = constr/cpu.nxdc
-INC_PATH ?=
+INC_PATH ?=$(abspath csrc/include)
 
 
 VERILATOR = verilator
