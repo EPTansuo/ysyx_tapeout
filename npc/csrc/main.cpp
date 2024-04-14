@@ -154,7 +154,6 @@ void verilator_sim(int argc, char **argv)
 	tfp->dump(contextp->time());
 	for (int i = 0; i < MAX_CYCLE && ! stop; i++)
 	{
-		
 		single_cycle();
 		contextp->timeInc(1);
 		tfp->dump(contextp->time());
