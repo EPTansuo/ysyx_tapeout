@@ -164,8 +164,8 @@ void verilator_sim(int argc, char **argv)
 	//std::cout<< "Ebreak at pc: "<<pc->pc<<"\t Inst: ";
 	//print_inst(inst_rom1->insts, pc->pc);
 	if(!stop){
-		std::cout << YELLOW "Maximum cycle reached!" NONE<<std::endl;
-		printf(" pc: 0x" FMT_WORD_HEX_WIDTH "\n", pc->pc);
+		std::cout << YELLOW "Maximum cycle reached!" NONE;
+		printf("at pc: 0x" FMT_WORD_HEX_WIDTH "\n", pc->pc);
 	}
 	else{
 		if(gpr1->regs[10] == 0)
