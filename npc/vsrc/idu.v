@@ -52,33 +52,27 @@ end
 always @(*)begin
         case(opcode)
                 `OP_I_TYPE:begin
+                        src1 = r_data1;
+                        imm = immI;
                         case(funct3)
                                 `Funct3_addi:begin
                                         inst_type = `Inst_addi;
-                                        src1 = r_data1;
-                                        imm = immI;
                                 end
                                 default:begin
                                         inst_type = `Inst_inv;
-                                        src1 = 0;
-                                        src2 = 0;
-                                        imm = 0;
                                 end
                         endcase
                 end
                 `OP_S_TYPE: begin
+                        src1 = r_data1;
+                        src2 = r_data2;
+                        imm = immS;
                         case (funct3)
                                 `Funct3_sw:begin
                                         inst_type = `Inst_sw;
-                                        src1 = r_data1;
-                                        src2 = r_data2;
-                                        imm = immS;
                         end 
                                 default: begin
                                         inst_type = 8'b0;
-                                        src1 = 0;
-                                        src2 = 0;
-                                        imm = 0;
                                 end
                         endcase
                 end
@@ -89,6 +83,7 @@ always @(*)begin
                 end
                 `OP_U_TYPE_aupic:begin
                         inst_type = `Inst_auipc;
+                        src1 = `ZeroWord;   //将src1设为0，则aupic可重复利用addi的加法器
                         imm = immU;
                 end
                 `OP_U_TYPE_lui:begin
