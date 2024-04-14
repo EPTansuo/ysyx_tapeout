@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include "monitor.h"
 
-static char* img_file  = "/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/dummy-riscv32e-npc.bin";
+static char* img_file  = NULL;
 
 const char *get_img_file(){
         return img_file;
