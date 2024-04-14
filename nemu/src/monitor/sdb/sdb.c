@@ -115,7 +115,7 @@ static int cmd_x(char *args){
   for(int i=0; i<size; i++){
     vaddr_t data = vaddr_read(addr + i * 4, 4);
     printf("0x" FMT_WORD_HEX_WIDTH "\t", addr + i * 4);
-#ifdef RV64
+#ifdef CONFIG_RV64
     printf("0x%08lx\n",data);
 #else
     printf("0x%08x\n",data);
