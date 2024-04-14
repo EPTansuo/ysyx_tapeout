@@ -47,6 +47,7 @@ static uint32_t img[] = {                   //    imm          rs1       rd   op
 	0b00000000000100000000000001110011  // ebreak
 };
 
+void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
 
 void init_insts(const char* img_file, VlUnpacked<unsigned char, 131072>& insts){
 	unsigned char _img[131072];
