@@ -53,7 +53,7 @@ run: $(BIN)
 #	@$(SIM_EXECUTABLE)
 #	@$(VCD_VIEWER) $(VCD_WAVE)
 	
-
+sim: run
 	
 clean:
 	rm -rf $(BUILD_DIR) $(VCD_WAVE)
