@@ -32,5 +32,5 @@ void isa_reg_display(const VlUnpacked<IData/*31:0*/, 32> & gpr, word_t pc){
                 if ((i + 1) % 4 == 0)
                         putchar('\n');
         }
-        printf("$pc = 0x" FMT_WORD_HEX_WIDTH "lx\n", pc);
+        printf("$pc = 0x" FMT_WORD_HEX_WIDTH "\n", pc);
 }
