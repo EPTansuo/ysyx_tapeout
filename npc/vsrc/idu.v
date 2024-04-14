@@ -29,8 +29,7 @@ assign rs1 = inst[19:15];
 assign rs2 = inst[24:20];
 assign rd = inst[11:7];
 
-
-wire [63:0] immI = { {52{inst[31]}}, inst[31:20] };
+wire [`WordBus] immI = { {(`WordWidth-12){inst[31]}}, inst[31:20] };
 
 import "DPI-C" function void npc_ebreak();
 
