@@ -1,7 +1,7 @@
 TOPNAME = cpu
 NXDC_FILES = constr/cpu.nxdc
 INC_PATH ?=$(abspath csrc/include)
-
+IMG = " "
 
 VERILATOR = verilator
 VERILATOR_CFLAGS += -MMD --build -cc --public --trace \
@@ -49,7 +49,7 @@ all: default
 
 run: $(BIN)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
-	@$^
+	@$^ $(IMG)
 #	@$(SIM_EXECUTABLE)
 #	@$(VCD_VIEWER) $(VCD_WAVE)
 	
