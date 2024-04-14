@@ -13,10 +13,15 @@
 #include "Vcpu__Dpi.h"
 #include "Vcpu_gpr.h"
 #include <iomanip> 
-
+#include "fmt-def.h"
+#include "color.h"
 
 #define RESET_ENABLE 1
 #define RESET_DISABLE 0
+
+#define CONFIG_RV32 1
+
+
 
 Vcpu *top = new Vcpu; 
 
@@ -130,12 +135,13 @@ void verilator_sim(int argc, char **argv)
 
 	Vcpu_pc *pc = top->cpu->pc1;
 
-	std::cout<< "Ebreak at pc: "<<pc->pc<<"\t Inst: ";
-	print_inst(inst_rom1->insts, pc->pc);
+	//std::cout<< "Ebreak at pc: "<<pc->pc<<"\t Inst: ";
+	//print_inst(inst_rom1->insts, pc->pc);
 	if(gpr1->regs[10] == 0)
-		std::cout<<"HEAT GOO TRAP"<<std::endl;
+		std::cout<<L_GREEN "HEAT GOO TRAP " NONE;
 	else 
-		std::cout<<"HEAT BAD TRAP"<<std::endl;
+		std::cout<<L_RED "HEAT BAD TRAP " NONE;
+	printf("at pc: 0x" FMT_WORD_HEX "\n", pc->pc);
 	top->final();
 	tfp->close();
 
