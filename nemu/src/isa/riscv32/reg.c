@@ -33,7 +33,7 @@ void isa_reg_display() {
         if((i+1)%4 == 0)
           putchar('\n');
   }
-  printf("$pc = 0x" FMT_WORD_HEX_WIDTH "lx\n", cpu.pc);
+  printf("$pc = 0x" FMT_WORD_HEX_WIDTH "\n", cpu.pc);
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
