@@ -190,6 +190,6 @@ void verilator_sim(int argc, char **argv)
 
 int main(int argc, char **argv)
 {
-
+	init_monitor(argc, argv);
 	verilator_sim(argc, argv);
 }
