@@ -27,13 +27,14 @@ $(SRC_AUTO_BIND): $(NXDC_FILES)
 VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
 CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
 CSRCS += $(SRC_AUTO_BIND)
-CSRCS += $($(NEMU_HOME)/src/utils/disasm.cc)
+#CSRCS += $(NEMU_HOME)/src/utils/disasm.cc
 
 
 # rules for verilator
 INCFLAGS = $(addprefix -I, $(INC_PATH))
-CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
-
+CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\"" #$(shell llvm-config --cxxflags)
+#LDFLAGS += $(shell llvm-config --ldflags)
+#LDLIBS += $(shell llvm-config --libs)
 
 # rules for NVBoard
 include $(NVBOARD_HOME)/scripts/nvboard.mk

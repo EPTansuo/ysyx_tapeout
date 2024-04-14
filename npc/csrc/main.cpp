@@ -30,6 +30,7 @@
 
 extern Vcpu *top;
 
+static  char _img[131072];
 
 bool stop = false;
 uint64_t ret_val = 0;
@@ -50,7 +51,7 @@ static uint32_t img[] = {                   //    imm          rs1       rd   op
 void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
 
 void init_insts(const char* img_file, VlUnpacked<unsigned char, 131072>& insts){
-	unsigned char _img[131072];
+	
 	FILE* fp = fopen(img_file,"r");
 	if(fp == NULL){
 		printf(L_RED "Can not open init insts!\n" NONE);
@@ -121,8 +122,11 @@ void npc_ebreak(){
 }
 
 void inst_invalid(){
+	//char logbuf[50];
+	word_t pc = top->cpu->pc1->pc;
 	std::cout<<L_RED "Invalid Inst" NONE<<std::endl;
-	print_inst(top->cpu->ifu1->inst_rom1->insts, top->cpu->pc1->pc);
+	print_inst(top->cpu->ifu1->inst_rom1->insts, pc);
+	//disassemble(logbuf, 40, pc, (uint8_t *)(&_img[pc-0x80000000]), 4);
 	exit(-1);
 }
 
