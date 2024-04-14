@@ -138,9 +138,9 @@ void verilator_sim(int argc, char **argv)
 	//std::cout<< "Ebreak at pc: "<<pc->pc<<"\t Inst: ";
 	//print_inst(inst_rom1->insts, pc->pc);
 	if(gpr1->regs[10] == 0)
-		std::cout<<L_GREEN "HEAT GOO TRAP " NONE;
+		std::cout<<L_GREEN "HIT GOO TRAP " NONE;
 	else 
-		std::cout<<L_RED "HEAT BAD TRAP " NONE;
+		std::cout<<L_RED "HIT BAD TRAP " NONE;
 	printf("at pc: 0x" FMT_WORD_HEX "\n", pc->pc);
 	top->final();
 	tfp->close();
