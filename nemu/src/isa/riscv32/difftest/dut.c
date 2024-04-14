@@ -30,7 +30,6 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
     succ = (memcmp(cpu.gpr, ref_r->gpr, DIFFTEST_REG_SIZE) == 0) ;
   }
 
-  succ = false;
   if(succ)
     return true;
   
