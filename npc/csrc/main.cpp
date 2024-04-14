@@ -172,6 +172,7 @@ void verilator_sim(int argc, char **argv)
 	if(!stop){
 		std::cout << YELLOW "Maximum cycle reached " NONE;
 		printf("at pc: 0x" FMT_WORD_HEX_WIDTH "\n", pc->pc);
+		exit(-1);
 	}
 	else{
 		if(gpr1->regs[10] == 0)
@@ -183,8 +184,8 @@ void verilator_sim(int argc, char **argv)
 	
 	top->final();
 	tfp->close();
-
 	delete top;
+	exit(gpr1->regs[10]);
 }
 
 
