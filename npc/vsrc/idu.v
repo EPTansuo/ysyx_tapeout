@@ -1,4 +1,5 @@
 `include "defines.v"
+`include "inst_def.v"
 
 module idu(
         input clk,
@@ -6,6 +7,7 @@ module idu(
 
         //从IFU读取的指令
         input [`InstDataBus] inst,
+        input [`InstAddrBus] ifu_pc,
 
         //读取寄存器
         output [`RegAddrBus] rs1,
@@ -18,7 +20,8 @@ module idu(
         output reg [7:0] inst_type,
         output reg [`RegDataBus] src1,
         output reg [`RegDataBus] src2,
-        output reg [`RegDataBus] imm
+        output reg [`RegDataBus] imm,
+        output reg [`InstAddrBus] idu_pc
 );
 
 wire [6:0]opcode = inst[6:0];
@@ -30,8 +33,9 @@ assign rs2 = inst[24:20];
 assign rd = inst[11:7];
 
 wire [`WordBus] immI = { {(`WordWidth-12){inst[31]}}, inst[31:20] };
-
-
+wire [`WordBus] immU = { inst[31:12], {12{1'b0}} };
+wire [`WordBus] immS = { {(`WordWidth-12){inst[31]}}, inst[31:25], inst[11:7] };
+wire [`WordBus] immJ = { {(`WordWidth-21){inst[31]}}, inst[31], inst[19:12], inst[20], inst[30:21],1'b0 };
 
 import "DPI-C" function void npc_ebreak();
 
@@ -41,17 +45,63 @@ always @(*) begin
         end
 end
 
+always @(*) begin
+        idu_pc = ifu_pc;
+end
 
 always @(*)begin
         case(opcode)
                 `OP_I_TYPE:begin
-                        inst_type = `Inst_addi;
+                        case(funct3)
+                                `Funct3_addi:begin
+                                        inst_type = `Inst_addi;
+                                        src1 = r_data1;
+                                        imm = immI;
+                                end
+                                default:begin
+                                        inst_type = `Inst_inv;
+                                        src1 = 0;
+                                        src2 = 0;
+                                        imm = 0;
+                                end
+                        endcase
+                end
+                `OP_S_TYPE: begin
+                        case (funct3)
+                                `Funct3_sw:begin
+                                        inst_type = `Inst_sw;
+                                        src1 = r_data1;
+                                        src2 = r_data2;
+                                        imm = immS;
+                        end 
+                                default: begin
+                                        inst_type = 8'b0;
+                                        src1 = 0;
+                                        src2 = 0;
+                                        imm = 0;
+                                end
+                        endcase
+                end
+
+                `OP_J_TYPE: begin
+                        inst_type = `Inst_jal;
+                        imm = immJ;
+                end
+                `OP_U_TYPE_aupic:begin
+                        inst_type = `Inst_auipc;
+                        imm = immU;
+                end
+                `OP_U_TYPE_lui:begin
+                        inst_type = `Inst_lui;
+                        imm = immU;
+                end
+                `OP_I_TYPE_jarl:begin
+                        inst_type = `Inst_jalr;
                         src1 = r_data1;
-                        src2 = r_data2;
                         imm = immI;
                 end
                 default:begin
-                        inst_type = 8'b0;
+                        inst_type = `Inst_inv;
                         src1 = 0;
                         src2 = 0;
                         imm = 0;

@@ -19,20 +19,6 @@
 
 
 
-`define OP_I_TYPE	7'b0010011	//I型指令的操作码
-`define OP_S_TYPE	7'b0100011	//S型指令的操作码
-`define OP_J_TYPE	7'b1101111	//J型指令的操作码
-`define OP_B_TYPE	7'b1100011	//B型指令的操作码
-`define OP_R_TYPE	7'b0110011	//R型指令的操作码
-`define OP_R_TYPE_W     7'b0111011	//R型指令的操作码
-
-
-`define Inst_addi       8'd0            //代表addi指令
-
-
-`define EBREAK          32'h00100073	//ebreak指令
-
-
 `ifdef CONFIG_RV64         //对于RV64的配置
 
 `define RegDataBus	63:0		//GPR 模块的数据线位宽
@@ -54,5 +40,5 @@
 `define ZeroWord  	32'h0    	//32位的0
 `define WordBus         31:0            //数据总线位宽
 `define WordWidth       32              //数据总线位宽
-`endif
+`endif // CONFIG_RV64
 

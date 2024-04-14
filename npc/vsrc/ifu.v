@@ -4,13 +4,21 @@ module ifu(
         input rst,
         input clk,
 
+        //从PC输入
         input [`InstAddrBus] addr,
-        output [`InstDataBus] inst
+
+        //输出到IDU
+        output [`InstDataBus] inst,
+        output reg [`InstAddrBus] ifu_pc
 );
 inst_rom inst_rom1(
         .rst(rst),
         .addr(addr),
         .inst(inst)
 );
+
+always @(*) begin
+        ifu_pc = addr;
+end
 
 endmodule

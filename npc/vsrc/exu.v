@@ -1,4 +1,6 @@
 `include "defines.v"
+`include "inst_def.v"
+
 
 module exu(
         input clk,
@@ -10,6 +12,7 @@ module exu(
         input [`RegDataBus] imm,
         input [7:0] inst_type,
         input [`RegAddrBus] rd,
+        input [`InstAddrBus] idu_pc,
 
         //写入寄存器
         output reg [`RegDataBus] w_data,
@@ -29,6 +32,7 @@ always @(*) begin
                         w_addr = rd;
                         we = `WriteEnable;
                 end
+
                 default:begin
                         w_data = 0;
                         w_addr = 0;

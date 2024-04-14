@@ -6,20 +6,23 @@ module cpu(
         input wire clk
 );
 
-wire [`InstAddrBus]npc;
+wire [`InstAddrBus]pc;
 wire [`InstDataBus]inst;
 
 pc pc1(
         .rst(rst),
         .clk(clk),
-        .npc(npc)
+        .pc(pc)
 );
+
+wire [`InstAddrBus] ifu_pc;
 
 ifu ifu1(
         .rst(rst),
         .clk(clk),
-        .addr(npc),
-        .inst(inst)
+        .addr(pc),
+        .inst(inst),
+        .ifu_pc(ifu_pc)
 );
 
 
@@ -32,7 +35,7 @@ wire [`RegAddrBus] rd;
 wire [7:0] inst_type;
 wire [`RegAddrBus] gpr_raddr_1;
 wire [`RegAddrBus] gpr_raddr_2;
-
+wire [`InstAddrBus] idu_pc;
 
 idu idu1(
         .rst(rst),
@@ -46,7 +49,9 @@ idu idu1(
         .inst_type(inst_type),
         .src1(src1),
         .src2(src2),
-        .imm(imm)
+        .imm(imm),
+        .ifu_pc(ifu_pc),
+        .idu_pc(idu_pc)
 );
 
 wire gpr_we;
@@ -75,7 +80,8 @@ exu exu1(
         .rd(rd),
         .w_data(gpr_wdata),
         .w_addr(gpr_waddr),
-        .we(gpr_we)
+        .we(gpr_we),
+        .idu_pc(idu_pc)
 );
 
 

@@ -129,8 +129,8 @@ void verilator_sim(int argc, char **argv)
 
 	Vcpu_pc *pc = top->cpu->pc1;
 
-	std::cout<< "Ebreak at pc: "<<pc->npc<<"\t Inst: ";
-	print_inst(inst_rom1->insts, pc->npc);
+	std::cout<< "Ebreak at pc: "<<pc->pc<<"\t Inst: ";
+	print_inst(inst_rom1->insts, pc->pc);
 	top->final();
 	tfp->close();
 
