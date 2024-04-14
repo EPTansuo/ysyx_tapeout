@@ -166,7 +166,7 @@ void verilator_sim(int argc, char **argv)
 		std::cout<<L_GREEN "HIT GOO TRAP " NONE;
 	else 
 		std::cout<<L_RED "HIT BAD TRAP " NONE;
-	printf("at pc: 0x" FMT_WORD_HEX "\n", pc->pc);
+	printf("at pc: 0x" FMT_WORD_HEX_WIDTH "\n", pc->pc);
 	top->final();
 	tfp->close();
 
