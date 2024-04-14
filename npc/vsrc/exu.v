@@ -63,7 +63,7 @@ always @(*) begin
                         w_addr = rd;
                         we = `WriteEnable;
                         pc_offset_en = `Enable;
-                        pc_offset = {add_src1_imm[`WordWidth-1:1], 1'b0};
+                        pc_offset = {add_src1_imm[`WordWidth-1:1], 1'b0} - idu_pc;
                 end
                 default:begin
                         w_data = 0;
