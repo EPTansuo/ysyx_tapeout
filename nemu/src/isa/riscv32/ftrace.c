@@ -149,7 +149,11 @@ void ftrace_print_func_list()
 {
         if(func_list != NULL){
                 for(int i = 0; i < func_num; i++){
+#ifdef RV64
                         printf("%s: 0x%016lx\n", func_list[i].name, func_list[i].value);
+#else
+                        printf("%s: 0x%08x\n", func_list[i].name, func_list[i].value);
+#endif 
                 }
         }
 }
@@ -192,7 +196,11 @@ void ftrace_func_call(word_t pc, word_t dnpc,  uint32_t inst){
                         if(pre_func_index == i){
                                 f.type = FUNC_RET;
                         }
+#ifdef RV64
                         printf("Call function: %s: %lx -> %lx\n", func_list[i].name, pc , dnpc);
+#else
+                        printf("Call function: %s: %x -> %x\n", func_list[i].name, pc , dnpc);
+#endif 
                         
                         f.addr1 = pc;
                         f.addr2 = dnpc;
@@ -221,7 +229,11 @@ void ftrace_func_call_list_print()
         p = p_next;
         while(p != NULL){
                 depth = p->depth;
-                printf("0x%lx:  ", p->addr1);
+#ifdef RV64
+                printf("0x%lx:  ", p->addr1);   
+#else
+                printf("0x%x:  ", p->addr1);
+#endif 
                 while(depth-- > 0) printf("  ");
                 if(p->type == FUNC_CALL){
                         printf("call ");
@@ -229,7 +241,11 @@ void ftrace_func_call_list_print()
                 else if( p-> type == FUNC_RET){
                         printf("ret  ");
                 }
+#ifdef RV64
                 printf("[%s@0x%lx]\n", func_list[p->func_index].name, p->addr2);
+#else
+                printf("[%s@0x%x]\n", func_list[p->func_index].name, p->addr2);
+#endif 
                 p = p->next;
         }
 }
