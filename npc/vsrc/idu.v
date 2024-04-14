@@ -38,6 +38,7 @@ wire [`WordBus] immS = { {(`WordWidth-12){inst[31]}}, inst[31:25], inst[11:7] };
 wire [`WordBus] immJ = { {(`WordWidth-21){inst[31]}}, inst[31], inst[19:12], inst[20], inst[30:21],1'b0 };
 
 import "DPI-C" function void npc_ebreak();
+import "DPI-C" function void inst_invalid();
 
 always @(*) begin
         if(inst == `EBREAK)begin
@@ -100,6 +101,7 @@ always @(*)begin
                         src1 = 0;
                         src2 = 0;
                         imm = 0;
+                        inst_invalid();
                 end
         endcase
 end

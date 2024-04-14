@@ -104,9 +104,14 @@ void reset(int n){
 }
 
 
-void npc_ebreak()
-{
+void npc_ebreak(){
 	stop = true;
+}
+
+void inst_invalid(){
+	std::cout<<L_RED "Invalid Inst" NONE<<std::endl;
+	print_inst(top->cpu->ifu1->inst_rom1->insts, top->cpu->pc1->pc);
+	exit(-1);
 }
 
 void verilator_sim(int argc, char **argv)
