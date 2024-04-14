@@ -33,7 +33,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   if(succ)
     return true;
   
-  printf("Different ERROR!\n  pc: 0x%lx\n", pc);
+  printf("Different \e[1;31m ERROR! \e[1;31m\n  pc: 0x%lx\n", pc);
   print_iringbuf();
   return false;
 }
