@@ -8,11 +8,15 @@ module cpu(
 
 wire [`InstAddrBus]pc;
 wire [`InstDataBus]inst;
+wire [`InstAddrBus]pc_offset;
+wire pc_offset_en;
 
 pc pc1(
         .rst(rst),
         .clk(clk),
-        .pc(pc)
+        .pc(pc),
+        .pc_offset(pc_offset),
+        .pc_offset_en(pc_offset_en)
 );
 
 wire [`InstAddrBus] ifu_pc;
@@ -81,7 +85,9 @@ exu exu1(
         .w_data(gpr_wdata),
         .w_addr(gpr_waddr),
         .we(gpr_we),
-        .idu_pc(idu_pc)
+        .idu_pc(idu_pc),
+        .pc_offset_en(pc_offset_en),
+        .pc_offset(pc_offset)
 );
 
 

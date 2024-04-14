@@ -4,6 +4,10 @@ module pc(
         input wire clk,
         input wire rst,
 
+        //从EXU传入
+        input wire pc_offset_en,
+        input wire [`InstAddrBus] pc_offset, //下一条指令地址
+
         //传输到IFU
         output reg[`InstAddrBus] pc/* verilator public */ //下一条指令地址
 );
@@ -17,7 +21,12 @@ always @(posedge clk) begin
         end
         else begin
                 //pc <= npc;
-                pc <= pc + 4;
+                if(pc_offset_en == `Enable)begin
+                        pc <= pc + pc_offset;
+                end
+                else begin 
+                        pc <= pc + 4;
+                end
         end
 end
 

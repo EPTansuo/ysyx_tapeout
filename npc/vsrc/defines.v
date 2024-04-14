@@ -5,7 +5,9 @@
 `define WriteDisable	1'b0		//写失能
 `define ReadEnable	1'b1		//读使能
 `define ReadDisable	1'b0		//读失能
-`define AluSelBus 	2:0		//译码阶段的alusel的位宽
+//`define AluSelBus 	2:0		//译码阶段的alusel的位宽
+`define Enable          1'b1            //使能
+`define Disable         1'b0            //失能
 
 `define RstEnable	1'b1		//复位使能
 `define RstDisable	1'b0		//复位失能
