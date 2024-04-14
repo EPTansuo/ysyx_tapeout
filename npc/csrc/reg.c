@@ -3,6 +3,13 @@
 #include <assert.h>
 #include "fmt-def.h"
 #include <verilated.h>
+#include <Vcpu.h>
+#include <Vcpu_cpu.h>
+#include <Vcpu_gpr.h>
+#include <Vcpu_pc.h>
+
+extern bool verbose;
+Vcpu *top = new Vcpu;
 
 const char *regs[] = {
     "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
@@ -23,14 +30,20 @@ inline const char *reg_name(int idx){
         return regs[check_reg_idx(idx)];
 }
 
-void isa_reg_display(const VlUnpacked<IData/*31:0*/, 32> & gpr, word_t pc){
+void isa_reg_display(){
         printf("reg info:\n");
         int reg_num = 32;
         for (int i = 0; i < reg_num; i++)
         {
-                printf("$%s = 0x" FMT_WORD_HEX_WIDTH "\t", regs[i], (word_t)gpr[i]);
+                printf("$%s = 0x" FMT_WORD_HEX_WIDTH "\t", regs[i], (word_t)(top->cpu->gpr1->regs[i]));
                 if ((i + 1) % 4 == 0)
                         putchar('\n');
         }
-        printf("$pc = 0x" FMT_WORD_HEX_WIDTH "\n", pc);
+        printf("$pc = 0x" FMT_WORD_HEX_WIDTH "\n", top->cpu->pc1->pc);
+}
+
+void print_regs_info(){
+        if(verbose){
+                isa_reg_display();
+        }
 }

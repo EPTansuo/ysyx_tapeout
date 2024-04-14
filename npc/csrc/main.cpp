@@ -28,7 +28,7 @@
 #define MAX_CYCLE 2000
 
 
-Vcpu *top = new Vcpu; 
+extern Vcpu *top;
 
 
 bool stop = false;
@@ -159,7 +159,8 @@ void verilator_sim(int argc, char **argv)
 		single_cycle();
 		contextp->timeInc(1);
 		tfp->dump(contextp->time());
-		isa_reg_display(gpr1->regs, top->cpu->pc1->pc); 
+		//isa_reg_display(gpr1->regs, top->cpu->pc1->pc); 
+		print_regs_info();
 		//contextp->timeInc(1);
 	}
 	contextp->timeInc(1);
