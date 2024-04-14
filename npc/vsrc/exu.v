@@ -68,6 +68,7 @@ always @(*) begin
                 default:begin
                         w_data = 0;
                         w_addr = 0;
+                        pc_offset_en = `Disable;
                         we = `WriteDisable;
                 end
         endcase
