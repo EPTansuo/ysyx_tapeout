@@ -15,6 +15,8 @@
 #include <iomanip> 
 #include "fmt-def.h"
 #include "color.h"
+#include "reg.h"
+
 
 #define RESET_ENABLE 1
 #define RESET_DISABLE 0
@@ -30,8 +32,8 @@ bool stop = false;
 uint64_t ret_val = 0;
 uint32_t inst_num = 0;
 
-//char * img_file = NULL;
-char *img_file = "/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/dummy-riscv32e-npc.bin";
+//const char * img_file = NULL;
+const char *img_file = "/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/dummy-riscv32e-npc.bin";
 
 // addi x1 x0 1  ; x1 = 1
 // addi x2 x0 2  ; x2 = 2 
@@ -74,9 +76,9 @@ void init_insts(VlUnpacked<unsigned char, 131072>& insts){
 	//return insts;
 }
 
-void print_inst(const VlUnpacked<unsigned char, 131072>& insts, size_t pc)
+void print_inst(const VlUnpacked<unsigned char, 131072>& insts, word_t pc)
 {
-	size_t index = pc - 0x80000000;
+	word_t index = pc - 0x80000000;
 	std::cout << std::hex << std::setw(8) << std::setfill('0')
 		<< pc << ":    ";
 	std::cout << std::hex << std::setw(2) << std::setfill('0')
@@ -150,6 +152,7 @@ void verilator_sim(int argc, char **argv)
 		single_cycle();
 		contextp->timeInc(1);
 		tfp->dump(contextp->time());
+		isa_reg_display(gpr1->regs, top->cpu->pc1->pc); 
 		//contextp->timeInc(1);
 	}
 	contextp->timeInc(1);
