@@ -116,7 +116,7 @@ void inst_invalid(){
 	exit(-1);
 }
 
-void verilator_sim(int argc, char **argv)
+int verilator_sim(int argc, char **argv)
 {
 	Verilated::commandArgs(argc, argv);
 
@@ -173,7 +173,7 @@ void verilator_sim(int argc, char **argv)
 	if(!stop){
 		std::cout << YELLOW "Maximum cycle reached " NONE;
 		printf("at pc: 0x" FMT_WORD_HEX_WIDTH "\n", pc->pc);
-		exit(-1);
+		return (-1);
 	}
 	else{
 		if(gpr1->regs[10] == 0)
@@ -182,16 +182,16 @@ void verilator_sim(int argc, char **argv)
 			std::cout<<L_RED "HIT BAD TRAP " NONE;
 		printf("at pc: 0x" FMT_WORD_HEX_WIDTH "\n", pc->pc);
 	}
-	
+	word_t ret_val = (gpr1->regs[10]);
 	top->final();
 	tfp->close();
 	delete top;
-	exit(gpr1->regs[10]);
+	return ret_val;
 }
 
 
 int main(int argc, char **argv)
 {
 	init_monitor(argc, argv);
-	verilator_sim(argc, argv);
+	return verilator_sim(argc, argv);
 }
