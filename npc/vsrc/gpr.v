@@ -21,7 +21,7 @@ module gpr(
 );
 
 
-reg[`RegDataBus] regs[`RegNum-1:0];   //对于rv64，有32个通用寄存器，位宽为64位
+reg[`RegDataBus] regs[`RegNum-1:0]/* verilator public */;   //对于rv64，有32个通用寄存器，位宽为64位
 
 
 //同步写

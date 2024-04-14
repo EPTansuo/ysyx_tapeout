@@ -11,6 +11,7 @@
 #include "Vcpu_ifu.h"
 #include "Vcpu_cpu.h"
 #include "Vcpu__Dpi.h"
+#include "Vcpu_gpr.h"
 #include <iomanip> 
 
 
@@ -94,7 +95,7 @@ void verilator_sim(int argc, char **argv)
 
 
 	Vcpu_inst_rom* inst_rom1 = top->cpu->ifu1->inst_rom1;
-
+	Vcpu_gpr* gpr1 = top->cpu->gpr1;
 
 	init_insts(inst_rom1->insts);
 	
@@ -131,6 +132,10 @@ void verilator_sim(int argc, char **argv)
 
 	std::cout<< "Ebreak at pc: "<<pc->pc<<"\t Inst: ";
 	print_inst(inst_rom1->insts, pc->pc);
+	if(gpr1->regs[10] == 0)
+		std::cout<<"HEAT GOO TRAP"<<std::endl;
+	else 
+		std::cout<<"HEAT BAD TRAP"<<std::endl;
 	top->final();
 	tfp->close();
 
