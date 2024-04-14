@@ -163,7 +163,7 @@ void verilator_sim(int argc, char **argv)
 	//std::cout<< "Ebreak at pc: "<<pc->pc<<"\t Inst: ";
 	//print_inst(inst_rom1->insts, pc->pc);
 	if(!stop)
-		std::cout << YELLOW "Maximum cycle reached!\n" NONE<<std::endl;
+		std::cout << YELLOW "Maximum cycle reached!" NONE<<std::endl;
 
 	if(gpr1->regs[10] == 0)
 		std::cout<<L_GREEN "HIT GOO TRAP " NONE;
