@@ -150,7 +150,7 @@ void ftrace_print_func_list()
         if(func_list != NULL){
                 for(int i = 0; i < func_num; i++){
 #ifdef RV64
-                        printf("%s: 0x%016lx\n", func_list[i].name, func_list[i].value);
+                        printf("%s: 0x" FMT_WORD_HEX_WIDTH "\n", func_list[i].name, func_list[i].value);
 #else
                         printf("%s: 0x%08x\n", func_list[i].name, func_list[i].value);
 #endif 
@@ -197,7 +197,7 @@ void ftrace_func_call(word_t pc, word_t dnpc,  uint32_t inst){
                                 f.type = FUNC_RET;
                         }
 #ifdef RV64
-                        printf("Call function: %s: %lx -> %lx\n", func_list[i].name, pc , dnpc);
+                        printf("Call function: %s: " FMT_WORD_HEX " -> " FMT_WORD_HEX "\n", func_list[i].name, pc , dnpc);
 #else
                         printf("Call function: %s: %x -> %x\n", func_list[i].name, pc , dnpc);
 #endif 
@@ -230,7 +230,7 @@ void ftrace_func_call_list_print()
         while(p != NULL){
                 depth = p->depth;
 #ifdef RV64
-                printf("0x%lx:  ", p->addr1);   
+                printf("0x" FMT_WORD_HEX ":  ", p->addr1);   
 #else
                 printf("0x%x:  ", p->addr1);
 #endif 
@@ -242,7 +242,7 @@ void ftrace_func_call_list_print()
                         printf("ret  ");
                 }
 #ifdef RV64
-                printf("[%s@0x%lx]\n", func_list[p->func_index].name, p->addr2);
+                printf("[%s@0x" FMT_WORD_HEX "]\n", func_list[p->func_index].name, p->addr2);
 #else
                 printf("[%s@0x%x]\n", func_list[p->func_index].name, p->addr2);
 #endif 
@@ -254,7 +254,7 @@ void ftrace_func_call_list_append(const Func_Call* f)
 {
         if(!ftrace_enabled)
                 return;
-        //printf("Push: %s: 0x%016lx\n", func_list[func_index].name, pc);
+        //printf("Push: %s: 0x" FMT_WORD_HEX_WIDTH "\n", func_list[func_index].name, pc);
         Func_Call *item = (Func_Call*)malloc(sizeof(Func_Call));
         item->addr1 = f->addr1;
         item->addr2 = f->addr2;

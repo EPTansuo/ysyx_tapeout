@@ -79,7 +79,7 @@ static int decode_exec(Decode *s) {
   __VA_ARGS__ ; \
 }
 
-  //printf("s->pc: 0x%lx\n",s->pc);
+  //printf("s->pc: 0x" FMT_WORD_HEX "\n",s->pc);
   INSTPAT_START();
 
   //U-type 长立即数
@@ -154,7 +154,7 @@ static int decode_exec(Decode *s) {
   
   INSTPAT_END();
 
-  //printf("s->dnpc:0x%016lx, s->snpc:0x%010lx, s->pc:0x%016lx\n",s->dnpc,s->snpc,s->pc);
+  //printf("s->dnpc:0x" FMT_WORD_HEX_WIDTH ", s->snpc:0x%010lx, s->pc:0x" FMT_WORD_HEX_WIDTH "\n",s->dnpc,s->snpc,s->pc);
   R(0) = 0; // reset $zero to 0
 
   return 0;
