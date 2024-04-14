@@ -31,6 +31,8 @@ assign rd = inst[11:7];
 
 wire [`WordBus] immI = { {(`WordWidth-12){inst[31]}}, inst[31:20] };
 
+
+
 import "DPI-C" function void npc_ebreak();
 
 always @(*) begin

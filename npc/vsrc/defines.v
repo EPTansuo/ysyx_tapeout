@@ -30,7 +30,6 @@
 `define Inst_addi       8'd0            //代表addi指令
 
 
-
 `define EBREAK          32'h00100073	//ebreak指令
 
 

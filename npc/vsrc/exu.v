@@ -17,11 +17,15 @@ module exu(
         output reg we
 );
 
+wire [`WordBus] add_src1_imm;
+
+assign add_src1_imm = src1+imm;
+
 
 always @(*) begin
         case (inst_type)
                 `Inst_addi:begin
-                        w_data = src1 + imm;
+                        w_data = add_src1_imm;
                         w_addr = rd;
                         we = `WriteEnable;
                 end
