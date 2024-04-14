@@ -23,7 +23,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
     return false;
   }
   else{
-    return memcmp(cpu.gpr, ref_r->gpr, DIFFTEST_REG_SIZE) == 0;
+    return memcmp(cpu.gpr, ref_r->gpr, DIFFTEST_REG_SIZE) ;
   }
   return true;
 }
