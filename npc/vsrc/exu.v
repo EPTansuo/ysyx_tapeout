@@ -39,7 +39,7 @@ always @(*) begin
                         pc_offset_en = `Disable;
                 end
                 `Inst_auipc: begin
-                        w_data = add_src1_imm;
+                        w_data = add_src1_imm + idu_pc;
                         w_addr = rd;
                         we = `WriteEnable;
                         pc_offset_en = `Disable;
