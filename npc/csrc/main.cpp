@@ -17,6 +17,7 @@
 #include <color.h>
 #include <reg.h>
 #include <unistd.h>
+#include <monitor.h>
 
 
 #define RESET_ENABLE 1
@@ -35,7 +36,6 @@ uint64_t ret_val = 0;
 uint32_t inst_num = 0;
 
 //const char * img_file = NULL;
-const char *img_file = "/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/dummy-riscv32e-npc.bin";
 
 // addi x1 x0 1  ; x1 = 1
 // addi x2 x0 2  ; x2 = 2 
@@ -46,6 +46,7 @@ static uint32_t img[] = {                   //    imm          rs1       rd   op
 	0b00000000100100001000000100010011, // 0b000000001001 00001 000 00010 0010011
 	0b00000000000100000000000001110011  // ebreak
 };
+
 
 void init_insts(const char* img_file, VlUnpacked<unsigned char, 131072>& insts){
 	unsigned char _img[131072];
@@ -132,10 +133,10 @@ void verilator_sim(int argc, char **argv)
 	Vcpu_inst_rom* inst_rom1 = top->cpu->ifu1->inst_rom1;
 	Vcpu_gpr* gpr1 = top->cpu->gpr1;
 
-	if(img_file == NULL)
+	if(get_img_file() == NULL)
 		init_insts(inst_rom1->insts);
 	else
-		init_insts(img_file, inst_rom1->insts);
+		init_insts(get_img_file(), inst_rom1->insts);
 	
 
 	// std::cout<<"------------------"<<std::endl;
