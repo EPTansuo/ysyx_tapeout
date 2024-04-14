@@ -50,7 +50,7 @@ all: default
 
 run: $(BIN)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
-	$^ $(IMG) $(ARGS)
+	$^ $(ARGS) $(IMG)
 #	@$(SIM_EXECUTABLE)
 #	@$(VCD_VIEWER) $(VCD_WAVE)
 	
