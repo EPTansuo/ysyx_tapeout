@@ -148,14 +148,10 @@ int verilator_sim(int argc, char **argv)
 		init_insts(get_img_file(), inst_rom1->insts);
 	
 
-	// std::cout<<"------------------"<<std::endl;
-	// for(size_t i = 0; i < inst_num; i++){
-	// 	std::cout<<std::hex<< std::setw(8) << std::setfill('0')<<img[i]<<std::endl;
-	// }
 
-	print_insts(top);
-	//std::cout<<top->rootp->inst;
-	//top->inst_rom1->insts = init_insts();
+
+	//print_insts(top);
+
 	reset(10);
 	tfp->dump(contextp->time());
 	for (int i = 0; i < MAX_CYCLE && ! stop; i++)
