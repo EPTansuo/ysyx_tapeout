@@ -28,6 +28,7 @@ Vcpu *top = new Vcpu;
 
 bool stop = false;
 uint64_t ret_val = 0;
+uint32_t inst_num = 0;
 
 //char * img_file = NULL;
 char *img_file = "/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/dummy-riscv32e-npc.bin";
@@ -50,7 +51,7 @@ void init_insts(const char* img_file, VlUnpacked<unsigned char, 131072>& insts){
 		return;
 	}
 	fseek(fp, 0, SEEK_SET);
-	fread(_img, 1, 131072, fp);
+	inst_num = fread(_img, 1, 131072, fp) / 4;
 	for(size_t i = 0; i < 131072; i++){
 		insts[i] = _img[i];
 	}
@@ -61,7 +62,7 @@ void init_insts(VlUnpacked<unsigned char, 131072>& insts){
 	
 	//uint8_t *insts = new uint8_t[sizeof(img)];
 
-	size_t inst_num = sizeof(img)/sizeof(uint32_t);
+	inst_num = sizeof(img)/sizeof(uint32_t);
 
 	for (size_t i = 0; i < inst_num; i++)
 	{
@@ -125,8 +126,6 @@ void verilator_sim(int argc, char **argv)
 	else
 		init_insts(img_file, inst_rom1->insts);
 	
-
-	size_t inst_num = sizeof(img)/sizeof(uint32_t);
 
 	std::cout<<"------------------"<<std::endl;
 	for(size_t i = 0; i < inst_num; i++){
