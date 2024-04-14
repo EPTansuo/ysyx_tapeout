@@ -47,10 +47,7 @@ void device_update();
 void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
 void print_iringbuf();
 
-<<<<<<< HEAD
-=======
 
->>>>>>> tracer-ysyx
 #ifdef CONFIG_ITRACE
 void print_iringbuf(){
   char logbuf[64];
