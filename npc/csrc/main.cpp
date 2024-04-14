@@ -23,6 +23,7 @@
 
 #define CONFIG_RV32 1
 
+#define MAX_CYCLE 100
 
 
 Vcpu *top = new Vcpu; 
@@ -146,7 +147,7 @@ void verilator_sim(int argc, char **argv)
 	//top->inst_rom1->insts = init_insts();
 	reset(10);
 	tfp->dump(contextp->time());
-	for (int i = 0; i < 20 && ! stop; i++)
+	for (int i = 0; i < MAX_CYCLE && ! stop; i++)
 	{
 		
 		single_cycle();
