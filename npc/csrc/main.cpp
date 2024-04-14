@@ -23,7 +23,7 @@
 
 #define CONFIG_RV32 1
 
-#define MAX_CYCLE 15
+#define MAX_CYCLE 12
 
 
 Vcpu *top = new Vcpu; 
