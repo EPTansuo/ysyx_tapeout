@@ -1,7 +1,7 @@
 TOPNAME = cpu
 NXDC_FILES = constr/cpu.nxdc
 INC_PATH ?=$(abspath csrc/include)
-IMG = " "
+IMG = ""
 
 VERILATOR = verilator
 VERILATOR_CFLAGS += -MMD --build -cc --public --trace \
