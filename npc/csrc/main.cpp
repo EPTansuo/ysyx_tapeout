@@ -29,6 +29,9 @@ Vcpu *top = new Vcpu;
 bool stop = false;
 uint64_t ret_val = 0;
 
+//char * img_file = NULL;
+char *img_file = "/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/dummy-riscv32e-npc.bin";
+
 // addi x1 x0 1  ; x1 = 1
 // addi x2 x0 2  ; x2 = 2 
 // addi x2 x1 9  ; x2 = x1 + 9
@@ -38,6 +41,21 @@ static uint32_t img[] = {                   //    imm          rs1       rd   op
 	0b00000000100100001000000100010011, // 0b000000001001 00001 000 00010 0010011
 	0b00000000000100000000000001110011  // ebreak
 };
+
+void init_insts(const char* img_file, VlUnpacked<unsigned char, 131072>& insts){
+	unsigned char _img[131072];
+	FILE* fp = fopen(img_file,"r");
+	if(fp == NULL){
+		printf(L_RED "Can not open init insts!\n" NONE);
+		return;
+	}
+	fseek(fp, 0, SEEK_SET);
+	fread(_img, 1, 131072, fp);
+	for(size_t i = 0; i < 131072; i++){
+		insts[i] = _img[i];
+	}
+	fclose(fp);	
+}
 
 void init_insts(VlUnpacked<unsigned char, 131072>& insts){
 	
@@ -102,7 +120,10 @@ void verilator_sim(int argc, char **argv)
 	Vcpu_inst_rom* inst_rom1 = top->cpu->ifu1->inst_rom1;
 	Vcpu_gpr* gpr1 = top->cpu->gpr1;
 
-	init_insts(inst_rom1->insts);
+	if(img_file == NULL)
+		init_insts(inst_rom1->insts);
+	else
+		init_insts(img_file, inst_rom1->insts);
 	
 
 	size_t inst_num = sizeof(img)/sizeof(uint32_t);
