@@ -92,6 +92,15 @@ void print_inst(const VlUnpacked<unsigned char, 131072>& insts, word_t pc)
 		<< std::endl;
 }
 
+void print_insts(Vcpu* top){
+	std::cout<<"------------------"<<std::endl;
+
+	for (size_t i = 0; i < inst_num; ++i) {
+		print_inst(top->cpu->ifu1->inst_rom1->insts, 0x80000000 + i*4);
+	}
+	std::cout<<"------------------"<<std::endl;
+}
+
 void single_cycle(){
 	top->clk = 0;
 	top->eval();
@@ -143,13 +152,8 @@ int verilator_sim(int argc, char **argv)
 	// for(size_t i = 0; i < inst_num; i++){
 	// 	std::cout<<std::hex<< std::setw(8) << std::setfill('0')<<img[i]<<std::endl;
 	// }
-	std::cout<<"------------------"<<std::endl;
 
-	for (size_t i = 0; i < inst_num; ++i) {
-		print_inst(inst_rom1->insts, 0x80000000 + i*4);
-	}
-	std::cout<<"------------------"<<std::endl;
-
+	print_insts(top);
 	//std::cout<<top->rootp->inst;
 	//top->inst_rom1->insts = init_insts();
 	reset(10);
