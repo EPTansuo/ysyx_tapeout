@@ -1,10 +1,10 @@
 #ifndef __FMT_DEF_H_
 #define __FMT_DEF_H_
 
-#ifdef RV64
-#define FMT_WORD_HEX "" FMT_WORD_HEX ""
+#ifdef CONFIG_RV64
+#define FMT_WORD_HEX "%lx"
 #define FMT_WORD_INT "%ld"
-#define FMT_WORD_HEX_WIDTH "" FMT_WORD_HEX_WIDTH ""
+#define FMT_WORD_HEX_WIDTH "%016lx"
 #define FMT_WORD_UINT "%lu"
 
 #else
