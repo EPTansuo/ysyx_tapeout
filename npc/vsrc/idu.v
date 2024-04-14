@@ -101,7 +101,7 @@ always @(*)begin
                         src1 = 0;
                         src2 = 0;
                         imm = 0;
-                        if(idu_pc > `Init_Addr) begin 
+                        if(idu_pc >= `Init_Addr) begin 
                                 inst_invalid();
                         end
                 end
