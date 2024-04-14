@@ -16,16 +16,25 @@
 #include <isa.h>
 #include <cpu/difftest.h>
 #include "../local-include/reg.h"
+#include <cpu/cpu.h>
 
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
+  bool succ = true;
+
   ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
+
   if (cpu.pc != ref_r->pc) {
-    return false;
+    succ = false;
   }
   else{
-    return memcmp(cpu.gpr, ref_r->gpr, DIFFTEST_REG_SIZE) ;
+    succ = (memcmp(cpu.gpr, ref_r->gpr, DIFFTEST_REG_SIZE) == 0) ;
   }
-  return true;
+  if(succ)
+    return true;
+  
+  printf("Different ERROR!\n  pc: 0x%lx", pc);
+  print_iringbuf();
+  return false;
 }
 
 void isa_difftest_attach() {
