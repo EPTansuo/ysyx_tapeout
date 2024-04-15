@@ -181,7 +181,7 @@ void inst_invalid(){
 	print_inst(top->cpu->ifu1->inst_rom1->insts, pc);
 	//disassemble(logbuf, 40, pc, (uint8_t *)(&_img[pc-0x80000000]), 4);
 	disassemble(logbuf, 50, pc, top->cpu->ifu1->inst_rom1->insts[pc-0x80000000]);
-	printf("                       %s\n",logbuf);
+	printf("\t%s\n",logbuf);
 	exit(-1);
 }
 
