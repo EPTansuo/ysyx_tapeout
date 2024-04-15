@@ -57,6 +57,16 @@ typedef struct{
 
 Disasm *disasm;
 
+void disassemble(char* logbuf, size_t logbuf_size, word_t pc, uint32_t inst){
+    uint32_t index = pc - 0x80000000;
+    if(disasm[index].pc == pc){
+	snprintf(logbuf, logbuf_size, "%s", disasm[index].str);
+    }else{
+	printf("Error: Can not find disasm for pc: "FMT_WORD_HEX"\n", pc);
+    
+    }
+}
+
 void init_disasm(const char* _img_file){
 	char img_file_path[200];
 	char line[100];
@@ -83,7 +93,7 @@ void init_disasm(const char* _img_file){
 	int i =0;
 	while (fgets(line, sizeof(line), fp) != NULL) {
 		if (sscanf(line, "%x %99[^\n]", &disasm[i].pc, &disasm[i].str) == 2) {
-		printf("Address: 0x%X, Instruction: %s\n", disasm[i].pc, disasm[i].str);
+		//printf("Address: 0x%X, Instruction: %s\n", disasm[i].pc, disasm[i].str);
 		} else {
 		fprintf(stderr, "Failed to parse line: %s", line);
 		}
@@ -165,11 +175,13 @@ void npc_ebreak(){
 }
 
 void inst_invalid(){
-	//char logbuf[50];
+	char logbuf[50];
 	word_t pc = top->cpu->pc1->pc;
-	std::cout<<L_RED "Invalid Inst" NONE<<std::endl;
+	std::cout<<L_RED "Invalid or Unimplemented Inst" NONE<<std::endl;
 	print_inst(top->cpu->ifu1->inst_rom1->insts, pc);
 	//disassemble(logbuf, 40, pc, (uint8_t *)(&_img[pc-0x80000000]), 4);
+	disassemble(logbuf, 50, pc, top->cpu->ifu1->inst_rom1->insts[pc-0x80000000]);
+	printf("%s\n",logbuf);
 	exit(-1);
 }
 
