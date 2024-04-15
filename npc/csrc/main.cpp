@@ -70,7 +70,7 @@ void init_disasm(const char* _img_file){
 	FILE* fp = fopen(img_file_path,"r");
 
 	if(fp == NULL){
-		printf("Error while opening file: %s \n",img_file_path);
+		printf("Error while open file: %s %s:%d\n",img_file_path,__FILE__,__LINE__);
 		return;
 	}
 
@@ -79,7 +79,7 @@ void init_disasm(const char* _img_file){
     	}
 
 	disasm = (Disasm*)malloc(sizeof(Disasm)*lines);
-
+	fseek(fp, 0, SEEK_SET);
 	int i =0;
 	while (fgets(line, sizeof(line), fp) != NULL) {
 		if (sscanf(line, "%x %99[^\n]", &disasm[i].pc, &disasm[i].pc) == 2) {
