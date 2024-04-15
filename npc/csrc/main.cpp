@@ -82,8 +82,8 @@ void init_disasm(const char* _img_file){
 	fseek(fp, 0, SEEK_SET);
 	int i =0;
 	while (fgets(line, sizeof(line), fp) != NULL) {
-		if (sscanf(line, "%x %99[^\n]", &disasm[i].pc, &disasm[i].pc) == 2) {
-		printf("Address: 0x%X, Instruction: %s\n", disasm[i].pc, disasm[i].pc);
+		if (sscanf(line, "%x %99[^\n]", &disasm[i].pc, &disasm[i].str) == 2) {
+		printf("Address: 0x%X, Instruction: %s\n", disasm[i].pc, disasm[i].str);
 		} else {
 		fprintf(stderr, "Failed to parse line: %s", line);
 		}
