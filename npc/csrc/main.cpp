@@ -66,6 +66,10 @@ void init_disasm(const char* _img_file){
 	strcat(base_file_name,".disasm");
 	FILE* fp = fopen(base_file_name,"r");
 
+	if(fp == NULL){
+		printf("Error while open file: %s   %s:%d ",base_file_name,__FILE__,__LINE__);
+	}
+
 	while (fgets(line, sizeof(line), fp) != NULL) {
         	lines++;  //统计文件的行
     	}
