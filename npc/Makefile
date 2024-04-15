@@ -51,8 +51,9 @@ all: default
 
 run: $(BIN)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
+	bash ./tools/disasm.sh $(IMG) $(BUILD_DIR)
 	$^ $(ARGS) $(IMG)
-	echo "$(ARGS)" $(IMG)
+#	echo "$(ARGS)" $(IMG)
 #	@$(SIM_EXECUTABLE)
 #	@$(VCD_VIEWER) $(VCD_WAVE)
 	
