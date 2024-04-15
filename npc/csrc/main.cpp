@@ -70,7 +70,7 @@ void init_disasm(const char* _img_file){
 	FILE* fp = fopen(img_file_path,"r");
 
 	if(fp == NULL){
-		printf("Error while open file: %s   %s:%d \n",img_file_path,__FILE__,__LINE__);
+		printf("Error while opening file: %s \n",img_file_path);
 		return;
 	}
 
