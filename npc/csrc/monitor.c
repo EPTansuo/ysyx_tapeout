@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <monitor.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 static char* img_file  = NULL;
 bool verbose = false;
@@ -11,6 +12,10 @@ bool verbose = false;
 
 const char *get_img_file(){
         return img_file;
+}
+
+void init_disasm(){
+
 }
 
 

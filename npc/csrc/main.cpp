@@ -18,7 +18,7 @@
 #include <reg.h>
 #include <unistd.h>
 #include <monitor.h>
-
+#include <libgen.h> // 引入libgen库
 
 #define RESET_ENABLE 1
 #define RESET_DISABLE 0
@@ -48,7 +48,42 @@ static uint32_t img[] = {                   //    imm          rs1       rd   op
 	0b00000000000100000000000001110011  // ebreak
 };
 
-void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
+
+typedef struct{
+        word_t pc;
+        uint8_t code[4];
+        char str[32];
+}Disasm;
+
+Disasm *disasm;
+
+void init_disasm(const char* _img_file){
+	char img_file_path[200];
+	char line[100];
+	uint16_t lines = 0;
+	strcpy(img_file_path,_img_file);
+	char *base_file_name = basename(img_file_path);
+	strcat(base_file_name,".disasm");
+	FILE* fp = fopen(base_file_name,"w");
+
+	while (fgets(line, sizeof(line), fp) != NULL) {
+        	lines++;  //统计文件的行
+    	}
+
+	disasm = (Disasm*)malloc(sizeof(Disasm)*lines);
+
+	int i =0;
+	while (fgets(line, sizeof(line), fp) != NULL) {
+		if (sscanf(line, "%x %99[^\n]", &disasm[i].pc, &disasm[i].pc) == 2) {
+		printf("Address: 0x%X, Instruction: %s\n", disasm[i].pc, disasm[i].pc);
+		} else {
+		fprintf(stderr, "Failed to parse line: %s", line);
+		}
+	i++;
+    	}
+
+}
+
 
 void init_insts(const char* img_file, VlUnpacked<unsigned char, 131072>& insts){
 	
@@ -152,7 +187,7 @@ int verilator_sim(int argc, char **argv)
 	else
 		init_insts(get_img_file(), inst_rom1->insts);
 	
-
+	init_disasm(get_img_file());
 
 
 	//print_insts(top);
