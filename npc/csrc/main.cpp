@@ -25,7 +25,7 @@
 
 #define CONFIG_RV32 1
 
-#define MAX_CYCLE 20
+#define MAX_CYCLE 2
 
 
 extern Vcpu *top;
