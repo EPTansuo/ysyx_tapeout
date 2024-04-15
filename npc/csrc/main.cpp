@@ -67,7 +67,8 @@ void init_disasm(const char* _img_file){
 	FILE* fp = fopen(base_file_name,"r");
 
 	if(fp == NULL){
-		printf("Error while open file: %s   %s:%d ",base_file_name,__FILE__,__LINE__);
+		printf("Error while open file: %s   %s:%d \n",base_file_name,__FILE__,__LINE__);
+		return;
 	}
 
 	while (fgets(line, sizeof(line), fp) != NULL) {
