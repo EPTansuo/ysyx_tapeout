@@ -64,7 +64,7 @@ void init_disasm(const char* _img_file){
 	strcpy(img_file_path,_img_file);
 	char *base_file_name = basename(img_file_path);
 	strcat(base_file_name,".disasm");
-	FILE* fp = fopen(base_file_name,"w");
+	FILE* fp = fopen(base_file_name,"r");
 
 	while (fgets(line, sizeof(line), fp) != NULL) {
         	lines++;  //统计文件的行
