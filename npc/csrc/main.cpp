@@ -58,7 +58,7 @@ typedef struct{
 Disasm *disasm;
 
 void disassemble(char* logbuf, size_t logbuf_size, word_t pc, uint32_t inst){
-    uint32_t index = pc - 0x80000000;
+    uint32_t index = (pc - 0x80000000)/4;
     if(disasm[index].pc == pc){
 	snprintf(logbuf, logbuf_size, "%s", disasm[index].str);
     }else{
