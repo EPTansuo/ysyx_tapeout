@@ -60,9 +60,11 @@ Disasm *disasm;
 void init_disasm(const char* _img_file){
 	char img_file_path[200];
 	char line[100];
+	char file_path[100] = "./build/";
 	uint16_t lines = 0;
-	strcpy(img_file_path,"./build/");
-	strcat(img_file_path,_img_file);
+	strcpy(img_file_path,_img_file);
+	strcat(file_path,img_file_path);
+	strcpy(img_file_path,file_path);
 	char *base_file_name = basename(img_file_path);
 	strcat(base_file_name,".disasm");
 	FILE* fp = fopen(base_file_name,"r");
