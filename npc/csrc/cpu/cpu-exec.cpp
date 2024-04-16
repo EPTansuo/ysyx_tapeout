@@ -2,9 +2,9 @@
 #include <isa.h>
 
 
-static Vcpu* top;
-static VerilatedVcdC * tfp;
-static VerilatedContext* contextp;
+extern Vcpu* top;
+extern VerilatedVcdC * tfp;
+extern VerilatedContext* contextp;
 
 
 
