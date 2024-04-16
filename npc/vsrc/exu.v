@@ -115,7 +115,7 @@ always @(*) begin
                         pc_offset_en = `Enable;
                         mem_we = `Disable;
                         mem_re = `Disable;
-                        pc_offset = src1 == src2 ? imm : 0;
+                        pc_offset = src1 == src2 ? imm : 4;
                         
                 end
                 default:begin
