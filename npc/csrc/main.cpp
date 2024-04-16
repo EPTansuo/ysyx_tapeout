@@ -62,7 +62,7 @@ void disassemble(char* logbuf, size_t logbuf_size, word_t pc, uint32_t inst){
     if(disasm[index].pc == pc){
 	snprintf(logbuf, logbuf_size, "%s", disasm[index].str);
     }else{
-	printf("Error: Can not find disasm for pc: "FMT_WORD_HEX"\n", pc);
+	printf("Error: Can not find disasm for pc: " FMT_WORD_HEX "\n", pc);
     
     }
 }
