@@ -112,10 +112,10 @@ always @(*) begin
                 end
                 `Inst_beq: begin
                         gpr_we = `Disable;
-                        pc_offset_en = `Enable;
                         mem_we = `Disable;
                         mem_re = `Disable;
-                        pc_offset = src1 == src2 ? imm : 4;
+                        pc_offset_en = src1 == src2? `Enable : `Disable;
+                        pc_offset = imm;
                         
                 end
                 default:begin
