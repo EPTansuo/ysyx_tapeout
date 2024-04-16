@@ -9,11 +9,12 @@ extern VerilatedContext* contextp;
 
 
 void cpu_eval_dump(){
-	top->eval();
-        if(tfp != NULL){
-        	tfp->dump(contextp->time());
-		contextp->timeInc(1);
-        }
+  top->eval();
+  if (tfp != NULL)
+  {
+    tfp->dump(contextp->time());
+    contextp->timeInc(1);
+  }
 }
 
 void cpu_single_cycle(){

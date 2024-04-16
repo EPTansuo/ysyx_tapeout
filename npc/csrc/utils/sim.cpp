@@ -20,3 +20,7 @@ void init_sim(){
 	
 }
 
+void stop_sim(){
+        top->final();
+ 	tfp->close();
+}

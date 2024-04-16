@@ -34,7 +34,7 @@ extern uint32_t inst_num;
 
 void engine_start();
 int is_exit_status_bad();
-
+void stop_sim();
 
 // int verilator_sim(int argc, char **argv)
 // {
@@ -100,6 +100,7 @@ int main(int argc, char **argv)
 {
 	init_monitor(argc, argv);
 	engine_start();
+	stop_sim();
 	return is_exit_status_bad();
 	//return verilator_sim(argc, argv);
 }
