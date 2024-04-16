@@ -157,11 +157,11 @@ void print_insts(Vcpu* top){
 }
 
 void single_cycle(Vcpu* _top, VerilatedVcdC* _tfp, VerilatedContext* _contextp){
-	_top->clk = 1;
+	_top->clk = 0;
 	_top->eval();
 	_contextp->timeInc(1);
 	_tfp->dump(_contextp->time());
-	top->clk = 0;
+	top->clk = 1;
 	top->eval();
 	_contextp->timeInc(1);
 	_tfp->dump(_contextp->time());
@@ -218,7 +218,7 @@ int verilator_sim(int argc, char **argv)
 
 	//print_insts(top);
 
-	reset(10, top, tfp, contextp);
+	reset(12, top, tfp, contextp);
 	tfp->dump(contextp->time());
 	for (int i = 0; i < MAX_CYCLE && ! stop; i++)
 	{
