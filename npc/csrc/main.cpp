@@ -157,12 +157,8 @@ void print_insts(Vcpu* top){
 }
 
 void single_cycle(Vcpu* _top, VerilatedVcdC* _tfp, VerilatedContext* _contextp){
-	_top->clk = 1;
+	_top->clk = !_top->clk;
 	_top->eval();
-	_contextp->timeInc(1);
-	_tfp->dump(_contextp->time());
-	top->clk = 0;
-	top->eval();
 	_contextp->timeInc(1);
 	_tfp->dump(_contextp->time());
 }
