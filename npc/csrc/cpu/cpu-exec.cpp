@@ -33,12 +33,12 @@ void cpu_reset(int n){
 }
 
 
-void init_cpu_exec(Vcpu* _top, VerilatedVcdC* _tfp, VerilatedContext* _contextp){
-        top = _top;
-        tfp = _tfp;
-        contextp = _contextp;
-        cpu_reset(3);
-}
+// void init_cpu_exec(Vcpu* _top, VerilatedVcdC* _tfp, VerilatedContext* _contextp){
+//         top = _top;
+//         tfp = _tfp;
+//         contextp = _contextp;
+//         cpu_reset(3);
+// }
 
 
 void assert_fail_msg() {

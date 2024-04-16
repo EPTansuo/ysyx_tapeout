@@ -15,7 +15,7 @@ void print_iringbuf();
 void set_npc_state(int state, vaddr_t pc, int halt_ret);
 void invalid_inst(vaddr_t thispc);
 
-void init_cpu_exec(Vcpu* _top, VerilatedVcdC* _tfp, VerilatedContext* _contextp);
+//void init_cpu_exec(Vcpu* _top, VerilatedVcdC* _tfp, VerilatedContext* _contextp);
 void cpu_eval_dump();
 void cpu_single_cycle();
 void cpu_reset(int n);

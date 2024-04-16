@@ -63,10 +63,11 @@ static int parse_args(int argc, char *argv[]) {
 
 void init_monitor(int argc, char** argv){
         Verilated::commandArgs(argc, argv);
-        init_sim();
         parse_args(argc, argv);
+        init_sim();
         load_img();
         init_disasm();
+        init_sim();
         init_sdb();
         welcome();
 }
