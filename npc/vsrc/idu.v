@@ -37,6 +37,7 @@ wire [`WordBus] immI = { {(`WordWidth-12){inst[31]}}, inst[31:20] };
 wire [`WordBus] immU = { inst[31:12], {12{1'b0}} };
 wire [`WordBus] immS = { {(`WordWidth-12){inst[31]}}, inst[31:25], inst[11:7] };
 wire [`WordBus] immJ = { {(`WordWidth-21){inst[31]}}, inst[31], inst[19:12], inst[20], inst[30:21],1'b0 };
+wire [`WordBus] immB = { {(`WordWidth-13){inst[31]}}, inst[31], inst[7], inst[30:25], inst[11:8], 1'b0};
 
 import "DPI-C" function void npc_ebreak();
 import "DPI-C" function void inst_invalid();
@@ -97,7 +98,23 @@ always @(*)begin
                         imm = immJ;
                 end
 
+                `OP_B_TYPE: begin
+                        imm = immB;
+                        src1 = r_data1;
+                        src2 = r_data2;
+                        case(funct3)
+                                3'b000: begin
+                                        inst_type = `Inst_beq;
+                                end
+                                default: begin
+                                        
+                                end
+                        endcase
+                end
+
                 `OP_R_TYPE: begin
+                        src1 = r_data1;
+                        src2 = r_data2;
                         case(funct7) 
                                 7'b000_0000: begin
                                         case(funct3)
@@ -128,6 +145,7 @@ always @(*)begin
                         src1 = r_data1;
                         imm = immI;
                 end
+
                 default:begin
                         inst_type = `Inst_inv;
                         src1 = 0;

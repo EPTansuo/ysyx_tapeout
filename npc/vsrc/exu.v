@@ -110,6 +110,14 @@ always @(*) begin
                         gpr_w_addr = rd;
                         gpr_w_data = src1 + src2;
                 end
+                `Inst_beq: begin
+                        gpr_we = `Disable;
+                        pc_offset_en = `Enable;
+                        mem_we = `Disable;
+                        mem_re = `Disable;
+                        pc_offset = src1 == src2 ? imm : 0;
+                        
+                end
                 default:begin
                         mem_we = `Disable;
                         mem_re = `Disable;

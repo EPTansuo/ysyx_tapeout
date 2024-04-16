@@ -21,6 +21,8 @@
 `define Inst_sw         8'd6            //sw
 `define Inst_lw         8'd7            //lw
 `define Inst_add        8'd8            //add
+`define Inst_beq        8'd9            //beq
+
 
 `define EBREAK          32'h00100073	//ebreak指令
 
