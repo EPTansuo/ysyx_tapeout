@@ -1,6 +1,5 @@
 TOPNAME = cpu
 NXDC_FILES = constr/cpu.nxdc
-INC_PATH ?=$(abspath csrc/include)
 IMG = "/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/dummy-riscv32e-npc.bin"
 ARGS = -v
 
@@ -13,6 +12,16 @@ BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
 BIN = $(BUILD_DIR)/$(TOPNAME)
 VCD_WAVE = wave.vcd
+
+-include .config
+
+INC_PATH +=$(abspath csrc/include)
+INC_PATH +=$(abspath csrc/isa/$(CONFIG_ISA)/include)
+INC_PATH +=$(abspath csrc/isa/$(CONFIG_ISA)/local-include)
+
+
+
+
 
 default: $(BIN)
 
@@ -32,7 +41,7 @@ CSRCS += $(SRC_AUTO_BIND)
 
 # rules for verilator
 INCFLAGS = $(addprefix -I, $(INC_PATH))
-CXXFLAGS += $(INCFLAGS) -g -DTOP_NAME="\"V$(TOPNAME)\"" #$(shell llvm-config --cxxflags) 
+CXXFLAGS += $(INCFLAGS) -g -DTOP_NAME="\"V$(TOPNAME)\"" -fpermissive #$(shell llvm-config --cxxflags) 
 #LDFLAGS += $(shell llvm-config --ldflags)
 #LDLIBS += $(shell llvm-config --libs)
 
@@ -42,6 +51,7 @@ include $(NVBOARD_HOME)/scripts/nvboard.mk
 
 
 $(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
+
 	@rm -rf $(OBJ_DIR)
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $^ \
@@ -58,6 +68,13 @@ run: $(BIN)
 #	@$(VCD_VIEWER) $(VCD_WAVE)
 	
 sim: run
+
+
+
+# menuconfig and autoconf.h
+include $(NPC_HOME)/csrc/scripts/config.mk
+
+
 	
 clean:
 	rm -rf $(BUILD_DIR) $(VCD_WAVE)
