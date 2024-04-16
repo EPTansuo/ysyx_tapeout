@@ -15,9 +15,9 @@ module exu(
         input [`InstAddrBus] idu_pc,
 
         //写入寄存器
-        output reg [`RegDataBus] w_data,
-        output reg [`RegAddrBus] w_addr,
-        output reg we,
+        output reg [`RegDataBus] gpr_w_data,
+        output reg [`RegAddrBus] gpr_w_addr,
+        output reg gpr_we,
 
         //传输到PC
         output reg [`InstAddrBus] pc_offset,
@@ -43,42 +43,46 @@ assign add_src1_imm = src1+imm;
 always @(*) begin
         case (inst_type)
                 `Inst_addi: begin
-                        w_data = add_src1_imm;
-                        w_addr = rd;
-                        we = `WriteEnable;
+                        gpr_w_data = add_src1_imm;
+                        gpr_w_addr = rd;
+                        gpr_we = `Enable;
                         pc_offset_en = `Disable;
                 end
                 `Inst_auipc: begin
-                        w_data = add_src1_imm ; //src1被设为pc，则aupic可重复利用addi的加法器
-                        w_addr = rd;
-                        we = `WriteEnable;
+                        gpr_w_data = add_src1_imm ; //src1被设为pc，则aupic可重复利用addi的加法器
+                        gpr_w_addr = rd;
+                        gpr_we = `Enable;
                         pc_offset_en = `Disable;
                 end
                 `Inst_lui: begin
-                        w_data = imm;
-                        w_addr = rd;
-                        we = `WriteEnable;
+                        gpr_w_data = imm;
+                        gpr_w_addr = rd;
+                        gpr_we = `Enable;
                         pc_offset_en = `Disable;
                 end
                 `Inst_jal: begin
-                        w_data = idu_pc + 4;
-                        w_addr = rd;
-                        we = `WriteEnable;
+                        gpr_w_data = idu_pc + 4;
+                        gpr_w_addr = rd;
+                        gpr_we = `Enable;
                         pc_offset_en = `Enable;
                         pc_offset = imm;
                 end
                 `Inst_jalr: begin
-                        w_data = idu_pc + 4;
-                        w_addr = rd;
-                        we = `WriteEnable;
+                        gpr_w_data = idu_pc + 4;
+                        gpr_w_addr = rd;
+                        gpr_we = `Enable;
                         pc_offset_en = `Enable;
                         pc_offset = {add_src1_imm[`WordWidth-1:1], 1'b0} - idu_pc;
                 end
+                //`Inst_sw: begin
+                        //gpr_we = `Disable;
+
+                //end
                 default:begin
-                        w_data = 0;
-                        w_addr = 0;
+                        gpr_w_data = 0;
+                        gpr_w_addr = 0;
                         pc_offset_en = `Disable;
-                        we = `WriteDisable;
+                        gpr_we = `Disable;
                 end
         endcase
 end
