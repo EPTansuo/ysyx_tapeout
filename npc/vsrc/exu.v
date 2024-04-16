@@ -29,6 +29,8 @@ module exu(
         output reg [`InstAddrBus] mem_w_addr,
         output reg [`InstAddrBus] mem_r_addr,
         output reg [`WordBus] mem_w_data,
+        output reg [1:0] mem_w_bytes,
+        output reg [1:0] mem_r_bytes,
 
         //从MEM传入
         input wire [`WordBus] mem_r_data
@@ -43,24 +45,32 @@ assign add_src1_imm = src1+imm;
 always @(*) begin
         case (inst_type)
                 `Inst_addi: begin
+                        mem_we = `Disable;
+                        mem_re = `Disable;
                         gpr_w_data = add_src1_imm;
                         gpr_w_addr = rd;
                         gpr_we = `Enable;
                         pc_offset_en = `Disable;
                 end
                 `Inst_auipc: begin
+                        mem_we = `Disable;
+                        mem_re = `Disable;
                         gpr_w_data = add_src1_imm ; //src1被设为pc，则aupic可重复利用addi的加法器
                         gpr_w_addr = rd;
                         gpr_we = `Enable;
                         pc_offset_en = `Disable;
                 end
                 `Inst_lui: begin
+                        mem_we = `Disable;
+                        mem_re = `Disable;
                         gpr_w_data = imm;
                         gpr_w_addr = rd;
                         gpr_we = `Enable;
                         pc_offset_en = `Disable;
                 end
                 `Inst_jal: begin
+                        mem_we = `Disable;
+                        mem_re = `Disable;
                         gpr_w_data = idu_pc + 4;
                         gpr_w_addr = rd;
                         gpr_we = `Enable;
@@ -68,17 +78,24 @@ always @(*) begin
                         pc_offset = imm;
                 end
                 `Inst_jalr: begin
+                        mem_we = `Disable;
+                        mem_re = `Disable;
                         gpr_w_data = idu_pc + 4;
                         gpr_w_addr = rd;
                         gpr_we = `Enable;
                         pc_offset_en = `Enable;
                         pc_offset = {add_src1_imm[`WordWidth-1:1], 1'b0} - idu_pc;
                 end
-                //`Inst_sw: begin
-                        //gpr_we = `Disable;
+                `Inst_sw: begin
+                        gpr_we = `Disable;
+                        pc_offset_en = `Disable;
+                        mem_we = `Enable;
+                        mem_re = `Disable;
 
-                //end
+                end
                 default:begin
+                        mem_we = `Disable;
+                        mem_re = `Disable;
                         gpr_w_data = 0;
                         gpr_w_addr = 0;
                         pc_offset_en = `Disable;
