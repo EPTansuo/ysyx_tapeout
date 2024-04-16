@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <utils.h>
 
+extern char* img_file;
+
 typedef struct{
         word_t pc;
         uint8_t code[4];
@@ -23,12 +25,12 @@ void disassemble(char* logbuf, size_t logbuf_size, word_t pc){
     }
 }
 
-void init_disasm(const char* _img_file){
+void init_disasm(){
 	char img_file_path[200];
 	char line[100];
 	char img_full_name[50];
 	uint16_t lines = 0;
-	strcpy(img_full_name, _img_file);
+	strcpy(img_full_name, img_file);
 	char* img_basename = basename(img_full_name);
 	strcat(img_basename,".disasm");
 	sprintf(img_file_path,"%s/%s","./build",img_basename);

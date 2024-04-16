@@ -1,5 +1,5 @@
 #include <cpu.h>
-#include "../../include/utils.h"
+#include <utils/utils.h>
 #include <Vcpu.h>
 #include <Vcpu_cpu.h>
 #include <Vcpu_pc.h>
@@ -21,7 +21,7 @@ void inst_invalid(){
 	char logbuf[50];
 	word_t pc = top->cpu->pc1->pc;
 	printf(L_RED "Invalid or Unimplemented Inst" NONE "\n");
-	print_inst(top->cpu->ifu1->inst_rom1->insts, pc);
+	print_inst( pc);
 	//disassemble(logbuf, 40, pc, (uint8_t *)(&_img[pc-0x80000000]), 4);
 	disassemble(logbuf, 50, pc );  //top->cpu->ifu1->inst_rom1->insts[pc-0x80000000]);
 	printf("\t%s\n",logbuf);

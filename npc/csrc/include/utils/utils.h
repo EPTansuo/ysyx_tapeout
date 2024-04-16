@@ -62,7 +62,7 @@ uint64_t get_time();
 
 
 void disassemble(char* logbuf, size_t logbuf_size, word_t pc);
-void init_disasm(const char* _img_file);
+void init_disasm();
 
 
 

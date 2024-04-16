@@ -5,8 +5,10 @@
 #include <monitor.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <inst.h>
+#include <utils/utils.h>
 
-static char* img_file  = NULL;
+char* img_file  = NULL;
 bool verbose = false;
 
 
@@ -14,9 +16,6 @@ const char *get_img_file(){
         return img_file;
 }
 
-void init_disasm(){
-
-}
 
 
 
@@ -43,6 +42,7 @@ static int parse_args(int argc, char *argv[]) {
 
 void init_monitor(int argc, char** argv){
         parse_args(argc, argv);
-
+        load_img();
+        init_disasm();
 }
 

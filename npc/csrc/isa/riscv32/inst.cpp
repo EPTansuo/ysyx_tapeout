@@ -15,7 +15,7 @@
 // addi x1 x0 1  ; x1 = 1
 // addi x2 x0 2  ; x2 = 2 
 // addi x2 x1 9  ; x2 = x1 + 9
-static uint32_t img_default[] = {                   //    imm          rs1       rd   opcode
+static uint32_t img_default[] = {           //    imm          rs1       rd   opcode
 	0b00000000000100000000000010010011, // 0b000000000001 00000 000 00001 0010011,
 	0b00000000001000000000000100010011, // 0b000000000010 00000 000 00010 0010011
 	0b00000000100100001000000100010011, // 0b000000001001 00001 000 00010 0010011
@@ -24,9 +24,10 @@ static uint32_t img_default[] = {                   //    imm          rs1      
 
 uint32_t inst_num;
 char img[131072];
+extern char* img_file;
+extern Vcpu *top;
 
-
-void init_insts(const char* img_file, VlUnpacked<unsigned char, 131072>& insts){
+void init_insts_file(){
 	
 	FILE* fp = fopen(img_file,"r");
 	if(fp == NULL){
@@ -36,12 +37,12 @@ void init_insts(const char* img_file, VlUnpacked<unsigned char, 131072>& insts){
 	fseek(fp, 0, SEEK_SET);
 	inst_num = fread(img, 1, 131072, fp) / 4;
 	for(size_t i = 0; i < 131072; i++){
-		insts[i] = img[i];
+		top->cpu->ifu1->inst_rom1->insts[i] = img[i];
 	}
 	fclose(fp);	
 }
 
-void init_insts(VlUnpacked<unsigned char, 131072>& insts){
+void init_insts_default(){
 	
 	//uint8_t *insts = new uint8_t[sizeof(img)];
 
@@ -50,15 +51,16 @@ void init_insts(VlUnpacked<unsigned char, 131072>& insts){
 	for (size_t i = 0; i < inst_num; i++)
 	{
 		for(size_t j=0; j < 4; j++){
-			insts[i*4+j] = img_default[i] >> (j*8) & 0xff;
+			top->cpu->ifu1->inst_rom1->insts[i*4+j] = img_default[i] >> (j*8) & 0xff;
 		}
 	}
 	
 	//return insts;
 }
 
-void print_inst(const VlUnpacked<unsigned char, 131072>& insts, word_t pc)
-{
+void print_inst(word_t pc)
+{	
+	VlUnpacked<unsigned char, 131072>& insts = (top->cpu->ifu1->inst_rom1->insts);
 	word_t index = pc - 0x80000000;
 	std::cout << std::hex << std::setw(8) << std::setfill('0')
 		<< pc << ":    ";
@@ -70,14 +72,21 @@ void print_inst(const VlUnpacked<unsigned char, 131072>& insts, word_t pc)
 		<< std::endl;
 }
 
-void print_insts(Vcpu* top){
+void print_all_insts(){
 	std::cout<<"------------------"<<std::endl;
 
 	for (size_t i = 0; i < inst_num; ++i) {
-		print_inst(top->cpu->ifu1->inst_rom1->insts, 0x80000000 + i*4);
+		print_inst(0x80000000 + i*4);
 	}
 	std::cout<<"------------------"<<std::endl;
 }
 
 
-
+void load_img(){
+	if(img_file == NULL){
+		init_insts_default();
+	}
+	else{
+		init_insts_file();
+	}
+}

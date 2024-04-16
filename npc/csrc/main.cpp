@@ -55,13 +55,7 @@ int verilator_sim(int argc, char **argv)
 	Vcpu_inst_rom* inst_rom1 = top->cpu->ifu1->inst_rom1;
 	Vcpu_gpr* gpr1 = top->cpu->gpr1;
 
-	if(get_img_file() == NULL)
-	//if(true)
-		init_insts(inst_rom1->insts);
-	else
-		init_insts(get_img_file(), inst_rom1->insts);
-	
-	init_disasm(get_img_file());
+
 
 
 	//print_insts(top);

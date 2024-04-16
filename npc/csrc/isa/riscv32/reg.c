@@ -3,10 +3,7 @@
 #include <assert.h>
 #include "fmt-def.h"
 #include <verilated.h>
-#include <Vcpu.h>
-#include <Vcpu_cpu.h>
-#include <Vcpu_gpr.h>
-#include <Vcpu_pc.h>
+
 
 extern bool verbose;
 
@@ -19,25 +16,14 @@ const char *regs[] = {
     "a6", "a7", "s2", "s3", "s4", "s5", "s6", "s7",
     "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"};
 
-inline int check_reg_idx(int idx){
-        if (idx < 0 || idx >= 32)
-        {
-                printf("Invalid register index %d\n", idx);
-                assert(0);
-        }
-        return idx;
-}
 
-inline const char *reg_name(int idx){
-        return regs[check_reg_idx(idx)];
-}
 
 void isa_reg_display(){
         printf("reg info:\n");
         int reg_num = 32;
         for (int i = 0; i < reg_num; i++)
         {
-                printf("$%s = 0x" FMT_WORD_HEX_WIDTH "\t", regs[i], (word_t)(top->cpu->gpr1->regs[i]));
+                printf("$%s = 0x" FMT_WORD_HEX_WIDTH "\t", regs[i], gpr(i));
                 if ((i + 1) % 4 == 0)
                         putchar('\n');
         }
@@ -49,3 +35,30 @@ void print_regs_info(){
                 isa_reg_display();
         }
 }
+
+
+
+word_t isa_reg_str2val(const char *s, bool *success) {
+  if(!strcmp(s, "$pc"))
+  {
+    *success = true;
+    return  top->cpu->pc1->pc;
+  }
+
+  if(!strcmp(s, "$0"))  //这里匹配$0,后面的for循环代码还可以匹配$$0
+  {
+    *success = true;
+    return gpr(0);    
+  }
+
+  int len = MUXDEF(CONFIG_RVE, 16, 32);
+  for(int i=0; i<len; i++){
+    if(strcmp(s+1, regs[i])==0){   //这里地址+1, 例如： $s0 去匹配 s0，要去掉前面的$
+      *success = true;
+      return gpr(i);
+    }
+  }
+  *success = false;
+  return 0;
+}
+

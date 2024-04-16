@@ -3,10 +3,31 @@
 #include <stdint.h>
 #include <verilated.h>
 #include <common.h>
+#include <Vcpu.h>
+#include <Vcpu_cpu.h>
+#include <Vcpu_gpr.h>
+#include <Vcpu_pc.h>
+#include <string.h>
 
 
-const char* reg_name(int idx);
-int check_reg_idx(int idx);
-void isa_reg_display(const VlUnpacked<IData/*31:0*/, 32> & gpr, word_t pc);
+void isa_reg_display();
+
 void print_regs_info();
+
+static inline int check_reg_idx(int idx){
+        if (idx < 0 || idx >= 32)
+        {
+                printf("Invalid register index %d\n", idx);
+                assert(0);
+        }
+        return idx;
+}
+
+#define gpr(idx) (top->cpu->gpr1->regs[check_reg_idx(idx)])
+
+static inline const char* reg_name(int idx) {
+  extern const char* regs[];
+  return regs[check_reg_idx(idx)];
+}
+
 #endif 

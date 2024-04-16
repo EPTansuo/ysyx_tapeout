@@ -3,9 +3,9 @@
 
 #include <verilated.h>
 #include <Vcpu.h>
+#include <common.h>
 
-void init_insts(const char* img_file, VlUnpacked<unsigned char, 131072>& insts);
-void init_insts(VlUnpacked<unsigned char, 131072>& insts);
-void print_inst(const VlUnpacked<unsigned char, 131072>& insts, word_t pc);
-void print_insts(Vcpu* top);
+void load_img();
+void print_inst(word_t pc);
+void print_all_insts();
 #endif // ! __INST_H_

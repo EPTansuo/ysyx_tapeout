@@ -1,9 +1,11 @@
 #include <cpu.h>
+#include <isa.h>
 
 
 static Vcpu* top;
 static VerilatedVcdC * tfp;
 static VerilatedContext* contextp;
+
 
 
 void cpu_eval_dump(){
@@ -36,3 +38,54 @@ void init_cpu_exec(Vcpu* _top, VerilatedVcdC* _tfp, VerilatedContext* _contextp)
         contextp = _contextp;
         cpu_reset(3);
 }
+
+
+void assert_fail_msg() {
+  isa_reg_display();
+ // statistic();
+}
+
+static void execute(uint64_t n) {
+  for (;n > 0; n --) {
+    //exec_once(&s, cpu.pc);
+    cpu_single_cycle();
+    //trace_and_difftest(&s, cpu.pc);
+    if (npc_state.state != NPC_RUNNING) break;
+    IFDEF(CONFIG_DEVICE, device_update());
+  }
+}
+
+
+
+void cpu_exec(uint64_t n) {
+  //g_print_step = (n < MAX_INST_TO_PRINT);
+  switch (npc_state.state) {
+    case NPC_END: case NPC_ABORT:
+      printf("Program execution has ended. To restart the program, exit NPC Simulation and run again.\n");
+      return;
+    default: npc_state.state = NPC_RUNNING;
+  }
+
+
+  execute(n);
+
+
+  switch (npc_state.state) {
+    case NPC_RUNNING: npc_state.state = NPC_STOP; break;
+
+    case NPC_END: case NPC_ABORT:
+      Log("nemu: %s at pc = " FMT_WORD,
+          (npc_state.state == NPC_ABORT ? ANSI_FMT("ABORT", ANSI_FG_RED) :
+           (npc_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) :
+            ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED))),
+          npc_state.halt_pc);
+#ifdef CONFIG_ITRACE
+        if(npc_state.state == NPC_END && npc_state.halt_ret != 0) print_iringbuf();
+#endif // CONFIG_ITRACE
+    
+      // fall through
+    case NPC_QUIT: ;
+  }
+}
+
+
