@@ -53,7 +53,6 @@ always @(*) begin
                         w_addr = rd;
                         we = `WriteEnable;
                         pc_offset_en = `Disable;
-                        pc_offset_en = `Disable;
                 end
                 `Inst_lui: begin
                         w_data = imm;
