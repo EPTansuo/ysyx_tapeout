@@ -6,6 +6,7 @@
 #include <fmt-def.h>
 #include <Vcpu_ifu.h>
 #include <Vcpu_inst_rom.h>
+#include <inst.h>
 
 #define MAX_INST_TO_PRINT 10001
 
@@ -59,7 +60,8 @@ static void exec_once(){
   char logbuf[50];
   cpu_single_cycle();
   disassemble(logbuf,50,top->cpu->pc1->pc);
-
+  print_inst(top->cpu->pc1->pc);
+  printf(" %s\n", logbuf);
   
 }
 

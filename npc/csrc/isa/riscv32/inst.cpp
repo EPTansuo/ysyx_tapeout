@@ -68,8 +68,7 @@ void print_inst(word_t pc)
 		<< static_cast<int>(insts[index+3]) << " "
 		<< std::setw(2) << static_cast<int>(insts[index+2]) << " "
 		<< std::setw(2) << static_cast<int>(insts[index+1]) << " "
-		<< std::setw(2) << static_cast<int>(insts[index+0])
-		<< std::endl;
+		<< std::setw(2) << static_cast<int>(insts[index+0]);
 }
 
 void print_all_insts(){
@@ -77,6 +76,7 @@ void print_all_insts(){
 
 	for (size_t i = 0; i < inst_num; ++i) {
 		print_inst(0x80000000 + i*4);
+		printf("\n");
 	}
 	std::cout<<"------------------"<<std::endl;
 }
