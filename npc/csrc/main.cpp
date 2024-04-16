@@ -157,7 +157,6 @@ void print_insts(Vcpu* top){
 }
 
 static inline void eval_dump(Vcpu* _top, VerilatedVcdC* _tfp, VerilatedContext* _contextp){
-	if(stop) return;
 	_top->eval();
 	_tfp->dump(_contextp->time());
 	_contextp->timeInc(1);
@@ -180,10 +179,12 @@ void reset(int n, Vcpu* _top, VerilatedVcdC* _tfp, VerilatedContext* _contextp){
 
 
 void npc_ebreak(){
+	if(stop) return;
 	stop = true;
 }
 
 void inst_invalid(){
+	if(stop) return;
 	char logbuf[50];
 	word_t pc = top->cpu->pc1->pc;
 	std::cout<<L_RED "Invalid or Unimplemented Inst" NONE<<std::endl;
