@@ -23,6 +23,7 @@
 #include <ftrace.h>
 #include <fmt-def.h>
 #include <isa.h>
+#include <inst.h>
 
 static int is_batch_mode = false;
 
@@ -167,6 +168,11 @@ static int cmd_info(char *args){
   {
     //打印ftrace信息
     ftrace_func_call_list_print();
+  }
+  else if(!strcmp(arg, "i"))
+  {
+    //打印加载的指令
+    print_all_insts();
   }
   else{
     printf("Unrecognized option: %s\n", args);
