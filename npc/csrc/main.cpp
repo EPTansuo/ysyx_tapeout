@@ -168,6 +168,7 @@ void single_cycle(Vcpu* _top, VerilatedVcdC* _tfp, VerilatedContext* _contextp){
 	{
 		_top->clk = !_top->clk;
 		eval_dump(_top,_tfp,_contextp);
+		if(stop) return;
 	}
 }
 
