@@ -33,7 +33,7 @@ bool stop = false;
 uint64_t ret_val = 0;
 extern uint32_t inst_num;
 
-
+void engine_start();
 
 
 
@@ -100,5 +100,6 @@ int verilator_sim(int argc, char **argv)
 int main(int argc, char **argv)
 {
 	init_monitor(argc, argv);
+	engine_start();
 	return verilator_sim(argc, argv);
 }
