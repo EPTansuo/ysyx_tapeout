@@ -61,7 +61,7 @@ static void exec_once(){
   cpu_single_cycle();
   disassemble(logbuf,50,top->cpu->pc1->pc);
   print_inst(top->cpu->pc1->pc);
-  printf(" %s\n", logbuf);
+  printf("\t%s\n", logbuf);
   
 }
 
