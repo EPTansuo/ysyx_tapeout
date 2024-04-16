@@ -1,12 +1,21 @@
 #include <cpu.h>
 #include <isa.h>
+#include <Vcpu.h>
+#include <Vcpu_cpu.h>
+#include <Vcpu_pc.h>
+#include <fmt-def.h>
+#include <Vcpu_ifu.h>
+#include <Vcpu_inst_rom.h>
 
+#define MAX_INST_TO_PRINT 10001
+
+static bool g_print_step = false;
 
 extern Vcpu* top;
 extern VerilatedVcdC * tfp;
 extern VerilatedContext* contextp;
 
-
+void disassemble(char* logbuf, size_t logbuf_size, word_t pc);
 
 void cpu_eval_dump(){
   top->eval();
@@ -46,10 +55,19 @@ void assert_fail_msg() {
  // statistic();
 }
 
+static void exec_once(){
+  char logbuf[50];
+  cpu_single_cycle();
+  disassemble(logbuf,50,top->cpu->pc1->pc);
+
+  
+}
+
+
 static void execute(uint64_t n) {
   for (;n > 0; n --) {
-    //exec_once(&s, cpu.pc);
-    cpu_single_cycle();
+    exec_once();
+    
     //trace_and_difftest(&s, cpu.pc);
     if (npc_state.state != NPC_RUNNING) break;
     IFDEF(CONFIG_DEVICE, device_update());
@@ -59,7 +77,7 @@ static void execute(uint64_t n) {
 
 
 void cpu_exec(uint64_t n) {
-  //g_print_step = (n < MAX_INST_TO_PRINT);
+  g_print_step = (n < MAX_INST_TO_PRINT);
   switch (npc_state.state) {
     case NPC_END: case NPC_ABORT:
       printf("Program execution has ended. To restart the program, exit NPC Simulation and run again.\n");
