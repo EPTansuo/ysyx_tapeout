@@ -9,6 +9,7 @@
 #include <Vcpu_inst_rom.h>
 #include <inst.h>
 #include "Vcpu__Dpi.h"
+#include <fmt-def.h>
 
 extern Vcpu* top;
 
@@ -24,9 +25,9 @@ void inst_invalid(){
 	char logbuf[50];
 	word_t pc = top->cpu->pc1->pc;
 	printf(L_RED "Invalid or Unimplemented Inst" NONE "\n");
-	print_inst( pc);
+	//print_inst( pc);
 	//disassemble(logbuf, 40, pc, (uint8_t *)(&_img[pc-0x80000000]), 4);
 	disassemble(logbuf, 50, pc );  //top->cpu->ifu1->inst_rom1->insts[pc-0x80000000]);
-	printf("\t%s\n",logbuf);
+	printf("At pc = " FMT_WORD_HEX "\t%s\n",logbuf);
 	set_npc_state(NPC_ABORT, top->cpu->pc1->pc, -1);
 }
