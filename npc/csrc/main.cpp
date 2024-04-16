@@ -128,6 +128,7 @@ int verilator_sim(int argc, char **argv)
 
 	Verilated::traceEverOn(true);
 
+	top = new Vcpu;
 	VerilatedVcdC *tfp = new VerilatedVcdC;
 	VerilatedContext *contextp = new VerilatedContext;
 
