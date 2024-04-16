@@ -157,10 +157,14 @@ void print_insts(Vcpu* top){
 }
 
 void single_cycle(Vcpu* _top, VerilatedVcdC* _tfp, VerilatedContext* _contextp){
-	_top->clk = !_top->clk;
-	_top->eval();
-	_contextp->timeInc(1);
-	_tfp->dump(_contextp->time());
+	int i = 2;
+	while(--i)
+	{
+		_top->clk = !_top->clk;
+		_top->eval();
+		_contextp->timeInc(1);
+		_tfp->dump(_contextp->time());
+	}
 }
 
 void reset(int n, Vcpu* _top, VerilatedVcdC* _tfp, VerilatedContext* _contextp){
