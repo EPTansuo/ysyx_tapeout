@@ -219,13 +219,12 @@ int verilator_sim(int argc, char **argv)
 	//print_insts(top);
 
 	reset(3, top, tfp, contextp);
-	tfp->dump(contextp->time());
 	for (int i = 0; i < MAX_CYCLE && ! stop; i++)
 	{
 		single_cycle(top, tfp, contextp);
 
 		//isa_reg_display(gpr1->regs, top->cpu->pc1->pc); 
-		print_regs_info();
+		//print_regs_info();
 		//contextp->timeInc(1);
 	}
 	contextp->timeInc(1);
