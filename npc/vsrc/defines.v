@@ -18,7 +18,7 @@
 `define InstDataWidth   32              //指令数据位宽
 
 `define InstRomSize	131072		//ROM的实际大小为128kB
-
+`define MemSize 	131072		//MEM的实际大小为128kB
 
 
 `ifdef CONFIG_RV64         //对于RV64的配置

@@ -21,7 +21,17 @@ module exu(
 
         //传输到PC
         output reg [`InstAddrBus] pc_offset,
-        output reg pc_offset_en
+        output reg pc_offset_en,
+
+        //传输到MEM
+        output reg mem_we,
+        output reg mem_re,
+        output reg [`InstAddrBus] mem_w_addr,
+        output reg [`InstAddrBus] mem_r_addr,
+        output reg [`WordBus] mem_w_data,
+
+        //从MEM传入
+        input wire [`WordBus] mem_r_data
 );
 
 

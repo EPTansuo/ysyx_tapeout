@@ -74,6 +74,13 @@ gpr gpr1(
         .rdata2(gpr_rdata_2)
 );
 
+wire exu_mem_we;
+wire exu_mem_re;
+wire [`InstAddrBus] exu_mem_w_addr;
+wire [`InstAddrBus] exu_mem_r_addr;
+wire [`WordBus] exu_mem_w_data;
+wire [`WordBus] exu_mem_r_data;
+
 exu exu1(
         .clk(clk),
         .rst(rst),
@@ -87,8 +94,27 @@ exu exu1(
         .we(gpr_we),
         .idu_pc(idu_pc),
         .pc_offset_en(pc_offset_en),
-        .pc_offset(pc_offset)
+        .pc_offset(pc_offset),
+        .mem_we(exu_mem_we),
+        .mem_re(exu_mem_re),
+        .mem_w_addr(exu_mem_w_addr),
+        .mem_r_addr(exu_mem_w_addr),
+        .mem_w_data(exu_mem_w_data),
+        .mem_r_data(exu_mem_r_data)
 );
+
+mem mem1(
+        .clk(clk),
+        .rst(rst),
+        .we(exu_mem_we),
+        .w_addr(exu_mem_w_addr),
+        .w_data(exu_mem_w_addr),
+        .re(exu_mem_re),
+        .r_addr(exu_mem_r_addr),
+        .r_data(exu_mem_r_data)
+);
+
+
 
 
 endmodule
