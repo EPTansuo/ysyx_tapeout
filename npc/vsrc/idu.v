@@ -96,7 +96,25 @@ always @(*)begin
                         inst_type = `Inst_jal;
                         imm = immJ;
                 end
-                `OP_U_TYPE_aupic:begin
+
+                `OP_R_TYPE: begin
+                        case(funct7) 
+                                7'b000_0000: begin
+                                        case(funct3)
+                                                3'b000: begin
+                                                        inst_type = `Inst_add;
+                                                end
+                                                default: begin
+                                                        
+                                                end
+                                        endcase
+                                end
+                                default: begin
+                                        
+                                end
+                        endcase
+                end
+                `OP_U_TYPE_aupic: begin
                         inst_type = `Inst_auipc;
                         src1 = ifu_pc;   //将src1设为pc，则aupic可重复利用addi的加法器
                         imm = immU;

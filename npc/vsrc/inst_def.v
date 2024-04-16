@@ -20,6 +20,7 @@
 `define Inst_jalr       8'd5            //jalr
 `define Inst_sw         8'd6            //sw
 `define Inst_lw         8'd7            //lw
+`define Inst_add        8'd8            //add
 
 `define EBREAK          32'h00100073	//ebreak指令
 
