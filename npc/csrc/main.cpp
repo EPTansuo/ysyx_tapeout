@@ -169,7 +169,7 @@ void single_cycle(Vcpu* _top, VerilatedVcdC* _tfp, VerilatedContext* _contextp){
 
 void reset(int n, Vcpu* _top, VerilatedVcdC* _tfp, VerilatedContext* _contextp){
 	_top->rst = RESET_ENABLE;
-	while(--n)single_cycle(_top, _tfp, _contextp);	
+	while(n--)single_cycle(_top, _tfp, _contextp);	
 	_top->rst = RESET_DISABLE;
 }
 
