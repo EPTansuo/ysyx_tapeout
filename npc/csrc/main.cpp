@@ -173,8 +173,13 @@ void single_cycle(Vcpu* _top, VerilatedVcdC* _tfp, VerilatedContext* _contextp){
 
 void reset(int n, Vcpu* _top, VerilatedVcdC* _tfp, VerilatedContext* _contextp){
 	_top->rst = RESET_ENABLE;
-	while(n--)single_cycle(_top, _tfp, _contextp);	
-	_top->rst = RESET_DISABLE;
+	while(--n)single_cycle(_top, _tfp, _contextp);	
+	_top->clk = !_top->clk;
+	eval_dump(_top,_tfp,_contextp);
+	_top->rst = RESET_DISABLE;    //让复位在下个时钟来时，保持半个周期。
+	_top->clk = !_top->clk;
+	eval_dump(_top,_tfp,_contextp);
+
 }
 
 
