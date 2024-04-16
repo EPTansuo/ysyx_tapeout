@@ -66,6 +66,18 @@ always @(*)begin
                                 end
                         endcase
                 end
+                `OP_I_TYPE_L: begin
+                        src1 = r_data1;
+                        imm = immI;
+                        case(funct3)
+                                3'b010: begin
+                                        inst_type = `Inst_lw;
+                                end
+                                default: begin
+                                        
+                                end
+                        endcase
+                end
                 `OP_S_TYPE: begin
                         src1 = r_data1;
                         src2 = r_data2;

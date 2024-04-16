@@ -94,6 +94,14 @@ always @(*) begin
                         mem_w_bytes = `FOUR_BYTES;
                         mem_w_addr = add_src1_imm;
                 end
+                `Inst_lw: begin
+                        gpr_we = `Disable;
+                        pc_offset_en = `Disable;
+                        mem_we = `Disable;
+                        mem_re = `Enable;
+                        mem_r_bytes = `FOUR_BYTES;
+                        mem_r_addr = add_src1_imm;
+                end
                 default:begin
                         mem_we = `Disable;
                         mem_re = `Disable;

@@ -19,6 +19,7 @@
 `define Inst_jal        8'd4            //jal
 `define Inst_jalr       8'd5            //jalr
 `define Inst_sw         8'd6            //sw
+`define Inst_lw         8'd7            //lw
 
 `define EBREAK          32'h00100073	//ebreak指令
 
