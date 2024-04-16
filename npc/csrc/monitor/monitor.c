@@ -68,7 +68,6 @@ void init_monitor(int argc, char** argv){
         load_img();
         cpu_reset(3);
         init_disasm();
-        init_sim();
         init_sdb();
         welcome();
 }
