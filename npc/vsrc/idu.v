@@ -51,6 +51,12 @@ always @(*) begin
         idu_pc = ifu_pc;
 end
 
+always @(*) begin
+        if(inst_type == `Inst_inv) begin 
+                inst_invalid();
+        end
+end
+
 always @(*)begin
         case(opcode)
                 `OP_I_TYPE:begin
@@ -74,7 +80,7 @@ always @(*)begin
                                         inst_type = `Inst_sw;
                         end 
                                 default: begin
-                                        inst_type = 8'b0;
+                                        inst_type = `Inst_inv;
                                 end
                         endcase
                 end
