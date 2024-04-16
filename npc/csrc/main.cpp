@@ -164,11 +164,10 @@ static inline void eval_dump(Vcpu* _top, VerilatedVcdC* _tfp, VerilatedContext* 
 
 void single_cycle(Vcpu* _top, VerilatedVcdC* _tfp, VerilatedContext* _contextp){
 	int i = 2;
-	while(i--)
+	while((i--) && (!stop))
 	{
 		_top->clk = !_top->clk;
 		eval_dump(_top,_tfp,_contextp);
-		if(stop) return;
 	}
 }
 
