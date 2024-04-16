@@ -218,7 +218,7 @@ int verilator_sim(int argc, char **argv)
 
 	//print_insts(top);
 
-	reset(12, top, tfp, contextp);
+	reset(3, top, tfp, contextp);
 	tfp->dump(contextp->time());
 	for (int i = 0; i < MAX_CYCLE && ! stop; i++)
 	{
