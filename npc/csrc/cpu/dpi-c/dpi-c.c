@@ -12,12 +12,15 @@
 
 extern Vcpu* top;
 
+
 void npc_ebreak(){
 	NPCTRAP(top->cpu->pc1->pc, top->cpu->gpr1->regs[10]);
 }
 
 
 void inst_invalid(){
+	if(npc_state.state == NPC_ABORT)
+		return;
 	char logbuf[50];
 	word_t pc = top->cpu->pc1->pc;
 	printf(L_RED "Invalid or Unimplemented Inst" NONE "\n");
