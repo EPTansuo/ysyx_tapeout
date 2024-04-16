@@ -11,6 +11,23 @@
 char* img_file  = NULL;
 bool verbose = false;
 
+void init_sdb();
+
+
+static void welcome() {
+  Log("Trace: %s", MUXDEF(CONFIG_TRACE, ANSI_FMT("ON", ANSI_FG_GREEN), ANSI_FMT("OFF", ANSI_FG_RED)));
+  IFDEF(CONFIG_TRACE, Log("If trace is enabled, a log file will be generated "
+        "to record the trace. This may lead to a large log file. "
+        "If it is not necessary, you can disable it in menuconfig"));
+  Log("Build time: %s, %s", __TIME__, __DATE__);
+  printf("Welcome to %s-NPC!\n", CONFIG_ISA);
+  printf("For help, type \"help\"\n");
+  //Log("Exercise: Please remove me in the source code and compile NEMU again.");
+  //assert(0);
+}
+
+
+
 
 const char *get_img_file(){
         return img_file;
@@ -44,5 +61,7 @@ void init_monitor(int argc, char** argv){
         parse_args(argc, argv);
         load_img();
         init_disasm();
+        init_sdb();
+        welcome();
 }
 
