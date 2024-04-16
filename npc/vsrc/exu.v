@@ -91,7 +91,8 @@ always @(*) begin
                         pc_offset_en = `Disable;
                         mem_we = `Enable;
                         mem_re = `Disable;
-
+                        mem_w_bytes = `FOUR_BYTES;
+                        mem_w_addr = add_src1_imm;
                 end
                 default:begin
                         mem_we = `Disable;

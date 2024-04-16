@@ -44,3 +44,7 @@
 `define WordWidth       32              //数据总线位宽
 `endif // CONFIG_RV64
 
+`define ONE_BYTE         2'b00          //代表内存读写1个字节
+`define TWO_BYTES        2'b01          //2字节
+`define FOUR_BYTES       2'b10          //4字节
+`define EIGHT_BYTES      2'b11          //8字节         

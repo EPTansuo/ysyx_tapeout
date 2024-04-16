@@ -45,14 +45,14 @@ always @( * ) begin
         else  begin
                 if(re == `Enable)begin
                         case(r_bytes)
-                                0: begin //一个字节
+                                `ONE_BYTE: begin //一个字节
 
                                         r_data = {{(`WordWidth-8){1'b0}}, mems[r_index]};
                                 end
-                                1: begin //两个字节
+                                `TWO_BYTES: begin //两个字节
                                         r_data = { {(`WordWidth-16){1'b0}}, mems[r_index+1], mems[r_index]};
                                 end
-                                2: begin //四个字节
+                                `FOUR_BYTES: begin //四个字节
                                         r_data = {mems[r_index+3],mems[r_index+2],mems[r_index+1],mems[r_index]};
                                 end
                                 default: begin   //暂时不支持8个字节,RV64才有相关的指令
@@ -73,13 +73,13 @@ always @(posedge clk) begin
         else  begin
                 if(we == `Enable)begin
                         case(w_bytes)
-                                0: begin //一个字节
+                                `ONE_BYTE: begin //一个字节
                                         mems[w_index] <= w_data[7:0];
                                 end
-                                1: begin //两个字节
+                                `TWO_BYTES: begin //两个字节
                                         {mems[w_index+1], mems[w_index]} <= w_data[15:0];
                                 end
-                                2: begin //四个字节
+                                `FOUR_BYTES: begin //四个字节
                                         {mems[w_index+3],mems[w_index+2],mems[w_index+1],mems[w_index]} <= w_data[31:0]; //[31:0]是为了后续RV64提前准备的
                                 end
                                 default: begin   //暂时不支持8个字节,RV64才有相关的指令
