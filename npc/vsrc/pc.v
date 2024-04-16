@@ -17,7 +17,7 @@ module pc(
 always @(posedge clk) begin
         if(rst == `RstEnable)begin
                 //pc <= `Init_Addr;
-                pc <= `Init_Addr;
+                pc <= `Init_Addr -4;
         end
         else begin
                 //pc <= npc;
