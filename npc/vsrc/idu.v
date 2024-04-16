@@ -51,11 +51,6 @@ always @(*) begin
         idu_pc = ifu_pc;
 end
 
-always @(*) begin
-        if(inst_type == `Inst_inv) begin 
-                inst_invalid();
-        end
-end
 
 always @(*)begin
         case(opcode)
