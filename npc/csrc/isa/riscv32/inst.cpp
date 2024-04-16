@@ -45,7 +45,7 @@ void init_insts_file(){
 void init_insts_default(){
 	
 	//uint8_t *insts = new uint8_t[sizeof(img)];
-
+	
 	inst_num = sizeof(img_default)/sizeof(uint32_t);
 
 	for (size_t i = 0; i < inst_num; i++)
@@ -83,6 +83,9 @@ void print_all_insts(){
 
 
 void load_img(){
+	if(top == NULL){
+		top = new Vcpu;
+	}
 	if(img_file == NULL){
 		init_insts_default();
 	}
