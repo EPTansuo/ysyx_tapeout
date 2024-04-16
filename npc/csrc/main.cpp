@@ -158,7 +158,7 @@ void print_insts(Vcpu* top){
 
 void single_cycle(Vcpu* _top, VerilatedVcdC* _tfp, VerilatedContext* _contextp){
 	int i = 2;
-	while(--i)
+	while(i--)
 	{
 		_top->clk = !_top->clk;
 		_top->eval();
