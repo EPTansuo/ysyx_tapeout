@@ -1,6 +1,6 @@
 TOPNAME = cpu
 NXDC_FILES = constr/cpu.nxdc
-IMG = "/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/add-riscv32e-npc.bin"
+IMG = "/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/dummy-riscv32e-npc.bin"
 ARGS = -v
 
 VERILATOR = verilator
