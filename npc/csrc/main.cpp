@@ -157,6 +157,7 @@ void print_insts(Vcpu* top){
 }
 
 static inline void eval_dump(Vcpu* _top, VerilatedVcdC* _tfp, VerilatedContext* _contextp){
+	if(stop) return;
 	_top->eval();
 	_tfp->dump(_contextp->time());
 	_contextp->timeInc(1);
