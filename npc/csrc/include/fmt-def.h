@@ -1,8 +1,7 @@
 #ifndef __FMT_DEF_H_
 #define __FMT_DEF_H_
 
-#define CONFIG_RV32 1
-
+#include "autoconf.h"
 
 #ifdef CONFIG_RV64
 #define FMT_WORD_HEX "%lx"

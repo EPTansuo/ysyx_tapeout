@@ -2,18 +2,7 @@
 #define __REG_H_
 #include <stdint.h>
 #include <verilated.h>
-
-#define CONFIG_RV32 1
-
-
-#ifdef CONFIG_RV64
-typedef uint64_t word_t;
-typedef int64_t sword_t;
-#else
-typedef uint32_t word_t;
-typedef int32_t sword_t;
-#endif
-
+#include <common.h>
 
 
 const char* reg_name(int idx);

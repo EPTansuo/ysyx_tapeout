@@ -31,9 +31,18 @@
 #include <stdlib.h>
 #endif
 
+#define RESET_ENABLE 1
+#define RESET_DISABLE 0
+
 #if CONFIG_MBASE + CONFIG_MSIZE > 0x100000000ul
 #define PMEM64 1
 #endif
+
+#ifdef CONFIG_ISA_riscv
+#ifndef CONFIG_RV64
+#define CONFIG_RV32
+#endif 
+#endif 
 
 typedef MUXDEF(CONFIG_ISA64, uint64_t, uint32_t) word_t;
 typedef MUXDEF(CONFIG_ISA64, int64_t, int32_t)  sword_t;

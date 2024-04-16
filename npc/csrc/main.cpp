@@ -4,7 +4,7 @@
 //#include <nvboard.h>
 #include <cstdlib>
 #include <cstdint>
-#include "../build/obj_dir/Vcpu.h"
+#include "Vcpu.h"
 #include "Vcpu___024root.h"
 #include "Vcpu_inst_rom.h"
 #include "Vcpu_pc.h"
@@ -19,16 +19,13 @@
 #include <unistd.h>
 #include <monitor.h>
 #include <libgen.h> // 引入libgen库
+#include <cpu.h>
 
-#define RESET_ENABLE 1
-#define RESET_DISABLE 0
-
-#define CONFIG_RV32 1
 
 #define MAX_CYCLE 200
 
 
-extern Vcpu *top;
+Vcpu *top;
 
 static  char _img[131072];
 
@@ -49,58 +46,7 @@ static uint32_t img[] = {                   //    imm          rs1       rd   op
 };
 
 
-typedef struct{
-        word_t pc;
-        uint8_t code[4];
-        char str[32];
-}Disasm;
 
-Disasm *disasm;
-
-void disassemble(char* logbuf, size_t logbuf_size, word_t pc, uint32_t inst){
-    uint32_t index = (pc - 0x80000000)/4;
-    if(disasm[index].pc == pc){
-	snprintf(logbuf, logbuf_size, "%s", disasm[index].str);
-    }else{
-	printf("Error: Can not find disasm for pc: " FMT_WORD_HEX "\n", pc);
-    
-    }
-}
-
-void init_disasm(const char* _img_file){
-	char img_file_path[200];
-	char line[100];
-	char img_full_name[50];
-	uint16_t lines = 0;
-	strcpy(img_full_name, _img_file);
-	char* img_basename = basename(img_full_name);
-	strcat(img_basename,".disasm");
-	sprintf(img_file_path,"%s/%s","./build",img_basename);
-
-	FILE* fp = fopen(img_file_path,"r");
-
-	if(fp == NULL){
-		printf("Error while open file: %s %s:%d\n",img_file_path,__FILE__,__LINE__);
-		return;
-	}
-
-	while (fgets(line, sizeof(line), fp) != NULL) {
-        	lines++;  //统计文件的行
-    	}
-
-	disasm = (Disasm*)malloc(sizeof(Disasm)*lines);
-	fseek(fp, 0, SEEK_SET);
-	int i =0;
-	while (fgets(line, sizeof(line), fp) != NULL) {
-		if (sscanf(line, "%x %99[^\n]", &disasm[i].pc, &disasm[i].str) == 2) {
-		//printf("Address: 0x%X, Instruction: %s\n", disasm[i].pc, disasm[i].str);
-		} else {
-		fprintf(stderr, "Failed to parse line: %s", line);
-		}
-	i++;
-    	}
-
-}
 
 
 void init_insts(const char* img_file, VlUnpacked<unsigned char, 131072>& insts){
@@ -156,26 +102,6 @@ void print_insts(Vcpu* top){
 	std::cout<<"------------------"<<std::endl;
 }
 
-static inline void eval_dump(Vcpu* _top, VerilatedVcdC* _tfp, VerilatedContext* _contextp){
-	_top->eval();
-	_tfp->dump(_contextp->time());
-	_contextp->timeInc(1);
-}
-
-void single_cycle(Vcpu* _top, VerilatedVcdC* _tfp, VerilatedContext* _contextp){
-	int i = 2;
-	while((i--))
-	{
-		_top->clk = !_top->clk;
-		eval_dump(_top,_tfp,_contextp);
-	}
-}
-
-void reset(int n, Vcpu* _top, VerilatedVcdC* _tfp, VerilatedContext* _contextp){
-	_top->rst = RESET_ENABLE;
-	while(n--)single_cycle(_top, _tfp, _contextp);	
-	_top->rst = RESET_DISABLE;
-}
 
 
 void npc_ebreak(){
@@ -190,7 +116,7 @@ void inst_invalid(){
 	std::cout<<L_RED "Invalid or Unimplemented Inst" NONE<<std::endl;
 	print_inst(top->cpu->ifu1->inst_rom1->insts, pc);
 	//disassemble(logbuf, 40, pc, (uint8_t *)(&_img[pc-0x80000000]), 4);
-	disassemble(logbuf, 50, pc, top->cpu->ifu1->inst_rom1->insts[pc-0x80000000]);
+	disassemble(logbuf, 50, pc );  //top->cpu->ifu1->inst_rom1->insts[pc-0x80000000]);
 	printf("\t%s\n",logbuf);
 	stop = true;
 	//exit(-1);
@@ -224,16 +150,16 @@ int verilator_sim(int argc, char **argv)
 
 	//print_insts(top);
 
-	reset(3, top, tfp, contextp);
+	init_cpu_exec(top, tfp, contextp);
 	for (int i = 0; i < MAX_CYCLE && ! stop; i++)
 	{
-		single_cycle(top, tfp, contextp);
+		cpu_single_cycle();
 
 		//isa_reg_display(gpr1->regs, top->cpu->pc1->pc); 
 		//print_regs_info();
 		//contextp->timeInc(1);
 	}
-	eval_dump(top, tfp, contextp);
+	cpu_eval_dump();
 
 	Vcpu_pc *pc = top->cpu->pc1;
 

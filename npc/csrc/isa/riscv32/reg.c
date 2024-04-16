@@ -9,7 +9,9 @@
 #include <Vcpu_pc.h>
 
 extern bool verbose;
-Vcpu *top = new Vcpu;
+
+extern Vcpu *top;
+
 
 const char *regs[] = {
     "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
