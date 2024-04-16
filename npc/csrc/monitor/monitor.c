@@ -8,10 +8,11 @@
 #include <inst.h>
 #include <utils/utils.h>
 #include <color.h>
+#include <verilated.h>
 
 char* img_file  = NULL;
 bool verbose = false;
-
+void init_sim();
 void init_sdb();
 
 
@@ -58,7 +59,11 @@ static int parse_args(int argc, char *argv[]) {
   return 0;
 }
 
+
+
 void init_monitor(int argc, char** argv){
+        Verilated::commandArgs(argc, argv);
+        init_sim();
         parse_args(argc, argv);
         load_img();
         init_disasm();
