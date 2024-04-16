@@ -156,14 +156,18 @@ void print_insts(Vcpu* top){
 	std::cout<<"------------------"<<std::endl;
 }
 
+static inline void eval_dump(Vcpu* _top, VerilatedVcdC* _tfp, VerilatedContext* _contextp){
+	_top->eval();
+	_tfp->dump(_contextp->time());
+	_contextp->timeInc(1);
+}
+
 void single_cycle(Vcpu* _top, VerilatedVcdC* _tfp, VerilatedContext* _contextp){
 	int i = 2;
 	while(i--)
 	{
 		_top->clk = !_top->clk;
-		_top->eval();
-		_tfp->dump(_contextp->time());
-		_contextp->timeInc(1);
+		eval_dump(_top,_tfp,_contextp);
 	}
 }
 
@@ -227,8 +231,7 @@ int verilator_sim(int argc, char **argv)
 		//print_regs_info();
 		//contextp->timeInc(1);
 	}
-	contextp->timeInc(1);
-	tfp->dump(contextp->time());
+	eval_dump(top, tfp, contextp);
 
 	Vcpu_pc *pc = top->cpu->pc1;
 
