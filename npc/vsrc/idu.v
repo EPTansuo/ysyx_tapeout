@@ -86,7 +86,7 @@ always @(*)begin
                 end
                 `OP_U_TYPE_aupic:begin
                         inst_type = `Inst_auipc;
-                        src1 = `ZeroWord;   //将src1设为0，则aupic可重复利用addi的加法器
+                        src1 = ifu_pc;   //将src1设为pc，则aupic可重复利用addi的加法器
                         imm = immU;
                 end
                 `OP_U_TYPE_lui:begin

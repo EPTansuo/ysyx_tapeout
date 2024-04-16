@@ -49,7 +49,7 @@ always @(*) begin
                         pc_offset_en = `Disable;
                 end
                 `Inst_auipc: begin
-                        w_data = add_src1_imm + idu_pc; //src1被设为0，则aupic可重复利用addi的加法器
+                        w_data = add_src1_imm ; //src1被设为pc，则aupic可重复利用addi的加法器
                         w_addr = rd;
                         we = `WriteEnable;
                         pc_offset_en = `Disable;
