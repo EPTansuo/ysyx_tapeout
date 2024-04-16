@@ -14,7 +14,7 @@ char* img_file  = NULL;
 bool verbose = false;
 void init_sim();
 void init_sdb();
-
+void cpu_reset(int n);
 
 static void welcome() {
   Log("Trace: %s", MUXDEF(CONFIG_TRACE, ANSI_FMT("ON", ANSI_FG_GREEN), ANSI_FMT("OFF", ANSI_FG_RED)));
@@ -66,6 +66,7 @@ void init_monitor(int argc, char** argv){
         parse_args(argc, argv);
         init_sim();
         load_img();
+        cpu_reset(3);
         init_disasm();
         init_sim();
         init_sdb();
