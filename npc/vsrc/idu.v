@@ -39,6 +39,8 @@ wire [`WordBus] immS = { {(`WordWidth-12){inst[31]}}, inst[31:25], inst[11:7] };
 wire [`WordBus] immJ = { {(`WordWidth-21){inst[31]}}, inst[31], inst[19:12], inst[20], inst[30:21],1'b0 };
 wire [`WordBus] immB = { {(`WordWidth-13){inst[31]}}, inst[31], inst[7], inst[30:25], inst[11:8], 1'b0};
 
+`ifndef STA
+
 import "DPI-C" function void npc_ebreak();
 import "DPI-C" function void inst_invalid();
 
@@ -49,6 +51,14 @@ always @(*) begin
 end
 
 always @(*) begin
+        if(idu_pc >= `Init_Addr && inst != `EBREAK) begin
+                inst_invalid();
+        end
+end
+
+`endif
+
+always @(*) begin
         idu_pc = ifu_pc;
 end
 
@@ -57,6 +67,7 @@ always @(*)begin
         case(opcode)
                 `OP_I_TYPE:begin
                         src1 = r_data1;
+                        src2 = 0;
                         imm = immI;
                         case(funct3)
                                 `Funct3_addi:begin
@@ -69,13 +80,14 @@ always @(*)begin
                 end
                 `OP_I_TYPE_L: begin
                         src1 = r_data1;
+                        src2 = 0;
                         imm = immI;
                         case(funct3)
                                 3'b010: begin
                                         inst_type = `Inst_lw;
                                 end
                                 default: begin
-                                        
+                                        inst_type = `Inst_inv;
                                 end
                         endcase
                 end
@@ -94,6 +106,8 @@ always @(*)begin
                 end
 
                 `OP_J_TYPE: begin
+                        src1 = 0;
+                        src2 = 0;
                         inst_type = `Inst_jal;
                         imm = immJ;
                 end
@@ -107,7 +121,7 @@ always @(*)begin
                                         inst_type = `Inst_beq;
                                 end
                                 default: begin
-                                        
+                                        inst_type = `Inst_inv;
                                 end
                         endcase
                 end
@@ -115,6 +129,7 @@ always @(*)begin
                 `OP_R_TYPE: begin
                         src1 = r_data1;
                         src2 = r_data2;
+                        imm = 0;
                         case(funct7) 
                                 7'b000_0000: begin
                                         case(funct3)
@@ -134,15 +149,19 @@ always @(*)begin
                 `OP_U_TYPE_aupic: begin
                         inst_type = `Inst_auipc;
                         src1 = ifu_pc;   //将src1设为pc，则aupic可重复利用addi的加法器
+                        src2 = 0;
                         imm = immU;
                 end
                 `OP_U_TYPE_lui:begin
                         inst_type = `Inst_lui;
                         imm = immU;
+                        src1 = 0;
+                        src2 = 0;
                 end
                 `OP_I_TYPE_jarl:begin
                         inst_type = `Inst_jalr;
                         src1 = r_data1;
+                        src2 = 0;
                         imm = immI;
                 end
 
@@ -151,9 +170,7 @@ always @(*)begin
                         src1 = 0;
                         src2 = 0;
                         imm = 0;
-                        if(idu_pc >= `Init_Addr && inst != `EBREAK) begin 
-                                inst_invalid();
-                        end
+
                 end
         endcase
 end

@@ -47,84 +47,116 @@ always @(*) begin
                 `Inst_addi: begin
                         mem_we = `Disable;
                         mem_re = `Disable;
+                        mem_w_addr = 0;
+                        mem_r_addr = 0;
+                        gpr_we = `Enable;
                         gpr_w_data = add_src1_imm;
                         gpr_w_addr = rd;
-                        gpr_we = `Enable;
                         pc_offset_en = `Disable;
+                        pc_offset = 4;
                 end
                 `Inst_auipc: begin
                         mem_we = `Disable;
                         mem_re = `Disable;
-                        gpr_w_data = add_src1_imm ; //src1被设为pc，则aupic可重复利用addi的加法器
-                        gpr_w_addr = rd;
+                        mem_w_addr = 0;
+                        mem_r_addr = 0;
                         gpr_we = `Enable;
+                        gpr_w_data = add_src1_imm;//src1被设为pc，则aupic可重复利用addi的加法器
+                        gpr_w_addr = rd;
                         pc_offset_en = `Disable;
+                        pc_offset = 4;
+
                 end
                 `Inst_lui: begin
                         mem_we = `Disable;
                         mem_re = `Disable;
+                        mem_w_addr = 0;
+                        mem_r_addr = 0;
+                        gpr_we = `Enable;
                         gpr_w_data = imm;
                         gpr_w_addr = rd;
-                        gpr_we = `Enable;
                         pc_offset_en = `Disable;
+                        pc_offset = 4;
                 end
                 `Inst_jal: begin
                         mem_we = `Disable;
                         mem_re = `Disable;
+                        mem_w_addr = 0;
+                        mem_r_addr = 0;
+                        gpr_we = `Enable;
                         gpr_w_data = idu_pc + 4;
                         gpr_w_addr = rd;
-                        gpr_we = `Enable;
                         pc_offset_en = `Enable;
                         pc_offset = imm;
                 end
                 `Inst_jalr: begin
                         mem_we = `Disable;
                         mem_re = `Disable;
+                        mem_w_addr = 0;
+                        mem_r_addr = 0;
+                        gpr_we = `Enable;
                         gpr_w_data = idu_pc + 4;
                         gpr_w_addr = rd;
-                        gpr_we = `Enable;
                         pc_offset_en = `Enable;
                         pc_offset = {add_src1_imm[`WordWidth-1:1], 1'b0} - idu_pc;
                 end
                 `Inst_sw: begin
-                        gpr_we = `Disable;
-                        pc_offset_en = `Disable;
                         mem_we = `Enable;
                         mem_re = `Disable;
-                        mem_w_bytes = `FOUR_BYTES;
                         mem_w_addr = add_src1_imm;
+                        mem_r_addr = src2;
+                        gpr_we = `Disable;
+                        gpr_w_data = 0;
+                        gpr_w_addr = 0;
+                        pc_offset_en = `Disable;
+                        pc_offset = 4;
+                        mem_w_bytes = `FOUR_BYTES;
                 end
                 `Inst_lw: begin
-                        gpr_we = `Disable;
-                        pc_offset_en = `Disable;
                         mem_we = `Disable;
                         mem_re = `Enable;
-                        mem_r_bytes = `FOUR_BYTES;
+                        mem_w_addr = 0;
                         mem_r_addr = add_src1_imm;
+                        gpr_we = `Disable;
+                        gpr_w_data = 0;
+                        gpr_w_addr = 0;
+                        pc_offset_en = `Disable;
+                        pc_offset = 4;
+                        mem_r_bytes = `FOUR_BYTES;
                 end
                 `Inst_add: begin
-                        gpr_we = `Enable;
-                        pc_offset_en = `Disable;
                         mem_we = `Disable;
                         mem_re = `Disable;
-                        gpr_w_addr = rd;
+                        mem_w_addr = 0;
+                        mem_r_addr = 0;
+                        gpr_we = `Enable;
                         gpr_w_data = src1 + src2;
+                        gpr_w_addr = rd;
+                        pc_offset_en = `Disable;
+                        pc_offset = 4;
                 end
                 `Inst_beq: begin
-                        gpr_we = `Disable;
                         mem_we = `Disable;
                         mem_re = `Disable;
-                        pc_offset_en = src1 == src2? `Enable : `Disable;
+                        mem_w_addr = 0;
+                        mem_r_addr = 0;
+                        gpr_we = `Disable;
+                        gpr_w_data = 0;
+                        gpr_w_addr = 0;
+                        pc_offset_en = src1 == src2? `Enable : `Disable;;
                         pc_offset = imm;
                         
                 end
                 default:begin
                         mem_we = `Disable;
                         mem_re = `Disable;
+                        mem_w_addr = 0;
+                        mem_r_addr = 0;
+                        gpr_we = `Disable;
                         gpr_w_data = 0;
                         gpr_w_addr = 0;
                         pc_offset_en = `Disable;
-                        gpr_we = `Disable;
+                        pc_offset = 0;
                 end
         endcase
 end
