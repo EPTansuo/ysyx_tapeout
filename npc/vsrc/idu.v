@@ -158,12 +158,19 @@ always @(*)begin
                         src2 = 0;
                         imm = immI;
                 end
-
                 default:begin
-                        inst_type = `Inst_inv;
-                        src1 = 0;
-                        src2 = 0;
-                        imm = 0;
+                        if( inst == `EBREAK ) begin
+                                inst_type = `Inst_ebreak;
+                                src1 = 0;
+                                src2 = 0;
+                                imm = 0;
+                        end
+                        else begin
+                                inst_type = `Inst_inv;
+                                src1 = 0;
+                                src2 = 0;
+                                imm = 0;
+                        end
 
                 end
         endcase

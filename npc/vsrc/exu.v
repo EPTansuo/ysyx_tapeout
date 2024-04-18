@@ -36,13 +36,20 @@ module exu(
         input wire [`WordBus] mem_r_data
 );
 
-
-
 `ifndef STA
 
+import "DPI-C" function void npc_ebreak();
 import "DPI-C" function void inst_invalid();
 
+// always @(*) begin
+//         if(inst == `EBREAK)begin
+//                 npc_ebreak();
+//         end
+// end
+
 `endif
+
+
 
 
 wire [`WordBus] add_src1_imm;
@@ -62,6 +69,8 @@ always @(*) begin
                         gpr_w_addr = rd;
                         pc_offset_en = `Disable;
                         pc_offset = 4;
+                        mem_w_bytes = `FOUR_BYTES;
+                        mem_r_bytes = `FOUR_BYTES;
                 end
                 `Inst_auipc: begin
                         mem_we = `Disable;
@@ -73,6 +82,8 @@ always @(*) begin
                         gpr_w_addr = rd;
                         pc_offset_en = `Disable;
                         pc_offset = 4;
+                        mem_w_bytes = `FOUR_BYTES;
+                        mem_r_bytes = `FOUR_BYTES;
 
                 end
                 `Inst_lui: begin
@@ -85,6 +96,8 @@ always @(*) begin
                         gpr_w_addr = rd;
                         pc_offset_en = `Disable;
                         pc_offset = 4;
+                        mem_w_bytes = `FOUR_BYTES;
+                        mem_r_bytes = `FOUR_BYTES;
                 end
                 `Inst_jal: begin
                         mem_we = `Disable;
@@ -96,6 +109,8 @@ always @(*) begin
                         gpr_w_addr = rd;
                         pc_offset_en = `Enable;
                         pc_offset = imm;
+                        mem_w_bytes = `FOUR_BYTES;
+                        mem_r_bytes = `FOUR_BYTES;
                 end
                 `Inst_jalr: begin
                         mem_we = `Disable;
@@ -107,6 +122,8 @@ always @(*) begin
                         gpr_w_addr = rd;
                         pc_offset_en = `Enable;
                         pc_offset = {add_src1_imm[`WordWidth-1:1], 1'b0} - idu_pc;
+                        mem_w_bytes = `FOUR_BYTES;
+                        mem_r_bytes = `FOUR_BYTES;
                 end
                 `Inst_sw: begin
                         mem_we = `Enable;
@@ -119,6 +136,7 @@ always @(*) begin
                         pc_offset_en = `Disable;
                         pc_offset = 4;
                         mem_w_bytes = `FOUR_BYTES;
+                        mem_r_bytes = `FOUR_BYTES;
                 end
                 `Inst_lw: begin
                         mem_we = `Disable;
@@ -130,6 +148,7 @@ always @(*) begin
                         gpr_w_addr = 0;
                         pc_offset_en = `Disable;
                         pc_offset = 4;
+                        mem_w_bytes = `FOUR_BYTES;
                         mem_r_bytes = `FOUR_BYTES;
                 end
                 `Inst_add: begin
@@ -142,6 +161,8 @@ always @(*) begin
                         gpr_w_addr = rd;
                         pc_offset_en = `Disable;
                         pc_offset = 4;
+                        mem_w_bytes = `FOUR_BYTES;
+                        mem_r_bytes = `FOUR_BYTES;
                 end
                 `Inst_beq: begin
                         mem_we = `Disable;
@@ -153,7 +174,25 @@ always @(*) begin
                         gpr_w_addr = 0;
                         pc_offset_en = src1 == src2? `Enable : `Disable;;
                         pc_offset = imm;
+                        mem_w_bytes = `FOUR_BYTES;
+                        mem_r_bytes = `FOUR_BYTES;
                         
+                end
+                `Inst_ebreak: begin
+                        mem_we = `Disable;
+                        mem_re = `Disable;
+                        mem_w_addr = 0;
+                        mem_r_addr = 0;
+                        gpr_we = `Disable;
+                        gpr_w_data = 0;
+                        gpr_w_addr = 0;
+                        pc_offset_en = `Disable;
+                        pc_offset = 0;
+                        mem_w_bytes = `FOUR_BYTES;
+                        mem_r_bytes = `FOUR_BYTES;
+                        `ifndef STA
+                        npc_ebreak();
+                        `endif
                 end
                 default:begin
                         mem_we = `Disable;
@@ -166,6 +205,8 @@ always @(*) begin
                         pc_offset_en = `Disable;
                         pc_offset = 0;
                         `ifndef STA
+                        mem_w_bytes = `FOUR_BYTES;
+                        mem_r_bytes = `FOUR_BYTES;
                         if(idu_pc >= `Init_Addr) begin
                                 inst_invalid();
                         end
