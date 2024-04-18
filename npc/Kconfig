@@ -102,18 +102,18 @@ config MTRACE_RANGE_MAX
   default "0x88000000"
 
 config DIFFTEST
-  depends on TARGET_NATIVE_ELF
   bool "Enable differential testing"
   default n
   help
     Enable differential testing with a reference design.
-    Note that this will significantly reduce the performance of NEMU.
 
 choice
   prompt "Reference design"
-  default DIFFTEST_REF_SPIKE if ISA_riscv
+  default DIFFTEST_REF_NEMU if ISA_riscv
+  default DIFFTEST_REF_SPIKE 
   default DIFFTEST_REF_QEMU
   depends on DIFFTEST
+
 config DIFFTEST_REF_QEMU
   bool "QEMU, communicate with socket"
 if ISA_riscv
@@ -125,14 +125,13 @@ endchoice
 config DIFFTEST_REF_PATH
   string
   default "tools/qemu-diff" if DIFFTEST_REF_QEMU
-  default "tools/kvm-diff" if DIFFTEST_REF_KVM
   default "tools/spike-diff" if DIFFTEST_REF_SPIKE
   default "none"
 
 config DIFFTEST_REF_NAME
   string
+  default "nemu" if DIFFTEST_REF_NEMU
   default "qemu" if DIFFTEST_REF_QEMU
-  default "kvm" if DIFFTEST_REF_KVM
   default "spike" if DIFFTEST_REF_SPIKE
   default "none"
 endmenu
