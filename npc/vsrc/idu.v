@@ -39,18 +39,7 @@ wire [`WordBus] immS = { {(`WordWidth-12){inst[31]}}, inst[31:25], inst[11:7] };
 wire [`WordBus] immJ = { {(`WordWidth-21){inst[31]}}, inst[31], inst[19:12], inst[20], inst[30:21],1'b0 };
 wire [`WordBus] immB = { {(`WordWidth-13){inst[31]}}, inst[31], inst[7], inst[30:25], inst[11:8], 1'b0};
 
-`ifndef STA
 
-import "DPI-C" function void npc_ebreak();
-import "DPI-C" function void inst_invalid();
-
-always @(*) begin
-        if(inst == `EBREAK)begin
-                npc_ebreak();
-        end
-end
-
-`endif
 
 always @(*) begin
         idu_pc = ifu_pc;

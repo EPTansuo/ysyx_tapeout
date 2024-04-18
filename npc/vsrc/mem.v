@@ -56,7 +56,7 @@ always @( * ) begin
                                         r_data = {mems[r_index+3],mems[r_index+2],mems[r_index+1],mems[r_index]};
                                 end
                                 default: begin   //暂时不支持8个字节,RV64才有相关的指令
-                                        r_data = 0;
+
                                 end
                         endcase
                         
