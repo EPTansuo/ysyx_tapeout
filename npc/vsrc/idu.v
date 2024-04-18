@@ -120,7 +120,7 @@ always @(*)begin
                                                         inst_type = `Inst_add;
                                                 end
                                                 default: begin
-                                                        
+                                                        inst_type = `Inst_inv;
                                                 end
                                         endcase
                                 end
