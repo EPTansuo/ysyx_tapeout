@@ -50,12 +50,6 @@ always @(*) begin
         end
 end
 
-always @(*) begin
-        if(idu_pc > `Init_Addr && inst != `EBREAK) begin
-                inst_invalid();
-        end
-end
-
 `endif
 
 always @(*) begin

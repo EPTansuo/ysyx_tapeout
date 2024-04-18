@@ -37,6 +37,14 @@ module exu(
 );
 
 
+
+`ifndef STA
+
+import "DPI-C" function void inst_invalid();
+
+`endif
+
+
 wire [`WordBus] add_src1_imm;
 
 assign add_src1_imm = src1+imm;
@@ -157,6 +165,12 @@ always @(*) begin
                         gpr_w_addr = 0;
                         pc_offset_en = `Disable;
                         pc_offset = 0;
+                        `ifndef STA
+                        if(idu_pc >= `Init_Addr) begin
+                                inst_invalid();
+                        end
+                        `endif
+
                 end
         endcase
 end
