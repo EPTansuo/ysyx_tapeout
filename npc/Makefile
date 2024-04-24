@@ -23,7 +23,7 @@ INC_PATH +=$(abspath csrc/isa/$(CONFIG_ISA)/local-include)
 
 
 
-default: $(BIN)
+default:$(BIN) 
 
 $(shell mkdir -p $(BUILD_DIR))
 
@@ -51,8 +51,9 @@ include $(NVBOARD_HOME)/scripts/nvboard.mk
 
 
 
-$(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
+$(shell python3 $(NPC_HOME)/tools/exu_gen/exu_gen.py > $(NPC_HOME)/vsrc/exu.v)
 
+$(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE) 
 	@rm -rf $(OBJ_DIR)
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $^ \
@@ -60,7 +61,7 @@ $(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
 all: default
 
-run: $(BIN)
+run: $(BIN) 
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	bash ./tools/disasm.sh $(IMG) $(BUILD_DIR)
 	$^ $(ARGS) $(IMG)
@@ -74,7 +75,7 @@ sync:
 	rsync -av $(NPC_HOME)/vsrc/ $(GZIC_SERVER_USER)@$(GZIC_SERVER_IP):$(GZIC_SERVER_NPC_HOME)/vsrc/
 rsync: sync
 
-remote_sim: sync
+remote_sim: sync EXU_GEN
 	ssh $(GZIC_SERVER_USER)@$(GZIC_SERVER_IP) "cd $(GZIC_SERVER_NPC_HOME) && make sim"
 	bash ./tools/mountserver.sh
 	bash ./tools/ln_rm_vcd.sh

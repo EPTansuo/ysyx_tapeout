@@ -19,6 +19,7 @@ void init_sim();
 void init_sdb();
 void cpu_reset(int n);
 void init_difftest(char *ref_so_file, long img_size, int port);
+void init_mem();
 
 static void welcome() {
   Log("Trace: %s", MUXDEF(CONFIG_TRACE, ANSI_FMT("ON", ANSI_FG_GREEN), ANSI_FMT("OFF", ANSI_FG_RED)));
@@ -74,6 +75,7 @@ void init_monitor(int argc, char** argv){
         parse_args(argc, argv);
         init_sim();
         long img_size = load_img();
+        init_mem();
         cpu_reset(3);
         init_disasm();
         init_difftest(diff_so_file, img_size, 0);  //Do not need to use the  third parameter
