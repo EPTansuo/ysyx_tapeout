@@ -18,6 +18,7 @@
 #include "../local-include/reg.h"
 #include <cpu/cpu.h>
 #include <fmt-def.h>
+#include <sim.h>
 
 extern const char *regs[];
 
@@ -30,7 +31,13 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   //  succ = false;
   //}
   //else{
-    succ = (memcmp(cpu.gpr, ref_r->gpr, DIFFTEST_REG_SIZE) == 0) ;
+    for(int i=0; i<32; i++){
+      if(gpr(i) != ref_r->gpr[i]){
+        succ = false;
+        break;
+      }
+    }
+    //succ = (memcmp(cpu.gpr, ref_r->gpr, DIFFTEST_REG_SIZE) == 0) ;
   //}
 
   if(succ)
