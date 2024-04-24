@@ -106,6 +106,9 @@ always @(*)begin
                                 3'b000: begin
                                         inst_type = `Inst_beq;
                                 end
+                                3'b001: begin
+                                        inst_type = `Inst_bne;
+                                end
                                 default: begin
                                         inst_type = `Inst_inv;
                                 end
