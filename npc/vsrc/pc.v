@@ -6,13 +6,16 @@ module pc(
 
         //从EXU传入
         input wire pc_offset_en,
-        input wire [`InstAddrBus] pc_offset, //下一条指令地址
+        input wire [`InstAddrBus] pc_offset, 
 
         //传输到IFU
-        output reg[`InstAddrBus] pc/* verilator public */ //下一条指令地址
+        output reg[`InstAddrBus] pc/* verilator public */ //指令地址
 );
 
 //reg[`InstAddrBus] pc; //当前的指令地址
+reg [`InstAddrBus] npc/* verilator public */; //下一条指令地址
+
+assign npc = pc_offset_en == `Enable ? pc + pc_offset : pc + 4;
 
 always @(posedge clk) begin
         if(rst == `RstEnable)begin
@@ -20,13 +23,7 @@ always @(posedge clk) begin
                 pc <= `Init_Addr -4;
         end
         else begin
-                //pc <= npc;
-                if(pc_offset_en == `Enable)begin
-                        pc <= pc + pc_offset;
-                end
-                else begin 
-                        pc <= pc + 4;
-                end
+                pc <= npc;
         end
 end
 
