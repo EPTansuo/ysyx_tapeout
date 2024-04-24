@@ -15,4 +15,6 @@
 /fceux-am
 /am-kernels
 .vscode/
+.virtual_documents
+.ipynb_checkpoints
 /nvboard
