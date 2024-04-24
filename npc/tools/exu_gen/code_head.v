@@ -46,7 +46,8 @@ module exu(
 import "DPI-C" function void npc_ebreak();
 import "DPI-C" function void inst_invalid();
 
-reg exu_invalid_inst = 0;
+reg exu_invalid_inst;
+
 
 always @(*) begin
         if(inst_type == `Inst_ebreak)begin

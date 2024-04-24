@@ -46,7 +46,8 @@ module exu(
 import "DPI-C" function void npc_ebreak();
 import "DPI-C" function void inst_invalid();
 
-reg exu_invalid_inst = 0;
+reg exu_invalid_inst;
+
 
 always @(*) begin
         if(inst_type == `Inst_ebreak)begin
@@ -66,13 +67,14 @@ wire [`WordBus] add_src1_imm;
 assign add_src1_imm = src1+imm;
 
 `ifndef STA
-assign exu_invalid_inst = inst_type == `Inst_addi ? 0 : 
-                          inst_type == `Inst_auipc ? 0 : 
-                          inst_type == `Inst_lui ? 0 : 
-                          inst_type == `Inst_jal ? 0 : 
-                          inst_type == `Inst_jalr ? 0 : 
-                          inst_type == `Inst_sw ? 0 : 
-                          1;
+assign exu_invalid_inst = rst == `RstEnable ? 1'b0 :
+                          inst_type == `Inst_addi ? 1'b0 :
+                          inst_type == `Inst_auipc ? 1'b0 :
+                          inst_type == `Inst_lui ? 1'b0 :
+                          inst_type == `Inst_jal ? 1'b0 :
+                          inst_type == `Inst_jalr ? 1'b0 :
+                          inst_type == `Inst_sw ? 1'b0 :
+                          1'b1;
 `endif
 
 
