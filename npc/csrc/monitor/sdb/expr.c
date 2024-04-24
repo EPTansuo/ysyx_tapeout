@@ -21,7 +21,7 @@
 #include <fmt-def.h>
 #include <common.h>
 #include <isa.h>
-#include <vaddr.h>
+#include <memory/vaddr.h>
 //#define LOG 
 
 enum {

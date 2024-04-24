@@ -13,11 +13,11 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
-#include <cpu.h>
+#include <cpu/cpu.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
-#include <vaddr.h>
+#include <memory/vaddr.h>
 #include <stdbool.h>
 #include <watchpoint.h>
 #include <ftrace.h>

@@ -13,21 +13,25 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
-#include <isa.h>
+#ifndef __MEMORY_PADDR_H__
+#define __MEMORY_PADDR_H__
+
 #include <common.h>
-#include <assert.h>
-#include <memory/paddr.h>
 
-//word_t vaddr_ifetch(vaddr_t addr, int len) {
-  //return paddr_read(addr, len);
-//}
+#define PMEM_LEFT  ((paddr_t)CONFIG_MBASE)
+#define PMEM_RIGHT ((paddr_t)CONFIG_MBASE + CONFIG_MSIZE - 1)
+#define RESET_VECTOR (PMEM_LEFT + CONFIG_PC_RESET_OFFSET)
 
-word_t vaddr_read(vaddr_t addr, int len) {
-  return paddr_read(addr, len);
-  //assert(0);
-  //return 0;
+/* convert the guest physical address in the guest program to host virtual address in NEMU */
+uint8_t* guest_to_host(paddr_t paddr);
+/* convert the host virtual address in NEMU to guest physical address in the guest program */
+paddr_t host_to_guest(uint8_t *haddr);
+
+static inline bool in_pmem(paddr_t addr) {
+  return addr - CONFIG_MBASE < CONFIG_MSIZE;
 }
 
-void vaddr_write(vaddr_t addr, int len, word_t data) {
-  paddr_write(addr, len, data);
-}
+word_t paddr_read(paddr_t addr, int len);
+void paddr_write(paddr_t addr, int len, word_t data);
+
+#endif

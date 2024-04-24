@@ -27,26 +27,29 @@ char img[131072];
 extern char* img_file;
 extern Vcpu *top;
 
-void init_insts_file(){
-	
+long init_insts_file(){
+	long size = 0;
 	FILE* fp = fopen(img_file,"r");
 	if(fp == NULL){
 		printf(L_RED "Can not open init insts!\n" NONE);
-		return;
+		return 0;
 	}
 	fseek(fp, 0, SEEK_SET);
-	inst_num = fread(img, 1, 131072, fp) / 4;
+	size = fread(img, 1, 131072, fp);
+	inst_num = size / 4;
 	for(size_t i = 0; i < 131072; i++){
 		top->cpu->ifu1->inst_rom1->insts[i] = img[i];
 	}
 	fclose(fp);	
+	return size;
 }
 
-void init_insts_default(){
+long init_insts_default(){
 	
 	//uint8_t *insts = new uint8_t[sizeof(img)];
-	
-	inst_num = sizeof(img_default)/sizeof(uint32_t);
+	long size = sizeof(img_default);
+
+	inst_num = size/sizeof(uint32_t);
 
 	for (size_t i = 0; i < inst_num; i++)
 	{
@@ -54,8 +57,8 @@ void init_insts_default(){
 			top->cpu->ifu1->inst_rom1->insts[i*4+j] = img_default[i] >> (j*8) & 0xff;
 		}
 	}
-	
-	//return insts;
+
+	return size;
 }
 
 void print_inst(word_t pc)
@@ -82,14 +85,14 @@ void print_all_insts(){
 }
 
 
-void load_img(){
+long load_img(){
 	if(top == NULL){
 		top = new Vcpu;
 	}
 	if(img_file == NULL){
-		init_insts_default();
+		return init_insts_default();
 	}
 	else{
-		init_insts_file();
+		return init_insts_file();
 	}
 }

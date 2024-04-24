@@ -13,21 +13,24 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
-#include <isa.h>
+#ifndef __ISA_RISCV_H__
+#define __ISA_RISCV_H__
+
 #include <common.h>
-#include <assert.h>
-#include <memory/paddr.h>
 
-//word_t vaddr_ifetch(vaddr_t addr, int len) {
-  //return paddr_read(addr, len);
-//}
 
-word_t vaddr_read(vaddr_t addr, int len) {
-  return paddr_read(addr, len);
-  //assert(0);
-  //return 0;
-}
+typedef struct {
+  word_t gpr[MUXDEF(CONFIG_RVE, 16, 32)];
+  vaddr_t pc;
+} MUXDEF(CONFIG_RV64, riscv64_CPU_state, riscv32_CPU_state);
 
-void vaddr_write(vaddr_t addr, int len, word_t data) {
-  paddr_write(addr, len, data);
-}
+// decode
+typedef struct {
+  union {
+    uint32_t val;
+  } inst;
+} MUXDEF(CONFIG_RV64, riscv64_ISADecodeInfo, riscv32_ISADecodeInfo);
+
+#define isa_mmu_check(vaddr, len, type) (MMU_DIRECT)
+
+#endif

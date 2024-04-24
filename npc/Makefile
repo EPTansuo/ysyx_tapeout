@@ -70,7 +70,14 @@ run: $(BIN)
 	
 sim: run
 
+sync:
+	rsync -av $(NPC_HOME)/vsrc/ $(GZIC_SERVER_USER)@$(GZIC_SERVER_IP):$(GZIC_SERVER_NPC_HOME)/vsrc/
+rsync: sync
 
+remote_sim: sync
+	ssh $(GZIC_SERVER_USER)@$(GZIC_SERVER_IP) "cd $(GZIC_SERVER_NPC_HOME) && make sim"
+	bash ./tools/mountserver.sh
+	bash ./tools/ln_rm_vcd.sh
 
 # menuconfig and autoconf.h
 include $(NPC_HOME)/csrc/scripts/config.mk

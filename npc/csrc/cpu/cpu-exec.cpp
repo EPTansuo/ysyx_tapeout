@@ -1,4 +1,4 @@
-#include <cpu.h>
+#include <cpu/cpu.h>
 #include <isa.h>
 #include <Vcpu.h>
 #include <Vcpu_cpu.h>
@@ -9,6 +9,8 @@
 #include <inst.h>
 
 #define MAX_INST_TO_PRINT 10001
+
+CPU_state cpu = {};
 
 static bool g_print_step = false;
 

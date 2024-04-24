@@ -56,6 +56,23 @@ wire [`WordBus] add_src1_imm;
 
 assign add_src1_imm = src1+imm;
 
+//Inst_addi
+//Inst_auipc
+//Inst_lui
+//Inst_jal
+//Inst_jalr
+//Inst_sw
+//Inst_lw
+//Inst_add
+//Inst_beq
+//Inst_ebreak
+
+
+
+
+
+
+
 
 always @(*) begin
         case (inst_type)

@@ -14,20 +14,32 @@
 ***************************************************************************************/
 
 #include <isa.h>
-#include <common.h>
-#include <assert.h>
-#include <memory/paddr.h>
+#include <cpu/difftest.h>
+#include "../local-include/reg.h"
+#include <cpu/cpu.h>
+#include <fmt-def.h>
 
-//word_t vaddr_ifetch(vaddr_t addr, int len) {
-  //return paddr_read(addr, len);
-//}
+bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
+  bool succ = true;
 
-word_t vaddr_read(vaddr_t addr, int len) {
-  return paddr_read(addr, len);
-  //assert(0);
-  //return 0;
+  ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
+
+  if (cpu.pc != ref_r->pc) {
+    succ = false;
+  }
+  else{
+    succ = (memcmp(cpu.gpr, ref_r->gpr, DIFFTEST_REG_SIZE) == 0) ;
+  }
+
+  if(succ)
+    return true;
+  
+  printf("\e[1;31mDifftest ERROR!\e[0m\n  pc: 0x" FMT_WORD_HEX "\n", pc);
+#ifdef CONFIG_ITRACE
+  print_iringbuf();
+#endif 
+  return false;
 }
 
-void vaddr_write(vaddr_t addr, int len, word_t data) {
-  paddr_write(addr, len, data);
+void isa_difftest_attach() {
 }

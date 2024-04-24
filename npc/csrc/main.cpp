@@ -19,7 +19,7 @@
 #include <unistd.h>
 #include <monitor.h>
 #include <libgen.h> // 引入libgen库
-#include <cpu.h>
+#include <cpu/cpu.h>
 #include <inst.h>
 
 #define MAX_CYCLE 200

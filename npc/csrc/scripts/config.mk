@@ -17,4 +17,10 @@ ifeq ($(CONFIG_CC_O2),y)
 CFLAGS += $(CONFIG_CC_OPT)
 endif
 
+ifeq ($(CONFIG_DIFFTEST),y)
+#CFLAGS += -I$(CONFIG_LIBRARY_PATH)
+ifeq ($(CONFIG_DIFFTEST_REF_NEMU),y)
+	LDFLAGS += -L$(NEMU_HOME)/build/riscv32-nemu-interpreter-so
+endif
+endif
 
