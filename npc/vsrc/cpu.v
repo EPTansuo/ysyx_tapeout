@@ -80,8 +80,8 @@ wire [`InstAddrBus] exu_mem_w_addr;
 wire [`InstAddrBus] exu_mem_r_addr;
 wire [`WordBus] exu_mem_w_data;
 wire [`WordBus] exu_mem_r_data;
-wire [1:0] exu_mem_w_bytes;   //0: 1Byte, 1: 2Bytes, 2: 4Bytes, 3: 8Bytes
-wire [1:0] exu_mem_r_bytes;
+wire [7:0] exu_mem_w_mask;
+wire [7:0] exu_mem_r_mask;
 exu exu1(
         .clk(clk),
         .rst(rst),
@@ -102,8 +102,8 @@ exu exu1(
         .mem_r_addr(exu_mem_w_addr),
         .mem_w_data(exu_mem_w_data),
         .mem_r_data(exu_mem_r_data),
-        .mem_w_bytes(exu_mem_w_bytes),
-        .mem_r_bytes(exu_mem_r_bytes)
+        .mem_w_mask(exu_mem_w_mask),
+        .mem_r_mask(exu_mem_w_mask)
 );
 
 mem mem1(
@@ -115,8 +115,8 @@ mem mem1(
         .re(exu_mem_re),
         .r_addr(exu_mem_r_addr),
         .r_data(exu_mem_r_data),
-        .r_bytes(exu_mem_r_bytes),
-        .w_bytes(exu_mem_w_bytes)
+        .r_mask(exu_mem_w_mask),
+        .w_mask(exu_mem_w_mask)
 );
 
 
