@@ -91,10 +91,12 @@ static void execute(uint64_t n) {
   for (;n > 0; n --) {
     exec_once();
 
-  if(first)
+  if(first){
     first = false;
-  else 
+  }
+  else{ 
     trace_and_difftest();
+  }
 
     if (npc_state.state != NPC_RUNNING) break;
     IFDEF(CONFIG_DEVICE, device_update());
