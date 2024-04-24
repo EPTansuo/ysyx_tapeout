@@ -53,7 +53,7 @@ always @(*) begin
 end
 
 always @(*) begin
-        if(idu_pc > `Init_Addr) begin
+        if(idu_pc >= `Init_Addr && inst_type == `Inst_inv) begin
                 inst_invalid();
         end
 end
