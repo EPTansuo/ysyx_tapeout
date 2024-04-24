@@ -99,11 +99,11 @@ exu exu1(
         .mem_we(exu_mem_we),
         .mem_re(exu_mem_re),
         .mem_w_addr(exu_mem_w_addr),
-        .mem_r_addr(exu_mem_w_addr),
+        .mem_r_addr(exu_mem_r_addr),
         .mem_w_data(exu_mem_w_data),
         .mem_r_data(exu_mem_r_data),
         .mem_w_mask(exu_mem_w_mask),
-        .mem_r_mask(exu_mem_w_mask)
+        .mem_r_mask(exu_mem_r_mask)
 );
 
 mem mem1(
@@ -115,7 +115,7 @@ mem mem1(
         .re(exu_mem_re),
         .r_addr(exu_mem_r_addr),
         .r_data(exu_mem_r_data),
-        .r_mask(exu_mem_w_mask),
+        .r_mask(exu_mem_r_mask),
         .w_mask(exu_mem_w_mask)
 );
 
