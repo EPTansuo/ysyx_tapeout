@@ -6,20 +6,27 @@ module cpu(
         input wire clk
 );
 
-wire [`InstAddrBus]npc;
+wire [`InstAddrBus]pc;
 wire [`InstDataBus]inst;
+wire [`InstAddrBus]pc_offset;
+wire pc_offset_en;
 
 pc pc1(
         .rst(rst),
         .clk(clk),
-        .npc(npc)
+        .pc(pc),
+        .pc_offset(pc_offset),
+        .pc_offset_en(pc_offset_en)
 );
+
+wire [`InstAddrBus] ifu_pc;
 
 ifu ifu1(
         .rst(rst),
         .clk(clk),
-        .addr(npc),
-        .inst(inst)
+        .addr(pc),
+        .inst(inst),
+        .ifu_pc(ifu_pc)
 );
 
 
@@ -32,7 +39,7 @@ wire [`RegAddrBus] rd;
 wire [7:0] inst_type;
 wire [`RegAddrBus] gpr_raddr_1;
 wire [`RegAddrBus] gpr_raddr_2;
-
+wire [`InstAddrBus] idu_pc;
 
 idu idu1(
         .rst(rst),
@@ -46,7 +53,9 @@ idu idu1(
         .inst_type(inst_type),
         .src1(src1),
         .src2(src2),
-        .imm(imm)
+        .imm(imm),
+        .ifu_pc(ifu_pc),
+        .idu_pc(idu_pc)
 );
 
 wire gpr_we;
@@ -65,6 +74,14 @@ gpr gpr1(
         .rdata2(gpr_rdata_2)
 );
 
+wire exu_mem_we;
+wire exu_mem_re;
+wire [`InstAddrBus] exu_mem_w_addr;
+wire [`InstAddrBus] exu_mem_r_addr;
+wire [`WordBus] exu_mem_w_data;
+wire [`WordBus] exu_mem_r_data;
+wire [1:0] exu_mem_w_bytes;   //0: 1Byte, 1: 2Bytes, 2: 4Bytes, 3: 8Bytes
+wire [1:0] exu_mem_r_bytes;
 exu exu1(
         .clk(clk),
         .rst(rst),
@@ -73,10 +90,36 @@ exu exu1(
         .imm(imm),
         .inst_type(inst_type),
         .rd(rd),
-        .w_data(gpr_wdata),
-        .w_addr(gpr_waddr),
-        .we(gpr_we)
+        .gpr_w_data(gpr_wdata),
+        .gpr_w_addr(gpr_waddr),
+        .gpr_we(gpr_we),
+        .idu_pc(idu_pc),
+        .pc_offset_en(pc_offset_en),
+        .pc_offset(pc_offset),
+        .mem_we(exu_mem_we),
+        .mem_re(exu_mem_re),
+        .mem_w_addr(exu_mem_w_addr),
+        .mem_r_addr(exu_mem_w_addr),
+        .mem_w_data(exu_mem_w_data),
+        .mem_r_data(exu_mem_r_data),
+        .mem_w_bytes(exu_mem_w_bytes),
+        .mem_r_bytes(exu_mem_r_bytes)
 );
+
+mem mem1(
+        .clk(clk),
+        .rst(rst),
+        .we(exu_mem_we),
+        .w_addr(exu_mem_w_addr),
+        .w_data(exu_mem_w_addr),
+        .re(exu_mem_re),
+        .r_addr(exu_mem_r_addr),
+        .r_data(exu_mem_r_data),
+        .r_bytes(exu_mem_r_bytes),
+        .w_bytes(exu_mem_w_bytes)
+);
+
+
 
 
 endmodule

@@ -1,7 +1,7 @@
 TOPNAME = cpu
 NXDC_FILES = constr/cpu.nxdc
-INC_PATH ?=
-
+IMG = "/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/add-riscv32e-npc.bin"
+ARGS = -v --diff="/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/nemu/build/riscv32-nemu-interpreter-so"
 
 VERILATOR = verilator
 VERILATOR_CFLAGS += -MMD --build -cc --public --trace \
@@ -12,6 +12,16 @@ BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
 BIN = $(BUILD_DIR)/$(TOPNAME)
 VCD_WAVE = wave.vcd
+
+-include .config
+
+INC_PATH +=$(abspath csrc/include)
+INC_PATH +=$(abspath csrc/isa/$(CONFIG_ISA)/include)
+INC_PATH +=$(abspath csrc/isa/$(CONFIG_ISA)/local-include)
+
+
+
+
 
 default: $(BIN)
 
@@ -26,13 +36,15 @@ $(SRC_AUTO_BIND): $(NXDC_FILES)
 VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
 CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
 CSRCS += $(SRC_AUTO_BIND)
-
+#CSRCS += $(NEMU_HOME)/src/utils/disasm.cc
 
 
 # rules for verilator
 INCFLAGS = $(addprefix -I, $(INC_PATH))
-CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
-
+CXXFLAGS += -Wall $(INCFLAGS) -g -DTOP_NAME="\"V$(TOPNAME)\"" -fpermissive #$(shell llvm-config --cxxflags) 
+LDFLAGS += -lreadline
+#LDFLAGS += $(shell llvm-config --ldflags)
+#LDLIBS += $(shell llvm-config --libs)
 
 # rules for NVBoard
 include $(NVBOARD_HOME)/scripts/nvboard.mk
@@ -40,6 +52,7 @@ include $(NVBOARD_HOME)/scripts/nvboard.mk
 
 
 $(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
+
 	@rm -rf $(OBJ_DIR)
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $^ \
@@ -49,10 +62,26 @@ all: default
 
 run: $(BIN)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
-	@$^
+	bash ./tools/disasm.sh $(IMG) $(BUILD_DIR)
+	$^ $(ARGS) $(IMG)
+#	echo "$(ARGS)" $(IMG)
 #	@$(SIM_EXECUTABLE)
 #	@$(VCD_VIEWER) $(VCD_WAVE)
 	
+sim: run
+
+sync:
+	rsync -av $(NPC_HOME)/vsrc/ $(GZIC_SERVER_USER)@$(GZIC_SERVER_IP):$(GZIC_SERVER_NPC_HOME)/vsrc/
+rsync: sync
+
+remote_sim: sync
+	ssh $(GZIC_SERVER_USER)@$(GZIC_SERVER_IP) "cd $(GZIC_SERVER_NPC_HOME) && make sim"
+	bash ./tools/mountserver.sh
+	bash ./tools/ln_rm_vcd.sh
+
+# menuconfig and autoconf.h
+include $(NPC_HOME)/csrc/scripts/config.mk
+
 
 	
 clean:

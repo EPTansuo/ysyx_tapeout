@@ -54,7 +54,7 @@ void print_iringbuf(){
   char logbuf[64];
   for(int i = 0; i < IRINGBUF_SIZE && iringbuf.inst[i] != 0; i++){
     //printf("0x%08x\n", iringbuf.inst[i]);
-    disassemble(logbuf, 128, iringbuf.pc[i] , (uint8_t*)(&(iringbuf.inst[i])), 4);
+    disassemble(logbuf, 64, iringbuf.pc[i] , (uint8_t*)(&(iringbuf.inst[i])), 4);
 
     if( iringbuf.head == 0 ? i == IRINGBUF_SIZE - 1 : i == iringbuf.head - 1)
       printf("--> ");
