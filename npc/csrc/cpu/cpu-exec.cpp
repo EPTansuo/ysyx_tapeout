@@ -7,6 +7,8 @@
 #include <Vcpu_ifu.h>
 #include <Vcpu_inst_rom.h>
 #include <inst.h>
+#include <watchpoint.h>
+#include <cpu/difftest.h>
 
 #define MAX_INST_TO_PRINT 10001
 
@@ -19,6 +21,12 @@ extern VerilatedVcdC * tfp;
 extern VerilatedContext* contextp;
 
 void disassemble(char* logbuf, size_t logbuf_size, word_t pc);
+
+
+static void trace_and_difftest(){
+  IFDEF(CONFIG_DIFFTEST, difftest_step(top->cpu->pc1->pc, top->cpu->pc1->pc + top->cpu->pc1->pc_offset));
+  scan_watchpoint();
+}
 
 void cpu_eval_dump(){
   top->eval();
@@ -72,7 +80,7 @@ static void execute(uint64_t n) {
   for (;n > 0; n --) {
     exec_once();
     
-    //trace_and_difftest(&s, cpu.pc);
+    trace_and_difftest();
     if (npc_state.state != NPC_RUNNING) break;
     IFDEF(CONFIG_DEVICE, device_update());
   }
