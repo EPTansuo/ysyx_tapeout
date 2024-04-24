@@ -25,8 +25,8 @@ void disassemble(char* logbuf, size_t logbuf_size, word_t pc);
 
 static void trace_and_difftest(){
 
-  //IFDEF(CONFIG_DIFFTEST, difftest_step(top->cpu->pc1->pc, top->cpu->pc1->pc + top->cpu->pc1->pc_offset));
-  IFDEF(CONFIG_DIFFTEST, difftest_step(0x80000000, 0x80000000 +4));
+  IFDEF(CONFIG_DIFFTEST, difftest_step(top->cpu->pc1->pc, top->cpu->pc1->pc + top->cpu->pc1->pc_offset));
+  printf("%s:%d: pc=0x%x, dnpc=0x%x\n" __FILE__, __LINE__,top->cpu->pc1->pc, top->cpu->pc1->pc + top->cpu->pc1->pc_offset);
   scan_watchpoint();
 }
 
