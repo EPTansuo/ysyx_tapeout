@@ -77,6 +77,8 @@ void init_monitor(int argc, char** argv){
         long img_size = load_img();
         init_mem();
         cpu_reset(3);
+        void cpu_single_cycle();
+        cpu_single_cycle();
         init_disasm();
         init_difftest(diff_so_file, img_size, 0);  //Do not need to use the  third parameter
         init_sdb();
