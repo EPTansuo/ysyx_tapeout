@@ -13,7 +13,7 @@
 #include <memory/host.h>
 
 extern Vcpu* top;
-
+extern unsigned char isa_logo[];
 
 uint8_t* guest_to_host(paddr_t paddr);
 paddr_t host_to_guest(uint8_t *haddr);
@@ -29,6 +29,7 @@ void inst_invalid(){
 		return;
 	char logbuf[50];
 	word_t pc = top->cpu->pc1->pc;
+	printf(L_RED "%s" NONE "\n", isa_logo);
 	printf(L_RED "Invalid or Unimplemented Inst" NONE "\n");
 	//print_inst( pc);
 	//disassemble(logbuf, 40, pc, (uint8_t *)(&_img[pc-0x80000000]), 4);
