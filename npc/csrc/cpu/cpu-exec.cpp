@@ -77,7 +77,7 @@ static void exec_once(){
   for(int i=0; i<32; i++){
     cpu.gpr[i] = gpr(i);
   }
-  cpu.pc = top->cpu->pc1->pc;
+  cpu.pc = top->cpu->pc1->pc + top->cpu->pc1->pc_offset;
 
   disassemble(logbuf,50,top->cpu->pc1->pc);
   print_inst(top->cpu->pc1->pc);
