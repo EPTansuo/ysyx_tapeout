@@ -20,6 +20,11 @@
 #include <fmt-def.h>
 #include <sim.h>
 
+static CPU_state cpu_state[2] = {}; 
+static int state_index = 0;
+static bool first = true;
+#define INDEX_INC do{state_index = (state_index + 1) % 2;}while(0)
+
 extern const char *regs[];
 
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
@@ -27,12 +32,20 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
 
   ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
 
-  //if (cpu.pc != ref_r->pc) {
+  memcpy(&cpu_state[state_index], &ref_r, sizeof(CPU_state));
+  INDEX_INC;
+
+  if(first){
+    first = false;
+    return true;
+  }
+
+  // if (cpu.pc != ref_r->pc) {
   //  succ = false;
-  //}
-  //else{
+  // }
+  // else{
     for(int i=0; i<32; i++){
-      if(gpr(i) != ref_r->gpr[i]){
+      if(gpr(i) != cpu_state[state_index].gpr[i]){
         succ = false;
         break;
       }
