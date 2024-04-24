@@ -56,6 +56,9 @@ always @(*)begin
                                 `Funct3_addi:begin
                                         inst_type = `Inst_addi;
                                 end
+                                3'b011: begin
+                                        inst_type = `Inst_sltiu;
+                                end
                                 default:begin
                                         inst_type = `Inst_inv;
                                 end
