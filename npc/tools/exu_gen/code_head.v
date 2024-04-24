@@ -53,7 +53,7 @@ always @(*) begin
 end
 
 always @(*) begin
-        if(idu_pc >= `Init_Addr) begin
+        if(idu_pc >= `Init_Addr && inst_type == `Inst_inv) begin
                 inst_invalid();
         end
 end
@@ -62,6 +62,5 @@ end
 
 wire [`WordBus] add_src1_imm;
 assign add_src1_imm = src1+imm;
-
 
 
