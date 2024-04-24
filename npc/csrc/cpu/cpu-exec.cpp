@@ -73,13 +73,11 @@ void assert_fail_msg() {
 static void exec_once(){
   char logbuf[50];
   cpu_single_cycle();
-#ifdef CONFIG_DIFFTEST
+
   for(int i=0; i<32; i++){
     cpu.gpr[i] = gpr(i);
   }
   cpu.pc = top->cpu->pc1->pc;
-
-#endif
 
   disassemble(logbuf,50,top->cpu->pc1->pc);
   print_inst(top->cpu->pc1->pc);
