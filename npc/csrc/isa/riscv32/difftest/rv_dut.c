@@ -26,7 +26,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
 
   ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
 
-  if (cpu.pc+4 != ref_r->pc) {
+  if (cpu.pc != ref_r->pc) {
     succ = false;
   }
   else{
