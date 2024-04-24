@@ -2,6 +2,7 @@
 #include <isa.h>
 #include <Vcpu.h>
 #include <Vcpu_cpu.h>
+#include <Vcpu_gpr.h>
 #include <Vcpu_pc.h>
 #include <fmt-def.h>
 #include <Vcpu_ifu.h>
@@ -9,6 +10,7 @@
 #include <inst.h>
 #include <watchpoint.h>
 #include <cpu/difftest.h>
+#include <reg.h>
 
 #define MAX_INST_TO_PRINT 10001
 
@@ -71,6 +73,14 @@ void assert_fail_msg() {
 static void exec_once(){
   char logbuf[50];
   cpu_single_cycle();
+#ifdef CONFIG_DIFFTEST
+  for(int i=0; i<32; i++){
+    cpu.gpr[i] = gpr(i);
+  }
+  cpu.pc = top->cpu->pc1->pc;
+
+#endif
+
   disassemble(logbuf,50,top->cpu->pc1->pc);
   print_inst(top->cpu->pc1->pc);
   printf("\t%s\n", logbuf);
