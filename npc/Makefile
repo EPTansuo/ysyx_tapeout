@@ -75,6 +75,7 @@ sync:
 rsync: sync
 
 remote_sim: sync
+	python3 $(NPC_HOME)/tools/exu_gen/exu_gen.py > $(NPC_HOME)/vsrc/exu.v
 	ssh $(GZIC_SERVER_USER)@$(GZIC_SERVER_IP) "cd $(GZIC_SERVER_NPC_HOME) && make sim"
 	bash ./tools/mountserver.sh
 	bash ./tools/ln_rm_vcd.sh
