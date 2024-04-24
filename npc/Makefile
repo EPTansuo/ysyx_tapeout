@@ -23,7 +23,7 @@ INC_PATH +=$(abspath csrc/isa/$(CONFIG_ISA)/local-include)
 
 
 
-default: sim
+default:$(BIN) 
 
 $(shell mkdir -p $(BUILD_DIR))
 
@@ -52,6 +52,7 @@ include $(NVBOARD_HOME)/scripts/nvboard.mk
 
 EXU_GEN:./tools/exu_gen/exu_table.xlsx
 	python3 $(NPC_HOME)/tools/exu_gen/exu_gen.py > $(NPC_HOME)/vsrc/exu.v
+
 $(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE) 
 	@rm -rf $(OBJ_DIR)
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
@@ -60,7 +61,7 @@ $(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
 all: default
 
-run: $(BIN) EXU_GEN
+run: $(BIN) 
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	bash ./tools/disasm.sh $(IMG) $(BUILD_DIR)
 	$^ $(ARGS) $(IMG)
