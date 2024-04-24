@@ -68,6 +68,7 @@ assign add_src1_imm = src1+imm;
 
 `ifndef STA
 assign exu_invalid_inst = rst == `RstEnable ? 0 : 
+                          inst_type == `Inst_ebreak ? 0 : 
                           inst_type == `Inst_addi ? 0 : 
                           inst_type == `Inst_auipc ? 0 : 
                           inst_type == `Inst_lui ? 0 : 
