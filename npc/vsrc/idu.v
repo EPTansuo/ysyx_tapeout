@@ -412,5 +412,17 @@ assign inst_type = inst == `EBREAK ? `Inst_ebreak :
                    `Inst_inv;
 
 
+assign imm = (opcode == 7'b0010111) ? immU :
+             (opcode == 7'b0110111) ? immU :
+             (opcode == 7'b0000011) ? immI :
+             (opcode == 7'b0010011) ? immI :
+             (opcode == 7'b0011011) ? immI :
+             (opcode == 7'b1100111) ? immI :
+             (opcode == 7'b0100011) ? immS :
+             (opcode == 7'b1101111) ? immJ :
+             (opcode == 7'b1100011) ? immB :
+             0;
+
+
 endmodule
 
