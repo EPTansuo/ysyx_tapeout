@@ -130,8 +130,18 @@ always @(*)begin
                                                 end
                                         endcase
                                 end
+								7'b010_0000: begin
+										case(funct3) 
+												3'b000: begin
+														inst_type = `Inst_sub;
+												end
+												default: begin
+														inst_type = `Inst_inv;
+												end
+										endcase
+								end
                                 default: begin
-                                        
+                                		inst_type = `Inst_inv;        
                                 end
                         endcase
                 end
