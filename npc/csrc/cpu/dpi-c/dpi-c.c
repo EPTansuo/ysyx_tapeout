@@ -42,7 +42,9 @@ void inst_invalid(){
 
 
 int pmem_read(int raddr){
-  return host_read(guest_to_host(raddr), 4);
+  word_t data = host_read(guest_to_host(raddr), 4);
+  printf("pmem_read: raddr = 0x%x, data = 0x%x\n", raddr, data);
+  return data;
 }
 void pmem_write(int waddr, int wdata, char wmask){
   int aligned_addr = waddr & (~0x3u);
