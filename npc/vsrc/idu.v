@@ -137,6 +137,9 @@ always @(*)begin
                                                 3'b100: begin
                                                         inst_type = `Inst_xor;
                                                 end
+                                                3'b110: begin
+                                                        inst_type = `Inst_or;
+                                                end
                                                 default: begin
                                                         inst_type = `Inst_inv;
                                                 end

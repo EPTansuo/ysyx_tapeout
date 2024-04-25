@@ -30,6 +30,7 @@
 `define Inst_bge        8'd15           //bge
 `define Inst_sltu       8'd16           //sltu
 `define Inst_xor        8'd17           //xor
+`define Inst_or         8'd18           //or
 
 `define EBREAK          32'h00100073	//ebreak指令
 
