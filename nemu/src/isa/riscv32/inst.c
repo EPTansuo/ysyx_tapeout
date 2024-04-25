@@ -19,6 +19,8 @@
 #include <cpu/decode.h>
 #include <ftrace.h>
 
+extern CPU_state cpu;
+
 #define R(i) gpr(i)
 #define Mr vaddr_read
 #define Mw vaddr_write
