@@ -112,7 +112,7 @@ assign gpr_w_addr = inst_type == `Inst_addi ? rd :
                     0;
 
 
-assign gpr_w_data = inst_type == `Inst_addi ? add_src1_imm : 
+assign gpr_w_data = inst_type == `Inst_addi ? 3: //add_src1_imm : 
                     inst_type == `Inst_auipc ? add_src1_imm : 
                     inst_type == `Inst_lui ? imm : 
                     inst_type == `Inst_jal ? idu_pc+4 : 
