@@ -39,7 +39,7 @@
 
 `else                      //对于RV32的配置
 
-`define SHAMT_LONG      SHAMT           //shamt for rv32 in some shift logic instructions
+`define SHAMT_LONG      `SHAMT           //shamt for rv32 in some shift logic instructions
 `define SHAMT_LONG_LEN  5
 `define RegDataBus      31:0		//GPR 模块的数据线位宽
 `define RegWidth        31		//寄存器的位宽
