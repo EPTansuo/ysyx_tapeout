@@ -14,7 +14,7 @@ LDFLAGS   += -T $(AM_HOME)/scripts/linker.ld \
 LDFLAGS   += --gc-sections -e _start
 CFLAGS += -DMAINARGS=\"$(mainargs)\"
 
-NPCFLAGS =--diff=$(NEMU_HOME)/build/riscv32-nemu-interpreter-so -b
+NPCFLAGS =--diff=$(NEMU_HOME)/build/riscv32-nemu-interpreter-so
 
 .PHONY: $(AM_HOME)/am/src/riscv/npc/trm.c
 
