@@ -45,7 +45,7 @@ int pmem_read(int raddr){
   if(raddr < 0x80000000)
     return 0;
   word_t data = host_read(guest_to_host(raddr), 4);
-  printf("pmem_read: raddr = 0x%x, data = 0x%x\n", raddr, data);
+  //printf("pmem_read: raddr = 0x%x, data = 0x%x\n", raddr, data);
   return data;
 }
 void pmem_write(int waddr, int wdata, char wmask){
