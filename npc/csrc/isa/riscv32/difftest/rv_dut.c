@@ -18,26 +18,60 @@
 #include "../local-include/reg.h"
 #include <cpu/cpu.h>
 #include <fmt-def.h>
+#include <sim.h>
 
+static CPU_state cpu_state_buf = {}; 
+static int state_index = 0;
+static bool first = true;
+#define INDEX_INC do{state_index = (state_index + 1) % 2;}while(0)
+
+extern const char *regs[];
 
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   bool succ = true;
+  if(!first){
+    //if(ref_r->pc != npc_cpu.pc){
+    if(false){
+      succ = false;
+    }
+    else {
+      for(int i = 0; i < 32; i++){
+        if(cpu_state_buf.gpr[i] != npc_cpu.gpr[i]){
+          succ = false;
+          break;
+        }
+      }
+    }
 
-  ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
-
-  if (cpu.pc != ref_r->pc) {
-    succ = false;
+    //  printf("npc:nemu:pc==0x%x\n",cpu_state_buf.pc);
+    //  printf("ref reg info:\n");
+    //     int reg_num = 32;
+    //     for (int i = 0; i < reg_num; i++)
+    //     {
+    //             printf("$%s = 0x" FMT_WORD_HEX_WIDTH "\t", regs[i], cpu_state_buf.gpr[i]);
+    //             if ((i + 1) % 4 == 0)
+    //                     putchar('\n');
+    //     }
+    //     printf("$pc = 0x" FMT_WORD_HEX_WIDTH "\n", top->cpu->pc1->pc);
+    if(!succ){
+      printf("\e[1;31m Difftest ERROR!\e[0m\n ");
+      printf("DO NOT SEE CURRENT INSTRATION, SEE PREVIOUS ONE!\n");
+      printf("npc:nemu:pc==0x%x\n",cpu_state_buf.pc);
+      printf("ref reg info:\n");
+      for (int i = 0; i < 32; i++)
+      {
+              printf("$%s = 0x" FMT_WORD_HEX_WIDTH "\t", regs[i], cpu_state_buf.gpr[i]);
+              if ((i + 1) % 4 == 0)
+                      putchar('\n');
+      }
+      printf("$pc = 0x" FMT_WORD_HEX_WIDTH "\n", cpu_state_buf.pc);
+      return false;
+    }
   }
-  else{
-    succ = (memcmp(cpu.gpr, ref_r->gpr, DIFFTEST_REG_SIZE) == 0) ;
-  }
-
-  if(succ)
-    return true;
-  
-  printf("\e[1;31m Difftest ERROR!\e[0m\n  pc: 0x" FMT_WORD_HEX "\n", pc);
-  //print_iringbuf();
-  return false;
+  first = false;
+  memcpy(&cpu_state_buf, ref_r, DIFFTEST_REG_SIZE);
+ // printf("npc:nemu:ref_r->pc==0x%x\n",ref_r->pc);
+  return succ;
 }
 
 void isa_difftest_attach() {

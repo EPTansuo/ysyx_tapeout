@@ -12,6 +12,7 @@
 #include <fmt-def.h>
 #include <memory/host.h>
 
+
 extern Vcpu* top;
 extern unsigned char isa_logo[];
 
@@ -42,18 +43,24 @@ void inst_invalid(){
 
 
 int pmem_read(int raddr){
-  return host_read(guest_to_host(raddr), 4);
+
+  if(raddr < 0x80000000)
+    return 0;
+  word_t data = host_read(guest_to_host(raddr), 4);
+  //printf("pmem_read: raddr = 0x%x, data = 0x%x\n", raddr, data);
+  return data;
 }
+
 void pmem_write(int waddr, int wdata, char wmask){
-  int aligned_addr = waddr & (~0x3u);
-  int cur_data = host_read(guest_to_host(aligned_addr), 4);
-  for (int i = 0; i < 4; i++) {
-      if (wmask & (1 << i)) {
-          int shift = i * 8;
-          int mask = 0xFF << shift;
-          cur_data &= (~mask);
-          cur_data |= (wdata & mask);
-      }
+  switch (wmask)
+  {
+    case 0x01: host_write(guest_to_host(waddr), 1, wdata); break; 
+    case 0x03: host_write(guest_to_host(waddr), 2, wdata); break;
+    case 0x0f: host_write(guest_to_host(waddr), 4, wdata); break;
+  default:
+    printf( L_RED " Can only write for 1/2/4 btyes ()." NONE "\n");
+    break;
   }
-  host_write(guest_to_host(aligned_addr),4,cur_data);
 }
+
+

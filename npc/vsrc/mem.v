@@ -25,6 +25,7 @@ import "DPI-C" function int pmem_read(input int raddr);
 import "DPI-C" function void pmem_write(input int waddr, input int wdata, input byte wmask);
 
 
+<<<<<<< HEAD
 always @(*) begin
         if (rst == `RstEnable) begin
                 r_data = 0;
@@ -36,10 +37,37 @@ always @(*) begin
                 else begin
                         r_data = 0;
                 end
+=======
+
+always @(*) begin
+        if (rst == `RstDisable) begin // 有读写请求时
+          r_data = pmem_read(r_addr);
+          if (we) begin // 有写请求时
+            pmem_write(w_addr, w_data, w_mask);
+          end
         end
-end
+        else begin
+          r_data = 0;
+>>>>>>> tracer-ysyx
+        end
+      end
+
+// always @(*) begin
+//         if (rst == `RstEnable) begin
+//                 r_data = 0;
+//         end
+//         else begin
+//                 if(re == `Enable) begin
+//                         r_data = pmem_read(r_addr);
+//                 end
+//                 else begin
+//                         r_data = 0;
+//                 end
+//         end
+// end
 
 
+<<<<<<< HEAD
 always @(posedge clk) begin
         if (rst == `RstEnable) begin
                 // Do nothing
@@ -50,6 +78,19 @@ always @(posedge clk) begin
                 end
         end
 end
+=======
+// always @(posedge clk) begin
+//         if (rst == `RstEnable) begin
+//                 // Do nothing
+//         end
+//         else begin
+//                 if(we == `Enable) begin
+//                         pmem_write(w_addr, w_data, w_mask);
+//                 end
+//         end
+// end
+
+>>>>>>> tracer-ysyx
 
 
 endmodule

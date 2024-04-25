@@ -18,6 +18,10 @@ module exu(
         input [7:0] inst_type,
         input [`RegAddrBus] rd,
         input [`InstAddrBus] idu_pc,
+<<<<<<< HEAD
+=======
+        input [`InstDataBus] idu_inst,
+>>>>>>> tracer-ysyx
 
         //to gpr
         output reg [`RegDataBus] gpr_w_data,
@@ -64,5 +68,16 @@ end
 `endif
 
 wire [`WordBus] add_src1_imm;
+wire [4:0] shamt;
+wire [`SHAMT_LONG_LEN-1:0] shamt_long;
+wire [`WordBus] sra_src1_sranum;
+
 assign add_src1_imm = src1+imm;
+assign shamt = `SHAMT;
+assign shamt_long = `SHAMT_LONG;
+
+`ifdef CONFIG_RV32
+reg [4:0] sranum;
+assign sra_src1_sranum = ({32{src1[31]}} << (6'd32-{1'b0,sranum[4:0]})) | (src1 >> sranum[4:0]);
+`endif
 

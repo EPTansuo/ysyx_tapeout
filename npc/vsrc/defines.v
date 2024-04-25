@@ -21,6 +21,8 @@
 `define MemSize 	131072		//MEM的实际大小为128kB
 
 
+`define SHAMT           idu_inst[24:20]
+
 `ifdef CONFIG_RV64         //对于RV64的配置
 
 `define RegDataBus	63:0		//GPR 模块的数据线位宽
@@ -28,23 +30,25 @@
 `define InstAddrBus     63:0            //指令地址线位宽
 `define InstAddrWidth   64              //指令地址位宽
 `define Init_Addr       64'h80000000	//初始化的地址
-`define ZeroWord  	64'h0    	//64位的0
+`define ZeroWord        64'h0    	//64位的0
 `define WordBus         63:0            //数据总线
 `define WordWidth       64              //数据总线位宽
 
+`define SHAMT_LONG      idu_inst[25:20]     //shamt for rv64 in some shift logic instructions
+`define SHAMT_LONG_LEN  6
+
 `else                      //对于RV32的配置
 
-`define RegDataBus	31:0		//GPR 模块的数据线位宽
+`define SHAMT_LONG      `SHAMT           //shamt for rv32 in some shift logic instructions
+`define SHAMT_LONG_LEN  5
+`define RegDataBus      31:0		//GPR 模块的数据线位宽
 `define RegWidth        31		//寄存器的位宽
 `define InstAddrBus     31:0            //指令地址线位宽
 `define InstAddrWidth   32              //指令地址位宽
 `define Init_Addr       32'h80000000	//初始化的地址
-`define ZeroWord  	32'h0    	//32位的0
+`define ZeroWord        32'h0    	//32位的0
 `define WordBus         31:0            //数据总线位宽
 `define WordWidth       32              //数据总线位宽
 `endif // CONFIG_RV64
 
-`define ONE_BYTE         2'b00          //代表内存读写1个字节
-`define TWO_BYTES        2'b01          //2字节
-`define FOUR_BYTES       2'b10          //4字节
-`define EIGHT_BYTES      2'b11          //8字节         
+

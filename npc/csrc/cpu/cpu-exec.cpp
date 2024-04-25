@@ -2,6 +2,7 @@
 #include <isa.h>
 #include <Vcpu.h>
 #include <Vcpu_cpu.h>
+#include <Vcpu_gpr.h>
 #include <Vcpu_pc.h>
 #include <fmt-def.h>
 #include <Vcpu_ifu.h>
@@ -9,10 +10,12 @@
 #include <inst.h>
 #include <watchpoint.h>
 #include <cpu/difftest.h>
+#include <reg.h>
 
 #define MAX_INST_TO_PRINT 10001
+bool first = true;
 
-CPU_state cpu = {};
+CPU_state npc_cpu = {};
 
 static bool g_print_step = false;
 
@@ -24,7 +27,9 @@ void disassemble(char* logbuf, size_t logbuf_size, word_t pc);
 
 
 static void trace_and_difftest(){
-  IFDEF(CONFIG_DIFFTEST, difftest_step(top->cpu->pc1->pc, top->cpu->pc1->pc + top->cpu->pc1->pc_offset));
+  //printf("pc=0x%x, dnpc=0x%x\n",top->cpu->pc1->pc, top->cpu->pc1->pc + (top->cpu->pc1->pc_offset_en?top->cpu->pc1->pc_offset:0));
+  //IFDEF(CONFIG_DIFFTEST, difftest_step(top->cpu->pc1->pc, top->cpu->pc1->pc + top->cpu->pc1->pc_offset));
+  IFDEF(CONFIG_DIFFTEST, difftest_step(0,0));
   scan_watchpoint();
 }
 
@@ -69,18 +74,27 @@ void assert_fail_msg() {
 static void exec_once(){
   char logbuf[50];
   cpu_single_cycle();
-  disassemble(logbuf,50,top->cpu->pc1->pc);
-  print_inst(top->cpu->pc1->pc);
-  printf("\t%s\n", logbuf);
-  
+
+  for(int i=0; i<32; i++){
+    npc_cpu.gpr[i] = gpr(i);
+  }
+  npc_cpu.pc = top->cpu->pc1->pc +4;
+
+  if(g_print_step){
+    disassemble(logbuf,50,top->cpu->pc1->pc);
+    print_inst(top->cpu->pc1->pc);
+    printf("\t%s\n", logbuf);
+  }
 }
 
 
 static void execute(uint64_t n) {
   for (;n > 0; n --) {
     exec_once();
-    
+
     trace_and_difftest();
+
+
     if (npc_state.state != NPC_RUNNING) break;
     IFDEF(CONFIG_DEVICE, device_update());
   }

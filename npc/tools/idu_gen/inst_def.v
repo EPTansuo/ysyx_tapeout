@@ -7,27 +7,6 @@
 
 `define EBREAK              32'h00100073
 
-<<<<<<< HEAD
-`define Inst_inv        8'd0            //无效指令 
-`define Inst_addi       8'd1            //代表addi指令
-`define Inst_auipc      8'd2            //auipc
-`define Inst_lui        8'd3            //lui
-`define Inst_jal        8'd4            //jal
-`define Inst_jalr       8'd5            //jalr
-`define Inst_sw         8'd6            //sw
-`define Inst_lw         8'd7            //lw
-`define Inst_add        8'd8            //add
-`define Inst_beq        8'd9            //beq
-`define Inst_ebreak     8'd10           //ebreak
-`define Inst_sltiu      8'd11           //sltiu
-`define Inst_bne        8'd12           //bne
-
-`define EBREAK          32'h00100073	//ebreak指令
-
-`define Funct3_sw       3'b010          //sw指令的funct3
-`define Funct3_addi     3'b000          //addi指令的funct3
-`define Funct3_jalr     3'b000          //jalr指令的funct3
-=======
 `define Inst_inv            8'd0
 `define Inst_ebreak         8'd1
 `define Inst_auipc          8'd2
@@ -84,4 +63,3 @@
 `define Inst_divu           8'd53
 `define Inst_divw           8'd54
 `define Inst_divuw          8'd55
->>>>>>> tracer-ysyx

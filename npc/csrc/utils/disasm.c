@@ -4,6 +4,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <utils.h>
+#include <string>
+#include <regex>
 
 extern char* img_file;
 
@@ -13,7 +15,11 @@ typedef struct{
         char str[32];
 }Disasm;
 
+extern const char *regs[];
+
 Disasm *disasm;
+
+#ifdef CONFIG_DISASM
 
 void disassemble(char* logbuf, size_t logbuf_size, word_t pc){
     uint32_t index = (pc - 0x80000000)/4;
@@ -25,9 +31,24 @@ void disassemble(char* logbuf, size_t logbuf_size, word_t pc){
     }
 }
 
+
+std::string replace_regs_name(const std::string& code) {
+    auto result = code;	
+    for(auto i=31; i>0; i--){
+    	result = std::regex_replace(result, std::regex(" x"+ std::to_string(i)), (std::string)" " + regs[i]); 
+	result = std::regex_replace(result, std::regex(",x"+ std::to_string(i)), (std::string)"," + regs[i]); 
+	//result = std::regex_replace(result, std::regex((std::string)"("+ std::to_string(i)+")"), (std::string)"(" + regs[i]+")"); 
+    }
+    return result;
+}
+
+
+
+
 void init_disasm(){
 	char img_file_path[200];
 	char line[100];
+	char asm_code_buf[100];
 	char img_full_name[50];
 	uint16_t lines = 0;
 	strcpy(img_full_name, img_file);
@@ -50,8 +71,10 @@ void init_disasm(){
 	fseek(fp, 0, SEEK_SET);
 	int i =0;
 	while (fgets(line, sizeof(line), fp) != NULL) {
-		if (sscanf(line, "%x %99[^\n]", &disasm[i].pc, &(disasm[i].str[0])) == 2) {
+		//if (sscanf(line, "%x %99[^\n]", &disasm[i].pc, &(disasm[i].str[0])) == 2) {
+		if (sscanf(line, "%x %99[^\n]", &disasm[i].pc, asm_code_buf) == 2) {
 		//printf("Address: 0x%X, Instruction: %s\n", disasm[i].pc, disasm[i].str);
+			//strcpy(&(disasm[i].str[0]),replace_regs_name(asm_code_buf).c_str());
 		} else {
 		fprintf(stderr, "Failed to parse line: %s", line);
 		}
@@ -59,3 +82,10 @@ void init_disasm(){
     	}
 
 }
+
+
+#else
+void init_disasm(){};
+void disassemble(char* logbuf, size_t logbuf_size, word_t pc){*logbuf = '0';};
+
+#endif
