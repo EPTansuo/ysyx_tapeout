@@ -82,7 +82,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 
 #ifdef CONFIG_TARGET_SHARE
-  printf("pc = " FMT_WORD "\t" FMT_WORD "\n", _this->pc, _this->isa.inst.val);
+  printf("nemu: pc = " FMT_WORD "\t" FMT_WORD "\n",  _this->pc, _this->isa.inst.val);
 #endif 
 
   scan_watchpoint();
