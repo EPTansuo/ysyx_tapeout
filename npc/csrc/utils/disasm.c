@@ -35,6 +35,7 @@ std::string replace_regs_name(const std::string& code) {
     for(auto i=31; i>0; i--){
     	result = std::regex_replace(result, std::regex(" x"+ std::to_string(i)), (std::string)" " + regs[i]); 
 	result = std::regex_replace(result, std::regex(",x"+ std::to_string(i)), (std::string)"," + regs[i]); 
+	result = std::regex_replace(result, std::regex((std::string)"("+ std::to_string(i)+")"), (std::string)"(" + regs[i]+")"); 
     }
     return result;
 }
