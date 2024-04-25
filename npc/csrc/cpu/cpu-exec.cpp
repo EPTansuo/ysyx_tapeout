@@ -28,8 +28,8 @@ void disassemble(char* logbuf, size_t logbuf_size, word_t pc);
 
 static void trace_and_difftest(){
   //printf("pc=0x%x, dnpc=0x%x\n",top->cpu->pc1->pc, top->cpu->pc1->pc + (top->cpu->pc1->pc_offset_en?top->cpu->pc1->pc_offset:0));
-  IFDEF(CONFIG_DIFFTEST, difftest_step(top->cpu->pc1->pc, top->cpu->pc1->pc + top->cpu->pc1->pc_offset));
-  
+  //IFDEF(CONFIG_DIFFTEST, difftest_step(top->cpu->pc1->pc, top->cpu->pc1->pc + top->cpu->pc1->pc_offset));
+  IFDEF(CONFIG_DIFFTEST, difftest_step(0,0));
   scan_watchpoint();
 }
 
