@@ -67,11 +67,16 @@ end
 wire [`WordBus] add_src1_imm;
 wire [4:0] shamt;
 wire [`SHAMT_LONG_LEN-1:0] shamt_long;
+wire [`WordBus] sra_src1_sranum;
 
 assign add_src1_imm = src1+imm;
 assign shamt = `SHAMT;
 assign shamt_long = `SHAMT_LONG;
 
+`ifdef CONFIG_RV32
+reg [4:0] sranum;
+assign sra_src1_sranum = ({32{src1[31]}} << (6'd32-{1'b0,sranum[4:0]})) | (src1 >> sranum[4:0]);
+`endif
 
 `ifndef STA
 assign exu_invalid_inst = rst == `RstEnable ? 0 : 
@@ -94,6 +99,7 @@ assign exu_invalid_inst = rst == `RstEnable ? 0 :
                           inst_type == `Inst_sub ? 0 : 
                           inst_type == `Inst_add ? 0 : 
                           inst_type == `Inst_srl ? 0 : 
+                          inst_type == `Inst_srai ? 0 : 
                           inst_type == `Inst_sra ? 0 : 
                           inst_type == `Inst_srli ? 0 : 
                           inst_type == `Inst_slli ? 0 : 
@@ -122,6 +128,7 @@ assign gpr_we = inst_type == `Inst_addi ? `Enable :
                 inst_type == `Inst_sub ? `Enable : 
                 inst_type == `Inst_add ? `Enable : 
                 inst_type == `Inst_srl ? `Enable : 
+                inst_type == `Inst_srai ? `Enable : 
                 inst_type == `Inst_sra ? `Enable : 
                 inst_type == `Inst_srli ? `Enable : 
                 inst_type == `Inst_slli ? `Enable : 
@@ -149,6 +156,7 @@ assign gpr_w_addr = inst_type == `Inst_addi ? rd :
                     inst_type == `Inst_sub ? rd : 
                     inst_type == `Inst_add ? rd : 
                     inst_type == `Inst_srl ? rd : 
+                    inst_type == `Inst_srai ? rd : 
                     inst_type == `Inst_sra ? rd : 
                     inst_type == `Inst_srli ? rd : 
                     inst_type == `Inst_slli ? rd : 
@@ -176,8 +184,8 @@ assign gpr_w_data = inst_type == `Inst_addi ? add_src1_imm :
                     inst_type == `Inst_sub ? src1 - src2 : 
                     inst_type == `Inst_add ? src1 + src2 : 
                     inst_type == `Inst_srl ? src1 >> src2 : 
-                    inst_type == `Inst_sra ? ({32{src1[31]}} << (6'd32-{1'b0,src2[4:0]}))
-     | (src1 >> src2[4:0]) : 
+                    inst_type == `Inst_srai ? sra_src1_sranum : 
+                    inst_type == `Inst_sra ? sra_src1_sranum : 
                     inst_type == `Inst_srli ? src1 >> shamt_long : 
                     inst_type == `Inst_slli ? src1 << shamt_long : 
                     inst_type == `Inst_lw ? mem_r_data : 
@@ -204,6 +212,7 @@ assign pc_offset_en = inst_type == `Inst_addi ? `Disable :
                       inst_type == `Inst_sub ? `Disable : 
                       inst_type == `Inst_add ? `Disable : 
                       inst_type == `Inst_srl ? `Disable : 
+                      inst_type == `Inst_srai ? `Disable : 
                       inst_type == `Inst_sra ? `Disable : 
                       inst_type == `Inst_srli ? `Disable : 
                       inst_type == `Inst_slli ? `Disable : 
@@ -231,6 +240,7 @@ assign pc_offset = inst_type == `Inst_addi ? 4 :
                    inst_type == `Inst_sub ? 4 : 
                    inst_type == `Inst_add ? 4 : 
                    inst_type == `Inst_srl ? 4 : 
+                   inst_type == `Inst_srai ? 4 : 
                    inst_type == `Inst_sra ? 4 : 
                    inst_type == `Inst_srli ? 4 : 
                    inst_type == `Inst_slli ? 4 : 
@@ -258,6 +268,7 @@ assign mem_re = inst_type == `Inst_addi ? `Disable :
                 inst_type == `Inst_sub ? `Disable : 
                 inst_type == `Inst_add ? `Disable : 
                 inst_type == `Inst_srl ? `Disable : 
+                inst_type == `Inst_srai ? `Disable : 
                 inst_type == `Inst_sra ? `Disable : 
                 inst_type == `Inst_srli ? `Disable : 
                 inst_type == `Inst_slli ? `Disable : 
@@ -285,6 +296,7 @@ assign mem_r_addr = inst_type == `Inst_addi ? 0 :
                     inst_type == `Inst_sub ? 0 : 
                     inst_type == `Inst_add ? 0 : 
                     inst_type == `Inst_srl ? 0 : 
+                    inst_type == `Inst_srai ? 0 : 
                     inst_type == `Inst_sra ? 0 : 
                     inst_type == `Inst_srli ? 0 : 
                     inst_type == `Inst_slli ? 0 : 
@@ -312,6 +324,7 @@ assign mem_r_mask = inst_type == `Inst_addi ? 0 :
                     inst_type == `Inst_sub ? 0 : 
                     inst_type == `Inst_add ? 0 : 
                     inst_type == `Inst_srl ? 0 : 
+                    inst_type == `Inst_srai ? 0 : 
                     inst_type == `Inst_sra ? 0 : 
                     inst_type == `Inst_srli ? 0 : 
                     inst_type == `Inst_slli ? 0 : 
@@ -339,6 +352,7 @@ assign mem_we = inst_type == `Inst_addi ? `Disable :
                 inst_type == `Inst_sub ? `Disable : 
                 inst_type == `Inst_add ? `Disable : 
                 inst_type == `Inst_srl ? `Disable : 
+                inst_type == `Inst_srai ? `Disable : 
                 inst_type == `Inst_sra ? `Disable : 
                 inst_type == `Inst_srli ? `Disable : 
                 inst_type == `Inst_slli ? `Disable : 
@@ -366,6 +380,7 @@ assign mem_w_addr = inst_type == `Inst_addi ? 0 :
                     inst_type == `Inst_sub ? 0 : 
                     inst_type == `Inst_add ? 0 : 
                     inst_type == `Inst_srl ? 0 : 
+                    inst_type == `Inst_srai ? 0 : 
                     inst_type == `Inst_sra ? 0 : 
                     inst_type == `Inst_srli ? 0 : 
                     inst_type == `Inst_slli ? 0 : 
@@ -393,6 +408,7 @@ assign mem_w_data = inst_type == `Inst_addi ? 0 :
                     inst_type == `Inst_sub ? 0 : 
                     inst_type == `Inst_add ? 0 : 
                     inst_type == `Inst_srl ? 0 : 
+                    inst_type == `Inst_srai ? 0 : 
                     inst_type == `Inst_sra ? 0 : 
                     inst_type == `Inst_srli ? 0 : 
                     inst_type == `Inst_slli ? 0 : 
@@ -420,6 +436,7 @@ assign mem_w_mask = inst_type == `Inst_addi ? 0 :
                     inst_type == `Inst_sub ? 0 : 
                     inst_type == `Inst_add ? 0 : 
                     inst_type == `Inst_srl ? 0 : 
+                    inst_type == `Inst_srai ? 0 : 
                     inst_type == `Inst_sra ? 0 : 
                     inst_type == `Inst_srli ? 0 : 
                     inst_type == `Inst_slli ? 0 : 
@@ -427,6 +444,34 @@ assign mem_w_mask = inst_type == `Inst_addi ? 0 :
                     inst_type == `Inst_sh ? 8'b00000011 : 
                     inst_type == `Inst_sw ? 8'b00001111 : 
                     0;
+
+
+assign sranum = inst_type == `Inst_addi ? 0 : 
+                inst_type == `Inst_auipc ? 0 : 
+                inst_type == `Inst_lui ? 0 : 
+                inst_type == `Inst_jal ? 0 : 
+                inst_type == `Inst_jalr ? 0 : 
+                inst_type == `Inst_beq ? 0 : 
+                inst_type == `Inst_bne ? 0 : 
+                inst_type == `Inst_bgeu ? 0 : 
+                inst_type == `Inst_bltu ? 0 : 
+                inst_type == `Inst_blt ? 0 : 
+                inst_type == `Inst_bge ? 0 : 
+                inst_type == `Inst_or ? 0 : 
+                inst_type == `Inst_xor ? 0 : 
+                inst_type == `Inst_sltu ? 0 : 
+                inst_type == `Inst_sltiu ? 0 : 
+                inst_type == `Inst_sub ? 0 : 
+                inst_type == `Inst_add ? 0 : 
+                inst_type == `Inst_srl ? 0 : 
+                inst_type == `Inst_srai ? shamt_long : 
+                inst_type == `Inst_sra ? src2[4:0] : 
+                inst_type == `Inst_srli ? 0 : 
+                inst_type == `Inst_slli ? 0 : 
+                inst_type == `Inst_lw ? 0 : 
+                inst_type == `Inst_sh ? 0 : 
+                inst_type == `Inst_sw ? 0 : 
+                0;
 
 
 
