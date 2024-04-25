@@ -48,10 +48,11 @@ int pmem_read(int raddr){
   //printf("pmem_read: raddr = 0x%x, data = 0x%x\n", raddr, data);
   return data;
 }
+
 void pmem_write(int waddr, int wdata, char wmask){
   int aligned_addr = waddr & (~0x3u);
-  int cur_data = host_read(guest_to_host(aligned_addr), 4);
-  for (int i = 0; i < 4; i++) {
+  //int cur_data = host_read(guest_to_host(aligned_addr), 4);
+  /*for (int i = 0; i < 4; i++) {
       if (wmask & (1 << i)) {
           int shift = i * 8;
           int mask = 0xFF << shift;
@@ -59,5 +60,16 @@ void pmem_write(int waddr, int wdata, char wmask){
           cur_data |= (wdata & mask);
       }
   }
-  host_write(guest_to_host(aligned_addr),4,cur_data);
+  host_write(guest_to_host(aligned_addr),4,cur_data);*/
+  for( int i = 0; i < 4; i++) {
+    if(wmask & (1 << i)) {
+      host_write(guest_to_host(aligned_addr + i), 1, (wdata >> (i * 8)) & 0xFF);
+    }
+  }
+  if((wmask & 0xf0) !=0){
+    printf( L_RED " Can only write for 4 btyes (max)." NONE "\n");
+  }
+
 }
+
+
