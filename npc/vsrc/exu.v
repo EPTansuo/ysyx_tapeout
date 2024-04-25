@@ -149,7 +149,8 @@ assign gpr_w_data = inst_type == `Inst_addi ? add_src1_imm :
                     inst_type == `Inst_sltiu ? src1 < imm ? 1 : 0 : 
                     inst_type == `Inst_sub ? src1 - src2 : 
                     inst_type == `Inst_add ? src1 + src2 : 
-                    inst_type == `Inst_sra ? $signed(src1) >> $signed(src2) : 
+                    inst_type == `Inst_sra ? ({32{src1[31]}} << (6'd32-{1'b0,src2[4:0]}))
+     | (src1 >> src2[4:0]) : 
                     inst_type == `Inst_srli ? src1 >> shamt_long : 
                     inst_type == `Inst_slli ? src1 << shamt_long : 
                     inst_type == `Inst_lw ? mem_r_data : 
