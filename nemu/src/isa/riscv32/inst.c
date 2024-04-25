@@ -86,9 +86,9 @@ static int decode_exec(Decode *s) {
 
   //printf("s->pc: 0x" FMT_WORD_HEX "\n",s->pc);
   INSTPAT_START();
-  printf("nemu: src1: %08x src2: %08x imm: %08x\n",src1,src2,imm);
-  printf("nemu: rs1: %08x, cpu.gpr[rs1]=%08x\n",(uint32_t)BITS( s->isa.inst.val, 19, 15),cpu.gpr[BITS( s->isa.inst.val, 19, 15)]);
-  printf("nemu: cpu.grp[2]=%08x\n", cpu.gpr[2]);
+  //printf("nemu: src1: %08x src2: %08x imm: %08x\n",src1,src2,imm);
+  //printf("nemu: rs1: %08x, cpu.gpr[rs1]=%08x\n",(uint32_t)BITS( s->isa.inst.val, 19, 15),cpu.gpr[BITS( s->isa.inst.val, 19, 15)]);
+  //printf("nemu: cpu.grp[2]=%08x\n", cpu.gpr[2]);
   //U-type 长立即数
   INSTPAT("??????? ????? ????? ??? ????? 00101 11", auipc  , U, R(rd) = s->pc + imm);
   INSTPAT("??????? ????? ????? ??? ????? 01101 11", lui    , U, R(rd) = imm);
