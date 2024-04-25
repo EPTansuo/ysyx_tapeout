@@ -71,67 +71,80 @@ assign exu_invalid_inst = rst == `RstEnable ? 0 :
                           inst_type == `Inst_ebreak ? 0 : 
                           inst_type == `Inst_addi ? 0 : 
                           inst_type == `Inst_auipc ? 0 : 
+                          inst_type == `Inst_jal ? 0 : 
                           1;
 `endif
 
 
 assign gpr_we = inst_type == `Inst_addi ? `Enable : 
                 inst_type == `Inst_auipc ? `Enable : 
+                inst_type == `Inst_jal ? `Enable : 
                 `Disable;
 
 
 assign gpr_w_addr = inst_type == `Inst_addi ? rd : 
                     inst_type == `Inst_auipc ? rd : 
+                    inst_type == `Inst_jal ? rd : 
                     0;
 
 
 assign gpr_w_data = inst_type == `Inst_addi ? add_src1_imm : 
                     inst_type == `Inst_auipc ? idu_pc+imm : 
+                    inst_type == `Inst_jal ? idu_pc+4 : 
                     0;
 
 
 assign pc_offset_en = inst_type == `Inst_addi ? `Disable : 
                       inst_type == `Inst_auipc ? `Disable : 
+                      inst_type == `Inst_jal ? `Enable : 
                       `Disable;
 
 
 assign pc_offset = inst_type == `Inst_addi ? 4 : 
                    inst_type == `Inst_auipc ? 4 : 
+                   inst_type == `Inst_jal ? imm : 
                    4;
 
 
 assign mem_re = inst_type == `Inst_addi ? `Disable : 
                 inst_type == `Inst_auipc ? `Disable : 
+                inst_type == `Inst_jal ? `Disable : 
                 `Disable;
 
 
 assign mem_r_addr = inst_type == `Inst_addi ? 0 : 
                     inst_type == `Inst_auipc ? 0 : 
+                    inst_type == `Inst_jal ? 0 : 
                     0;
 
 
 assign mem_r_mask = inst_type == `Inst_addi ? 0 : 
                     inst_type == `Inst_auipc ? 0 : 
+                    inst_type == `Inst_jal ? 0 : 
                     0;
 
 
 assign mem_we = inst_type == `Inst_addi ? `Disable : 
                 inst_type == `Inst_auipc ? `Disable : 
+                inst_type == `Inst_jal ? `Disable : 
                 `Disable;
 
 
 assign mem_w_addr = inst_type == `Inst_addi ? 0 : 
                     inst_type == `Inst_auipc ? 0 : 
+                    inst_type == `Inst_jal ? 0 : 
                     0;
 
 
 assign mem_w_data = inst_type == `Inst_addi ? 0 : 
                     inst_type == `Inst_auipc ? 0 : 
+                    inst_type == `Inst_jal ? 0 : 
                     0;
 
 
 assign mem_w_mask = inst_type == `Inst_addi ? 0 : 
                     inst_type == `Inst_auipc ? 0 : 
+                    inst_type == `Inst_jal ? 0 : 
                     0;
 
 
