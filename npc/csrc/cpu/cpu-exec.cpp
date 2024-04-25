@@ -15,7 +15,7 @@
 #define MAX_INST_TO_PRINT 10001
 bool first = true;
 
-CPU_state cpu = {};
+CPU_state npc_cpu = {};
 
 static bool g_print_step = false;
 
@@ -76,9 +76,9 @@ static void exec_once(){
   cpu_single_cycle();
 
   for(int i=0; i<32; i++){
-    cpu.gpr[i] = gpr(i);
+    npc_cpu.gpr[i] = gpr(i);
   }
-  cpu.pc = top->cpu->pc1->pc +4;
+  npc_cpu.pc = top->cpu->pc1->pc +4;
 
   disassemble(logbuf,50,top->cpu->pc1->pc);
   print_inst(top->cpu->pc1->pc);
