@@ -39,6 +39,7 @@ wire [6:0]funct7 = inst[31:25];
 assign rs1 = inst[19:15];
 assign rs2 = inst[24:20];
 assign rd = inst[11:7];
+assign idu_inst = inst;
 
 wire [`WordBus] immI = { {(`WordWidth-12){inst[31]}}, inst[31:20] };
 wire [`WordBus] immU = { inst[31:12], {12{1'b0}} };
