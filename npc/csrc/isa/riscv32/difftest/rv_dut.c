@@ -39,7 +39,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   }
   first = false;
   memcpy(&cpu_state_buf, ref_r, DIFFTEST_REG_SIZE);
-  
+  printf("npc:nemu:ref_r->pc==0x%x\n",ref_r->pc);
   return succ;
 }
 
