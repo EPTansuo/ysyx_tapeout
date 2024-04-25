@@ -109,7 +109,7 @@ always @(*)begin
                                 3'b001: begin
                                         inst_type = `Inst_bne;
                                 end
-                                3'b110: begin
+                                3'b100: begin
                                         inst_type = `Inst_blt;
                                 end
                                 default: begin
