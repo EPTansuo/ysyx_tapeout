@@ -70,7 +70,7 @@ void pmem_write(int waddr, int wdata, char wmask){
     printf( L_RED " Can only write for 1/2/4 btyes ()." NONE "\n");
     break;
   }
-
+  printf("pmem_write: waddr = 0x%x, wdata = 0x%x, wmask = 0x%x\n", waddr, wdata, wmask);
 }
 
 
