@@ -6,7 +6,7 @@
 #include <common.h>
 #include <fmt-def.h>
 
-
+/*
 enum {
         FUNC_NONE = 0,
         FUNC_CALL,
@@ -29,10 +29,6 @@ typedef struct Func_Call{
         struct Func_Call* next;
 } Func_Call;
 
-void ftrace_phase_elf(const char* _elf_file);
-void ftrace_print_func_list();
-void ftrace_init(const char* _img_file);
-void ftrace_func_call_list_append(const Func_Call* f);
 
 bool ftrace_enabled = false;
 char* elf_file = NULL;
@@ -48,6 +44,13 @@ Func_Call *func_call_list = NULL;
 int func_num = 0;
 int stack_depth = 0;
 
+
+
+
+void ftrace_phase_elf(const char* _elf_file);
+void ftrace_print_func_list();
+void ftrace_init(const char* _img_file);
+void ftrace_func_call_list_append(const Func_Call* f);
 
 
 void ftrace_init(const char* _img_file)
@@ -260,4 +263,10 @@ void ftrace_func_call_list_append(const Func_Call* f)
         ftrace_func_call_list_print();
 }
 
+*/
 
+
+void ftrace_init(const char* _img_file){};
+void ftrace_func_call(word_t pc, word_t dnpc, uint32_t inst){};
+void ftrace_func_ret(word_t pc, uint32_t inst){};
+void ftrace_func_call_list_print(){};
