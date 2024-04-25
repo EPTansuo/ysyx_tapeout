@@ -36,12 +36,12 @@ void engine_start() {
 
 static void restart() {
   /* Set the initial program counter. */
-  cpu.pc = RESET_VECTOR;
+  npc_cpu.pc = RESET_VECTOR;
   top->cpu->pc1->pc = RESET_VECTOR;
   
   /* The zero register is always 0. */
   top->cpu->gpr1->regs[0] = 0;
-  cpu.gpr[0] = 0;
+  npc_cpu.gpr[0] = 0;
 }
 
 void init_isa() {
