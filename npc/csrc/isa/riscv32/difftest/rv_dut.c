@@ -32,7 +32,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
 
   
   printf("reg_pc : 0x%x\n",ref_r->pc);
-  memcpy(&cpu_state[state_index], &ref_r, sizeof(CPU_state));
+  memcpy(&cpu_state[state_index], ref_r, sizeof(CPU_state));
   for(int i=0; i<32; i++){
     cpu_state[state_index].gpr[i] = ref_r->gpr[i];
   }
