@@ -37,57 +37,10 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
       return false;
     }
   }
-  printf("ref reg info:\n");
-  int reg_num = 32;
-  for (int i = 0; i < reg_num; i++)
-  {
-          printf("$%s = 0x" FMT_WORD_HEX_WIDTH "\t", regs[i], cpu_state_buf.gpr[i]);
-          if ((i + 1) % 4 == 0)
-                  putchar('\n');
-  }
-  printf("$pc = 0x" FMT_WORD_HEX_WIDTH "\n", cpu_state_buf.pc);
 
   memcpy(&cpu_state_buf, ref_r, DIFFTEST_REG_SIZE);
 
   return true;
-  // bool succ = true;
-
-  
-  // printf("reg_pc : 0x%x\n",ref_r->pc);
-  // memcpy(&cpu_state[state_index], ref_r, DIFFTEST_REG_SIZE);
-  // for(int i=0; i<32; i++){
-  //   cpu_state[state_index].gpr[i] = ref_r->gpr[i];
-  // }
-
-  // INDEX_INC;
-  
-  // if(first){
-  //   first = false;
-  //   return true;
-  // }
-
-  //   printf("ref reg info:\n");
-  // int reg_num = 32;
-  // for (int i = 0; i < reg_num; i++)
-  // {
-  //         printf("$%s = 0x" FMT_WORD_HEX_WIDTH "\t", regs[i], cpu_state[state_index].gpr[i]);
-  //         if ((i + 1) % 4 == 0)
-  //                 putchar('\n');
-  // }
-  // printf("$pc = 0x" FMT_WORD_HEX_WIDTH "\n", cpu_state[state_index].pc);
-
-  //  succ = (memcmp(&cpu_state[state_index], &npc_cpu, DIFFTEST_REG_SIZE) == 0);
-
-  // if(succ)
-  //   return true;
-  
-  
-  //print_iringbuf();
-
-
- 
-
-  //return false;
 }
 
 void isa_difftest_attach() {
