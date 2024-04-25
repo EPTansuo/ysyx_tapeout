@@ -11,6 +11,8 @@
 #include "Vcpu__Dpi.h"
 #include <fmt-def.h>
 #include <memory/host.h>
+#include <memory/paddr.h>
+
 
 extern Vcpu* top;
 extern unsigned char isa_logo[];
@@ -50,7 +52,7 @@ int pmem_read(int raddr){
 }
 
 void pmem_write(int waddr, int wdata, char wmask){
-  int aligned_addr = waddr & (~0x3u);
+  //int aligned_addr = waddr & (~0x3u);
   //int cur_data = host_read(guest_to_host(aligned_addr), 4);
   /*for (int i = 0; i < 4; i++) {
       if (wmask & (1 << i)) {
@@ -63,9 +65,9 @@ void pmem_write(int waddr, int wdata, char wmask){
   host_write(guest_to_host(aligned_addr),4,cur_data);*/
   switch (wmask)
   {
-    case 0x01: host_write(guest_to_host(aligned_addr), 1, wdata); break; 
-    case 0x03: host_write(guest_to_host(aligned_addr), 2, wdata); break;
-    case 0x0f: host_write(guest_to_host(aligned_addr), 4, wdata); break;
+    case 0x01: host_write(guest_to_host(waddr), 1, wdata); break; 
+    case 0x03: host_write(guest_to_host(waddr), 2, wdata); break;
+    case 0x0f: host_write(guest_to_host(waddr), 4, wdata); break;
   default:
     printf( L_RED " Can only write for 1/2/4 btyes ()." NONE "\n");
     break;
