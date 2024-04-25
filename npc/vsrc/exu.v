@@ -544,8 +544,8 @@ assign mem_w_mask = inst_type == `Inst_addi ? 0 :
                     inst_type == `Inst_lhu ? 0 : 
                     inst_type == `Inst_lh ? 0 : 
                     inst_type == `Inst_lw ? 0 : 
-                    inst_type == `Inst_sb ? 8'b00000001 : 
-                    inst_type == `Inst_sh ? 8'b00000011 : 
+                    inst_type == `Inst_sb ? 8'b00001000 : 
+                    inst_type == `Inst_sh ? 8'b00001100 : 
                     inst_type == `Inst_sw ? 8'b00001111 : 
                     0;
 
