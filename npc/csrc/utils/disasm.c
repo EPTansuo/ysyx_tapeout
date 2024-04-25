@@ -32,7 +32,7 @@ void disassemble(char* logbuf, size_t logbuf_size, word_t pc){
 
 std::string replace_regs_name(const std::string& code) {
     auto result = code;	
-    for(auto i=31; i>=0; i--){
+    for(auto i=31; i>0; i--){
     	result = std::regex_replace(result, std::regex(" x"+ std::to_string(i)), (std::string)" " + regs[i]); 
 	result = std::regex_replace(result, std::regex(",x"+ std::to_string(i)), (std::string)"," + regs[i]); 
     }
