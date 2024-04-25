@@ -56,6 +56,15 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
     if(!succ){
       printf("\e[1;31m Difftest ERROR!\e[0m\n ");
       printf("DO NOT SEE CURRENT INSTRATION, SEE PREVIOUS ONE!\n");
+      printf("npc:nemu:pc==0x%x\n",cpu_state_buf.pc);
+      printf("ref reg info:\n");
+      for (int i = 0; i < 32; i++)
+      {
+              printf("$%s = 0x" FMT_WORD_HEX_WIDTH "\t", regs[i], cpu_state_buf.gpr[i]);
+              if ((i + 1) % 4 == 0)
+                      putchar('\n');
+      }
+      printf("$pc = 0x" FMT_WORD_HEX_WIDTH "\n", cpu_state_buf.pc);
       return false;
     }
   }
