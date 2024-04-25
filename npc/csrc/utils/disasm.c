@@ -4,7 +4,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <utils.h>
-#include <iostream>
 #include <string>
 #include <regex>
 
@@ -32,19 +31,9 @@ void disassemble(char* logbuf, size_t logbuf_size, word_t pc){
 
 
 std::string replace_regs_name(const std::string& code) {
-    std::regex regPattern(R"(x(\d+))");
-    std::smatch matches;
-    std::string result = code;
-
-    auto pos = result.cbegin();
-    while (std::regex_search(pos, result.cend(), matches, regPattern)) {
-        int index = std::stoi(matches[1]); 
-        if (index >= 0 && index < 32) {
-            result.replace(matches.position(0), matches.length(0), regs[index]);
-        }
-        pos = result.cbegin() + matches.position(0) + strlen(regs[index]);
-    }
-
+    auto result = code;	
+    for(auto i=0; i<32; i++)
+    	result = std::regex_replace(result, std::regex("x"+ std::to_string(i)), regs[i]); 
     return result;
 }
 
