@@ -134,6 +134,9 @@ always @(*)begin
                                                 3'b011: begin
                                                         inst_type = `Inst_sltu;
                                                 end
+                                                3'b100: begin
+                                                        inst_type = `Inst_xor;
+                                                end
                                                 default: begin
                                                         inst_type = `Inst_inv;
                                                 end
