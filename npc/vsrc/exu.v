@@ -210,7 +210,7 @@ assign gpr_w_data = inst_type == `Inst_addi ? add_src1_imm :
                     inst_type == `Inst_sll ? src1 << src2[4:0] : 
                     inst_type == `Inst_srli ? src1 >> shamt_long : 
                     inst_type == `Inst_slli ? src1 << shamt_long : 
-                    inst_type == `Inst_lbu ? mem_r_data : 
+                    inst_type == `Inst_lbu ? {{(`WordWidth-8){1'b0}}, mem_r_data[7:0]} : 
                     inst_type == `Inst_lw ? mem_r_data : 
                     inst_type == `Inst_sb ? 0 : 
                     inst_type == `Inst_sh ? 0 : 
