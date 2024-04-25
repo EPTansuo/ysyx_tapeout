@@ -61,13 +61,14 @@ void pmem_write(int waddr, int wdata, char wmask){
       }
   }
   host_write(guest_to_host(aligned_addr),4,cur_data);*/
-  for( int i = 0; i < 4; i++) {
-    if(wmask & (1 << i)) {
-      host_write(guest_to_host(aligned_addr + i), 1, (wdata >> (i * 8)) & 0xFF);
-    }
-  }
-  if((wmask & 0xf0) !=0){
-    printf( L_RED " Can only write for 4 btyes (max)." NONE "\n");
+  switch (wmask)
+  {
+    case 0x01: host_write(guest_to_host(aligned_addr), 1, wdata); break; 
+    case 0x03: host_write(guest_to_host(aligned_addr), 2, wdata); break;
+    case 0x0f: host_write(guest_to_host(aligned_addr), 4, wdata); break;
+  default:
+    printf( L_RED " Can only write for 1/2/4 btyes ()." NONE "\n");
+    break;
   }
 
 }
