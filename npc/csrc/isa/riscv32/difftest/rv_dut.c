@@ -55,6 +55,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
     //     printf("$pc = 0x" FMT_WORD_HEX_WIDTH "\n", top->cpu->pc1->pc);
     if(!succ){
       printf("\e[1;31m Difftest ERROR!\e[0m\n  pc: 0x" FMT_WORD_HEX "\n", pc);
+      printf("DO NOT SEE CURRENT INSTRATION, SEE PREVIOUS ONE!\n");
       return false;
     }
   }
