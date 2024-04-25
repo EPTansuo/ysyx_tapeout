@@ -215,7 +215,7 @@ assign pc_offset = inst_type == `Inst_addi ? 4 :
                    inst_type == `Inst_jalr ? {add_src1_imm[`WordWidth-1:1],1'b0} - idu_pc : 
                    inst_type == `Inst_beq ? src1 == src2 ? imm : 4 : 
                    inst_type == `Inst_bne ? src1 != src2 ? imm : 4 : 
-                   inst_type == `Inst_bgeu ? src1 > src2 ? imm : 4 : 
+                   inst_type == `Inst_bgeu ? src1 >= src2 ? imm : 4 : 
                    inst_type == `Inst_bltu ? src1 < src2 ? imm : 4 : 
                    inst_type == `Inst_blt ? $signed(src1) < $signed(src2) ? imm : 4 : 
                    inst_type == `Inst_bge ? $signed(src1) >= $signed(src2) ? imm : 4 : 
