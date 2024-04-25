@@ -73,6 +73,7 @@ assign exu_invalid_inst = rst == `RstEnable ? 0 :
                           inst_type == `Inst_auipc ? 0 : 
                           inst_type == `Inst_jal ? 0 : 
                           inst_type == `Inst_jalr ? 0 : 
+                          inst_type == `Inst_sub ? 0 : 
                           inst_type == `Inst_add ? 0 : 
                           inst_type == `Inst_lw ? 0 : 
                           inst_type == `Inst_sw ? 0 : 
@@ -84,6 +85,7 @@ assign gpr_we = inst_type == `Inst_addi ? `Enable :
                 inst_type == `Inst_auipc ? `Enable : 
                 inst_type == `Inst_jal ? `Enable : 
                 inst_type == `Inst_jalr ? `Enable : 
+                inst_type == `Inst_sub ? `Enable : 
                 inst_type == `Inst_add ? `Enable : 
                 inst_type == `Inst_lw ? `Enable : 
                 inst_type == `Inst_sw ? `Disable : 
@@ -94,6 +96,7 @@ assign gpr_w_addr = inst_type == `Inst_addi ? rd :
                     inst_type == `Inst_auipc ? rd : 
                     inst_type == `Inst_jal ? rd : 
                     inst_type == `Inst_jalr ? rd : 
+                    inst_type == `Inst_sub ? rd : 
                     inst_type == `Inst_add ? rd : 
                     inst_type == `Inst_lw ? rd : 
                     inst_type == `Inst_sw ? 0 : 
@@ -104,6 +107,7 @@ assign gpr_w_data = inst_type == `Inst_addi ? add_src1_imm :
                     inst_type == `Inst_auipc ? idu_pc+imm : 
                     inst_type == `Inst_jal ? idu_pc+4 : 
                     inst_type == `Inst_jalr ? idu_pc+4 : 
+                    inst_type == `Inst_sub ? src1-src2 : 
                     inst_type == `Inst_add ? src1+src2 : 
                     inst_type == `Inst_lw ? mem_r_data : 
                     inst_type == `Inst_sw ? 0 : 
@@ -114,6 +118,7 @@ assign pc_offset_en = inst_type == `Inst_addi ? `Disable :
                       inst_type == `Inst_auipc ? `Disable : 
                       inst_type == `Inst_jal ? `Enable : 
                       inst_type == `Inst_jalr ? `Enable : 
+                      inst_type == `Inst_sub ? `Disable : 
                       inst_type == `Inst_add ? `Disable : 
                       inst_type == `Inst_lw ? `Disable : 
                       inst_type == `Inst_sw ? `Disable : 
@@ -124,6 +129,7 @@ assign pc_offset = inst_type == `Inst_addi ? 4 :
                    inst_type == `Inst_auipc ? 4 : 
                    inst_type == `Inst_jal ? imm : 
                    inst_type == `Inst_jalr ? {add_src1_imm[`WordWidth-1:1],1'b0} - idu_pc : 
+                   inst_type == `Inst_sub ? 4 : 
                    inst_type == `Inst_add ? 4 : 
                    inst_type == `Inst_lw ? 4 : 
                    inst_type == `Inst_sw ? 4 : 
@@ -134,6 +140,7 @@ assign mem_re = inst_type == `Inst_addi ? `Disable :
                 inst_type == `Inst_auipc ? `Disable : 
                 inst_type == `Inst_jal ? `Disable : 
                 inst_type == `Inst_jalr ? `Disable : 
+                inst_type == `Inst_sub ? `Disable : 
                 inst_type == `Inst_add ? `Disable : 
                 inst_type == `Inst_lw ? `Enable : 
                 inst_type == `Inst_sw ? `Disable : 
@@ -144,6 +151,7 @@ assign mem_r_addr = inst_type == `Inst_addi ? 0 :
                     inst_type == `Inst_auipc ? 0 : 
                     inst_type == `Inst_jal ? 0 : 
                     inst_type == `Inst_jalr ? 0 : 
+                    inst_type == `Inst_sub ? 0 : 
                     inst_type == `Inst_add ? 0 : 
                     inst_type == `Inst_lw ? add_src1_imm : 
                     inst_type == `Inst_sw ? 0 : 
@@ -154,6 +162,7 @@ assign mem_r_mask = inst_type == `Inst_addi ? 0 :
                     inst_type == `Inst_auipc ? 0 : 
                     inst_type == `Inst_jal ? 0 : 
                     inst_type == `Inst_jalr ? 0 : 
+                    inst_type == `Inst_sub ? 0 : 
                     inst_type == `Inst_add ? 0 : 
                     inst_type == `Inst_lw ? 8'b00001111 : 
                     inst_type == `Inst_sw ? 0 : 
@@ -164,6 +173,7 @@ assign mem_we = inst_type == `Inst_addi ? `Disable :
                 inst_type == `Inst_auipc ? `Disable : 
                 inst_type == `Inst_jal ? `Disable : 
                 inst_type == `Inst_jalr ? `Disable : 
+                inst_type == `Inst_sub ? `Disable : 
                 inst_type == `Inst_add ? `Disable : 
                 inst_type == `Inst_lw ? `Disable : 
                 inst_type == `Inst_sw ? `Enable : 
@@ -174,6 +184,7 @@ assign mem_w_addr = inst_type == `Inst_addi ? 0 :
                     inst_type == `Inst_auipc ? 0 : 
                     inst_type == `Inst_jal ? 0 : 
                     inst_type == `Inst_jalr ? 0 : 
+                    inst_type == `Inst_sub ? 0 : 
                     inst_type == `Inst_add ? 0 : 
                     inst_type == `Inst_lw ? 0 : 
                     inst_type == `Inst_sw ? add_src1_imm : 
@@ -184,6 +195,7 @@ assign mem_w_data = inst_type == `Inst_addi ? 0 :
                     inst_type == `Inst_auipc ? 0 : 
                     inst_type == `Inst_jal ? 0 : 
                     inst_type == `Inst_jalr ? 0 : 
+                    inst_type == `Inst_sub ? 0 : 
                     inst_type == `Inst_add ? 0 : 
                     inst_type == `Inst_lw ? 0 : 
                     inst_type == `Inst_sw ? src2 : 
@@ -194,6 +206,7 @@ assign mem_w_mask = inst_type == `Inst_addi ? 0 :
                     inst_type == `Inst_auipc ? 0 : 
                     inst_type == `Inst_jal ? 0 : 
                     inst_type == `Inst_jalr ? 0 : 
+                    inst_type == `Inst_sub ? 0 : 
                     inst_type == `Inst_add ? 0 : 
                     inst_type == `Inst_lw ? 0 : 
                     inst_type == `Inst_sw ? 8'b00001111 : 
