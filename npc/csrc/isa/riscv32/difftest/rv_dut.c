@@ -30,7 +30,7 @@ extern const char *regs[];
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   bool succ = true;
   if(!first){
-    first = true;
+    first = false;
     succ = memcmp(&cpu_state_buf, &npc_cpu, DIFFTEST_REG_SIZE) == 0;
     printf("npc:nemu:pc==0x%x\n",ref_r->pc);
     if(!succ){
