@@ -111,7 +111,7 @@ mem mem1(
         .rst(rst),
         .we(exu_mem_we),
         .w_addr(exu_mem_w_addr),
-        .w_data(exu_mem_w_addr),
+        .w_data(exu_mem_w_data),
         .re(exu_mem_re),
         .r_addr(exu_mem_r_addr),
         .r_data(exu_mem_r_data),
