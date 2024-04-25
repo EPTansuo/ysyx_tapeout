@@ -31,16 +31,15 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   bool succ = true;
   if(!first){
     succ = memcmp(&cpu_state_buf, &npc_cpu, DIFFTEST_REG_SIZE) == 0;
-    // printf("npc:nemu:pc==0x%x\n",ref_r->pc);
-    // if(!succ){
-    //   printf("\e[1;31m Difftest ERROR!\e[0m\n  pc: 0x" FMT_WORD_HEX "\n", pc);
-    //   return false;
-    // }
+     printf("npc:nemu:pc==0x%x\n",cpu_state_buf.pc);
+    if(!succ){
+      printf("\e[1;31m Difftest ERROR!\e[0m\n  pc: 0x" FMT_WORD_HEX "\n", pc);
+      return false;
+    }
   }
   first = false;
   memcpy(&cpu_state_buf, ref_r, DIFFTEST_REG_SIZE);
-  printf("npc:nemu:pc==0x%x\n",ref_r->pc);
-  succ = memcmp(&cpu_state_buf, &npc_cpu, DIFFTEST_REG_SIZE) == 0;
+  
   return succ;
 }
 
