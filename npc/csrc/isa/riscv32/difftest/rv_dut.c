@@ -30,7 +30,19 @@ extern const char *regs[];
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   bool succ = true;
   if(!first){
-    succ = memcmp(&cpu_state_buf, &npc_cpu, DIFFTEST_REG_SIZE) == 0;
+    //succ = memcmp(&cpu_state_buf, &npc_cpu, DIFFTEST_REG_SIZE) == 0;
+    if(cpu_state_buf.pc != npc_cpu.pc){
+      succ = false;
+    }
+    else {
+      for(int i = 0; i < 32; i++){
+        if(cpu_state_buf.gpr[i] != npc_cpu.gpr[i]){
+          succ = false;
+          break;
+        }
+      }
+    }
+
      printf("npc:nemu:pc==0x%x\n",cpu_state_buf.pc);
      printf("ref reg info:\n");
         int reg_num = 32;
