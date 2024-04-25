@@ -18,6 +18,7 @@ module exu(
         input [7:0] inst_type,
         input [`RegAddrBus] rd,
         input [`InstAddrBus] idu_pc,
+        input [`InstDataBus] idu_inst,
 
         //to gpr
         output reg [`RegDataBus] gpr_w_data,

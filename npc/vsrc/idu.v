@@ -28,7 +28,8 @@ module idu(
         output reg [`RegDataBus] src1,
         output reg [`RegDataBus] src2,
         output reg [`RegDataBus] imm,
-        output reg [`InstAddrBus] idu_pc
+        output reg [`InstAddrBus] idu_pc,
+        output [`InstDataBus] idu_inst
 );
 
 wire [6:0]opcode = inst[6:0];

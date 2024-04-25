@@ -40,7 +40,7 @@ wire [7:0] inst_type;
 wire [`RegAddrBus] gpr_raddr_1;
 wire [`RegAddrBus] gpr_raddr_2;
 wire [`InstAddrBus] idu_pc;
-
+wire [`InstDataBus] idu_inst;
 idu idu1(
         .rst(rst),
         .clk(clk),
@@ -55,7 +55,8 @@ idu idu1(
         .src2(src2),
         .imm(imm),
         .ifu_pc(ifu_pc),
-        .idu_pc(idu_pc)
+        .idu_pc(idu_pc),
+        .idu_inst(idu_inst)
 );
 
 wire gpr_we;
@@ -103,7 +104,8 @@ exu exu1(
         .mem_w_data(exu_mem_w_data),
         .mem_r_data(exu_mem_r_data),
         .mem_w_mask(exu_mem_w_mask),
-        .mem_r_mask(exu_mem_r_mask)
+        .mem_r_mask(exu_mem_r_mask),
+        .idu_inst(idu_inst)
 );
 
 mem mem1(
