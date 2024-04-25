@@ -46,6 +46,7 @@ int pmem_read(int raddr){
 }
 void pmem_write(int waddr, int wdata, char wmask){
   int aligned_addr = waddr & (~0x3u);
+  printf("pmem_write: waddr = 0x%x, wdata = 0x%x, wmask = 0x%x\n", waddr, wdata, wmask);
   if(wmask == 0x0f)
     host_write(guest_to_host(aligned_addr),4,wdata);
   else if(wmask == 0x03)
