@@ -31,7 +31,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   bool succ = true;
   if(!first){
     //succ = memcmp(&cpu_state_buf, &npc_cpu, DIFFTEST_REG_SIZE) == 0;
-    if(cpu_state_buf.pc != npc_cpu.pc){
+    if(ref_r->pc != npc_cpu.pc){
       succ = false;
     }
     else {
