@@ -81,6 +81,12 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 
+#ifdef CONFIG_TARGET_SHARE
+  char logbuf[100];
+  disassemble(logbuf, 100, _this->pc, (uint8_t *)&_this->isa.inst.val, 4);
+  printf("pc = " FMT_WORD "\t" FMT_WORD ": %s\n", _this->pc, _this->isa.inst.val, logbuf);
+#endif 
+
   scan_watchpoint();
 }
 
