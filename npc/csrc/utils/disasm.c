@@ -42,7 +42,7 @@ std::string replace_regs_name(const std::string& code) {
         if (index >= 0 && index < 32) {
             result.replace(matches.position(0), matches.length(0), regs[index]);
         }
-        pos = result.cbegin() + matches.position(0) + matches.length(0);
+        pos = result.cbegin() + matches.position(0) + strlen(regs[index]);
     }
 
     return result;
