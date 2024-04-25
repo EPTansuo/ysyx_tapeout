@@ -12,23 +12,24 @@ module idu(
         input clk,
         input rst,
 
-        //从IFU读取的指令
+        //from ifu
         input [`InstDataBus] inst,
         input [`InstAddrBus] ifu_pc,
 
-        //读取寄存器
+        //read regs (connect with gpr)
         output [`RegAddrBus] rs1,
         output [`RegAddrBus] rs2,
         input [`RegDataBus]  r_data1,
         input [`RegDataBus]  r_data2,
 
-        //输出到EXU
+        //to exu
         output [`RegAddrBus] rd,
         output reg [7:0] inst_type,
         output reg [`RegDataBus] src1,
         output reg [`RegDataBus] src2,
         output reg [`RegDataBus] imm,
-        output reg [`InstAddrBus] idu_pc
+        output reg [`InstAddrBus] idu_pc,
+        output [`InstDataBus] idu_inst
 );
 
 wire [6:0]opcode = inst[6:0];
@@ -38,6 +39,7 @@ wire [6:0]funct7 = inst[31:25];
 assign rs1 = inst[19:15];
 assign rs2 = inst[24:20];
 assign rd = inst[11:7];
+assign idu_inst = inst;
 
 wire [`WordBus] immI = { {(`WordWidth-12){inst[31]}}, inst[31:20] };
 wire [`WordBus] immU = { inst[31:12], {12{1'b0}} };

@@ -104,12 +104,8 @@ exu exu1(
         .mem_w_data(exu_mem_w_data),
         .mem_r_data(exu_mem_r_data),
         .mem_w_mask(exu_mem_w_mask),
-<<<<<<< HEAD
-        .mem_r_mask(exu_mem_r_mask)
-=======
         .mem_r_mask(exu_mem_r_mask),
         .idu_inst(idu_inst)
->>>>>>> tracer-ysyx
 );
 
 mem mem1(
