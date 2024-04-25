@@ -20,6 +20,8 @@ void init_sdb();
 void cpu_reset(int n);
 void init_difftest(char *ref_so_file, long img_size, int port);
 void init_mem();
+void sdb_set_batch_mode();
+
 
 static void welcome() {
   Log("Trace: %s", MUXDEF(CONFIG_TRACE, ANSI_FMT("ON", ANSI_FG_GREEN), ANSI_FMT("OFF", ANSI_FG_RED)));
@@ -47,14 +49,16 @@ const char *get_img_file(){
 static int parse_args(int argc, char *argv[]) {
   const struct option table[] = {
     {"help"     , no_argument      , NULL, 'h'},
+    {"batch"    , no_argument      , NULL, 'b'},
     {"verbose"  , no_argument      , NULL, 'v'},
     {"diff"     , required_argument, NULL, 'd'},
     {0          , 0                , NULL,  0 },
   };
   int o;
-  while ( (o = getopt_long(argc, argv, "-hvd:", table, NULL)) != -1) {
+  while ( (o = getopt_long(argc, argv, "-hbvd:", table, NULL)) != -1) {
     switch (o) {
       case 'v': verbose = true; break; 
+      case 'b': sdb_set_batch_mode(); break;
       case 'd': diff_so_file = optarg; break;
       case 1: img_file = optarg; return 0;
       default:
