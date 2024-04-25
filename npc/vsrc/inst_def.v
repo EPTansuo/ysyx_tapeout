@@ -1,16 +1,16 @@
 
-`define OP_I_TYPE	7'b0010011	//I型指令的操作码
-`define OP_I_TYPE_W	7'b0011011	//I型xxxw指令的操作码
-`define OP_I_TYPE_L     7'b0000011	//I型load指令的操作码
-`define OP_I_TYPE_jarl  7'b1100111	//I型jalr指令的操作码
+`define OP_I_TYPE	7'b0010_011	//I型指令的操作码
+`define OP_I_TYPE_W	7'b0011_011	//I型xxxw指令的操作码
+`define OP_I_TYPE_L     7'b0000_011	//I型load指令的操作码
+`define OP_I_TYPE_jarl  7'b1100_111	//I型jalr指令的操作码
 
-`define OP_S_TYPE	7'b0100011	//S型指令的操作码
-`define OP_J_TYPE	7'b1101111	//J型指令的操作码
-`define OP_B_TYPE	7'b1100011	//B型指令的操作码
-`define OP_R_TYPE	7'b0110011	//R型指令的操作码
-`define OP_R_TYPE_W     7'b0111011	//R型xxxw指令的操作码
-`define OP_U_TYPE_aupic	7'b0010111	//U型指令aupic操作码
-`define OP_U_TYPE_lui   7'b0110111	//U型指令lui操作码
+`define OP_S_TYPE	7'b0100_011	//S型指令的操作码
+`define OP_J_TYPE	7'b1101_111	//J型指令的操作码
+`define OP_B_TYPE	7'b1100_011	//B型指令的操作码
+`define OP_R_TYPE	7'b0110_011	//R型指令的操作码
+`define OP_R_TYPE_W     7'b0111_011	//R型xxxw指令的操作码
+`define OP_U_TYPE_aupic	7'b0010_111	//U型指令aupic操作码
+`define OP_U_TYPE_lui   7'b0110_111	//U型指令lui操作码
 
 `define Inst_inv        8'd0            //无效指令 
 `define Inst_addi       8'd1            //代表addi指令
@@ -28,7 +28,7 @@
 `define Inst_sub        8'd13           //sub
 `define Inst_blt        8'd14           //blt
 `define Inst_bge        8'd15           //bge
-
+`define Inst_sltu       8'd16           //sltu
 
 `define EBREAK          32'h00100073	//ebreak指令
 

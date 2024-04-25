@@ -131,21 +131,24 @@ always @(*)begin
                                                 3'b000: begin
                                                         inst_type = `Inst_add;
                                                 end
+                                                3'b011: begin
+                                                        inst_type = `Inst_sltu;
+                                                end
                                                 default: begin
                                                         inst_type = `Inst_inv;
                                                 end
                                         endcase
                                 end
-								7'b010_0000: begin
-										case(funct3) 
-												3'b000: begin
-														inst_type = `Inst_sub;
-												end
-												default: begin
-														inst_type = `Inst_inv;
-												end
-										endcase
-								end
+                                7'b010_0000: begin
+                                                case(funct3) 
+                                                                3'b000: begin
+                                                                                inst_type = `Inst_sub;
+                                                                end
+                                                                default: begin
+                                                                                inst_type = `Inst_inv;
+                                                                end
+                                                endcase
+                                end
                                 default: begin
                                 		inst_type = `Inst_inv;        
                                 end
