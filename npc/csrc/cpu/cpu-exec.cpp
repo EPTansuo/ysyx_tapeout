@@ -80,10 +80,11 @@ static void exec_once(){
   }
   npc_cpu.pc = top->cpu->pc1->pc +4;
 
-  disassemble(logbuf,50,top->cpu->pc1->pc);
-  print_inst(top->cpu->pc1->pc);
-  printf("\t%s\n", logbuf);
-  
+  if(g_print_step){
+    disassemble(logbuf,50,top->cpu->pc1->pc);
+    print_inst(top->cpu->pc1->pc);
+    printf("\t%s\n", logbuf);
+  }
 }
 
 
