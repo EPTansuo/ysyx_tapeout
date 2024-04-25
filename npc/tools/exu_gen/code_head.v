@@ -65,5 +65,11 @@ end
 `endif
 
 wire [`WordBus] add_src1_imm;
+wire [4:0] shamt;
+wire [`SHAMT_LONG_LEN-1:0] shamt_long;
+
 assign add_src1_imm = src1+imm;
+assign shamt = `SHAMT;
+assign shamt_long = `SHAMT_LONG;
+
 

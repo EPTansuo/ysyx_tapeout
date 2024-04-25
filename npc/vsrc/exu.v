@@ -65,7 +65,13 @@ end
 `endif
 
 wire [`WordBus] add_src1_imm;
+wire [4:0] shamt;
+wire [`SHAMT_LONG_LEN-1:0] shamt_long;
+
 assign add_src1_imm = src1+imm;
+assign shamt = `SHAMT;
+assign shamt_long = `SHAMT_LONG;
+
 
 `ifndef STA
 assign exu_invalid_inst = rst == `RstEnable ? 0 : 
@@ -137,7 +143,7 @@ assign gpr_w_data = inst_type == `Inst_addi ? add_src1_imm :
                     inst_type == `Inst_sltiu ? src1 < imm ? 1 : 0 : 
                     inst_type == `Inst_sub ? src1 - src2 : 
                     inst_type == `Inst_add ? src1 + src2 : 
-                    inst_type == `Inst_slli ? src1 << `SHAMT_LONG : 
+                    inst_type == `Inst_slli ? src1 << shamt_long : 
                     inst_type == `Inst_lw ? mem_r_data : 
                     inst_type == `Inst_sw ? 0 : 
                     0;
