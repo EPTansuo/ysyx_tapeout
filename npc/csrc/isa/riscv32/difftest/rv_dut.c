@@ -30,9 +30,9 @@ extern const char *regs[];
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   bool succ = true;
 
-  //ref_difftest_regcpy(&npc_cpu, DIFFTEST_TO_DUT);
+  
   printf("reg_pc : 0x%x\n",ref_r->pc);
-  //memcpy(&cpu_state[state_index], &ref_r, sizeof(CPU_state));
+  memcpy(&cpu_state[state_index], &ref_r, sizeof(CPU_state));
   for(int i=0; i<32; i++){
     cpu_state[state_index].gpr[i] = ref_r->gpr[i];
   }
@@ -55,20 +55,20 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
 
   INDEX_INC;
 
-  return true;
   if(first){
     first = false;
     return true;
   }
 
-  // if (cpu.pc != ref_r->pc) {
-  //  succ = false;
-  // }
-  // else{
-    for(int i=0; i<32; i++){
-      if(gpr(i) != cpu_state[state_index].gpr[i]){
-        succ = false;
-        break;
+    if (npc_cpu.pc != ref_r->pc) {
+    succ = false;
+    }
+    else{
+      for(int i=0; i<32; i++){
+        if(gpr(i) != cpu_state[state_index].gpr[i]){
+          succ = false;
+          break;
+        }
       }
     }
     //succ = (memcmp(cpu.gpr, ref_r->gpr, DIFFTEST_REG_SIZE) == 0) ;
