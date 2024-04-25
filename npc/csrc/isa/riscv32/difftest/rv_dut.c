@@ -32,17 +32,12 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
 
   
   printf("reg_pc : 0x%x\n",ref_r->pc);
-  memcpy(&cpu_state[state_index], ref_r, sizeof(CPU_state));
+  memcpy(&cpu_state[state_index], ref_r, DIFFTEST_REG_SIZE);
   for(int i=0; i<32; i++){
     cpu_state[state_index].gpr[i] = ref_r->gpr[i];
   }
 
-
-
-  cpu_state[state_index].pc = ref_r->pc;
-
-
-   printf("ref reg info:\n");
+  printf("ref reg info:\n");
   int reg_num = 32;
   for (int i = 0; i < reg_num; i++)
   {
@@ -51,10 +46,12 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
                   putchar('\n');
   }
   printf("$pc = 0x" FMT_WORD_HEX_WIDTH "\n", cpu_state[state_index].pc);
-  printf("Do not compare PC !\n");
 
   INDEX_INC;
 
+  succ = (memcmp(&cpu_state[state_index], &npc_cpu, DIFFTEST_REG_SIZE) == 0);
+
+  
   if(first){
     first = false;
     return true;
