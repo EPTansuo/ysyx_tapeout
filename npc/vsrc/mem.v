@@ -26,6 +26,7 @@ import "DPI-C" function void pmem_write(input int waddr, input int wdata, input 
 
 
 
+
 always @(*) begin
         if (rst == `RstDisable) begin // 有读写请求时
           r_data = pmem_read(r_addr);
@@ -63,6 +64,7 @@ always @(*) begin
 //                 end
 //         end
 // end
+
 
 
 endmodule

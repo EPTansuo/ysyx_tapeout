@@ -12,17 +12,17 @@ module idu(
         input clk,
         input rst,
 
-        //从IFU读取的指令
+        //from ifu
         input [`InstDataBus] inst,
         input [`InstAddrBus] ifu_pc,
 
-        //读取寄存器
+        //read regs (connect with gpr)
         output [`RegAddrBus] rs1,
         output [`RegAddrBus] rs2,
         input [`RegDataBus]  r_data1,
         input [`RegDataBus]  r_data2,
 
-        //输出到EXU
+        //to exu
         output [`RegAddrBus] rd,
         output reg [7:0] inst_type,
         output reg [`RegDataBus] src1,
@@ -356,75 +356,75 @@ assign inst_pat_sll = opcode_0110011 &
 
 
 
-assign inst_type = inst == `EBREAK ? `Inst_ebreak :
-                   inst_pat_auipc ? `Inst_auipc :
-                   inst_pat_lui ? `Inst_lui :
-                   inst_pat_lbu ? `Inst_lbu :
-                   inst_pat_lh ? `Inst_lh :
-                   inst_pat_lhu ? `Inst_lhu :
-                   inst_pat_lw ? `Inst_lw :
-                   inst_pat_andi ? `Inst_andi :
-                   inst_pat_addi ? `Inst_addi :
-                   inst_pat_addiw ? `Inst_addiw :
-                   inst_pat_sltiu ? `Inst_sltiu :
-                   inst_pat_jalr ? `Inst_jalr :
-                   inst_pat_ld ? `Inst_ld :
-                   inst_pat_xori ? `Inst_xori :
-                   inst_pat_sd ? `Inst_sd :
-                   inst_pat_sw ? `Inst_sw :
-                   inst_pat_sh ? `Inst_sh :
-                   inst_pat_sb ? `Inst_sb :
-                   inst_pat_jal ? `Inst_jal :
-                   inst_pat_bne ? `Inst_bne :
-                   inst_pat_beq ? `Inst_beq :
-                   inst_pat_blt ? `Inst_blt :
-                   inst_pat_bge ? `Inst_bge :
-                   inst_pat_bltu ? `Inst_bltu :
-                   inst_pat_bgeu ? `Inst_bgeu :
-                   inst_pat_addw ? `Inst_addw :
-                   inst_pat_sub ? `Inst_sub :
-                   inst_pat_add ? `Inst_add :
-                   inst_pat_and ? `Inst_and :
-                   inst_pat_or ? `Inst_or :
-                   inst_pat_xor ? `Inst_xor :
-                   inst_pat_sllw ? `Inst_sllw :
-                   inst_pat_sltu ? `Inst_sltu :
-                   inst_pat_srliw ? `Inst_srliw :
-                   inst_pat_slliw ? `Inst_slliw :
-                   inst_pat_sra ? `Inst_sra :
-                   inst_pat_srl ? `Inst_srl :
-                   inst_pat_sraiw ? `Inst_sraiw :
-                   inst_pat_sraw ? `Inst_sraw :
-                   inst_pat_srlw ? `Inst_srlw :
-                   inst_pat_sll ? `Inst_sll :
-                   inst_pat_srai ? `Inst_srai :
-                   inst_pat_slli ? `Inst_slli :
-                   inst_pat_mul ? `Inst_mul :
-                   inst_pat_mulw ? `Inst_mulw :
-                   inst_pat_rem ? `Inst_rem :
-                   inst_pat_remu ? `Inst_remu :
-                   inst_pat_remw ? `Inst_remw :
-                   inst_pat_remuv ? `Inst_remuv :
-                   inst_pat_subw ? `Inst_subw :
-                   inst_pat_srli ? `Inst_srli :
-                   inst_pat_div ? `Inst_div :
-                   inst_pat_divu ? `Inst_divu :
-                   inst_pat_divw ? `Inst_divw :
-                   inst_pat_divuw ? `Inst_divuw :
+assign inst_type = inst == `EBREAK ? `Inst_ebreak : 
+                   inst_pat_auipc ? `Inst_auipc : 
+                   inst_pat_lui ? `Inst_lui : 
+                   inst_pat_lbu ? `Inst_lbu : 
+                   inst_pat_lh ? `Inst_lh : 
+                   inst_pat_lhu ? `Inst_lhu : 
+                   inst_pat_lw ? `Inst_lw : 
+                   inst_pat_andi ? `Inst_andi : 
+                   inst_pat_addi ? `Inst_addi : 
+                   inst_pat_addiw ? `Inst_addiw : 
+                   inst_pat_sltiu ? `Inst_sltiu : 
+                   inst_pat_jalr ? `Inst_jalr : 
+                   inst_pat_ld ? `Inst_ld : 
+                   inst_pat_xori ? `Inst_xori : 
+                   inst_pat_sd ? `Inst_sd : 
+                   inst_pat_sw ? `Inst_sw : 
+                   inst_pat_sh ? `Inst_sh : 
+                   inst_pat_sb ? `Inst_sb : 
+                   inst_pat_jal ? `Inst_jal : 
+                   inst_pat_bne ? `Inst_bne : 
+                   inst_pat_beq ? `Inst_beq : 
+                   inst_pat_blt ? `Inst_blt : 
+                   inst_pat_bge ? `Inst_bge : 
+                   inst_pat_bltu ? `Inst_bltu : 
+                   inst_pat_bgeu ? `Inst_bgeu : 
+                   inst_pat_addw ? `Inst_addw : 
+                   inst_pat_sub ? `Inst_sub : 
+                   inst_pat_add ? `Inst_add : 
+                   inst_pat_and ? `Inst_and : 
+                   inst_pat_or ? `Inst_or : 
+                   inst_pat_xor ? `Inst_xor : 
+                   inst_pat_sllw ? `Inst_sllw : 
+                   inst_pat_sltu ? `Inst_sltu : 
+                   inst_pat_srliw ? `Inst_srliw : 
+                   inst_pat_slliw ? `Inst_slliw : 
+                   inst_pat_sra ? `Inst_sra : 
+                   inst_pat_srl ? `Inst_srl : 
+                   inst_pat_sraiw ? `Inst_sraiw : 
+                   inst_pat_sraw ? `Inst_sraw : 
+                   inst_pat_srlw ? `Inst_srlw : 
+                   inst_pat_sll ? `Inst_sll : 
+                   inst_pat_srai ? `Inst_srai : 
+                   inst_pat_slli ? `Inst_slli : 
+                   inst_pat_mul ? `Inst_mul : 
+                   inst_pat_mulw ? `Inst_mulw : 
+                   inst_pat_rem ? `Inst_rem : 
+                   inst_pat_remu ? `Inst_remu : 
+                   inst_pat_remw ? `Inst_remw : 
+                   inst_pat_remuv ? `Inst_remuv : 
+                   inst_pat_subw ? `Inst_subw : 
+                   inst_pat_srli ? `Inst_srli : 
+                   inst_pat_div ? `Inst_div : 
+                   inst_pat_divu ? `Inst_divu : 
+                   inst_pat_divw ? `Inst_divw : 
+                   inst_pat_divuw ? `Inst_divuw : 
                    `Inst_inv;
 
 
-assign imm = (opcode == 7'b0010111) ? immU :
-             (opcode == 7'b0110111) ? immU :
-             (opcode == 7'b0000011) ? immI :
-             (opcode == 7'b0010011) ? immI :
-             (opcode == 7'b0011011) ? immI :
-             (opcode == 7'b1100111) ? immI :
-             (opcode == 7'b0100011) ? immS :
-             (opcode == 7'b1101111) ? immJ :
-             (opcode == 7'b1100011) ? immB :
+assign imm = (opcode == 7'b0010111) ? immU : 
+             (opcode == 7'b0110111) ? immU : 
+             (opcode == 7'b0000011) ? immI : 
+             (opcode == 7'b0010011) ? immI : 
+             (opcode == 7'b0011011) ? immI : 
+             (opcode == 7'b1100111) ? immI : 
+             (opcode == 7'b0100011) ? immS : 
+             (opcode == 7'b1101111) ? immJ : 
+             (opcode == 7'b1100011) ? immB : 
              0;
-
+ 
 
 endmodule
 

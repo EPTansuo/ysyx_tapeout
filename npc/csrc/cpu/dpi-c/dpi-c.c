@@ -11,7 +11,6 @@
 #include "Vcpu__Dpi.h"
 #include <fmt-def.h>
 #include <memory/host.h>
-#include <memory/paddr.h>
 
 
 extern Vcpu* top;
@@ -44,6 +43,7 @@ void inst_invalid(){
 
 
 int pmem_read(int raddr){
+
   if(raddr < 0x80000000)
     return 0;
   word_t data = host_read(guest_to_host(raddr), 4);
