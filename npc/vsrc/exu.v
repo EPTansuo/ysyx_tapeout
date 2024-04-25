@@ -69,44 +69,57 @@ assign add_src1_imm = src1+imm;
 `ifndef STA
 assign exu_invalid_inst = rst == `RstEnable ? 0 : 
                           inst_type == `Inst_ebreak ? 0 : 
+                          inst_type == `Inst_addi ? 0 : 
                           1;
 `endif
 
 
-assign gpr_we = `Disable;
+assign gpr_we = inst_type == `Inst_addi ? `Enable : 
+                `Disable;
 
 
-assign gpr_w_addr = 0;
+assign gpr_w_addr = inst_type == `Inst_addi ? rd : 
+                    0;
 
 
-assign gpr_w_data = 0;
+assign gpr_w_data = inst_type == `Inst_addi ? add_src1_imm : 
+                    0;
 
 
-assign pc_offset_en = `Disable;
+assign pc_offset_en = inst_type == `Inst_addi ? `Disable : 
+                      `Disable;
 
 
-assign pc_offset = 4;
+assign pc_offset = inst_type == `Inst_addi ? 4 : 
+                   4;
 
 
-assign mem_re = `Disable;
+assign mem_re = inst_type == `Inst_addi ? `Disable : 
+                `Disable;
 
 
-assign mem_r_addr = 0;
+assign mem_r_addr = inst_type == `Inst_addi ? 0 : 
+                    0;
 
 
-assign mem_r_mask = 0;
+assign mem_r_mask = inst_type == `Inst_addi ? 0 : 
+                    0;
 
 
-assign mem_we = `Disable;
+assign mem_we = inst_type == `Inst_addi ? `Disable : 
+                `Disable;
 
 
-assign mem_w_addr = 0;
+assign mem_w_addr = inst_type == `Inst_addi ? 0 : 
+                    0;
 
 
-assign mem_w_data = 0;
+assign mem_w_data = inst_type == `Inst_addi ? 0 : 
+                    0;
 
 
-assign mem_w_mask = 0;
+assign mem_w_mask = inst_type == `Inst_addi ? 0 : 
+                    0;
 
 
 
