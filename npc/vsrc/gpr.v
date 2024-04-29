@@ -33,6 +33,9 @@ always @(posedge clk) begin
 		if(we == `WriteEnable )begin
 			regs[waddr] <= waddr == 0 ? `ZeroWord : wdata; // $0寄存器始终为0
 		end
+		else begin
+			regs[0] <= `ZeroWord; // Ensure regs[0] is always assigned
+		end
 	end
 end
 
