@@ -38,9 +38,7 @@ end
 
 
 //异步读
-always @(*) begin
-	rdata1 = raddr1 == 0 ? `ZeroWord : regs[raddr1];
-	rdata2 = raddr2 == 0 ? `ZeroWord : regs[raddr2];
-end
+assign rdata1 = raddr1 == 0 ? `ZeroWord : regs[raddr1];
+assign rdata2 = raddr2 == 0 ? `ZeroWord : regs[raddr2];
 
 endmodule

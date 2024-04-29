@@ -1,3 +1,7 @@
+!*.sh
+!*.ipynb
+!*.py
+!/npc/tools/*
 *.*
 *
 !*/
@@ -15,6 +19,6 @@
 /fceux-am
 /am-kernels
 .vscode/
-.virtual_documents
-.ipynb_checkpoints
+.virtual_documents/
+.ipynb_checkpoints/
 /nvboard
