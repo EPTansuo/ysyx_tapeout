@@ -17,8 +17,6 @@ inst_rom inst_rom1(
         .inst(inst)
 );
 
-always @(*) begin
-        ifu_pc = addr;
-end
+assign ifu_pc = addr;
 
 endmodule
