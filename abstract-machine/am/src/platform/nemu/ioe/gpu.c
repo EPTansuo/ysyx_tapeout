@@ -19,8 +19,8 @@ void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
     .width = w, .height = h,
     .vmemsz = 0
   };
-  //w = io_read(AM_GPU_CONFIG).width ;
-  //h = io_read(AM_GPU_CONFIG).height ;
+  w = io_read(AM_GPU_CONFIG).width ;
+  h = io_read(AM_GPU_CONFIG).height ;
   printf("%s: h: %d, w: %d \n",__func__, h , w);
 }
 
