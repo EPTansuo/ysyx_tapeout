@@ -38,6 +38,11 @@ void *malloc(size_t size) {
   if(!hbrk)
      hbrk = (void *)ROUNDUP(heap.start, 8); 
   size  = (size_t)ROUNDUP(size, 8);
+
+  if ((uintptr_t)hbrk + size > (uintptr_t)heap.end) {
+    printf("malloc FAILED, NO AVAILABLE SPACE!\n");
+    return NULL; 
+  }
   char *old = hbrk;
   hbrk += size;
   //printf("heap.start:%d, heap.end: %d", heap.start, heap.end);
