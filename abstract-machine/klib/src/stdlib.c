@@ -29,42 +29,30 @@ int atoi(const char* nptr) {
   return x;
 }
 
-static char* start_addr;    // addr的初始值
-static bool init_flag = 0;  // 初始化的标志, 初始化完成后置1
+
 
 void *malloc(size_t size) {
-    if(!init_flag) {
-        start_addr = (void*)ROUNDUP(heap.start, 8);
-        init_flag = true;
-    }
-    size = (size_t)ROUNDUP(size, 8);
-    char* old = start_addr; // 获取addr
-    start_addr += size;
-    return old; // [addr, addr + size]
-}
+  // On native, malloc() will be called during initializaion of C runtime.
+  // Therefore do not call panic() here, else it will yield a dead recursion:
+  //   panic() -> putchar() -> (glibc) -> malloc() -> panic()
+  static char *hbrk = 0;
+  if(!hbrk)
+     hbrk = (void *)ROUNDUP(heap.start, 8);
+  size  = (size_t)ROUNDUP(size, 8);
 
-// void *malloc(size_t size) {
-//   // On native, malloc() will be called during initializaion of C runtime.
-//   // Therefore do not call panic() here, else it will yield a dead recursion:
-//   //   panic() -> putchar() -> (glibc) -> malloc() -> panic()
-//   static char *hbrk = 0;
-//   if(!hbrk)
-//      hbrk = (void *)ROUNDUP(heap.start, 8);
-//   size  = (size_t)ROUNDUP(size, 8);
-//
-//   if ((uintptr_t)hbrk + size > (uintptr_t)heap.end) {
-//     printf("malloc FAILED, NO AVAILABLE SPACE!\n");
-//     return NULL;
-//   }
-//   char *old = hbrk;
-//   hbrk += size;
-//   //printf("heap.start:%d, heap.end: %d", heap.start, heap.end);
-//   assert((uintptr_t)heap.start <= (uintptr_t)hbrk && (uintptr_t)hbrk < (uintptr_t)heap.end);
-//   for (uint64_t *p = (uint64_t *)old; p != (uint64_t *)hbrk; p ++) {
-//     *p = 0;
-//   }
-//   return old;
-// }
+  if ((uintptr_t)hbrk + size > (uintptr_t)heap.end) {
+    printf("malloc FAILED, NO AVAILABLE SPACE!\n");
+    return NULL;
+  }
+  char *old = hbrk;
+  hbrk += size;
+  //printf("heap.start:%d, heap.end: %d", heap.start, heap.end);
+  assert((uintptr_t)heap.start <= (uintptr_t)hbrk && (uintptr_t)hbrk < (uintptr_t)heap.end);
+  // for (uint64_t *p = (uint64_t *)old; p != (uint64_t *)hbrk; p ++) {
+  //   *p = 0;
+  // }
+  return old;
+}
 
 void free(void *ptr) {
 }
