@@ -26,7 +26,7 @@
  * This is useful when you use the `si' command.
  * You can modify this value as you want.
  */
-#define MAX_INST_TO_PRINT 100001
+#define MAX_INST_TO_PRINT 10000001
 #define IRINGBUF_SIZE 45
 #define MTRACER_SIZE 1000
 
