@@ -13,6 +13,7 @@ void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
   uint32_t scr_size = inl(VGACTL_ADDR);
   uint16_t h = scr_size;
   uint16_t w = scr_size >> 16;
+  printf("%s: h: %d, w: %d \n",__func__, h , w);
   *cfg = (AM_GPU_CONFIG_T) {
     .present = true, .has_accel = false,
     .width = w, .height = h,
