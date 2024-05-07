@@ -25,6 +25,8 @@ const char *regs[] = {
   "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
 };
 
+
+/*
 const char *csrs[] = {
   "mepc",
   "mcause",
@@ -68,7 +70,7 @@ void isa_csr_str2val(const char *s, word_t *val, bool *success){
 word_t *get_isa_csr_str2addr(const char *s){
   return &cpu.csr[get_csr_str2index(s)];
 }
-
+*/
 void isa_reg_display() {
 	printf("reg info:\n");
   int reg_num = MUXDEF(CONFIG_RVE, 16, 32);

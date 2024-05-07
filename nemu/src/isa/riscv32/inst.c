@@ -21,8 +21,23 @@
 
 extern CPU_state cpu;
 
+static vaddr_t *csr_register(word_t imm) {
+  switch (imm)
+  {
+  case 0x341: return &(cpu.csr.mepc);
+  case 0x342: return &(cpu.csr.mcause);
+  case 0x300: return &(cpu.csr.mstatus);
+  case 0x305: return &(cpu.csr.mtvec);
+  default: panic("Unknown csr");
+  }
+}
+
+#define ECALL(dnpc) { bool success; dnpc = (isa_raise_intr(isa_reg_str2val("a7", &success), s->pc)); }
+#define CSR(i) *csr_register(i)
+
+
 #define R(i) gpr(i)
-#define CSR(i) csr(i)
+
 #define Mr vaddr_read
 #define Mw vaddr_write
 
