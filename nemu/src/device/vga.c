@@ -6,7 +6,19 @@
 * You may obtain a copy of Mulan PSL v2 at:
 *          http://license.coscl.org.cn/MulanPSL2
 *
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BAS
+* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+* EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+* MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+*
+* See the Mulan PSL v2 for more details.
+***************************************************************************************/
+
+#include <common.h>
+#include <device/map.h>
+
+#define SCREEN_W (MUXDEF(CONFIG_VGA_SIZE_800x600, 800, 400))
+#define SCREEN_H (MUXDEF(CONFIG_VGA_SIZE_800x600, 600, 300))
+
 static uint32_t screen_width() {
   return MUXDEF(CONFIG_TARGET_AM, io_read(AM_GPU_CONFIG).width, SCREEN_W);
 }
@@ -62,6 +74,11 @@ static inline void update_screen() {
 void vga_update_screen() {
   // TODO: call `update_screen()` when the sync register is non-zero,
   // then zero out the sync register
+  uint32_t sync_reg = vgactl_port_base[1];
+  if (sync_reg) {
+    update_screen();
+    vgactl_port_base[1] = 0;
+  }
 }
 
 void init_vga() {
@@ -78,15 +95,3 @@ void init_vga() {
   IFDEF(CONFIG_VGA_SHOW_SCREEN, init_screen());
   IFDEF(CONFIG_VGA_SHOW_SCREEN, memset(vmem, 0, screen_size()));
 }
-IS, WITHOUT WARRANTIES OF ANY KIND,
-* EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
-* MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
-*
-* See the Mulan PSL v2 for more details.
-***************************************************************************************/
-
-#include <common.h>
-#include <device/map.h>
-
-#define SCREEN_W (MUXDEF(CONFIG_VGA_SIZE_800x600, 800, 400))
-#define SCREEN_H (MUXDEF(CONFIG_VGA_SIZE_800x600, 600, 300))

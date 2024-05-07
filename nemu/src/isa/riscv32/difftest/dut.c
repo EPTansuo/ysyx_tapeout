@@ -35,7 +35,9 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
     return true;
   
   printf("\e[1;31mDifftest ERROR!\e[0m\n  pc: 0x"FMT_WORD_HEX"\n", pc);
+#ifdef CONFIG_ITRACE
   print_iringbuf();
+#endif 
   return false;
 }
 

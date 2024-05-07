@@ -7,6 +7,5 @@ if [ -L "${VCDFILE}" ]; then
         rm "${VCDFILE}"
 fi
 
-echo "ln -s ${MOUNT_POINT}${GZIC_SERVER_NPC_HOME}/rtl_sim/wave.vcd ${VCDFILE}"
-ln -s ${MOUNT_POINT}${GZIC_SERVER_NPC_HOME}/rtl_sim/wave.vcd ${VCDFILE}
-
+echo "ln -s ${MOUNT_POINT}/PROJECT/Verilog/npc_gate_sim//rtl_sim/wave.vcd ${VCDFILE}"
+ln -s "${MOUNT_POINT}/PROJECT/Verilog/npc_gate_sim//rtl_sim/wave.vcd ${VCDFILE}"

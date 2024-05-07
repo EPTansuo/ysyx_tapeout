@@ -39,33 +39,6 @@ always @(*) begin
         end
       end
 
-// always @(*) begin
-//         if (rst == `RstEnable) begin
-//                 r_data = 0;
-//         end
-//         else begin
-//                 if(re == `Enable) begin
-//                         r_data = pmem_read(r_addr);
-//                 end
-//                 else begin
-//                         r_data = 0;
-//                 end
-//         end
-// end
-
-
-// always @(posedge clk) begin
-//         if (rst == `RstEnable) begin
-//                 // Do nothing
-//         end
-//         else begin
-//                 if(we == `Enable) begin
-//                         pmem_write(w_addr, w_data, w_mask);
-//                 end
-//         end
-// end
-
-
 
 endmodule
 

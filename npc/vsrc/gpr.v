@@ -33,14 +33,15 @@ always @(posedge clk) begin
 		if(we == `WriteEnable )begin
 			regs[waddr] <= waddr == 0 ? `ZeroWord : wdata; // $0寄存器始终为0
 		end
+		else begin
+			regs[0] <= `ZeroWord; // Ensure regs[0] is always assigned
+		end
 	end
 end
 
 
 //异步读
-always @(*) begin
-	rdata1 = raddr1 == 0 ? `ZeroWord : regs[raddr1];
-	rdata2 = raddr2 == 0 ? `ZeroWord : regs[raddr2];
-end
+assign rdata1 = raddr1 == 0 ? `ZeroWord : regs[raddr1];
+assign rdata2 = raddr2 == 0 ? `ZeroWord : regs[raddr2];
 
 endmodule

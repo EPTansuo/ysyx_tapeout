@@ -6,7 +6,7 @@ MOUNT_POINT="/home/han/Disk/GZIC_Server"
 
 if [ ! "$(ls -A $1)" ]; then
 	echo "Mount Server File System"
-	sshfs $GZIC_SERVER_USER@$GIZC_SERVER_IP:/ ${MOUNT_POINT}
+	mount.gzic.server	
 fi
 
 
