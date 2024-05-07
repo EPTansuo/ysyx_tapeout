@@ -32,8 +32,7 @@ void init_isa();
 extern CPU_state cpu;
 void isa_reg_display();
 word_t isa_reg_str2val(const char *name, bool *success);
-word_t* get_csr_reg_addr(word_t imm);
-word_t *get_isa_csr_str2addr(const char *s);
+
 
 // exec
 struct Decode;
