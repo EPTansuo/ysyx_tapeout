@@ -25,6 +25,50 @@ const char *regs[] = {
   "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
 };
 
+const char *csrs[] = {
+  "mepc",
+  "mcause",
+  "mstatus",
+  "mtvec",
+};
+
+word_t get_csr_str2index(const char* _csr_name){
+  for(int i=0; i<sizeof(csrs)/sizeof(csrs[0]); i++){
+    if(strcmp(_csr_name, csrs[i])==0)
+      return i;
+  }
+  panic("ERROR: Unknow CSR!");
+}
+
+word_t* get_csr_reg_addr(word_t imm){
+  switch (imm)
+  {
+  case 0x341: return &cpu.csr[0];
+  case 0x342: return &cpu.csr[1];
+  case 0x300: return &cpu.csr[2];
+  case 0x305: return &cpu.csr[3];
+  default: panic("ERROR: Unknow CSR!");
+  }
+}
+
+void isa_csr_str2val(const char *s, word_t *val, bool *success){
+  int index = -1;
+  for(int i=0; i<sizeof(csrs)/sizeof(csrs[0]); i++){
+    if(strcmp(s, csrs[i])==0)
+      index = i;
+  }
+  if(index == -1) {
+    if(success != NULL) *success = false;
+    return;
+  }
+  if(success != NULL) *success = true;
+  *val = cpu.csr[index];
+}
+
+word_t *get_isa_csr_str2addr(const char *s){
+  return &cpu.csr[get_csr_str2index(s)];
+}
+
 void isa_reg_display() {
 	printf("reg info:\n");
   int reg_num = MUXDEF(CONFIG_RVE, 16, 32);
