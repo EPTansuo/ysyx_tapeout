@@ -151,6 +151,7 @@ static int decode_exec(Decode *s) {
 
 #ifndef CONFIG_RV32                                                            //不可直接转换到int64_t
    INSTPAT("0000001 ????? ????? 001 ????? 01100 11", mulh   , R, R(rd) = BITS((int64_t)(int32_t)src1 * (int64_t)(int32_t)src2, 63,32));
+   INSTPAT("0000001 ????? ????? 011 ????? 01100 11", mulhu  , R, R(rd) = BITS((uint64_t)(uint32_t)src1 * (uint64_t)(uint32_t)src2, 63,32));
 #endif 
    INSTPAT("0000001 ????? ????? 000 ????? 01100 11", mul    , R, R(rd) = (sword_t)src1 * (sword_t)src2);
    INSTPAT("0000001 ????? ????? 000 ????? 01110 11", mulw   , R, R(rd) = SEXT(BITS(src1 * src2, 31, 0), 32));
