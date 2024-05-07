@@ -27,7 +27,7 @@
  * You can modify this value as you want.
  */
 #define MAX_INST_TO_PRINT 10000001
-#define IRINGBUF_SIZE 45
+#define IRINGBUF_SIZE 100
 #define MTRACER_SIZE 1000
 
 CPU_state cpu = {};
@@ -176,7 +176,9 @@ void cpu_exec(uint64_t n) {
             ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED))),
           nemu_state.halt_pc);
 #ifdef CONFIG_ITRACE
-        if(nemu_state.state == NEMU_END && nemu_state.halt_ret != 0) print_iringbuf();
+        if((nemu_state.state == NEMU_END && nemu_state.halt_ret != 0) ||
+          nemu_state.state == NEMU_ABORT) 
+            print_iringbuf();
 #endif // CONFIG_ITRACE
     
       // fall through
