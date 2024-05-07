@@ -22,6 +22,9 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
  /* *get_isa_csr_str2addr("mepc") = epc;
   *get_isa_csr_str2addr("mcause") = NO;
   return *get_isa_csr_str2addr("mtvec");*/
+  if(NO == 0)
+    epc += 4;
+    
   cpu.csr.mcause = NO;
   cpu.csr.mepc = epc;
 
