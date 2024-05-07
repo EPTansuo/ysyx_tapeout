@@ -11,16 +11,16 @@ void __am_gpu_init() {
 void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
  //see func: init_vga in vga.c in nemu
   uint32_t scr_size = inl(VGACTL_ADDR);
-  uint16_t h = scr_size;
-  uint16_t w = scr_size >> 16;
+  uint32_t h = scr_size & 0xffff;
+  uint32_t w = scr_size >> 16;
   //printf("%s: h: %d, w: %d \n",__func__, h , w);
   *cfg = (AM_GPU_CONFIG_T) {
     .present = true, .has_accel = false,
     .width = w, .height = h,
     .vmemsz = 0
   };
-  w = io_read(AM_GPU_CONFIG).width ;
-  h = io_read(AM_GPU_CONFIG).height ;
+  //w = io_read(AM_GPU_CONFIG).width ;
+  //h = io_read(AM_GPU_CONFIG).height ;
   printf("%s: h: %d, w: %d \n",__func__, h , w);
 }
 
