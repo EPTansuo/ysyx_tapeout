@@ -32,22 +32,19 @@ void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
 }
 
 void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
-  if(ctl->w == 0 || ctl->h == 0){
-    printf("vga error!\n");
-    //return;
-  }
-  if(!ctl->sync){
-    //return;
-  }
-  uint32_t *pixels = ctl->pixels;
-  uint32_t *fb_addr = (uint32_t *)(uintptr_t)FB_ADDR;
-  uint32_t screen_w = inl(VGACTL_ADDR) >> 16;
-  for(int i = ctl->y; i < ctl->y + ctl->h; i++){
-    for(int j = ctl->x; j < ctl->x + ctl->w; j++){
-      fb_addr[screen_w*i+j] = pixels[ctl->w*(i-ctl->y)+(j-ctl->x)];
+  if(ctl->w != 0 && ctl->h != 0){
+    if(!ctl->sync){
+      return;
+    }
+    uint32_t *pixels = ctl->pixels;
+    uint32_t *fb_addr = (uint32_t *)(uintptr_t)FB_ADDR;
+    uint32_t screen_w = inl(VGACTL_ADDR) >> 16;
+    for(int i = ctl->y; i < ctl->y + ctl->h; i++){
+      for(int j = ctl->x; j < ctl->x + ctl->w; j++){
+        fb_addr[screen_w*i+j] = pixels[ctl->w*(i-ctl->y)+(j-ctl->x)];
+      }
     }
   }
-
   if (ctl->sync) {
     outl(SYNC_ADDR, 1);
   }
