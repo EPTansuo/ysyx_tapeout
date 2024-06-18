@@ -27,7 +27,7 @@
  * You can modify this value as you want.
  */
 #define MAX_INST_TO_PRINT 10000001
-#define IRINGBUF_SIZE 100
+#define IRINGBUF_SIZE 20
 #define MTRACER_SIZE 1000
 
 CPU_state cpu = {};
