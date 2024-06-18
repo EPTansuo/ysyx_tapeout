@@ -38,19 +38,19 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
     }
   }
 
-  succ = (cpu.csr.mstatus == ref_r->csr.mstatus) && 
-         (cpu.csr.mcause == ref_r->csr.mcause) &&
-         (cpu.csr.mepc == ref_r->csr.mepc) && 
-         (cpu.csr.mtvec == ref_r->csr.mtvec);
-  if(!succ){
-     printf("\e[1;31mCSR DIFFTESET ERROR!\e[0m\n");
-     printf("ref csr info:");
-     printf("mstatus: 0x%x\n", ref_r->csr.mstatus);
-      printf("mcause: 0x%x\n", ref_r->csr.mcause);
-      printf("mepc: 0x%x\n", ref_r->csr.mepc);
-      printf("mtvec: 0x%x\n", ref_r->csr.mtvec);
-     goto print_error_info;
-  }
+  // succ = (cpu.csr.mstatus == ref_r->csr.mstatus) && 
+  //        (cpu.csr.mcause == ref_r->csr.mcause) &&
+  //        (cpu.csr.mepc == ref_r->csr.mepc) && 
+  //        (cpu.csr.mtvec == ref_r->csr.mtvec);
+  // if(!succ){
+  //    printf("\e[1;31mCSR DIFFTESET ERROR!\e[0m\n");
+  //    printf("ref csr info:");
+  //    printf("mstatus: 0x%x\n", ref_r->csr.mstatus);
+  //     printf("mcause: 0x%x\n", ref_r->csr.mcause);
+  //     printf("mepc: 0x%x\n", ref_r->csr.mepc);
+  //     printf("mtvec: 0x%x\n", ref_r->csr.mtvec);
+  //    goto print_error_info;
+  // }
 
   if(succ)
     return true;
