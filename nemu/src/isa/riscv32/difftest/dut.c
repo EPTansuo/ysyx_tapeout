@@ -31,8 +31,11 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   }
   else{
     succ = (memcmp(cpu.gpr, ref_r->gpr, DIFFTEST_REG_SIZE) == 0) ; // check gpr
-    printf("\e[1;31mGPR DIFFTESET ERROR!\e[0m\n");
-    if(!succ) goto print_error_info;
+    
+    if(!succ){
+      printf("\e[1;31mGPR DIFFTESET ERROR!\e[0m\n");
+      goto print_error_info;
+    }
   }
 
   succ = (cpu.csr.mstatus == ref_r->csr.mstatus) && 
