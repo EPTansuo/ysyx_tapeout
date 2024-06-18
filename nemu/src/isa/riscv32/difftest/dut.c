@@ -52,10 +52,13 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
 
 print_error_info:
   printf("\e[1;31mDifftest ERROR!\e[0m\n  pc: 0x"FMT_WORD_HEX"\n", pc);
+
+isa_csr_display();
+
 #ifdef CONFIG_ITRACE
   print_iringbuf();
 #endif 
-  return false;
+  return false; // the reg info will be printed when nemu is ABORTed 
 }
 
 void isa_difftest_attach() {

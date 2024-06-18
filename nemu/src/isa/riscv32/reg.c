@@ -71,6 +71,15 @@ word_t *get_isa_csr_str2addr(const char *s){
   return &cpu.csr[get_csr_str2index(s)];
 }
 */
+
+void isa_csr_display(){
+  printf("csr info:\n");
+  printf("mepc = 0x"FMT_WORD_HEX_WIDTH"\n", cpu.csr.mepc);
+  printf("mcause = 0x"FMT_WORD_HEX_WIDTH"\n", cpu.csr.mcause);
+  printf("mstatus = 0x"FMT_WORD_HEX_WIDTH"\n", cpu.csr.mstatus);
+  printf("mtvec = 0x"FMT_WORD_HEX_WIDTH"\n", cpu.csr.mtvec);
+}
+
 void isa_reg_display() {
 	printf("reg info:\n");
   int reg_num = MUXDEF(CONFIG_RVE, 16, 32);

@@ -33,7 +33,6 @@ extern CPU_state cpu;
 void isa_reg_display();
 word_t isa_reg_str2val(const char *name, bool *success);
 
-
 // exec
 struct Decode;
 int isa_exec_once(struct Decode *s);
@@ -51,6 +50,7 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type);
 vaddr_t isa_raise_intr(word_t NO, vaddr_t epc);
 #define INTR_EMPTY ((word_t)-1)
 word_t isa_query_intr();
+void isa_csr_display();
 
 // difftest
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc);
