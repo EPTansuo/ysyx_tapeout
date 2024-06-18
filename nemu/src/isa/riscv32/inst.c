@@ -70,6 +70,14 @@ enum {
 
 #define XLEN (MUXDEF(CONFIG_RV64, 64, 32)) 
 
+#define MRET() { \
+  s->dnpc = CSR(0x341); \
+  cpu.csr.mstatus &= ~(1<<3); \
+  cpu.csr.mstatus |= ((cpu.csr.mstatus&(1<<7))>>4); \
+  cpu.csr.mstatus |= (1<<7); \
+  cpu.csr.mstatus &= ~((1<<11)+(1<<12)); \
+}
+
 
 //该函数在INSTPAT宏内被调用
 static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_t *imm, int type) {
@@ -184,7 +192,8 @@ static int decode_exec(Decode *s) {
 
   INSTPAT("??????? ????? ????? 001 ????? 11100 11", csrrw  , I, R(rd) = CSR(imm); CSR(imm) = src1);
   INSTPAT("??????? ????? ????? 010 ????? 11100 11", csrrs  , I, R(rd) = CSR(imm); CSR(imm) |= src1);
-  INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall  , I, ECALL(s->dnpc));
+  INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall  , N, ECALL(s->dnpc));
+  INSTPAT("0011000 00010 00000 000 00000 11100 11", mret   , N, MRET());
 
    INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak , N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
    INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv    , N, INV(s->pc));
