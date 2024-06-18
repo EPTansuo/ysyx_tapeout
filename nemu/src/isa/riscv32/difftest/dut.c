@@ -37,7 +37,10 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
          (cpu.csr.mcause == ref_r->csr.mcause) &&
          (cpu.csr.mepc == ref_r->csr.mepc) && 
          (cpu.csr.mtvec == ref_r->csr.mtvec);
-  if(!succ) goto print_error_info;
+  if(!succ){
+     printf("\e[1;31mCSR DIFFTESET ERROR!\e[0m\n");
+     goto print_error_info;
+  }
 
   if(succ)
     return true;
