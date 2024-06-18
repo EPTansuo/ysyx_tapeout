@@ -9,8 +9,8 @@ Context* __am_irq_handle(Context *c) {
     Event ev = {0};
     switch (c->mcause) {
       case 0 : ev.event = EVENT_SYSCALL; break;
-      case 11: ev.event = EVENT_YIELD; break;
-      default: ev.event = EVENT_ERROR; break;
+      case 11: ev.event = EVENT_YIELD;   break;
+      default: ev.event = EVENT_ERROR;   break;
     }
 
     c = user_handler(ev, c);
