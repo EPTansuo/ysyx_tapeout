@@ -24,21 +24,47 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
 
   ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
 
-  if (cpu.pc != ref_r->pc) {
+  if (cpu.pc != ref_r->pc) {   //check pc
     succ = false;
+    printf("\e[1;31mPC DIFFTESET ERROR!\e[0m\n");
+    goto print_error_info;
   }
   else{
-    succ = (memcmp(cpu.gpr, ref_r->gpr, DIFFTEST_REG_SIZE) == 0) ;
+    succ = (memcmp(cpu.gpr, ref_r->gpr, DIFFTEST_REG_SIZE) == 0) ; // check gpr
+    
+    if(!succ){
+      printf("\e[1;31mGPR DIFFTESET ERROR!\e[0m\n");
+      goto print_error_info;
+    }
+  }
+
+  succ = (cpu.csr.mstatus == ref_r->csr.mstatus) && 
+         (cpu.csr.mcause == ref_r->csr.mcause) &&
+         (cpu.csr.mepc == ref_r->csr.mepc) && 
+         (cpu.csr.mtvec == ref_r->csr.mtvec);
+  if(!succ){
+      printf("\e[1;31mCSR DIFFTESET ERROR!\e[0m\n");
+      printf("ref csr info:");
+      printf("mstatus: 0x%x\n", ref_r->csr.mstatus);
+      printf("mcause: 0x%x\n", ref_r->csr.mcause);
+      printf("mepc: 0x%x\n", ref_r->csr.mepc);
+      printf("mtvec: 0x%x\n", ref_r->csr.mtvec);
+     goto print_error_info;
   }
 
   if(succ)
     return true;
-  
+
+print_error_info:
   printf("\e[1;31mDifftest ERROR!\e[0m\n  pc: 0x"FMT_WORD_HEX"\n", pc);
+
+isa_csr_display();
+
+
 #ifdef CONFIG_ITRACE
   print_iringbuf();
 #endif 
-  return false;
+  return false; // the reg info will be printed when nemu is ABORTed 
 }
 
 void isa_difftest_attach() {

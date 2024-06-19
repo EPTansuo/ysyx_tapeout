@@ -37,6 +37,10 @@ static void restart() {
 
   /* The zero register is always 0. */
   cpu.gpr[0] = 0;
+
+  cpu.csr.mstatus = MUXDEF(CONFIG_RV64, 0xa00001800, 0x1800);
+  cpu.csr.mtvec = MUXDEF(CONFIG_RV64, 0x80000000, 0x100);
+  cpu.csr.mepc = 0;
 }
 
 void init_isa() {
