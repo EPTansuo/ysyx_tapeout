@@ -18,6 +18,7 @@
 #include <cpu/ifetch.h>
 #include <cpu/decode.h>
 #include <ftrace.h>
+#include <fmt-def.h>
 
 extern CPU_state cpu;
 
@@ -67,6 +68,13 @@ enum {
 #define SHAMT_LONG_LEN 5
 #endif
 
+void etrace_print_info(){
+#ifdef CONFIG_ETRACE
+  printf("ETRACE: pc: 0x"FMT_WORD_HEX" mepc =" FMT_WORD_HEX " mstatus = " FMT_WORD_HEX 
+  "\n mcause = " FMT_WORD_HEX " mtvec = " FMT_WORD_HEX "\n", 
+  cpu.pc, cpu.csr.mepc, cpu.csr.mstatus, cpu.csr.mcause, cpu.csr.mtvec);
+#endif
+}
 
 #define XLEN (MUXDEF(CONFIG_RV64, 64, 32)) 
 
