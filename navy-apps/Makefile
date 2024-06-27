@@ -84,7 +84,10 @@ INCFLAGS += $(addprefix -I, $(INC_PATH))
 
 CFLAGS   += -O2 -MMD $(INCFLAGS) -static -D__NAVY__ \
             -D__ISA__=\"$(ISA)\" -D__ISA_$(shell echo $(ISA) | tr a-z A-Z)__ \
-            -fno-asynchronous-unwind-tables -fno-builtin -fno-stack-protector
+            -fno-asynchronous-unwind-tables -fno-builtin -fno-stack-protector \
+			-Wno-implicit-function-declaration
+			#-D_COMPILING_NEWLIB=1 -D_POSIX_PRIORITY_SCHEDULING=1 -D_GNU_SOURCE \
+		   	#-D__LARGE64_FILES 
 CXXFLAGS +=  $(CFLAGS) -ffreestanding -fno-rtti -fno-exceptions
 ASFLAGS  +=  $(CFLAGS)
 
