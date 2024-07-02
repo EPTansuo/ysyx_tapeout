@@ -73,7 +73,7 @@ void init_disasm(){
 	while (fgets(line, sizeof(line), fp) != NULL) {
 		//if (sscanf(line, "%x %99[^\n]", &disasm[i].pc, &(disasm[i].str[0])) == 2) {
 		if (sscanf(line, "%x %99[^\n]", &disasm[i].pc, asm_code_buf) == 2) {
-		//printf("Address: 0x%X, Instruction: %s\n", disasm[i].pc, disasm[i].str);
+		printf("Address: 0x%X, Instruction: %s\n", disasm[i].pc, disasm[i].str);
 			//strcpy(&(disasm[i].str[0]),replace_regs_name(asm_code_buf).c_str());
 		} else {
 		fprintf(stderr, "Failed to parse line: %s", line);
