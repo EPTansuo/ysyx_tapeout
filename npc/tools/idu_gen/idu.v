@@ -73,6 +73,7 @@ wire funct7_0100000;
 wire funct7_6_010000;
 wire funct7_6_000000;
 wire funct7_0000001;
+wire funct7_0011000;
 
 
 wire opcode_0010111;
@@ -86,6 +87,7 @@ wire opcode_1101111;
 wire opcode_1100011;
 wire opcode_0111011;
 wire opcode_0110011;
+wire opcode_1110011;
 
 
 wire inst_pat_auipc;
@@ -142,6 +144,10 @@ wire inst_pat_sra;
 wire inst_pat_srl;
 wire inst_pat_divu;
 wire inst_pat_sll;
+wire inst_pat_csrrw;
+wire inst_pat_csrrs;
+wire inst_pat_ecall;
+wire inst_pat_mret;
 
 
 assign funct3_100 = (funct3 == 3'b100);
@@ -159,6 +165,7 @@ assign funct7_0100000 = (funct7 == 7'b0100000);
 assign funct7_6_010000 = (funct7[6:1] == 6'b010000);
 assign funct7_6_000000 = (funct7[6:1] == 6'b000000);
 assign funct7_0000001 = (funct7 == 7'b0000001);
+assign funct7_0011000 = (funct7 == 7'b0011000);
 
 
 assign opcode_0010111 = (opcode == 7'b0010111);
@@ -172,6 +179,7 @@ assign opcode_1101111 = (opcode == 7'b1101111);
 assign opcode_1100011 = (opcode == 7'b1100011);
 assign opcode_0111011 = (opcode == 7'b0111011);
 assign opcode_0110011 = (opcode == 7'b0110011);
+assign opcode_1110011 = (opcode == 7'b1110011);
 
 
 assign inst_pat_auipc = opcode_0010111;
@@ -354,6 +362,20 @@ assign inst_pat_divu = opcode_0110011 &
 assign inst_pat_sll = opcode_0110011 &
                       funct3_001;
 
+assign inst_pat_csrrw = opcode_1110011 &
+                        funct3_001;
+
+assign inst_pat_csrrs = opcode_1110011 &
+                        funct3_010;
+
+assign inst_pat_ecall = opcode_1110011 &
+                        funct3_000 &
+                        funct7_0000000;
+
+assign inst_pat_mret = opcode_1110011 &
+                       funct3_000 &
+                       funct7_0011000;
+
 
 
 assign inst_type = inst == `EBREAK ? `Inst_ebreak : 
@@ -411,6 +433,10 @@ assign inst_type = inst == `EBREAK ? `Inst_ebreak :
                    inst_pat_divu ? `Inst_divu : 
                    inst_pat_divw ? `Inst_divw : 
                    inst_pat_divuw ? `Inst_divuw : 
+                   inst_pat_csrrw ? `Inst_csrrw : 
+                   inst_pat_csrrs ? `Inst_csrrs : 
+                   inst_pat_ecall ? `Inst_ecall : 
+                   inst_pat_mret ? `Inst_mret : 
                    `Inst_inv;
 
 
@@ -420,6 +446,7 @@ assign imm = (opcode == 7'b0010111) ? immU :
              (opcode == 7'b0010011) ? immI : 
              (opcode == 7'b0011011) ? immI : 
              (opcode == 7'b1100111) ? immI : 
+             (opcode == 7'b1110011) ? immI : 
              (opcode == 7'b0100011) ? immS : 
              (opcode == 7'b1101111) ? immJ : 
              (opcode == 7'b1100011) ? immB : 

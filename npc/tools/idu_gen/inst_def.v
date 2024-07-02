@@ -63,3 +63,7 @@
 `define Inst_divu           8'd53
 `define Inst_divw           8'd54
 `define Inst_divuw          8'd55
+`define Inst_csrrw          8'd56
+`define Inst_csrrs          8'd57
+`define Inst_ecall          8'd58
+`define Inst_mret           8'd59
