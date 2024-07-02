@@ -39,13 +39,8 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   assert(elf.e_machine == EXPECT_TYPE);
 
   Elf_Phdr ph[elf.e_phnum];
-  ramdisk_read(ph, elf.e_phoff, sizeof(Elf_Phdr)*elf.e_phnum);
-  for (int i = 0; i < elf.e_phnum; i++) {
-    if (ph[i].p_type == PT_LOAD) {
-      ramdisk_read((void *)ph[i].p_vaddr, ph[i].p_offset, ph[i].p_memsz);
-      memset((void *)(ph[i].p_vaddr + ph[i].p_filesz), 0, ph[i].p_memsz - ph[i].p_filesz);
-    }
-  }
+ 
+   TODO();
   return elf.e_entry;
 
   return 0;
