@@ -19,6 +19,8 @@
 #include <cpu/cpu.h>
 #include <fmt-def.h>
 
+extern const char* regs[];
+
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   bool succ = true;
 
@@ -56,8 +58,18 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
     return true;
 
 print_error_info:
-  printf("\e[1;31mDifftest ERROR!\e[0m\n  pc: 0x"FMT_WORD_HEX"\n", pc);
+  printf("\e[1;31mDifftest ERROR!\e[0m\npc: 0x"FMT_WORD_HEX"\n", pc);
 
+  printf("ref: reg info:\n");
+  int reg_num = MUXDEF(CONFIG_RVE, 16, 32);
+  for (int i = 0; i < reg_num; i++) {
+        if(i%4 == 0)
+          printf("ref: ");
+        printf("$%s = 0x"FMT_WORD_HEX_WIDTH"\t", regs[i], ref_r->gpr[i]);
+        if((i+1)%4 == 0)
+          putchar('\n');
+  }
+  printf("ref: $pc = 0x" FMT_WORD_HEX_WIDTH "\n", cpu.pc);
 isa_csr_display();
 
 
