@@ -113,6 +113,7 @@ assign exu_invalid_inst = rst == `RstEnable ? 0 :
                           inst_type == `Inst_bge ? 0 : 
                           inst_type == `Inst_or ? 0 : 
                           inst_type == `Inst_xor ? 0 : 
+                          inst_type == `Inst_slt ? 0 : 
                           inst_type == `Inst_sltu ? 0 : 
                           inst_type == `Inst_sltiu ? 0 : 
                           inst_type == `Inst_sub ? 0 : 
@@ -152,6 +153,7 @@ assign gpr_we = inst_type == `Inst_addi ? `Enable :
                 inst_type == `Inst_bge ? `Disable : 
                 inst_type == `Inst_or ? `Enable : 
                 inst_type == `Inst_xor ? `Enable : 
+                inst_type == `Inst_slt ? `Enable : 
                 inst_type == `Inst_sltu ? `Enable : 
                 inst_type == `Inst_sltiu ? `Enable : 
                 inst_type == `Inst_sub ? `Enable : 
@@ -190,6 +192,7 @@ assign gpr_w_addr = inst_type == `Inst_addi ? rd :
                     inst_type == `Inst_bge ? 0 : 
                     inst_type == `Inst_or ? rd : 
                     inst_type == `Inst_xor ? rd : 
+                    inst_type == `Inst_slt ? rd : 
                     inst_type == `Inst_sltu ? rd : 
                     inst_type == `Inst_sltiu ? rd : 
                     inst_type == `Inst_sub ? rd : 
@@ -228,6 +231,7 @@ assign gpr_w_data = inst_type == `Inst_addi ? add_src1_imm :
                     inst_type == `Inst_bge ? 0 : 
                     inst_type == `Inst_or ? src1 | src2 : 
                     inst_type == `Inst_xor ? src1 ^ src2 : 
+                    inst_type == `Inst_slt ? $signed(src1)<$signed(src2) ? 1 : 0 : 
                     inst_type == `Inst_sltu ? src1 < src2 ? 1 : 0 : 
                     inst_type == `Inst_sltiu ? src1 < imm ? 1 : 0 : 
                     inst_type == `Inst_sub ? src1 - src2 : 
@@ -266,6 +270,7 @@ assign pc_offset_en = inst_type == `Inst_addi ? `Disable :
                       inst_type == `Inst_bge ? `Enable : 
                       inst_type == `Inst_or ? `Disable : 
                       inst_type == `Inst_xor ? `Disable : 
+                      inst_type == `Inst_slt ? `Disable : 
                       inst_type == `Inst_sltu ? `Disable : 
                       inst_type == `Inst_sltiu ? `Disable : 
                       inst_type == `Inst_sub ? `Disable : 
@@ -304,6 +309,7 @@ assign pc_offset = inst_type == `Inst_addi ? 4 :
                    inst_type == `Inst_bge ? $signed(src1) >= $signed(src2) ? imm : 4 : 
                    inst_type == `Inst_or ? 4 : 
                    inst_type == `Inst_xor ? 4 : 
+                   inst_type == `Inst_slt ? 4 : 
                    inst_type == `Inst_sltu ? 4 : 
                    inst_type == `Inst_sltiu ? 4 : 
                    inst_type == `Inst_sub ? 4 : 
@@ -342,6 +348,7 @@ assign mem_re = inst_type == `Inst_addi ? `Disable :
                 inst_type == `Inst_bge ? `Disable : 
                 inst_type == `Inst_or ? `Disable : 
                 inst_type == `Inst_xor ? `Disable : 
+                inst_type == `Inst_slt ? `Disable : 
                 inst_type == `Inst_sltu ? `Disable : 
                 inst_type == `Inst_sltiu ? `Disable : 
                 inst_type == `Inst_sub ? `Disable : 
@@ -380,6 +387,7 @@ assign mem_r_addr = inst_type == `Inst_addi ? 0 :
                     inst_type == `Inst_bge ? 0 : 
                     inst_type == `Inst_or ? 0 : 
                     inst_type == `Inst_xor ? 0 : 
+                    inst_type == `Inst_slt ? 0 : 
                     inst_type == `Inst_sltu ? 0 : 
                     inst_type == `Inst_sltiu ? 0 : 
                     inst_type == `Inst_sub ? 0 : 
@@ -418,6 +426,7 @@ assign mem_r_mask = inst_type == `Inst_addi ? 0 :
                     inst_type == `Inst_bge ? 0 : 
                     inst_type == `Inst_or ? 0 : 
                     inst_type == `Inst_xor ? 0 : 
+                    inst_type == `Inst_slt ? 0 : 
                     inst_type == `Inst_sltu ? 0 : 
                     inst_type == `Inst_sltiu ? 0 : 
                     inst_type == `Inst_sub ? 0 : 
@@ -456,6 +465,7 @@ assign mem_we = inst_type == `Inst_addi ? `Disable :
                 inst_type == `Inst_bge ? `Disable : 
                 inst_type == `Inst_or ? `Disable : 
                 inst_type == `Inst_xor ? `Disable : 
+                inst_type == `Inst_slt ? `Disable : 
                 inst_type == `Inst_sltu ? `Disable : 
                 inst_type == `Inst_sltiu ? `Disable : 
                 inst_type == `Inst_sub ? `Disable : 
@@ -494,6 +504,7 @@ assign mem_w_addr = inst_type == `Inst_addi ? 0 :
                     inst_type == `Inst_bge ? 0 : 
                     inst_type == `Inst_or ? 0 : 
                     inst_type == `Inst_xor ? 0 : 
+                    inst_type == `Inst_slt ? 0 : 
                     inst_type == `Inst_sltu ? 0 : 
                     inst_type == `Inst_sltiu ? 0 : 
                     inst_type == `Inst_sub ? 0 : 
@@ -532,6 +543,7 @@ assign mem_w_data = inst_type == `Inst_addi ? 0 :
                     inst_type == `Inst_bge ? 0 : 
                     inst_type == `Inst_or ? 0 : 
                     inst_type == `Inst_xor ? 0 : 
+                    inst_type == `Inst_slt ? 0 : 
                     inst_type == `Inst_sltu ? 0 : 
                     inst_type == `Inst_sltiu ? 0 : 
                     inst_type == `Inst_sub ? 0 : 
@@ -570,6 +582,7 @@ assign mem_w_mask = inst_type == `Inst_addi ? 0 :
                     inst_type == `Inst_bge ? 0 : 
                     inst_type == `Inst_or ? 0 : 
                     inst_type == `Inst_xor ? 0 : 
+                    inst_type == `Inst_slt ? 0 : 
                     inst_type == `Inst_sltu ? 0 : 
                     inst_type == `Inst_sltiu ? 0 : 
                     inst_type == `Inst_sub ? 0 : 
@@ -608,6 +621,7 @@ assign sranum = inst_type == `Inst_addi ? 0 :
                 inst_type == `Inst_bge ? 0 : 
                 inst_type == `Inst_or ? 0 : 
                 inst_type == `Inst_xor ? 0 : 
+                inst_type == `Inst_slt ? 0 : 
                 inst_type == `Inst_sltu ? 0 : 
                 inst_type == `Inst_sltiu ? 0 : 
                 inst_type == `Inst_sub ? 0 : 
@@ -646,6 +660,7 @@ assign csr_raddr = inst_type == `Inst_addi ? 0 :
                    inst_type == `Inst_bge ? 0 : 
                    inst_type == `Inst_or ? 0 : 
                    inst_type == `Inst_xor ? 0 : 
+                   inst_type == `Inst_slt ? 0 : 
                    inst_type == `Inst_sltu ? 0 : 
                    inst_type == `Inst_sltiu ? 0 : 
                    inst_type == `Inst_sub ? 0 : 
@@ -684,6 +699,7 @@ assign csr_we = inst_type == `Inst_addi ? `Disable :
                 inst_type == `Inst_bge ? `Disable : 
                 inst_type == `Inst_or ? `Disable : 
                 inst_type == `Inst_xor ? `Disable : 
+                inst_type == `Inst_slt ? `Disable : 
                 inst_type == `Inst_sltu ? `Disable : 
                 inst_type == `Inst_sltiu ? `Disable : 
                 inst_type == `Inst_sub ? `Disable : 
@@ -722,6 +738,7 @@ assign csr_waddr = inst_type == `Inst_addi ? 0 :
                    inst_type == `Inst_bge ? 0 : 
                    inst_type == `Inst_or ? 0 : 
                    inst_type == `Inst_xor ? 0 : 
+                   inst_type == `Inst_slt ? 0 : 
                    inst_type == `Inst_sltu ? 0 : 
                    inst_type == `Inst_sltiu ? 0 : 
                    inst_type == `Inst_sub ? 0 : 
@@ -760,6 +777,7 @@ assign csr_wdata = inst_type == `Inst_addi ? 0 :
                    inst_type == `Inst_bge ? 0 : 
                    inst_type == `Inst_or ? 0 : 
                    inst_type == `Inst_xor ? 0 : 
+                   inst_type == `Inst_slt ? 0 : 
                    inst_type == `Inst_sltu ? 0 : 
                    inst_type == `Inst_sltiu ? 0 : 
                    inst_type == `Inst_sub ? 0 : 

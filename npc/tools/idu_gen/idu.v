@@ -140,6 +140,7 @@ wire inst_pat_rem;
 wire inst_pat_xor;
 wire inst_pat_div;
 wire inst_pat_sltu;
+wire inst_pat_slt;
 wire inst_pat_sra;
 wire inst_pat_srl;
 wire inst_pat_divu;
@@ -347,6 +348,9 @@ assign inst_pat_div = opcode_0110011 &
 assign inst_pat_sltu = opcode_0110011 &
                        funct3_011;
 
+assign inst_pat_slt = opcode_0110011 &
+                      funct3_010;
+
 assign inst_pat_sra = opcode_0110011 &
                       funct3_101 &
                       funct7_0100000;
@@ -411,6 +415,7 @@ assign inst_type = inst == `EBREAK ? `Inst_ebreak :
                    inst_pat_xor ? `Inst_xor : 
                    inst_pat_sllw ? `Inst_sllw : 
                    inst_pat_sltu ? `Inst_sltu : 
+                   inst_pat_slt ? `Inst_slt : 
                    inst_pat_srliw ? `Inst_srliw : 
                    inst_pat_slliw ? `Inst_slliw : 
                    inst_pat_sra ? `Inst_sra : 
