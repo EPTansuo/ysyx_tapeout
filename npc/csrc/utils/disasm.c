@@ -19,7 +19,7 @@ extern const char *regs[];
 
 Disasm *disasm;
 
-//#define CONFIG_DISASM
+#define CONFIG_DISASM
 #ifdef CONFIG_DISASM
 
 void disassemble(char* logbuf, size_t logbuf_size, word_t pc){
