@@ -95,7 +95,8 @@ void pmem_write(int waddr, int wdata, char wmask){
       || (!regs_equ(top->cpu->gpr1->regs,mwinfo.regs))){
 
       if(waddr == CONFIG_SERIAL_MMIO) {
-          printf(L_PURPLE "%c" NONE "", wdata);
+          //printf(L_PURPLE "%c" NONE "", wdata);
+          putchar(wdata);
           goto end_pmem_write;
       }
       else if (waddr > CONFIG_MBASE + CONFIG_MSIZE){
