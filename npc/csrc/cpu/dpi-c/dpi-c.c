@@ -98,6 +98,9 @@ void pmem_write(int waddr, int wdata, char wmask){
           printf(L_PURPLE "%c" NONE "", wdata);
           goto end_pmem_write;
       }
+      else if (waddr > CONFIG_MBASE + CONFIG_MSIZE){
+        goto end_pmem_write;
+      }
       
       #ifdef CONFIG_MTRACE
       printf("--------MTRACE---------\n");
