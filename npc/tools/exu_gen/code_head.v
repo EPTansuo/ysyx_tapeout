@@ -58,6 +58,7 @@ module exu(
 );
 
 assign exu_csr_pc = exu_pc;
+assign exu_csr_inst_type = inst_type;
 
 `ifndef STA
 

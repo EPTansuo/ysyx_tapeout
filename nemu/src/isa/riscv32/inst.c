@@ -80,7 +80,7 @@ void etrace_print_info(){
 
 ////CSR(0x341) = mepc 
 #define MRET() { \
-  s->dnpc = CSR(0x341); \    
+  s->dnpc = CSR(0x341); \
   cpu.csr.mstatus &= ~(1<<3); \
   cpu.csr.mstatus |= ((cpu.csr.mstatus&(1<<7))>>4); \
   cpu.csr.mstatus |= (1<<7); \

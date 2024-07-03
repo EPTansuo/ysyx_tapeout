@@ -20,7 +20,9 @@ def gen_assign(table, col):
 
     for row in range(table.shape[0]): # number of rows(insts)
         if (table_isnull.iloc[row,0] == False):
-            continue       # line commont
+            #continue       # line commont
+            if (table.iloc[row,0].startswith('//')): # line commont
+                continue
         if(first_line == False):
             code += spaces
         first_line = False
@@ -54,7 +56,9 @@ def gen_invalid_inst(table):
 
     for row in range(table.shape[0]): # number of rows(insts)
         if (table_isnull.iloc[row,0] == False):
-            continue       # line commont
+            #continue       # line commont
+            if (table.iloc[row,0].startswith('//')): # line commont
+                continue
         code += spaces
         if(row != table.shape[0] - 1):
             code += f"inst_type == {table.iloc[row,1]} ? 0 : \n"

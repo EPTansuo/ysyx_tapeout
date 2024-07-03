@@ -19,7 +19,7 @@ module csr(
         input wire [`InstAddrBus] exu_pc,
 
         //from grp
-        input [`RegDataBus] gpr_a7
+        input [`RegDataBus] gpr_a7_a5 //a7 或 a5
 );
 
 
@@ -66,8 +66,8 @@ always @(posedge clk) begin
                         csrs[MSTATUS_INDEX][7] <= csrs[MSTATUS_INDEX][3];
                         csrs[MSTATUS_INDEX][3] <= 0;
                         csrs[MSTATUS_INDEX][12:11] <= 2'b11;
-                        csrs[MEPC_INDEX] <= exu_pc;
-                        csrs[MCAUSE_INDEX] = gpr_a7;
+                        csrs[MEPC_INDEX] <= exu_pc ;
+                        csrs[MCAUSE_INDEX] = gpr_a7_a5;
                        // dnpc = mtvec; //在exu中设置
                 end
                 else if(inst_type ==  `Inst_mret) begin

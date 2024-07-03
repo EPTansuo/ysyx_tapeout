@@ -19,6 +19,8 @@
 #include <cpu/cpu.h>
 #include <fmt-def.h>
 
+extern const char* regs[];
+
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   bool succ = true;
 
@@ -42,27 +44,42 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
          (cpu.csr.mcause == ref_r->csr.mcause) &&
          (cpu.csr.mepc == ref_r->csr.mepc) && 
          (cpu.csr.mtvec == ref_r->csr.mtvec);
+  if(succ)
+    return true;
   if(!succ){
       printf("\e[1;31mCSR DIFFTESET ERROR!\e[0m\n");
-      printf("ref csr info:");
-      printf("mstatus: 0x%x\n", ref_r->csr.mstatus);
-      printf("mcause: 0x%x\n", ref_r->csr.mcause);
-      printf("mepc: 0x%x\n", ref_r->csr.mepc);
-      printf("mtvec: 0x%x\n", ref_r->csr.mtvec);
+      printf("ref csr info:\n");
+      if(cpu.csr.mepc != ref_r->csr.mepc) printf("-->"); 
+      printf("mepc: 0x%08x\n", ref_r->csr.mepc);
+      if(cpu.csr.mcause != ref_r->csr.mcause) printf("-->");
+      printf("mcause: 0x%08x\n", ref_r->csr.mcause);
+      if(cpu.csr.mstatus != ref_r->csr.mstatus) printf("-->");
+      printf("mstatus: 0x%08x\n", ref_r->csr.mstatus);
+      if(cpu.csr.mtvec != ref_r->csr.mtvec) printf("-->");
+      printf("mtvec: 0x%08x\n", ref_r->csr.mtvec);
      goto print_error_info;
   }
 
-  if(succ)
-    return true;
+  
 
 print_error_info:
-  printf("\e[1;31mDifftest ERROR!\e[0m\n  pc: 0x"FMT_WORD_HEX"\n", pc);
+  printf("\e[1;31mDifftest ERROR!\e[0m\n");
+  
+  printf("ref: reg info:\n");
+  int reg_num = MUXDEF(CONFIG_RVE, 16, 32);
+  for (int i = 0; i < reg_num; i++) {
+        if(i%4 == 0)
+          printf("ref: ");
+        printf("$%s = 0x"FMT_WORD_HEX_WIDTH"\t", regs[i], ref_r->gpr[i]);
+        if((i+1)%4 == 0)
+          putchar('\n');
+  }
+  printf("ref: $pc = 0x" FMT_WORD_HEX_WIDTH "\n", cpu.pc);
 
-isa_csr_display();
-
+  isa_csr_display();
 
 #ifdef CONFIG_ITRACE
-  print_iringbuf();
+  //print_iringbuf();
 #endif 
   return false; // the reg info will be printed when nemu is ABORTed 
 }

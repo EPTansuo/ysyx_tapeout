@@ -62,7 +62,7 @@ idu idu1(
 wire gpr_we;
 wire [`RegAddrBus] gpr_waddr;
 wire [`RegDataBus] gpr_wdata;
-wire [`RegDataBus] gpr_a7;
+wire [`RegDataBus] to_csr;
 gpr gpr1(
         .clk(clk),
         .rst(rst),
@@ -73,7 +73,7 @@ gpr gpr1(
         .rdata1(gpr_rdata_1),
         .raddr2(gpr_raddr_2),
         .rdata2(gpr_rdata_2),
-        .a7(gpr_a7)
+        .to_csr(to_csr)
 );
 
 wire exu_mem_we;
@@ -142,7 +142,7 @@ csr csr1(
         .rdata(exu_csr_rdata),
         .inst_type(exu_csr_inst_type),
         .exu_pc(exu_csr_pc),
-        .gpr_a7(gpr_a7)
+        .gpr_a7_a5(to_csr) 
 );
 
 mem mem1(
