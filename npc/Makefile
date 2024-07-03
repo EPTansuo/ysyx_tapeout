@@ -1,12 +1,13 @@
 TOPNAME = cpu
 NXDC_FILES = constr/cpu.nxdc
-IMG = "/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/bit-riscv32e-npc.bin"
+#IMG = "/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/tests/am-tests/build/amtest-riscv32e-npc.bin"
+IMG = "/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/kernels/snake/build/snake-riscv32e-npc.bin"
 ARGS = -v --diff="/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/nemu/build/riscv32-nemu-interpreter-so"
 
 VERILATOR = verilator
 VERILATOR_CFLAGS += -MMD --build -cc --public --trace \
 				-O3 --x-assign fast --x-initial fast --noassert \
-				-I$(YSYX_HOME)/npc/vsrc 
+				-I$(YSYX_HOME)/npc/vsrc  --threads 1
 
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
@@ -22,7 +23,6 @@ INC_PATH +=$(abspath csrc/isa/$(CONFIG_ISA)/local-include)
 
 
 
-
 default:$(BIN) 
 
 $(shell mkdir -p $(BUILD_DIR))
@@ -34,14 +34,19 @@ $(SRC_AUTO_BIND): $(NXDC_FILES)
 
 # project source
 VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
-CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
+#CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
+CSRCS = $(shell find $(abspath ./csrc) \( -path $(abspath ./csrc/device) -prune \) -o \( -name "*.c" -or -name "*.cc" -or -name "*.cpp" \) -print)
+
 CSRCS += $(SRC_AUTO_BIND)
 #CSRCS += $(NEMU_HOME)/src/utils/disasm.cc
+
+-include csrc/device/filelist.mk
 
 
 # rules for verilator
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += -Wall $(INCFLAGS) -g -DTOP_NAME="\"V$(TOPNAME)\"" -fpermissive #$(shell llvm-config --cxxflags) 
+CXXFLAGS += -fmacro-prefix-map=$(PWD)=npc -g
 LDFLAGS += -lreadline
 #LDFLAGS += $(shell llvm-config --ldflags)
 #LDLIBS += $(shell llvm-config --libs)
@@ -54,6 +59,7 @@ include $(NVBOARD_HOME)/scripts/nvboard.mk
 $(shell python3 $(NPC_HOME)/tools/exu_gen/exu_gen.py > $(NPC_HOME)/vsrc/exu.v)
 
 $(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE) 
+	echo $(CSRCS)
 	@rm -rf $(OBJ_DIR)
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $^ \

@@ -15,8 +15,9 @@
 
 #include <memory/host.h>
 #include <memory/paddr.h>
-//#include <device/mmio.h>
+#include <device/mmio.h>
 #include <isa.h>
+#include <autoconf.h>
 
 #if   defined(CONFIG_PMEM_MALLOC)
 static uint8_t *pmem = NULL;
@@ -64,14 +65,22 @@ void print_memwrite(paddr_t addr, int len, word_t data){
     printf("0x%08x:    ", (paddr_t)addr + i);
     if (likely(in_pmem(addr))) 
       origin_mem=  pmem_read(addr+i, 1);
-    else
-      IFDEF(CONFIG_DEVICE, origin_mem = mmio_read(addr, len));
+    else{
+#ifdef CONFIG_DEVICE
+      printf("do not support mmio  =>  " );
+
+      printf("0x%02x\n", (unsigned int)(data >> (i * 8) & 0xff));
+#endif 
+    }
     //out_of_bound(addr);
     printf("0x%02x  =>  ", (unsigned int)origin_mem);
 
     printf("0x%02x\n", (unsigned int)(data >> (i * 8) & 0xff));
   }
 }
+
+#else 
+void print_memwrite(paddr_t addr, int len, word_t data){};
 
 #endif
 

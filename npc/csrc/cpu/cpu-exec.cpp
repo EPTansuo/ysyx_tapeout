@@ -16,7 +16,7 @@
 bool first = true;
 
 CPU_state npc_cpu = {};
-
+uint64_t g_nr_guest_inst = 0;
 static bool g_print_step = false;
 
 extern Vcpu* top;
@@ -24,7 +24,7 @@ extern VerilatedVcdC * tfp;
 extern VerilatedContext* contextp;
 
 void disassemble(char* logbuf, size_t logbuf_size, word_t pc);
-
+void device_update();
 
 static void trace_and_difftest(){
   //printf("pc=0x%x, dnpc=0x%x\n",top->cpu->pc1->pc, top->cpu->pc1->pc + (top->cpu->pc1->pc_offset_en?top->cpu->pc1->pc_offset:0));

@@ -22,5 +22,8 @@ void init_sim(){
 
 void stop_sim(){
         top->final();
- 	tfp->close();
+#ifdef CONFIG_WAVE_DUMP
+	tfp->close();
+#endif 
+ 	
 }

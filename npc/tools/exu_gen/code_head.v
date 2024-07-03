@@ -39,8 +39,25 @@ module exu(
         output reg [7:0] mem_r_mask,
 
         //from MEM
-        input wire [`WordBus] mem_r_data
+        input wire [`WordBus] mem_r_data,
+
+
+        //from pc
+        input wire [`InstAddrBus] exu_pc,
+
+        //from csr
+        input  [`RegDataBus] csr_rdata,
+
+        //to csr
+        output reg [`InstAddrBus] exu_csr_pc,
+        output reg [7:0] exu_csr_inst_type,
+        output reg [11:0] csr_raddr,
+        output reg [`RegDataBus] csr_wdata,
+        output reg [11:0] csr_waddr,
+        output reg csr_we
 );
+
+assign exu_csr_pc = exu_pc;
 
 `ifndef STA
 

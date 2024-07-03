@@ -19,6 +19,7 @@ extern const char *regs[];
 
 Disasm *disasm;
 
+#define CONFIG_DISASM
 #ifdef CONFIG_DISASM
 
 void disassemble(char* logbuf, size_t logbuf_size, word_t pc){
@@ -48,7 +49,7 @@ std::string replace_regs_name(const std::string& code) {
 void init_disasm(){
 	char img_file_path[200];
 	char line[100];
-	char asm_code_buf[100];
+	//char asm_code_buf[100];
 	char img_full_name[50];
 	uint16_t lines = 0;
 	strcpy(img_full_name, img_file);
@@ -71,8 +72,8 @@ void init_disasm(){
 	fseek(fp, 0, SEEK_SET);
 	int i =0;
 	while (fgets(line, sizeof(line), fp) != NULL) {
-		//if (sscanf(line, "%x %99[^\n]", &disasm[i].pc, &(disasm[i].str[0])) == 2) {
-		if (sscanf(line, "%x %99[^\n]", &disasm[i].pc, asm_code_buf) == 2) {
+		if (sscanf(line, "%x %99[^\n]", &disasm[i].pc, &(disasm[i].str[0])) == 2) {
+		//if (sscanf(line, "%x %99[^\n]", &disasm[i].pc, asm_code_buf) == 2) {
 		//printf("Address: 0x%X, Instruction: %s\n", disasm[i].pc, disasm[i].str);
 			//strcpy(&(disasm[i].str[0]),replace_regs_name(asm_code_buf).c_str());
 		} else {
