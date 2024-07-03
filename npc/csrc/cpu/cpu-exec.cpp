@@ -16,7 +16,7 @@
 bool first = true;
 
 CPU_state npc_cpu = {};
-
+uint64_t g_nr_guest_inst = 0;
 static bool g_print_step = false;
 
 extern Vcpu* top;
