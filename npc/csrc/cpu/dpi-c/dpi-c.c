@@ -51,7 +51,7 @@ int pmem_read(int raddr){
     //获取当前时间
     return (uint32_t)get_rtc_time();
   }
-  else (raddr == CONFIG_RTC_MMIO + 4) {
+  else if (raddr == CONFIG_RTC_MMIO + 4) {
     return (uint32_t)(get_rtc_time() >> 32);
   }
 
