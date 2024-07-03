@@ -134,6 +134,8 @@ assign exu_invalid_inst = rst == `RstEnable ? 0 :
                           inst_type == `Inst_sw ? 0 : 
                           inst_type == `Inst_csrrw ? 0 : 
                           inst_type == `Inst_csrrs ? 0 : 
+                          inst_type == `Inst_ecall ? 0 : 
+                          inst_type == `Inst_mret ? 0 : 
                           1;
 `endif
 
