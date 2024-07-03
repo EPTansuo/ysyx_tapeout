@@ -62,30 +62,49 @@ int pmem_read(int raddr){
   return data;
 }
 void print_memwrite(paddr_t addr, int len, word_t data);
+
+typedef  struct{
+  paddr_t addr;
+  char wmask;
+  word_t data;
+  word_t pc;
+}memwrite_info;
+
 void pmem_write(int waddr, int wdata, char wmask){
+  static memwrite_info mwinfo;   //防止多次输出
+  if(mwinfo.pc != top->cpu->pc1->pc || mwinfo.addr != waddr
+      || mwinfo.wmask != wmask || mwinfo.data != wdata  ){
 
+      if(waddr == CONFIG_SERIAL_MMIO) {
+          printf(L_BLUE "%c" NONE "", wdata);
+          goto end_pmem_write;
+      }
+      
+      #ifdef CONFIG_MTRACE
+      printf("--------MTRACE---------\n");
+      printf("wmask = 0x%x", wmask);
+      print_memwrite(waddr, wmask == 0x01 ? 1 : wmask == 0x03 ? 2 : wmask ==0x0f ? 4 : 0, wdata);
+      #endif
 
-  if(waddr == CONFIG_SERIAL_MMIO) {
-    printf(L_BLUE "%c" NONE "", wdata);
-    return;
+      switch (wmask)
+      {
+        case 0x01: host_write(guest_to_host(waddr), 1, wdata); break; 
+        case 0x03: host_write(guest_to_host(waddr), 2, wdata); break;
+        case 0x0f: host_write(guest_to_host(waddr), 4, wdata); break;
+      default:
+        printf( L_RED " Can only write for 1/2/4 btyes ()." NONE "\n");
+        break;
+      }
+end_pmem_write:
+      mwinfo.pc = top->cpu->pc1->pc;
+      mwinfo.addr = waddr;
+      mwinfo.wmask = wmask;
+      mwinfo.data = wdata;
   }
 
 
-  #ifdef CONFIG_MTRACE
-  printf("--------MTRACE---------\n");
-  printf("wmask = 0x%x", wmask);
-  print_memwrite(waddr, wmask == 0x01 ? 1 : wmask == 0x03 ? 2 : wmask ==0x0f ? 4 : 0, wdata);
-  #endif
 
-  switch (wmask)
-  {
-    case 0x01: host_write(guest_to_host(waddr), 1, wdata); break; 
-    case 0x03: host_write(guest_to_host(waddr), 2, wdata); break;
-    case 0x0f: host_write(guest_to_host(waddr), 4, wdata); break;
-  default:
-    printf( L_RED " Can only write for 1/2/4 btyes ()." NONE "\n");
-    break;
-  }
+ 
 
 }
 
