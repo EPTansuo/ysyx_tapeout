@@ -39,8 +39,25 @@ module exu(
         output reg [7:0] mem_r_mask,
 
         //from MEM
-        input wire [`WordBus] mem_r_data
+        input wire [`WordBus] mem_r_data,
+
+
+        //from pc
+        input wire [`InstAddrBus] exu_pc,
+
+        //from csr
+        input  [`RegDataBus] csr_rdata,
+
+        //to csr
+        output reg [`InstAddrBus] exu_csr_pc,
+        output reg [7:0] exu_csr_inst_type,
+        output reg [11:0] csr_raddr,
+        output reg [`RegDataBus] csr_wdata,
+        output reg [11:0] csr_waddr,
+        output reg csr_we
 );
+
+assign exu_csr_pc = exu_pc;
 
 `ifndef STA
 
@@ -114,6 +131,8 @@ assign exu_invalid_inst = rst == `RstEnable ? 0 :
                           inst_type == `Inst_sb ? 0 : 
                           inst_type == `Inst_sh ? 0 : 
                           inst_type == `Inst_sw ? 0 : 
+                          inst_type == `Inst_csrrw ? 0 : 
+                          inst_type == `Inst_csrrs ? 0 : 
                           1;
 `endif
 
@@ -151,6 +170,8 @@ assign gpr_we = inst_type == `Inst_addi ? `Enable :
                 inst_type == `Inst_sb ? `Disable : 
                 inst_type == `Inst_sh ? `Disable : 
                 inst_type == `Inst_sw ? `Disable : 
+                inst_type == `Inst_csrrw ? `Enable : 
+                inst_type == `Inst_csrrs ? `Enable : 
                 `Disable;
 
 
@@ -187,6 +208,8 @@ assign gpr_w_addr = inst_type == `Inst_addi ? rd :
                     inst_type == `Inst_sb ? 0 : 
                     inst_type == `Inst_sh ? 0 : 
                     inst_type == `Inst_sw ? 0 : 
+                    inst_type == `Inst_csrrw ? rd : 
+                    inst_type == `Inst_csrrs ? rd : 
                     0;
 
 
@@ -223,6 +246,8 @@ assign gpr_w_data = inst_type == `Inst_addi ? add_src1_imm :
                     inst_type == `Inst_sb ? 0 : 
                     inst_type == `Inst_sh ? 0 : 
                     inst_type == `Inst_sw ? 0 : 
+                    inst_type == `Inst_csrrw ? csr_rdata : 
+                    inst_type == `Inst_csrrs ? csr_rdata : 
                     0;
 
 
@@ -259,6 +284,8 @@ assign pc_offset_en = inst_type == `Inst_addi ? `Disable :
                       inst_type == `Inst_sb ? `Disable : 
                       inst_type == `Inst_sh ? `Disable : 
                       inst_type == `Inst_sw ? `Disable : 
+                      inst_type == `Inst_csrrw ? `Disable : 
+                      inst_type == `Inst_csrrs ? `Disable : 
                       `Disable;
 
 
@@ -295,6 +322,8 @@ assign pc_offset = inst_type == `Inst_addi ? 4 :
                    inst_type == `Inst_sb ? 4 : 
                    inst_type == `Inst_sh ? 4 : 
                    inst_type == `Inst_sw ? 4 : 
+                   inst_type == `Inst_csrrw ? 4 : 
+                   inst_type == `Inst_csrrs ? 4 : 
                    4;
 
 
@@ -331,6 +360,8 @@ assign mem_re = inst_type == `Inst_addi ? `Disable :
                 inst_type == `Inst_sb ? `Disable : 
                 inst_type == `Inst_sh ? `Disable : 
                 inst_type == `Inst_sw ? `Disable : 
+                inst_type == `Inst_csrrw ? `Disable : 
+                inst_type == `Inst_csrrs ? `Disable : 
                 `Disable;
 
 
@@ -367,6 +398,8 @@ assign mem_r_addr = inst_type == `Inst_addi ? 0 :
                     inst_type == `Inst_sb ? 0 : 
                     inst_type == `Inst_sh ? 0 : 
                     inst_type == `Inst_sw ? 0 : 
+                    inst_type == `Inst_csrrw ? 0 : 
+                    inst_type == `Inst_csrrs ? 0 : 
                     0;
 
 
@@ -403,6 +436,8 @@ assign mem_r_mask = inst_type == `Inst_addi ? 0 :
                     inst_type == `Inst_sb ? 0 : 
                     inst_type == `Inst_sh ? 0 : 
                     inst_type == `Inst_sw ? 0 : 
+                    inst_type == `Inst_csrrw ? 0 : 
+                    inst_type == `Inst_csrrs ? 0 : 
                     0;
 
 
@@ -439,6 +474,8 @@ assign mem_we = inst_type == `Inst_addi ? `Disable :
                 inst_type == `Inst_sb ? `Enable : 
                 inst_type == `Inst_sh ? `Enable : 
                 inst_type == `Inst_sw ? `Enable : 
+                inst_type == `Inst_csrrw ? `Disable : 
+                inst_type == `Inst_csrrs ? `Disable : 
                 `Disable;
 
 
@@ -475,6 +512,8 @@ assign mem_w_addr = inst_type == `Inst_addi ? 0 :
                     inst_type == `Inst_sb ? add_src1_imm : 
                     inst_type == `Inst_sh ? add_src1_imm : 
                     inst_type == `Inst_sw ? add_src1_imm : 
+                    inst_type == `Inst_csrrw ? 0 : 
+                    inst_type == `Inst_csrrs ? 0 : 
                     0;
 
 
@@ -511,6 +550,8 @@ assign mem_w_data = inst_type == `Inst_addi ? 0 :
                     inst_type == `Inst_sb ? src2 : 
                     inst_type == `Inst_sh ? src2 : 
                     inst_type == `Inst_sw ? src2 : 
+                    inst_type == `Inst_csrrw ? 0 : 
+                    inst_type == `Inst_csrrs ? 0 : 
                     0;
 
 
@@ -547,6 +588,8 @@ assign mem_w_mask = inst_type == `Inst_addi ? 0 :
                     inst_type == `Inst_sb ? 8'b00000001 : 
                     inst_type == `Inst_sh ? 8'b00000011 : 
                     inst_type == `Inst_sw ? 8'b00001111 : 
+                    inst_type == `Inst_csrrw ? 0 : 
+                    inst_type == `Inst_csrrs ? 0 : 
                     0;
 
 
@@ -583,7 +626,161 @@ assign sranum = inst_type == `Inst_addi ? 0 :
                 inst_type == `Inst_sb ? 0 : 
                 inst_type == `Inst_sh ? 0 : 
                 inst_type == `Inst_sw ? 0 : 
+                inst_type == `Inst_csrrw ? 0 : 
+                inst_type == `Inst_csrrs ? 0 : 
                 0;
+
+
+assign csr_raddr = inst_type == `Inst_addi ? 0 : 
+                   inst_type == `Inst_andi ? 0 : 
+                   inst_type == `Inst_xori ? 0 : 
+                   inst_type == `Inst_auipc ? 0 : 
+                   inst_type == `Inst_lui ? 0 : 
+                   inst_type == `Inst_jal ? 0 : 
+                   inst_type == `Inst_jalr ? 0 : 
+                   inst_type == `Inst_beq ? 0 : 
+                   inst_type == `Inst_bne ? 0 : 
+                   inst_type == `Inst_bgeu ? 0 : 
+                   inst_type == `Inst_bltu ? 0 : 
+                   inst_type == `Inst_blt ? 0 : 
+                   inst_type == `Inst_bge ? 0 : 
+                   inst_type == `Inst_or ? 0 : 
+                   inst_type == `Inst_xor ? 0 : 
+                   inst_type == `Inst_sltu ? 0 : 
+                   inst_type == `Inst_sltiu ? 0 : 
+                   inst_type == `Inst_sub ? 0 : 
+                   inst_type == `Inst_add ? 0 : 
+                   inst_type == `Inst_and ? 0 : 
+                   inst_type == `Inst_srl ? 0 : 
+                   inst_type == `Inst_srai ? 0 : 
+                   inst_type == `Inst_sra ? 0 : 
+                   inst_type == `Inst_sll ? 0 : 
+                   inst_type == `Inst_srli ? 0 : 
+                   inst_type == `Inst_slli ? 0 : 
+                   inst_type == `Inst_lbu ? 0 : 
+                   inst_type == `Inst_lhu ? 0 : 
+                   inst_type == `Inst_lh ? 0 : 
+                   inst_type == `Inst_lw ? 0 : 
+                   inst_type == `Inst_sb ? 0 : 
+                   inst_type == `Inst_sh ? 0 : 
+                   inst_type == `Inst_sw ? 0 : 
+                   inst_type == `Inst_csrrw ? imm[11:0] : 
+                   inst_type == `Inst_csrrs ? imm[11:0] : 
+                   0;
+
+
+assign csr_we = inst_type == `Inst_addi ? `Disable : 
+                inst_type == `Inst_andi ? `Disable : 
+                inst_type == `Inst_xori ? `Disable : 
+                inst_type == `Inst_auipc ? `Disable : 
+                inst_type == `Inst_lui ? `Disable : 
+                inst_type == `Inst_jal ? `Disable : 
+                inst_type == `Inst_jalr ? `Disable : 
+                inst_type == `Inst_beq ? `Disable : 
+                inst_type == `Inst_bne ? `Disable : 
+                inst_type == `Inst_bgeu ? `Disable : 
+                inst_type == `Inst_bltu ? `Disable : 
+                inst_type == `Inst_blt ? `Disable : 
+                inst_type == `Inst_bge ? `Disable : 
+                inst_type == `Inst_or ? `Disable : 
+                inst_type == `Inst_xor ? `Disable : 
+                inst_type == `Inst_sltu ? `Disable : 
+                inst_type == `Inst_sltiu ? `Disable : 
+                inst_type == `Inst_sub ? `Disable : 
+                inst_type == `Inst_add ? `Disable : 
+                inst_type == `Inst_and ? `Disable : 
+                inst_type == `Inst_srl ? `Disable : 
+                inst_type == `Inst_srai ? `Disable : 
+                inst_type == `Inst_sra ? `Disable : 
+                inst_type == `Inst_sll ? `Disable : 
+                inst_type == `Inst_srli ? `Disable : 
+                inst_type == `Inst_slli ? `Disable : 
+                inst_type == `Inst_lbu ? `Disable : 
+                inst_type == `Inst_lhu ? `Disable : 
+                inst_type == `Inst_lh ? `Disable : 
+                inst_type == `Inst_lw ? `Disable : 
+                inst_type == `Inst_sb ? `Disable : 
+                inst_type == `Inst_sh ? `Disable : 
+                inst_type == `Inst_sw ? `Disable : 
+                inst_type == `Inst_csrrw ? `Enable : 
+                inst_type == `Inst_csrrs ? `Enable : 
+                `Disable;
+
+
+assign csr_waddr = inst_type == `Inst_addi ? 0 : 
+                   inst_type == `Inst_andi ? 0 : 
+                   inst_type == `Inst_xori ? 0 : 
+                   inst_type == `Inst_auipc ? 0 : 
+                   inst_type == `Inst_lui ? 0 : 
+                   inst_type == `Inst_jal ? 0 : 
+                   inst_type == `Inst_jalr ? 0 : 
+                   inst_type == `Inst_beq ? 0 : 
+                   inst_type == `Inst_bne ? 0 : 
+                   inst_type == `Inst_bgeu ? 0 : 
+                   inst_type == `Inst_bltu ? 0 : 
+                   inst_type == `Inst_blt ? 0 : 
+                   inst_type == `Inst_bge ? 0 : 
+                   inst_type == `Inst_or ? 0 : 
+                   inst_type == `Inst_xor ? 0 : 
+                   inst_type == `Inst_sltu ? 0 : 
+                   inst_type == `Inst_sltiu ? 0 : 
+                   inst_type == `Inst_sub ? 0 : 
+                   inst_type == `Inst_add ? 0 : 
+                   inst_type == `Inst_and ? 0 : 
+                   inst_type == `Inst_srl ? 0 : 
+                   inst_type == `Inst_srai ? 0 : 
+                   inst_type == `Inst_sra ? 0 : 
+                   inst_type == `Inst_sll ? 0 : 
+                   inst_type == `Inst_srli ? 0 : 
+                   inst_type == `Inst_slli ? 0 : 
+                   inst_type == `Inst_lbu ? 0 : 
+                   inst_type == `Inst_lhu ? 0 : 
+                   inst_type == `Inst_lh ? 0 : 
+                   inst_type == `Inst_lw ? 0 : 
+                   inst_type == `Inst_sb ? 0 : 
+                   inst_type == `Inst_sh ? 0 : 
+                   inst_type == `Inst_sw ? 0 : 
+                   inst_type == `Inst_csrrw ? imm[11:0] : 
+                   inst_type == `Inst_csrrs ? imm[11:0] : 
+                   0;
+
+
+assign csr_wdata = inst_type == `Inst_addi ? 0 : 
+                   inst_type == `Inst_andi ? 0 : 
+                   inst_type == `Inst_xori ? 0 : 
+                   inst_type == `Inst_auipc ? 0 : 
+                   inst_type == `Inst_lui ? 0 : 
+                   inst_type == `Inst_jal ? 0 : 
+                   inst_type == `Inst_jalr ? 0 : 
+                   inst_type == `Inst_beq ? 0 : 
+                   inst_type == `Inst_bne ? 0 : 
+                   inst_type == `Inst_bgeu ? 0 : 
+                   inst_type == `Inst_bltu ? 0 : 
+                   inst_type == `Inst_blt ? 0 : 
+                   inst_type == `Inst_bge ? 0 : 
+                   inst_type == `Inst_or ? 0 : 
+                   inst_type == `Inst_xor ? 0 : 
+                   inst_type == `Inst_sltu ? 0 : 
+                   inst_type == `Inst_sltiu ? 0 : 
+                   inst_type == `Inst_sub ? 0 : 
+                   inst_type == `Inst_add ? 0 : 
+                   inst_type == `Inst_and ? 0 : 
+                   inst_type == `Inst_srl ? 0 : 
+                   inst_type == `Inst_srai ? 0 : 
+                   inst_type == `Inst_sra ? 0 : 
+                   inst_type == `Inst_sll ? 0 : 
+                   inst_type == `Inst_srli ? 0 : 
+                   inst_type == `Inst_slli ? 0 : 
+                   inst_type == `Inst_lbu ? 0 : 
+                   inst_type == `Inst_lhu ? 0 : 
+                   inst_type == `Inst_lh ? 0 : 
+                   inst_type == `Inst_lw ? 0 : 
+                   inst_type == `Inst_sb ? 0 : 
+                   inst_type == `Inst_sh ? 0 : 
+                   inst_type == `Inst_sw ? 0 : 
+                   inst_type == `Inst_csrrw ? src1 : 
+                   inst_type == `Inst_csrrs ? src1|csr_rdata : 
+                   0;
 
 
 

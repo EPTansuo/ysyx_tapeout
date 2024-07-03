@@ -52,3 +52,7 @@
 `endif // CONFIG_RV64
 
 
+`define MEPC_NO        12'h341
+`define MCAUSE_NO      12'h342
+`define MSTATUS_NO     12'h300
+`define MTVEC_NO       12'h305
