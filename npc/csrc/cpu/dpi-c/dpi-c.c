@@ -54,7 +54,7 @@ int pmem_read(int raddr){
   else if (raddr == CONFIG_RTC_MMIO + 4) {
     return (uint32_t)(get_rtc_time() >> 32);
   }
-  printf("readmem at addr :%x \n",raddr );
+  //printf("readmem at addr :%x \n",raddr );
   if(raddr < 0x80000000)
     return 0;
   word_t data = host_read(guest_to_host(raddr), 4);
