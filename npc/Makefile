@@ -22,7 +22,6 @@ INC_PATH +=$(abspath csrc/isa/$(CONFIG_ISA)/local-include)
 
 
 
-
 default:$(BIN) 
 
 $(shell mkdir -p $(BUILD_DIR))

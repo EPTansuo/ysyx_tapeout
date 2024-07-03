@@ -139,3 +139,4 @@ endmenu
 
 
 source "csrc/memory/Kconfig"
+source "csrc/device/Kconfig"
