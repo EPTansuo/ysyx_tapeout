@@ -60,11 +60,11 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
      goto print_error_info;
   }
 
-  isa_csr_display();
+  
 
 print_error_info:
   printf("\e[1;31mDifftest ERROR!\e[0m\n");
-
+  isa_csr_display();
   printf("ref: reg info:\n");
   int reg_num = MUXDEF(CONFIG_RVE, 16, 32);
   for (int i = 0; i < reg_num; i++) {
