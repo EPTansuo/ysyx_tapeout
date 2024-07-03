@@ -67,7 +67,7 @@ void print_memwrite(paddr_t addr, int len, word_t data){
       origin_mem=  pmem_read(addr+i, 1);
     else{
 #ifdef CONFIG_DEVICE
-      printf("xxxx  =>  " );
+      printf("do not support mmio  =>  " );
 
       printf("0x%02x\n", (unsigned int)(data >> (i * 8) & 0xff));
 #endif 
