@@ -20,6 +20,7 @@ void init_sdb();
 void cpu_reset(int n);
 void init_difftest(char *ref_so_file, long img_size, int port);
 void init_mem();
+void init_device();
 void sdb_set_batch_mode();
 
 
@@ -84,6 +85,7 @@ void init_monitor(int argc, char** argv){
         init_sim();
         long img_size = load_img();
         init_mem();
+        IFDEF(CONFIG_DEVICE, init_device());
         cpu_reset(3);
         //void cpu_single_cycle();
         //cpu_single_cycle();
