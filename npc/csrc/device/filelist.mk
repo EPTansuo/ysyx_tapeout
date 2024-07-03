@@ -13,17 +13,20 @@
 # See the Mulan PSL v2 for more details.
 #**************************************************************************************/
 
-DIRS-y += src/device/io
-SRCS-$(CONFIG_DEVICE) += src/device/device.c src/device/alarm.c src/device/intr.c
-SRCS-$(CONFIG_HAS_SERIAL) += src/device/serial.c
-SRCS-$(CONFIG_HAS_TIMER) += src/device/timer.c
-SRCS-$(CONFIG_HAS_KEYBOARD) += src/device/keyboard.c
-SRCS-$(CONFIG_HAS_VGA) += src/device/vga.c
-SRCS-$(CONFIG_HAS_AUDIO) += src/device/audio.c
-SRCS-$(CONFIG_HAS_DISK) += src/device/disk.c
-SRCS-$(CONFIG_HAS_SDCARD) += src/device/sdcard.c
+#DIRS-y += csrc/device/io
+CSRCS += $(shell find $(abspath csrc/device/io) -name "*.c")
+CSRCS-$(CONFIG_DEVICE) += csrc/device/device.c csrc/device/alarm.c csrc/device/intr.c
+CSRCS-$(CONFIG_HAS_SERIAL) += csrc/device/serial.c
+CSRCS-$(CONFIG_HAS_TIMER) += csrc/device/timer_d.c
+CSRCS-$(CONFIG_HAS_KEYBOARD) += csrc/device/keyboard.cf
+CSRCS-$(CONFIG_HAS_VGA) += csrc/device/vga.c
+CSRCS-$(CONFIG_HAS_AUDIO) += csrc/device/audio.c
+CSRCS-$(CONFIG_HAS_DISK) += csrc/device/disk.c
+CSRCS-$(CONFIG_HAS_SDCARD) += csrc/device/sdcard.c
 
-SRCS-BLACKLIST-$(CONFIG_TARGET_AM) += src/device/alarm.c
+CSRCS += $(abspath $(CSRCS-y))
+
+SRCS-BLACKLIST-$(CONFIG_TARGET_AM) += csrc/device/alarm.c
 
 ifdef CONFIG_DEVICE
 ifndef CONFIG_TARGET_AM

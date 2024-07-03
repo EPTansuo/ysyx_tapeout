@@ -34,9 +34,13 @@ $(SRC_AUTO_BIND): $(NXDC_FILES)
 
 # project source
 VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
-CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
+#CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
+CSRCS = $(shell find $(abspath ./csrc) \( -path $(abspath ./csrc/device) -prune \) -o \( -name "*.c" -or -name "*.cc" -or -name "*.cpp" \) -print)
+
 CSRCS += $(SRC_AUTO_BIND)
 #CSRCS += $(NEMU_HOME)/src/utils/disasm.cc
+
+-include csrc/device/filelist.mk
 
 
 # rules for verilator
@@ -55,6 +59,7 @@ include $(NVBOARD_HOME)/scripts/nvboard.mk
 $(shell python3 $(NPC_HOME)/tools/exu_gen/exu_gen.py > $(NPC_HOME)/vsrc/exu.v)
 
 $(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE) 
+	echo $(CSRCS)
 	@rm -rf $(OBJ_DIR)
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $^ \
