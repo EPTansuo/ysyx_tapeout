@@ -63,7 +63,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   isa_csr_display();
 
 print_error_info:
-  printf("\e[1;31mDifftest ERROR!\e[0m\npc: 0x"FMT_WORD_HEX"\n", pc);
+  printf("\e[1;31mDifftest ERROR!\e[0m\n");
 
   printf("ref: reg info:\n");
   int reg_num = MUXDEF(CONFIG_RVE, 16, 32);
@@ -79,7 +79,7 @@ print_error_info:
 
 
 #ifdef CONFIG_ITRACE
-  print_iringbuf();
+  //print_iringbuf();
 #endif 
   return false; // the reg info will be printed when nemu is ABORTed 
 }
