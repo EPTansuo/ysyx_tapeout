@@ -76,7 +76,7 @@ void pmem_write(int waddr, int wdata, char wmask){
       || mwinfo.wmask != wmask || mwinfo.data != wdata  ){
 
       if(waddr == CONFIG_SERIAL_MMIO) {
-          printf(L_BLUE "%c" NONE "", wdata);
+          printf(L_PURPLE "%c" NONE "", wdata);
           goto end_pmem_write;
       }
       
