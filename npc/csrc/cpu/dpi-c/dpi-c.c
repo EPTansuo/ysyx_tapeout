@@ -61,9 +61,9 @@ int pmem_read(int raddr){
   //printf("pmem_read: raddr = 0x%x, data = 0x%x\n", raddr, data);
   return data;
 }
-
+void print_memwrite(paddr_t addr, int len, word_t data);
 void pmem_write(int waddr, int wdata, char wmask){
-
+  
   if(waddr == CONFIG_SERIAL_MMIO) {
     printf(L_BLUE "%c" NONE "", wdata);
     return;
@@ -78,6 +78,9 @@ void pmem_write(int waddr, int wdata, char wmask){
     printf( L_RED " Can only write for 1/2/4 btyes ()." NONE "\n");
     break;
   }
+#ifdef CONFIG_MTRACE
+  print_memwrite(waddr, wdata == 0x01 ? 1 : wdata == 0x03 ? 2 : wdata ==0x0f ?0x0f : 0, wdata);
+#endif
 }
 
 
