@@ -66,7 +66,7 @@ always @(posedge clk) begin
                         csrs[MSTATUS_INDEX][7] <= csrs[MSTATUS_INDEX][3];
                         csrs[MSTATUS_INDEX][3] <= 0;
                         csrs[MSTATUS_INDEX][12:11] <= 2'b11;
-                        csrs[MEPC_INDEX] <= exu_pc;
+                        csrs[MEPC_INDEX] <= exu_pc + 4;
                         csrs[MCAUSE_INDEX] = gpr_a7_a5;
                        // dnpc = mtvec; //在exu中设置
                 end
