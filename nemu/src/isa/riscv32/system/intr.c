@@ -14,7 +14,7 @@
 ***************************************************************************************/
 
 #include <isa.h>
-  
+
 word_t isa_raise_intr(word_t NO, vaddr_t epc) {
   /* TODO: Trigger an interrupt/exception with ``NO''.
    * Then return the address of the interrupt/exception vector.
@@ -32,8 +32,8 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
   //清除MIE，禁用中断，防止中断嵌套
   cpu.csr.mstatus &= ~(1U<<3);     //清除第三位(MIE)
 
-  //设置MPP为11，表示中断模式为机器模式
-  cpu.csr.mstatus |= (3U<<11);     //将 mstatus 的第11位（MPP位之一）和第12位（MPP位之二）置一
+  //设置MPP为11，表示中断模式
+  cpu.csr.mstatus |= ((1<<11)+(1<<12));     //将 mstatus 的第11位（MPP位之一）和第12位（MPP位之二）置一
 
   cpu.csr.mcause = NO;
   cpu.csr.mepc = epc;
