@@ -10,8 +10,8 @@ DISASM="${2}/${FILE_NAME}.disasm"
 ##echo "$ELF"
 ##echo "$DISASM"
 ##riscv64-linux-gnu-objdump -d --no-show-raw-insn -M numeric,no-aliases "${ELF}" \
-        | awk '/^[[:xdigit:]]+:/ {printf "%s\t", substr($1, 1, length($1)-1); \
-        for (i=2; i<=NF; i++) { if ($i ~ /<|#/) break; printf "%s ", $i} printf "\n";}' > "${DISASM}";
+#        | awk '/^[[:xdigit:]]+:/ {printf "%s\t", substr($1, 1, length($1)-1); \
+#        for (i=2; i<=NF; i++) { if ($i ~ /<|#/) break; printf "%s ", $i} printf "\n";}' > "${DISASM}";
 
 riscv64-linux-gnu-objdump -d --no-show-raw-insn -M no-aliases "${ELF}" \
         | awk '/^[[:xdigit:]]+:/ {printf "%s\t", substr($1, 1, length($1)-1); \
