@@ -19,14 +19,17 @@ module gpr(
 	input [`RegAddrBus]	raddr2, //要读取的寄存器地址
 	output reg[`RegDataBus]	rdata2, //要读取的数据     
 
-	//to csr "a7";
-	output reg[`RegDataBus] a7
+	//to csr "a7" or "a5";
+	output reg[`RegDataBus] to_csr
 );
-
 
 reg[`RegDataBus] regs[`RegNum-1:0]/* verilator public */;   //对于rv64，有32个通用寄存器，位宽为64位
 
-assign a7 = regs[17]; // a7 
+`ifdef CONFIG_RV32E
+assign to_csr = regs[15]; // a5
+`else
+assign to_csr = regs[17]; // a7 
+`endif
 
 //同步写
 always @(posedge clk) begin
