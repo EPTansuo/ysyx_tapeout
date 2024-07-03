@@ -133,6 +133,8 @@ assign exu_invalid_inst = rst == `RstEnable ? 0 :
                           inst_type == `Inst_sw ? 0 : 
                           inst_type == `Inst_csrrw ? 0 : 
                           inst_type == `Inst_csrrs ? 0 : 
+                          inst_type == `Inst_ecall ? 0 : 
+                          inst_type == `Inst_mret ? 0 : 
                           1;
 `endif
 
@@ -172,6 +174,8 @@ assign gpr_we = inst_type == `Inst_addi ? `Enable :
                 inst_type == `Inst_sw ? `Disable : 
                 inst_type == `Inst_csrrw ? `Enable : 
                 inst_type == `Inst_csrrs ? `Enable : 
+                inst_type == `Inst_ecall ? `Disable : 
+                inst_type == `Inst_mret ? `Disable : 
                 `Disable;
 
 
@@ -210,6 +214,8 @@ assign gpr_w_addr = inst_type == `Inst_addi ? rd :
                     inst_type == `Inst_sw ? 0 : 
                     inst_type == `Inst_csrrw ? rd : 
                     inst_type == `Inst_csrrs ? rd : 
+                    inst_type == `Inst_ecall ? 0 : 
+                    inst_type == `Inst_mret ? 0 : 
                     0;
 
 
@@ -248,6 +254,8 @@ assign gpr_w_data = inst_type == `Inst_addi ? add_src1_imm :
                     inst_type == `Inst_sw ? 0 : 
                     inst_type == `Inst_csrrw ? csr_rdata : 
                     inst_type == `Inst_csrrs ? csr_rdata : 
+                    inst_type == `Inst_ecall ? 0 : 
+                    inst_type == `Inst_mret ? 0 : 
                     0;
 
 
@@ -286,6 +294,8 @@ assign pc_offset_en = inst_type == `Inst_addi ? `Disable :
                       inst_type == `Inst_sw ? `Disable : 
                       inst_type == `Inst_csrrw ? `Disable : 
                       inst_type == `Inst_csrrs ? `Disable : 
+                      inst_type == `Inst_ecall ? `Enable : 
+                      inst_type == `Inst_mret ? `Enable : 
                       `Disable;
 
 
@@ -324,6 +334,8 @@ assign pc_offset = inst_type == `Inst_addi ? 4 :
                    inst_type == `Inst_sw ? 4 : 
                    inst_type == `Inst_csrrw ? 4 : 
                    inst_type == `Inst_csrrs ? 4 : 
+                   inst_type == `Inst_ecall ? csr_rdata-exu_pc : 
+                   inst_type == `Inst_mret ? csr_rdata-exu_pc : 
                    4;
 
 
@@ -362,6 +374,8 @@ assign mem_re = inst_type == `Inst_addi ? `Disable :
                 inst_type == `Inst_sw ? `Disable : 
                 inst_type == `Inst_csrrw ? `Disable : 
                 inst_type == `Inst_csrrs ? `Disable : 
+                inst_type == `Inst_ecall ? `Disable : 
+                inst_type == `Inst_mret ? `Disable : 
                 `Disable;
 
 
@@ -400,6 +414,8 @@ assign mem_r_addr = inst_type == `Inst_addi ? 0 :
                     inst_type == `Inst_sw ? 0 : 
                     inst_type == `Inst_csrrw ? 0 : 
                     inst_type == `Inst_csrrs ? 0 : 
+                    inst_type == `Inst_ecall ? 0 : 
+                    inst_type == `Inst_mret ? 0 : 
                     0;
 
 
@@ -438,6 +454,8 @@ assign mem_r_mask = inst_type == `Inst_addi ? 0 :
                     inst_type == `Inst_sw ? 0 : 
                     inst_type == `Inst_csrrw ? 0 : 
                     inst_type == `Inst_csrrs ? 0 : 
+                    inst_type == `Inst_ecall ? 0 : 
+                    inst_type == `Inst_mret ? 0 : 
                     0;
 
 
@@ -476,6 +494,8 @@ assign mem_we = inst_type == `Inst_addi ? `Disable :
                 inst_type == `Inst_sw ? `Enable : 
                 inst_type == `Inst_csrrw ? `Disable : 
                 inst_type == `Inst_csrrs ? `Disable : 
+                inst_type == `Inst_ecall ? `Disable : 
+                inst_type == `Inst_mret ? `Disable : 
                 `Disable;
 
 
@@ -514,6 +534,8 @@ assign mem_w_addr = inst_type == `Inst_addi ? 0 :
                     inst_type == `Inst_sw ? add_src1_imm : 
                     inst_type == `Inst_csrrw ? 0 : 
                     inst_type == `Inst_csrrs ? 0 : 
+                    inst_type == `Inst_ecall ? 0 : 
+                    inst_type == `Inst_mret ? 0 : 
                     0;
 
 
@@ -552,6 +574,8 @@ assign mem_w_data = inst_type == `Inst_addi ? 0 :
                     inst_type == `Inst_sw ? src2 : 
                     inst_type == `Inst_csrrw ? 0 : 
                     inst_type == `Inst_csrrs ? 0 : 
+                    inst_type == `Inst_ecall ? 0 : 
+                    inst_type == `Inst_mret ? 0 : 
                     0;
 
 
@@ -590,6 +614,8 @@ assign mem_w_mask = inst_type == `Inst_addi ? 0 :
                     inst_type == `Inst_sw ? 8'b00001111 : 
                     inst_type == `Inst_csrrw ? 0 : 
                     inst_type == `Inst_csrrs ? 0 : 
+                    inst_type == `Inst_ecall ? 0 : 
+                    inst_type == `Inst_mret ? 0 : 
                     0;
 
 
@@ -628,6 +654,8 @@ assign sranum = inst_type == `Inst_addi ? 0 :
                 inst_type == `Inst_sw ? 0 : 
                 inst_type == `Inst_csrrw ? 0 : 
                 inst_type == `Inst_csrrs ? 0 : 
+                inst_type == `Inst_ecall ? 0 : 
+                inst_type == `Inst_mret ? 0 : 
                 0;
 
 
@@ -666,6 +694,8 @@ assign csr_raddr = inst_type == `Inst_addi ? 0 :
                    inst_type == `Inst_sw ? 0 : 
                    inst_type == `Inst_csrrw ? imm[11:0] : 
                    inst_type == `Inst_csrrs ? imm[11:0] : 
+                   inst_type == `Inst_ecall ? `MTVEC_NO : 
+                   inst_type == `Inst_mret ? `MTVEC_NO : 
                    0;
 
 
@@ -704,6 +734,8 @@ assign csr_we = inst_type == `Inst_addi ? `Disable :
                 inst_type == `Inst_sw ? `Disable : 
                 inst_type == `Inst_csrrw ? `Enable : 
                 inst_type == `Inst_csrrs ? `Enable : 
+                inst_type == `Inst_ecall ? `Disable : 
+                inst_type == `Inst_mret ? `Disable : 
                 `Disable;
 
 
@@ -742,6 +774,8 @@ assign csr_waddr = inst_type == `Inst_addi ? 0 :
                    inst_type == `Inst_sw ? 0 : 
                    inst_type == `Inst_csrrw ? imm[11:0] : 
                    inst_type == `Inst_csrrs ? imm[11:0] : 
+                   inst_type == `Inst_ecall ? 0 : 
+                   inst_type == `Inst_mret ? 0 : 
                    0;
 
 
@@ -780,6 +814,8 @@ assign csr_wdata = inst_type == `Inst_addi ? 0 :
                    inst_type == `Inst_sw ? 0 : 
                    inst_type == `Inst_csrrw ? src1 : 
                    inst_type == `Inst_csrrs ? src1|csr_rdata : 
+                   inst_type == `Inst_ecall ? 0 : 
+                   inst_type == `Inst_mret ? 0 : 
                    0;
 
 
