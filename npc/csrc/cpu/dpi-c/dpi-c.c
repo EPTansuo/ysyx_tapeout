@@ -47,7 +47,7 @@ uint64_t get_rtc_time(){
   return t;
 }
 
-uint64_t get_uptime();
+
 int pmem_read(int raddr){
 
   if(raddr == CONFIG_RTC_MMIO) {
@@ -55,7 +55,7 @@ int pmem_read(int raddr){
     return (uint32_t)get_time();
   }
   else if (raddr == CONFIG_RTC_MMIO + 4) {
-    return (uint32_t)(get_uptime() >> 32);
+    return (uint32_t)(get_time() >> 32);
   }
   //printf("readmem at addr :%x \n",raddr );
   if(raddr < 0x80000000)
