@@ -52,7 +52,7 @@ int pmem_read(int raddr){
 
   if(raddr == CONFIG_RTC_MMIO) {
     //获取开机时间
-    return (uint32_t)get_uptime();
+    return (uint32_t)get_time();
   }
   else if (raddr == CONFIG_RTC_MMIO + 4) {
     return (uint32_t)(get_uptime() >> 32);
