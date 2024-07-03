@@ -100,7 +100,7 @@ void pmem_write(int waddr, int wdata, char wmask){
       
       #ifdef CONFIG_MTRACE
       printf("--------MTRACE---------\n");
-      printf("wmask = 0x%x", wmask);
+      printf("wmask = 0x%x\n", wmask);
       print_memwrite(waddr, wmask == 0x01 ? 1 : wmask == 0x03 ? 2 : wmask ==0x0f ? 4 : 0, wdata);
       #endif
 

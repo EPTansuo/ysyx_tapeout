@@ -79,6 +79,9 @@ void print_memwrite(paddr_t addr, int len, word_t data){
   }
 }
 
+#elif 
+void print_memwrite(paddr_t addr, int len, word_t data){};
+
 #endif
 
 void init_mem() {
