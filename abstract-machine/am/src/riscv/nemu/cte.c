@@ -38,7 +38,8 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
 
 void yield() {
 #ifdef __riscv_e
-  asm volatile("li a5, -1; ecall");
+  //asm volatile("li a5, -1; ecall");
+  asm volatile("li a5, 11; ecall");  //根据下面的改成了11，下面的根据spike修改
 #else
   //asm volatile("li a7, -1; ecall");
   asm volatile("li a7, 11; ecall"); //Spike 那边是0xb来着
