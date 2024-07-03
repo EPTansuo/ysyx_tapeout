@@ -42,7 +42,7 @@ CSRCS += $(SRC_AUTO_BIND)
 # rules for verilator
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += -Wall $(INCFLAGS) -g -DTOP_NAME="\"V$(TOPNAME)\"" -fpermissive #$(shell llvm-config --cxxflags) 
-CXXFLGAS += -fmacro-prefix-map=$(PWD)=.
+CXXFLAGS += -fmacro-prefix-map=$(PWD)=.
 LDFLAGS += -lreadline
 #LDFLAGS += $(shell llvm-config --ldflags)
 #LDLIBS += $(shell llvm-config --libs)
