@@ -35,7 +35,7 @@ bool cte_init(Context*(*handler)(Event, Context*)) {
 Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
   return NULL;
 }
-//#undef __riscv_e
+#undef __riscv_e
 void yield() {
 #ifdef __riscv_e
   asm volatile("li a5, -1; ecall");
