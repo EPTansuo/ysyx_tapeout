@@ -58,7 +58,7 @@ int pmem_read(int raddr){
     return (uint32_t)(get_time() >> 32);
   }
   //printf("readmem at addr :%x \n",raddr );
-  if(raddr < 0x80000000)
+  if(raddr < CONFIG_MBASE && raddr > CONFIG_MBASE + CONFIG_MSIZE)
     return 0;
   word_t data = host_read(guest_to_host(raddr), 4);
   //printf("pmem_read: raddr = 0x%x, data = 0x%x\n", raddr, data);
