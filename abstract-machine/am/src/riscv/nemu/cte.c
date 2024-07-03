@@ -35,13 +35,13 @@ bool cte_init(Context*(*handler)(Event, Context*)) {
 Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
   return NULL;
 }
-
+//#undef __riscv_e
 void yield() {
 #ifdef __riscv_e
   asm volatile("li a5, -1; ecall");
 #else
   asm volatile("li a7, -1; ecall");
-  //asm volatile("li a7, 11; ecall"); //Spike 那边是0xb来着
+//  asm volatile("li a7, 11; ecall");
 #endif
 }
 
