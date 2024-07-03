@@ -91,7 +91,7 @@ void pmem_write(int waddr, int wdata, char wmask){
   
   if(mwinfo.pc != top->cpu->pc1->pc || mwinfo.addr != waddr
       || mwinfo.wmask != wmask || mwinfo.data != wdata 
-      || regs_equ(top->cpu->gpr1->regs,mwinfo.regs)){
+      || (!regs_equ(top->cpu->gpr1->regs,mwinfo.regs))){
 
       if(waddr == CONFIG_SERIAL_MMIO) {
           printf(L_PURPLE "%c" NONE "", wdata);
