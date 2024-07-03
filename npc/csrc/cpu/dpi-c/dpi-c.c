@@ -21,6 +21,7 @@ extern unsigned char isa_logo[];
 uint8_t* guest_to_host(paddr_t paddr);
 paddr_t host_to_guest(uint8_t *haddr);
 
+uint64_t npc_uptime;
 
 void npc_ebreak(){
 	NPCTRAP(top->cpu->pc1->pc, top->cpu->gpr1->regs[10]);
@@ -46,15 +47,15 @@ uint64_t get_rtc_time(){
   return t;
 }
 
-
+uint64_t get_uptime();
 int pmem_read(int raddr){
 
   if(raddr == CONFIG_RTC_MMIO) {
-    //获取当前时间
-    return (uint32_t)get_rtc_time();
+    //获取开机时间
+    return (uint32_t)get_uptime();
   }
   else if (raddr == CONFIG_RTC_MMIO + 4) {
-    return (uint32_t)(get_rtc_time() >> 32);
+    return (uint32_t)(get_uptime() >> 32);
   }
   //printf("readmem at addr :%x \n",raddr );
   if(raddr < 0x80000000)

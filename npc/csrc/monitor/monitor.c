@@ -9,6 +9,7 @@
 #include <utils/utils.h>
 #include <color.h>
 #include <verilated.h>
+#include <sys/time.h>
 
 char* diff_so_file = NULL;
 char* img_file  = NULL;
@@ -23,6 +24,22 @@ void init_mem();
 void init_device();
 void sdb_set_batch_mode();
 
+uint64_t init_uptime(){
+  static uint64_t init_time = 0;
+
+  if(!init_time){
+      struct timeval tv;
+      gettimeofday(&tv, NULL);
+      init_time = tv.tv_sec * 1000000LL + tv.tv_usec - init_uptime();
+  }
+  return init_time;
+}
+uint64_t get_uptime(){
+  struct timeval tv;
+
+  gettimeofday(&tv, NULL);
+  return tv.tv_sec * 1000000LL + tv.tv_usec - init_uptime();
+}
 
 static void welcome() {
   Log("Trace: %s", MUXDEF(CONFIG_TRACE, ANSI_FMT("ON", ANSI_FG_GREEN), ANSI_FMT("OFF", ANSI_FG_RED)));
@@ -93,5 +110,6 @@ void init_monitor(int argc, char** argv){
         init_difftest(diff_so_file, img_size, 0);  //Do not need to use the  third parameter
         init_sdb();
         welcome();
+        init_uptime();
 }
 
