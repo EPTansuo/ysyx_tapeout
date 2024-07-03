@@ -44,6 +44,8 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
          (cpu.csr.mcause == ref_r->csr.mcause) &&
          (cpu.csr.mepc == ref_r->csr.mepc) && 
          (cpu.csr.mtvec == ref_r->csr.mtvec);
+  if(succ)
+    return true;
   if(!succ){
       printf("\e[1;31mCSR DIFFTESET ERROR!\e[0m\n");
       printf("ref csr info:\n");
@@ -58,8 +60,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
      goto print_error_info;
   }
 
-  if(succ)
-    return true;
+  isa_csr_display();
 
 print_error_info:
   printf("\e[1;31mDifftest ERROR!\e[0m\npc: 0x"FMT_WORD_HEX"\n", pc);
@@ -74,7 +75,7 @@ print_error_info:
           putchar('\n');
   }
   printf("ref: $pc = 0x" FMT_WORD_HEX_WIDTH "\n", cpu.pc);
-isa_csr_display();
+
 
 
 #ifdef CONFIG_ITRACE
