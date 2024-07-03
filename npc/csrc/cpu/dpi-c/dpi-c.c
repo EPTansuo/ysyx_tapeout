@@ -70,11 +70,13 @@ void pmem_write(int waddr, int wdata, char wmask){
     return;
   }
 
+  printf("waddr= %x\n",waddr);
   #ifdef CONFIG_MTRACE
   printf("--------MTRACE---------\n");
   printf("wmask = 0x%x", wmask);
   print_memwrite(waddr, wmask == 0x01 ? 1 : wmask == 0x03 ? 2 : wmask ==0x0f ? 4 : 0, wdata);
-#endif
+  #endif
+
   switch (wmask)
   {
     case 0x01: host_write(guest_to_host(waddr), 1, wdata); break; 
