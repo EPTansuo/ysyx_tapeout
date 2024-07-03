@@ -33,7 +33,7 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
   cpu.csr.mstatus &= ~(1U<<3);     //清除第三位(MIE)
 
   //设置MPP为11，表示中断模式
-  cpu.csr.mstatus |= ((1<<11)+(1<<12));     //将 mstatus 的第11位（MPP位之一）和第12位（MPP位之二）置一
+  cpu.csr.mstatus |= (3U<<11);     //将 mstatus 的第11位（MPP位之一）和第12位（MPP位之二）置一
 
   cpu.csr.mcause = NO;
   cpu.csr.mepc = epc;
