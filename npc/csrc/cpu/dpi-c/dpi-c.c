@@ -12,6 +12,8 @@
 #include <fmt-def.h>
 #include <memory/host.h>
 #include <time.h>
+#include <verilated.h>
+#include <iostream>
 
 extern Vcpu* top;
 extern unsigned char isa_logo[];
@@ -68,12 +70,28 @@ typedef  struct{
   char wmask;
   word_t data;
   word_t pc;
+  VlUnpacked<word_t, 32> regs;
 }memwrite_info;
+
+
+
+
+
+// return true is equ
+bool regs_equ(const VlUnpacked<word_t,32>&reg1, const VlUnpacked<word_t,32>&reg2){
+  for(int i = 0; i < 32; i++){
+    if(reg1[i] != reg2[i])
+      return false;
+  }
+  return true;
+}
 
 void pmem_write(int waddr, int wdata, char wmask){
   static memwrite_info mwinfo;   //防止多次输出
+  
   if(mwinfo.pc != top->cpu->pc1->pc || mwinfo.addr != waddr
-      || mwinfo.wmask != wmask || mwinfo.data != wdata  ){
+      || mwinfo.wmask != wmask || mwinfo.data != wdata 
+      || regs_equ(top->cpu->gpr1->regs,mwinfo.regs)){
 
       if(waddr == CONFIG_SERIAL_MMIO) {
           printf(L_PURPLE "%c" NONE "", wdata);
@@ -100,11 +118,9 @@ end_pmem_write:
       mwinfo.addr = waddr;
       mwinfo.wmask = wmask;
       mwinfo.data = wdata;
+      mwinfo.regs = top->cpu->gpr1->regs;
   }
 
-
-
- 
 
 }
 
