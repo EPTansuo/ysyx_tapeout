@@ -1,7 +1,7 @@
 TOPNAME = cpu
 NXDC_FILES = constr/cpu.nxdc
 #IMG = "/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/tests/am-tests/build/amtest-riscv32e-npc.bin"
-IMG = "/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/kernels/snake/build/snake-riscv32e-npc.bin"
+IMG = "/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/leap-year-riscv32e-npc.bin"
 ARGS = -v --diff="/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/nemu/build/riscv32-nemu-interpreter-so"
 
 VERILATOR = verilator
