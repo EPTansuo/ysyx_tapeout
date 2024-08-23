@@ -8,6 +8,10 @@
 !*.cc
 !*.cpp
 !.gitignore
+!*.sh
+!*.py
+!*.h
+!.config
 !README.md
 build/
 !Kconfig
