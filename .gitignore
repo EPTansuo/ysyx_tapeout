@@ -2,6 +2,7 @@
 !*.ipynb
 !*.py
 !/npc/tools/*
+!/npc/.config
 *.*
 *
 !*/
