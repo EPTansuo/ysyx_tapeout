@@ -11,7 +11,7 @@
 !*.sh
 !*.py
 !*.h
-!.config
+/csrc/include/autoconf.h
 !README.md
 build/
 !Kconfig
