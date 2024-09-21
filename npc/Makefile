@@ -1,37 +1,78 @@
+TOPNAME = top 
+MAIN = $(TOPNAME).topMain
 BUILD_DIR = ./build
+OBJ_DIR = $(BUILD_DIR)/OBJ_DIR
 
-PRJ = playground
 
-test:
-	mill -i $(PRJ).test
+VERILATOR = verilator
+VERILATOR_COVERAGE = verilator_coverage
+# verilator flags
+VERILATOR_FLAGS += -MMD --trace --build -cc --exe \
+		-O3 --x-assign fast --x-initial fast --noassert -report-unoptflat
 
-verilog:
-	$(call git_commit, "generate verilog")
-	mkdir -p $(BUILD_DIR)
-	mill -i $(PRJ).runMain Elaborate --target-dir $(BUILD_DIR)
+# timescale set
+VERILATOR_FLAGS += --timescale 1us/1us
 
-help:
-	mill -i $(PRJ).runMain Elaborate --help
+verilog: $(SCALA_FILE)
+	@mkdir -p $(BUILD_DIR)/verilog
+	mill -i $(TOPNAME).runMain $(MAIN) -td $(BUILD_DIR)/verilog --emit-modules verilog
 
-reformat:
-	mill -i __.reformat
+vcd ?=
+ifeq ($(vcd), 1)
+	CXXFLAGS += -DVCD
+endif
 
-checkformat:
-	mill -i __.checkFormat
 
-bsp:
-	mill -i mill.bsp.BSP/install
+-include .config
 
-idea:
-	mill -i mill.idea.GenIdea/idea
+# C flags
+INC_PATH +=$(abspath csrc/include)
+INC_PATH +=$(abspath csrc/isa/$(CONFIG_ISA)/include)
+INC_PATH +=$(abspath csrc/isa/$(CONFIG_ISA)/local-include)
+
+INCFLAGS = $(addprefix -I, $(INC_PATH))
+CXXFLAGS += $(INCFLAGS) $(CFLAGS_SIM) -DTOP_NAME="V$(TOPNAME)"
+
+# source file
+TOP_V = $(BUILD_DIR)/verilog/$(TOPNAME).v
+SCALA_FILE = $(shell find ./src/main -name '*.scala')
+CSRCS = $(shell find $(abspath ./csrc) \( -path $(abspath ./csrc/device) -prune \) -o \( -name "*.c" -or -name "*.cc" -or -name "*.cpp" \) -print)
+
+# rules for NVBoard
+include $(NVBOARD_HOME)/scripts/nvboard.mk
+
+
+
+BIN = $(BUILD_DIR)/$(TOPNAME)
+NPC_EXEC := $(BIN)
+
+default: $(BIN)
+
+$(BIN): $(CSRCS) verilog
+	$(VERILATOR) $(VERILATOR_FLAGS) -top $(TOPNAME)$(CSRCS) $(wildcard $(BUILD_DIR)/verilog/*.v) \
+		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
+		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) --top-module $(TOPNAME)
+
+
+
+sim: run
+run: $(BIN)
+	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
+	bash ./tools/disasm.sh $(IMG) $(BUILD_DIR)
+	$^ $(ARGS) $(IMG)
+
+# menuconfig and autoconf.h
+include $(NPC_HOME)/csrc/scripts/config.mk
 
 clean:
-	-rm -rf $(BUILD_DIR)
+	-rm -rf $(BUILD_DIR) logs
 
-.PHONY: test verilog help reformat checkformat clean
+clean_mill:
+	-rm -rf out
 
-sim:
-	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
-	@echo "Write this Makefile by yourself."
+clean_all: clean clean_mill
 
--include ../Makefile
+.PHONY: clean clean_all clean_mill srun run sim verilog
+
+
+include ../Makefile
