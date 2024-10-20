@@ -1,7 +1,6 @@
 !*.sh
 !*.ipynb
 !*.py
-!/npc/tools/*
 *.*
 *
 !*/
@@ -22,3 +21,4 @@
 .virtual_documents/
 .ipynb_checkpoints/
 /nvboard
+!/npc/tools/*
