@@ -3,20 +3,15 @@
 !*/
 !Makefile
 !*.mk
-!*.scala
 !*.[cSh]
 !*.v
-!*.cpp
 !*.cc
+!*.cpp
 !.gitignore
-!.scalafmt.conf
-!build.sc
+!*.sh
+!*.py
+!*.h
+/csrc/include/autoconf.h
 !README.md
 build/
-!/tools/*
-# mill
-out/
-.bsp/
-.idea/
-.idea_modules/
-test_run_dir/
+!Kconfig
