@@ -18,9 +18,9 @@ class regfile_io(xlen: Int) extends Bundle{
 class regfile(xlen: Int) extends Module{
     val io = IO(new regfile_io(xlen))
 
-    var regs = Mem(32, Uint(xlen.W))
-    io.rdata1 := Mux(io.raddr1 == 0, 0.U, regs(io.raddr1))
-    io.rdata2 := Mux(io.raddr1 == 0, 0.U, regs(io.raddr2))
+    var regs = Mem(32, UInt(xlen.W))
+    io.rdata1 := Mux(io.raddr1 === 0.U, 0.U, regs(io.raddr1))
+    io.rdata2 := Mux(io.raddr1 === 0.U, 0.U, regs(io.raddr2))
 
     when(io.we) {
         regs(io.waddr) := io.wdata

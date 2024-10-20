@@ -3,21 +3,33 @@ package cpu
 import chisel3._
 import chisel3.util._
 import chisel3.stage._
-import common.Constants._
+
+import defines._ 
+import top._ 
+
+
+class cpu_io extends Bundle{
+  val imem = Flipped(new imem_io())
+  val dmem = Flipped(new dmem_io())
+
+  //JUST FOR EXPOSING THE SIGNAL
+  val control_io = (new control_io(XLEN))
+}
 
 class cpu extends Module{
-  val io = IO(new Bundle{
-    val imem = Flipped(new IMemPortIO())
-    val exit = Output(Bool())
-  })
+  val io = IO(new cpu_io())
 
-  val regfile = Mem(32, UInt(XLEN.W))
-  val pc_reg = RegInit(PC_INIT)
+  val datapath_ = Module(new datapath(XLEN))
+  val control_ = Module(new control(XLEN))
 
-  pc_reg := pc_reg + 4.U(XLEN.W)
-  io.imem.addr := pc_reg
-  val inst = io.imem.inst
+  datapath_.io.ctrlsig <> control_.io
+  
+  //JUST FOR EXPOSING THE SIGNAL
+  io.control_io <> control_.io
 
-  io.exit := (inst === 0x00000000.U(WORD_LEN.W))
+  datapath_.io.imemio <> io.imem
+
+  datapath_.io.dmemio <> io.dmem
+  
 
 }

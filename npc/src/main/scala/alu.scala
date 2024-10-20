@@ -9,20 +9,20 @@ object aluop extends Enumeration {
       ALU_COPY_A, ALU_COPY_B = Value
 }
 
-class aluio(width:Int) extends Bundle {
-    val A = input(UInt(width.W)
-    val B = input(UInt(width.W)
-    val aluop = Input(Uint(4.W))
+class alu_io(width:Int) extends Bundle {
+    val A = Input(UInt(width.W))
+    val B = Input(UInt(width.W))
+    val aluop = Input(UInt(4.W))
     val out = Output(UInt(width.W))
 }
 
 
 class alu(val width: Int) extends Module{
-    val io = IO(new aluio(width))
+    val io = IO(new alu_io(width))
 
-    val shamt = io.B(4,0).asUint
+    val shamt = io.B(4,0).asUInt
 
-    io.out := MuxLookup(io.aluop, io.B)(
+    io.out := MuxLookup(io.aluop, io.B,
         Seq(
             aluop.ALU_ADD.id.U -> (io.A + io.B),
             aluop.ALU_SUB.id.U -> (io.A - io.B),
