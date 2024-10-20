@@ -1,6 +1,4 @@
-!*.sh
-!*.ipynb
-!*.py
+
 *.*
 *
 !*/
@@ -22,3 +20,8 @@
 .ipynb_checkpoints/
 /nvboard
 !/npc/tools/*
+!*.sh
+!*.c
+!*.h
+!*.ipynb
+!*.py

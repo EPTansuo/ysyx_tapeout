@@ -13,7 +13,7 @@
 !build.sc
 !README.md
 build/
-!tools/*
+!/tools/*
 # mill
 out/
 .bsp/
