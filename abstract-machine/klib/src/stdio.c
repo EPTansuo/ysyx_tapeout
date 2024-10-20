@@ -119,7 +119,7 @@ int _itoa(char* dst, int num){
   return digits+bits;
 }
 
-int itoa(char* dst, int num){
+int itoa_(char* dst, int num){
   int digits = 0;
   int bits = 0;
   if (num == 0) {
