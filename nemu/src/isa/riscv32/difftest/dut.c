@@ -70,7 +70,10 @@ print_error_info:
   for (int i = 0; i < reg_num; i++) {
         if(i%4 == 0)
           printf("ref: ");
-        printf("$%s = 0x"FMT_WORD_HEX_WIDTH"\t", regs[i], ref_r->gpr[i]);
+        if(ref_r->gpr[i] != cpu.gpr[i])
+          printf("$%s = " "\033[1;31m" " 0x" FMT_WORD_HEX_WIDTH "\033[0m" "\t", regs[i], ref_r->gpr[i]);
+        else
+          printf("$%s = 0x"FMT_WORD_HEX_WIDTH"\t", regs[i], ref_r->gpr[i]);
         if((i+1)%4 == 0)
           putchar('\n');
   }
