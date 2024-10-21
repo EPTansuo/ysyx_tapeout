@@ -71,7 +71,7 @@ print_error_info:
         if(i%4 == 0)
           printf("ref: ");
         if(ref_r->gpr[i] != cpu.gpr[i])
-          printf("$%s = " "\033[1;31m" " 0x" FMT_WORD_HEX_WIDTH "\033[0m" "\t", regs[i], ref_r->gpr[i]);
+          printf("$%s = " "\033[1;31m" "0x" FMT_WORD_HEX_WIDTH "\033[0m" "\t", regs[i], ref_r->gpr[i]);
         else
           printf("$%s = 0x"FMT_WORD_HEX_WIDTH"\t", regs[i], ref_r->gpr[i]);
         if((i+1)%4 == 0)
