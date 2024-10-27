@@ -81,7 +81,7 @@ struct target_ops nemu_ops = {
 
 bool init_gdbstub()
 {
-        gdbstub_t gdbstub;
+        
         struct target_ops ops;
         arch_info_t arch = {
             .reg_byte = 4,
@@ -95,4 +95,6 @@ bool init_gdbstub()
         char ip_port[32];
         sprintf(ip_port, "%s", "127.0.0.1:9012");
         return gdbstub_init(&gdbstub, &ops, arch, ip_port);
+
+        gdbstub_run(&gdbstub, NULL);
 }

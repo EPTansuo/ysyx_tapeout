@@ -3,6 +3,8 @@
 
 #include <gdbstub.h>
 
+gdbstub_t gdbstub;
+
 bool init_gdbstub();
 
 
