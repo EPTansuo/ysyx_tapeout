@@ -4,6 +4,11 @@
 #include <cpu/cpu.h>
 #include <memory/vaddr.h>
 #include <stdio.h>
+#include <utils.h>
+
+
+void execute(uint64_t n);
+
 bool gdbstub_init(gdbstub_t *gdbstub, struct target_ops *ops, arch_info_t arch, char *s);
 
 static int nemu_read_reg(void *args, int regno, size_t *reg_value)
@@ -30,18 +35,23 @@ static int nemu_write_mem(void *args, size_t addr, size_t len, void *val)
         return 0;
 }
 
+
 static gdb_action_t nemu_cont(void *args)
 {
-        cpu_exec(-1);
-
-        return ACT_NONE;
+        //cpu_exec(-1);
+        while(nemu_state.state == NEMU_RUNNING){
+               execute(1);
+        }
+        return ACT_RESUME;
 }
 
 static gdb_action_t nemu_stepi(void *args)
 {
-        cpu_exec(1);
+        //cpu_exec(1);
+        if(nemu_state.state == NEMU_RUNNING)
+                execute(1);
 
-        return ACT_NONE;
+        return ACT_RESUME;
 }
 
 static bool nemu_set_bp(void *args, size_t addr, bp_type_t type)
