@@ -106,9 +106,15 @@ struct target_ops nemu_ops = {
 
 void print_target_ops(const struct target_ops *ops) {
     printf("Function pointers: \n");
-    printf("  continue: %p\n", (void*)ops->cont);
-    printf("  stepi: %p\n", (void*)ops->stepi);
-    // 添加其它函数指针的打印
+    printf("  Read Register: %p\n", (void*)ops->read_reg);
+    printf("  Write Register: %p\n", (void*)ops->write_reg);
+    printf("  Read Memory: %p\n", (void*)ops->read_mem);
+    printf("  Write Memory: %p\n", (void*)ops->write_mem);
+    printf("  Continue: %p\n", (void*)ops->cont);
+    printf("  Single Step: %p\n", (void*)ops->stepi);
+    printf("  Set Breakpoint: %p\n", (void*)ops->set_bp);
+    printf("  Delete Breakpoint: %p\n", (void*)ops->del_bp);
+    printf("  On Interrupt: %p\n", (void*)ops->on_interrupt);
 }
 
 void print_arch_info(const arch_info_t *arch) {
