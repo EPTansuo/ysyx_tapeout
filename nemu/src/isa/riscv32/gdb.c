@@ -109,5 +109,5 @@ bool init_gdbstub()
         sprintf(ip_port, "%s", "127.0.0.1:9012");
         return gdbstub_init(&gdbstub, &ops, arch, ip_port);
 
-        gdbstub_run(&gdbstub, NULL);
+       // gdbstub_run(&gdbstub, NULL);
 }
