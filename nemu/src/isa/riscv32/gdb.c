@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <utils.h>
 #include <fmt-def.h>
+#include <errno.h>
 
 
 void execute(uint64_t n);
@@ -42,7 +43,7 @@ static int nemu_read_mem(void *args, size_t addr, size_t len, void *val)
         printf(":---read_mem = "FMT_WORD_HEX" %zx\n", (word_t)addr, len);
         if(addr < 0x80000000 || addr > 0x80000000 + 0x1000000){
                 printf(":---ERROR: read_mem = "FMT_WORD_HEX" %zx\n", (word_t)addr, len);
-                return -1;
+                return EFAULT;
         }
         
         (*((word_t*)val)) = vaddr_read(addr, len);
