@@ -47,7 +47,9 @@ static int nemu_read_mem(void *args, size_t addr, size_t len, void *val)
         }
         if(addr < 0x80000000){
                 (*((word_t*)val)) = vaddr_read(addr+0x80000000, len);
+                return 0;
         }
+        
         (*((word_t*)val)) = vaddr_read(addr, len);
         return 0;
 }
@@ -71,7 +73,7 @@ gdb_action_t nemu_cont(void *args)
                 nemu_state.state == NEMU_END ? ":-- STATE: end" : 
                 nemu_state.state == NEMU_ABORT ? ":-- STATE: abort" :
                 nemu_state.state == NEMU_QUIT ? ":-- STATE: quit" : ":-- STATE: other");
-                
+
         return ACT_RESUME;
 }
 
