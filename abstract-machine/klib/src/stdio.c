@@ -52,6 +52,11 @@ int vprintf( const char *fmt, va_list ap) {
   while (*fmt) {
     if (*fmt == '%') {
       fmt++; // 跳过 '%'
+
+      while(*fmt >= '0' && *fmt <= '9'){ //直接忽略类似于%02d中的02
+        fmt++;
+      }
+
       if (*fmt == 'd') {
         int num = va_arg(ap, int);
         len += _print_itoa(num);
