@@ -14,10 +14,10 @@ void execute(uint64_t n);
 
 static int nemu_read_reg(void *args, int regno, size_t *value)
 {       
-        printf("read_reg: %d\n", regno);
+        printf(":---read_reg: %d\n", regno);
 
         if(regno > 32 || regno < 0){
-                printf("ERROR: read_reg: %d\n", regno);
+                printf(":---ERROR: read_reg: %d\n", regno);
                 return -1;
         }
         
@@ -32,16 +32,16 @@ static int nemu_read_reg(void *args, int regno, size_t *value)
 
 static int nemu_write_reg(void *args, int regno, size_t data)
 {
-        printf("write_reg: %d %zx\n", regno, data);
+        printf(":---write_reg: %d %zx\n", regno, data);
         isa_reg_write(regno, data);
         return 0;
 }
 
 static int nemu_read_mem(void *args, size_t addr, size_t len, void *val)
 {
-        printf("read_mem = "FMT_WORD_HEX" %zx\n", (word_t)addr, len);
+        printf(":---read_mem = "FMT_WORD_HEX" %zx\n", (word_t)addr, len);
         if(addr < 0x80000000 || addr > 0x80000000 + 0x1000000){
-                printf("ERROR: read_mem = "FMT_WORD_HEX" %zx\n", (word_t)addr, len);
+                printf(":---ERROR: read_mem = "FMT_WORD_HEX" %zx\n", (word_t)addr, len);
                 return -1;
         }
         
@@ -51,7 +51,7 @@ static int nemu_read_mem(void *args, size_t addr, size_t len, void *val)
 
 static int nemu_write_mem(void *args, size_t addr, size_t len, void *val)
 {
-        printf("write_mem = " FMT_WORD_HEX " %zx %x\n", (word_t)addr, len, *(word_t*)val);
+        printf(":---write_mem = " FMT_WORD_HEX " %zx %x\n", (word_t)addr, len, *(word_t*)val);
         vaddr_write(addr, len, *(word_t*)val);
         return 0;
 }
@@ -59,7 +59,7 @@ static int nemu_write_mem(void *args, size_t addr, size_t len, void *val)
 gdb_action_t nemu_cont(void *args)
 {
         //cpu_exec(-1);
-        printf("cont\n");
+        printf(":---cont\n");
         while(nemu_state.state == NEMU_RUNNING){
                execute(1);
         }
@@ -69,7 +69,7 @@ gdb_action_t nemu_cont(void *args)
 static gdb_action_t nemu_stepi(void *args)
 {
         //cpu_exec(1);
-        printf("stepi\n");
+        printf(":---stepi\n");
         if(nemu_state.state == NEMU_RUNNING)
                 execute(1);
 
@@ -78,7 +78,7 @@ static gdb_action_t nemu_stepi(void *args)
 
 static bool nemu_set_bp(void *args, size_t addr, bp_type_t type)
 {
-        printf("set breakpoints = %x %zx %x\n", type, addr, type);
+        printf(":---set breakpoints = %x %zx %x\n", type, addr, type);
         // (void)args;
         // (void)addr;
         // (void)type;
@@ -88,7 +88,7 @@ static bool nemu_set_bp(void *args, size_t addr, bp_type_t type)
 
 static bool nemu_del_bp(void *args, size_t addr, bp_type_t type)
 {
-        printf("remove breakpoints = %x %zx %x\n", type, addr, type);
+        printf(":---remove breakpoints = %x %zx %x\n", type, addr, type);
         // (void)args;
         // (void)addr;
         // (void)type;
@@ -98,7 +98,7 @@ static bool nemu_del_bp(void *args, size_t addr, bp_type_t type)
 
 static void nemu_on_interrupt(void *args)
 {
-        printf("interrupt\n");
+        printf(":---interrupt\n");
         (void)args;
 }
 
