@@ -21,7 +21,7 @@ static int nemu_read_reg(void *args, int regno, size_t *value)
                 return -1;
         }
         
-       // *value = (size_t)isa_reg_read(regno);
+        *value = (size_t)isa_reg_read(regno);
         return 0;
 }
 
