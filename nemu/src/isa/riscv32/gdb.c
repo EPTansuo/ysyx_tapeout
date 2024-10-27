@@ -9,28 +9,32 @@
 
 void execute(uint64_t n);
 
-bool gdbstub_init(gdbstub_t *gdbstub, struct target_ops *ops, arch_info_t arch, char *s);
+//bool gdbstub_init(gdbstub_t *gdbstub, struct target_ops *ops, arch_info_t arch, char *s);
 
 static int nemu_read_reg(void *args, int regno, size_t *reg_value)
 {       
+        printf("read_reg = %d\n", regno);
         *reg_value = isa_reg_read(regno);
         return 0;
 }
 
 static int nemu_write_reg(void *args, int regno, size_t data)
 {
+        printf("write_reg = %d %zx\n", regno, data);
         isa_reg_write(regno, data);
         return 0;
 }
 
 static int nemu_read_mem(void *args, size_t addr, size_t len, void *val)
 {
+        printf("read_mem = %x %zx\n", (word_t)addr, len);
         (*((word_t*)val)) = vaddr_read(addr, len);
         return 0;
 }
 
 static int nemu_write_mem(void *args, size_t addr, size_t len, void *val)
 {
+        printf("write_mem = %x %zx %x\n", (word_t)addr, len, *(word_t*)val);
         vaddr_write(addr, len, *(word_t*)val);
         return 0;
 }
@@ -38,6 +42,7 @@ static int nemu_write_mem(void *args, size_t addr, size_t len, void *val)
 gdb_action_t nemu_cont(void *args)
 {
         //cpu_exec(-1);
+        printf("cont\n");
         while(nemu_state.state == NEMU_RUNNING){
                execute(1);
         }
@@ -47,6 +52,7 @@ gdb_action_t nemu_cont(void *args)
 static gdb_action_t nemu_stepi(void *args)
 {
         //cpu_exec(1);
+        printf("stepi\n");
         if(nemu_state.state == NEMU_RUNNING)
                 execute(1);
 
