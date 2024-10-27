@@ -126,13 +126,21 @@ bool init_gdbstub()
             .target_desc = TARGET_RV32,
 #endif
         };
+        
         char ip_port[32];
         sprintf(ip_port, "%s", "127.0.0.1:9012");
-         gdbstub_init(&gdbstub, &ops, arch, ip_port);
+        
+        if(!gdbstub_init(&gdbstub, &ops, arch, ip_port)){
+                fprintf(stderr, "Fail to create socket.\n");
+                return false;
+        }
         
         print_gdbstub(&gdbstub);
 
-        gdbstub_run(&gdbstub, NULL);
+        if(!gdbstub_run(&gdbstub, NULL)){
+                fprintf(stderr, "Fail to run in debug mode.\n");
+                return false;
+        }
         
         return true;
 }
