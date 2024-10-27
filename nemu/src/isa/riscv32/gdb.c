@@ -56,18 +56,20 @@ static gdb_action_t nemu_stepi(void *args)
 
 static bool nemu_set_bp(void *args, size_t addr, bp_type_t type)
 {
-        (void)args;
-        (void)addr;
-        (void)type;
+        printf("set breakpoints = %x %zx %x\n", type, addr, type);
+        // (void)args;
+        // (void)addr;
+        // (void)type;
 
         return false;
 }
 
 static bool nemu_del_bp(void *args, size_t addr, bp_type_t type)
 {
-        (void)args;
-        (void)addr;
-        (void)type;
+        printf("remove breakpoints = %x %zx %x\n", type, addr, type);
+        // (void)args;
+        // (void)addr;
+        // (void)type;
 
         return false;
 }
