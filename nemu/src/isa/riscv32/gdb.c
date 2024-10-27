@@ -155,8 +155,9 @@ bool init_gdbstub()
         
         print_gdbstub(&gdbstub);
 
+        printf("function: read_reg: %p", nemu_read_reg);
 
-        if(!gdbstub_run(&gdbstub, &gdbstub)){
+        if(!gdbstub_run(&gdbstub, NULL)){
                 fprintf(stderr, "Fail to run in debug mode.\n");
                 return false;
         }
