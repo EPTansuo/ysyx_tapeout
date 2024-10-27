@@ -87,9 +87,9 @@ bool init_gdbstub()
             .reg_byte = 4,
             .reg_num = 32,
 #ifdef CONFIG_RV64
-            .target_desc = "riscv:rv32",
+            .target_desc = TARGET_RV32,
 #else
-            .target_desc = "riscv:rv64",
+            .target_desc = TARGET_RV64,
 #endif
         };
         char ip_port[32];
