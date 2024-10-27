@@ -148,6 +148,8 @@ bool init_gdbstub()
         }
         
         print_gdbstub(&gdbstub);
+        size_t a;
+        nemu_read_reg(NULL, 0, &a);
 
         if(!gdbstub_run(&gdbstub, NULL)){
                 fprintf(stderr, "Fail to run in debug mode.\n");
