@@ -92,6 +92,27 @@ struct target_ops nemu_ops = {
     .on_interrupt = nemu_on_interrupt,
 };
 
+void print_target_ops(const struct target_ops *ops) {
+    printf("Function pointers: \n");
+    printf("  continue: %p\n", (void*)ops->cont);
+    printf("  stepi: %p\n", (void*)ops->stepi);
+    // 添加其它函数指针的打印
+}
+
+void print_arch_info(const arch_info_t *arch) {
+    printf("Arch info: \n");
+    printf("  Description: %s\n", arch->target_desc);
+    printf("  Number of registers: %d\n", arch->reg_num);
+    printf("  Register size (bytes): %zu\n", arch->reg_byte);
+}
+
+void print_gdbstub(const gdbstub_t *gdbstub) {
+    printf("GDB Stub Information:\n");
+    print_target_ops(gdbstub->ops);
+    print_arch_info(&gdbstub->arch);
+    //print_gdbstub_private(gdbstub->priv);
+}
+
 bool init_gdbstub()
 {
         
@@ -108,6 +129,8 @@ bool init_gdbstub()
         char ip_port[32];
         sprintf(ip_port, "%s", "127.0.0.1:9012");
          gdbstub_init(&gdbstub, &ops, arch, ip_port);
+        
+        print_gdbstub(&gdbstub);
 
         gdbstub_run(&gdbstub, NULL);
         
