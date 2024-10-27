@@ -76,6 +76,7 @@ static bool nemu_del_bp(void *args, size_t addr, bp_type_t type)
 
 static void nemu_on_interrupt(void *args)
 {
+        printf("interrupt\n");
         (void)args;
 }
 
