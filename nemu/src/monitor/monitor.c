@@ -24,6 +24,7 @@ void init_difftest(char *ref_so_file, long img_size, int port);
 void init_device();
 void init_sdb();
 void init_disasm(const char *triple);
+bool init_gdbstub();
 
 static void welcome() {
   Log("Trace: %s", MUXDEF(CONFIG_TRACE, ANSI_FMT("ON", ANSI_FG_GREEN), ANSI_FMT("OFF", ANSI_FG_RED)));
@@ -45,7 +46,10 @@ void sdb_set_batch_mode();
 static char *log_file = NULL;
 static char *diff_so_file = NULL;
 //static char *img_file =  NULL;
-static char *img_file =  "/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/tests/am-tests/build/amtest-riscv32e-nemu.bin";
+static char *img_file =  "/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/tests/"
+                         "cpu-tests"
+                         "/build/"
+                         "mul-longlong-riscv32-nemu.bin";
 static int difftest_port = 1234;
 
 static long load_img() {
@@ -146,6 +150,10 @@ void init_monitor(int argc, char *argv[]) {
 
   /* Display welcome message. */
   welcome();
+
+  /* Initialize the GDB stub. */
+  init_gdbstub();
+
 }
 #else // CONFIG_TARGET_AM
 static long load_img() {

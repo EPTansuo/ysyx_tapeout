@@ -108,3 +108,12 @@ word_t isa_reg_str2val(const char *s, bool *success) {
   *success = false;
   return 0;
 }
+
+
+word_t isa_reg_read(int idx){
+  return gpr(idx);
+}
+
+void isa_reg_write(int idx, word_t val){
+  gpr(idx) = val;
+}
