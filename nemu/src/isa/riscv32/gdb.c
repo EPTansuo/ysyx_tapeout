@@ -16,11 +16,16 @@ static int nemu_read_reg(void *args, int regno, size_t *value)
 {       
         printf("read_reg: %d\n", regno);
 
-        if(regno > 31 || regno < 0){
+        if(regno > 32 || regno < 0){
                 printf("ERROR: read_reg: %d\n", regno);
                 return -1;
         }
         
+        if(regno == 32){
+                *value = (size_t)cpu.pc;
+                return 0;
+        }
+
         *value = (size_t)isa_reg_read(regno);
         return 0;
 }
@@ -136,7 +141,7 @@ bool init_gdbstub()
         
         arch_info_t arch = {
             .reg_byte = 4,
-            .reg_num = 32,
+            .reg_num = 33,
 #ifdef CONFIG_RV64
             .target_desc = TARGET_RV64,
 #else
