@@ -46,7 +46,10 @@ void sdb_set_batch_mode();
 static char *log_file = NULL;
 static char *diff_so_file = NULL;
 //static char *img_file =  NULL;
-static char *img_file =  "/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/mul-longlong-riscv32-nemu.bin";
+static char *img_file =  "/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/tests/"
+                         "cpu-tests"
+                         "/build/"
+                         "mul-longlong-riscv32-nemu.bin";
 static int difftest_port = 1234;
 
 static long load_img() {
