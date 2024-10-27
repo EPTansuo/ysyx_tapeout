@@ -119,7 +119,7 @@ bool init_gdbstub()
         struct target_ops ops;
         arch_info_t arch = {
             .reg_byte = 4,
-            .reg_num = 32,
+            .reg_num = 33,
 #ifdef CONFIG_RV64
             .target_desc = TARGET_RV32,
 #else
