@@ -41,11 +41,13 @@ static int nemu_write_reg(void *args, int regno, size_t data)
 static int nemu_read_mem(void *args, size_t addr, size_t len, void *val)
 {
         printf(":---read_mem = "FMT_WORD_HEX" %zx\n", (word_t)addr, len);
-        if(addr < 0x80000000 || addr > 0x80000000 + 0x1000000){
+        if(addr > 0x80000000 + 0x8000000){
                 printf(":---ERROR: read_mem = "FMT_WORD_HEX" %zx\n", (word_t)addr, len);
                 return EFAULT;
         }
-        
+        if(addr < 0x80000000){
+                (*((word_t*)val)) = vaddr_read(addr+0x80000000, len);
+        }
         (*((word_t*)val)) = vaddr_read(addr, len);
         return 0;
 }
