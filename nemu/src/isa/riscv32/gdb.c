@@ -138,7 +138,7 @@ bool init_gdbstub()
         };
         
         char ip_port[32];
-        sprintf(ip_port, "%s", "127.0.0.1:9011");
+        sprintf(ip_port, "%s", "127.0.0.1:9012");
         
         if(!gdbstub_init(&gdbstub, &ops, arch, ip_port)){
                 fprintf(stderr, "Fail to create socket.\n");
