@@ -62,10 +62,11 @@ static int nemu_write_mem(void *args, size_t addr, size_t len, void *val)
 gdb_action_t nemu_cont(void *args)
 {
         //cpu_exec(-1);
-        printf(":---cont\n");
-        while(nemu_state.state == NEMU_RUNNING){
-               execute(1);
-        }
+        //printf(":---cont\n");
+        //while(nemu_state.state == NEMU_RUNNING){
+        //       execute(1);
+        //}
+        cpu_exec(-1);
         return ACT_RESUME;
 }
 
