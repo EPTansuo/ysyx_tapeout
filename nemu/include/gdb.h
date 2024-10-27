@@ -3,4 +3,7 @@
 
 #include <gdbstub.h>
 
+bool init_gdbstub();
+
+
 #endif // !__GDB_H_
