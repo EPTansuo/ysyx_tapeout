@@ -12,20 +12,22 @@ void execute(uint64_t n);
 
 //bool gdbstub_init(gdbstub_t *gdbstub, struct target_ops *ops, arch_info_t arch, char *s);
 
-static int nemu_read_reg(void *args, int regno, size_t *reg_value)
+static int nemu_read_reg(void *args, int regno, size_t *value)
 {       
+        printf("read_reg: %d\n", regno);
+
         if(regno > 31 || regno < 0){
-                printf("ERROR: read_reg = %d\n", regno);
+                printf("ERROR: read_reg: %d\n", regno);
                 return -1;
         }
-        printf("read_reg = %d\n", regno);
-        *reg_value = isa_reg_read(regno);
+        
+        *value = (size_t)isa_reg_read(regno);
         return 0;
 }
 
 static int nemu_write_reg(void *args, int regno, size_t data)
 {
-        printf("write_reg = %d %zx\n", regno, data);
+        printf("write_reg: %d %zx\n", regno, data);
         isa_reg_write(regno, data);
         return 0;
 }
