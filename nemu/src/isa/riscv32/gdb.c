@@ -134,7 +134,6 @@ void print_gdbstub(const gdbstub_t *gdbstub) {
 bool init_gdbstub()
 {
         
-        struct target_ops ops;
         arch_info_t arch = {
             .reg_byte = 4,
             .reg_num = 32,
@@ -148,7 +147,7 @@ bool init_gdbstub()
         char ip_port[32];
         sprintf(ip_port, "%s", "127.0.0.1:9012");
         
-        if(!gdbstub_init(&gdbstub, &ops, arch, ip_port)){
+        if(!gdbstub_init(&gdbstub, &nemu_ops, arch, ip_port)){
                 fprintf(stderr, "Fail to create socket.\n");
                 return false;
         }
@@ -157,7 +156,7 @@ bool init_gdbstub()
 
         size_t reg_value;
         //printf("function: read_reg: %p\n", nemu_read_reg);
-        int ret = (ops.read_reg)(NULL, 0, &reg_value);
+        int ret = (nemu_ops.read_reg)(NULL, 0, &reg_value);
 
         printf("ret: %d\n", ret);
         if(!gdbstub_run(&gdbstub, NULL)){
