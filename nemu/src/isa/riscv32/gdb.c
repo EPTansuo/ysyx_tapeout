@@ -14,6 +14,10 @@ void execute(uint64_t n);
 
 static int nemu_read_reg(void *args, int regno, size_t *reg_value)
 {       
+        if(regno > 31 || regno < 0){
+                printf("ERROR: read_reg = %d\n", regno);
+                return -1;
+        }
         printf("read_reg = %d\n", regno);
         *reg_value = isa_reg_read(regno);
         return 0;
