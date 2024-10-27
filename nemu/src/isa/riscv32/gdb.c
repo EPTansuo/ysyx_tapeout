@@ -5,6 +5,7 @@
 #include <memory/vaddr.h>
 #include <stdio.h>
 #include <utils.h>
+#include <fmt-def.h>
 
 
 void execute(uint64_t n);
@@ -27,14 +28,14 @@ static int nemu_write_reg(void *args, int regno, size_t data)
 
 static int nemu_read_mem(void *args, size_t addr, size_t len, void *val)
 {
-        printf("read_mem = %x %zx\n", (word_t)addr, len);
+        printf("read_mem = "FMT_WORD_HEX" %zx\n", (word_t)addr, len);
         (*((word_t*)val)) = vaddr_read(addr, len);
         return 0;
 }
 
 static int nemu_write_mem(void *args, size_t addr, size_t len, void *val)
 {
-        printf("write_mem = %x %zx %x\n", (word_t)addr, len, *(word_t*)val);
+        printf("write_mem = " FMT_WORD_HEX " %zx %x\n", (word_t)addr, len, *(word_t*)val);
         vaddr_write(addr, len, *(word_t*)val);
         return 0;
 }
