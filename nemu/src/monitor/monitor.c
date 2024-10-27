@@ -134,9 +134,6 @@ void init_monitor(int argc, char *argv[]) {
   /* Initialize differential testing. */
   init_difftest(diff_so_file, img_size, difftest_port);
 
-  /* Initialize the GDB stub. */
-  init_gdbstub();
-
   /* Initialize the simple debugger. */
   init_sdb();
 
@@ -153,6 +150,10 @@ void init_monitor(int argc, char *argv[]) {
 
   /* Display welcome message. */
   welcome();
+
+  /* Initialize the GDB stub. */
+  init_gdbstub();
+
 }
 #else // CONFIG_TARGET_AM
 static long load_img() {
