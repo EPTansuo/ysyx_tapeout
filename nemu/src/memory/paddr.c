@@ -31,6 +31,9 @@ paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 //打印内存写入信息，内存读取信息的打印没有单独设置为函数
 void print_memwrite(paddr_t addr, int len, word_t data);
 
+inline uint8_t* get_pmem_addr(){
+  return pmem;
+}
 
 static word_t pmem_read(paddr_t addr, int len) {
   word_t ret = host_read(guest_to_host(addr), len);

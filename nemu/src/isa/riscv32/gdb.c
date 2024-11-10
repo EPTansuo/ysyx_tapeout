@@ -7,7 +7,7 @@
 #include <utils.h>
 #include <fmt-def.h>
 #include <errno.h>
-
+#include <memory/paddr.h>
 
 void execute(uint64_t n);
 
@@ -41,16 +41,18 @@ static int nemu_write_reg(void *args, int regno, size_t data)
 static int nemu_read_mem(void *args, size_t addr, size_t len, void *val)
 {
         printf(":---read_mem = "FMT_WORD_HEX" %zx\n", (word_t)addr, len);
-        if(addr > 0x80000000 + 0x8000000){
+        if(addr+len > CONFIG_MSIZE + CONFIG_MBASE){
                 printf(":---ERROR: read_mem = "FMT_WORD_HEX" %zx\n", (word_t)addr, len);
                 return EFAULT;
         }
-        if(addr < 0x80000000){
-                (*((word_t*)val)) = vaddr_read(addr+0x80000000, len);
-                return 0;
+        else if (in_pmem(addr))
+        {
+                memcpy(val, get_pmem_addr() + (addr-CONFIG_MBASE) , len);
         }
-        
-        (*((word_t*)val)) = vaddr_read(addr, len);
+        if(addr < CONFIG_MBASE){
+                memcpy(val, get_pmem_addr()+addr , len);
+        }
+
         return 0;
 }
 
