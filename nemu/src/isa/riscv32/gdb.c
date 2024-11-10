@@ -94,6 +94,7 @@ static int nemu_write_mem(void *args, size_t addr, size_t len, void *val)
 
 gdb_action_t nemu_cont(void *args)
 {
+        nemu_state.state = NEMU_RUNNING;
         execute(-1);
         print_nemu_state();
         printf(":---continue over\n");
