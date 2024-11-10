@@ -15,10 +15,12 @@ void execute(uint64_t n);
 // bool gdbstub_init(gdbstub_t *gdbstub, struct target_ops *ops, arch_info_t arch, char *s);
 
 void print_nemu_state(){
-        printf(nemu_state.state == NEMU_RUNNING ? ":-- STATE: running" : nemu_state.state == NEMU_END ? ":-- STATE: end"
-                                                                : nemu_state.state == NEMU_ABORT ? ":-- STATE: abort"
-                                                                : nemu_state.state == NEMU_QUIT  ? ":-- STATE: quit"
-                                                                                                : ":-- STATE: other");
+        printf(nemu_state.state == NEMU_RUNNING ? ":-- STATE: running" 
+                : nemu_state.state == NEMU_END ? ":-- STATE: end"
+                : nemu_state.state == NEMU_ABORT ? ":-- STATE: abort"
+                : nemu_state.state == NEMU_QUIT  ? ":-- STATE: quit"
+                : nemu_state.state == NEMU_STOP  ? ":-- STATE: stop"
+                                                 : ":-- STATE: other");
         putchar('\n');
 }
 
