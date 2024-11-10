@@ -141,6 +141,7 @@ static void nemu_on_interrupt(void *args)
 {
         printf(":---interrupt\n");
         (void)args;
+        nemu_state.state = NEMU_END;
 }
 
 struct target_ops nemu_ops = {
