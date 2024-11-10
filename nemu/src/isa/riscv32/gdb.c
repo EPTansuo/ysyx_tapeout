@@ -193,7 +193,8 @@ bool init_gdbstub()
         char ip_port[32];
         sprintf(ip_port, "%s", "127.0.0.1:9012");
 
-        Log("GDB Stub Initialization: %s\n", ip_port);
+        Log("GDB Stub Initialization\n");
+        printf("Waiting for GDB connection on %s\n", ip_port);
 
         arch_info_t arch = {
             .reg_byte = 4,
