@@ -73,7 +73,7 @@ static int nemu_read_mem(void *args, size_t addr, size_t len, void *val)
 static int nemu_write_mem(void *args, size_t addr, size_t len, void *val)
 {
         printf(":---write_mem = " FMT_WORD_HEX " %zx %x\n", (word_t)addr, len, *(word_t *)val);
-        // vaddr_write(addr, len, *(word_t*)val);
+
         if (addr + len > CONFIG_MSIZE + CONFIG_MBASE)
         {
                 printf(":---ERROR: read_mem = " FMT_WORD_HEX " %zx\n", (word_t)addr, len);
@@ -92,11 +92,6 @@ static int nemu_write_mem(void *args, size_t addr, size_t len, void *val)
 
 gdb_action_t nemu_cont(void *args)
 {
-        // cpu_exec(-1);
-        // printf(":---cont\n");
-        // while(nemu_state.state == NEMU_RUNNING){
-        //        execute(1);
-        // }
         cpu_exec(-1);
         print_nemu_state();
 
@@ -105,7 +100,6 @@ gdb_action_t nemu_cont(void *args)
 
 static gdb_action_t nemu_stepi(void *args)
 {
-        // cpu_exec(1);
         printf(":---stepi\n");
         print_nemu_state();
         if (nemu_state.state == NEMU_RUNNING || nemu_state.state == NEMU_STOP)
