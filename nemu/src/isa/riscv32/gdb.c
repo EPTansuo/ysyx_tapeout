@@ -19,6 +19,7 @@ void print_nemu_state(){
                                                                 : nemu_state.state == NEMU_ABORT ? ":-- STATE: abort"
                                                                 : nemu_state.state == NEMU_QUIT  ? ":-- STATE: quit"
                                                                                                 : ":-- STATE: other");
+        putchar('\n');
 }
 
 static int nemu_read_reg(void *args, int regno, size_t *value)
@@ -107,7 +108,7 @@ static gdb_action_t nemu_stepi(void *args)
         // cpu_exec(1);
         printf(":---stepi\n");
         print_nemu_state();
-        if (nemu_state.state == NEMU_RUNNING)
+        if (nemu_state.state == NEMU_RUNNING || nemu_state.state == NEMU_STOP)
                 execute(1);
 
         return ACT_RESUME;
