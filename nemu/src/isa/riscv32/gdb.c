@@ -10,9 +10,16 @@
 #include <memory/paddr.h>
 #include <breakpoint.h>
 
+bool gdbstub_valid = false;
+
 void execute(uint64_t n);
 
-// bool gdbstub_init(gdbstub_t *gdbstub, struct target_ops *ops, arch_info_t arch, char *s);
+
+void use_gdbstub(bool enable){
+        gdbstub_valid = enable;
+}
+
+
 
 void print_nemu_state(){
         printf(nemu_state.state == NEMU_RUNNING ? ":-- STATE: running" 
@@ -180,6 +187,13 @@ void print_gdbstub(const gdbstub_t *gdbstub)
 
 bool init_gdbstub()
 {
+        if(!gdbstub_valid)
+                return true;
+        
+        char ip_port[32];
+        sprintf(ip_port, "%s", "127.0.0.1:9012");
+
+        Log("GDB Stub Initialization: %s\n", ip_port);
 
         arch_info_t arch = {
             .reg_byte = 4,
@@ -191,8 +205,7 @@ bool init_gdbstub()
 #endif
         };
 
-        char ip_port[32];
-        sprintf(ip_port, "%s", "127.0.0.1:9012");
+        
 
         if (!gdbstub_init(&gdbstub, &nemu_ops, arch, ip_port))
         {

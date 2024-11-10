@@ -25,6 +25,7 @@ void init_device();
 void init_sdb();
 void init_disasm(const char *triple);
 bool init_gdbstub();
+void use_gdbstub(bool);
 
 static void welcome() {
   Log("Trace: %s", MUXDEF(CONFIG_TRACE, ANSI_FMT("ON", ANSI_FG_GREEN), ANSI_FMT("OFF", ANSI_FG_RED)));
@@ -80,6 +81,7 @@ static int parse_args(int argc, char *argv[]) {
     {"log"      , required_argument, NULL, 'l'},
     {"diff"     , required_argument, NULL, 'd'},
     {"port"     , required_argument, NULL, 'p'},
+    {"gdbstub"  , no_argument      , NULL, 'g'},
     {"help"     , no_argument      , NULL, 'h'},
     {"ftrace"   , no_argument      , NULL, 'f'},
     {0          , 0                , NULL,  0 },
@@ -92,6 +94,7 @@ static int parse_args(int argc, char *argv[]) {
       case 'l': log_file = optarg; break;
       case 'd': diff_so_file = optarg; break;
       case 'f': ftrace_init(img_file); break;
+      case 'g': use_gdbstub(true); break;
       case 1: img_file = optarg; return 0;
       default:
         printf("Usage: %s [OPTION...] IMAGE [args]\n\n", argv[0]);
