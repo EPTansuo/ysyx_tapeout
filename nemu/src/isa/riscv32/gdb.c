@@ -73,8 +73,21 @@ static int nemu_read_mem(void *args, size_t addr, size_t len, void *val)
 
 static int nemu_write_mem(void *args, size_t addr, size_t len, void *val)
 {
-        printf(":---write_mem = " FMT_WORD_HEX " %zx %x\n", (word_t)addr, len, *(word_t*)val);
-        vaddr_write(addr, len, *(word_t*)val);
+        printf(":---write_mem = " FMT_WORD_HEX " %zx %x\n", (word_t)addr, len, *(word_t *)val);
+        // vaddr_write(addr, len, *(word_t*)val);
+        if (addr + len > CONFIG_MSIZE + CONFIG_MBASE)
+        {
+                printf(":---ERROR: read_mem = " FMT_WORD_HEX " %zx\n", (word_t)addr, len);
+                return EFAULT;
+        }
+        else if (in_pmem(addr))
+        {
+                memcpy(get_pmem_addr() + (addr - CONFIG_MBASE),val, len);
+        }
+        else
+        {
+                memcpy(get_pmem_addr() + addr, val, len);
+        }
         return 0;
 }
 
