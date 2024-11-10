@@ -18,6 +18,7 @@
 #include <cpu/difftest.h>
 #include <locale.h>
 #include <watchpoint.h>
+#include <breakpoint.h>
 #include <ftrace.h>
 #include <fmt-def.h>
 
@@ -83,6 +84,8 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 
 
   scan_watchpoint();
+  scan_breakpoint(dnpc);
+
 }
 
 static void exec_once(Decode *s, vaddr_t pc) {
