@@ -14,6 +14,13 @@ void execute(uint64_t n);
 
 // bool gdbstub_init(gdbstub_t *gdbstub, struct target_ops *ops, arch_info_t arch, char *s);
 
+void print_nemu_state(){
+        printf(nemu_state.state == NEMU_RUNNING ? ":-- STATE: running" : nemu_state.state == NEMU_END ? ":-- STATE: end"
+                                                                : nemu_state.state == NEMU_ABORT ? ":-- STATE: abort"
+                                                                : nemu_state.state == NEMU_QUIT  ? ":-- STATE: quit"
+                                                                                                : ":-- STATE: other");
+}
+
 static int nemu_read_reg(void *args, int regno, size_t *value)
 {
         printf(":---read_reg: %d\n", regno);
@@ -59,21 +66,7 @@ static int nemu_read_mem(void *args, size_t addr, size_t len, void *val)
         }
 
         return 0;
-        // printf(":---read_mem = " FMT_WORD_HEX " %zx\n", (word_t)addr, len);
-        // if (addr > 0x80000000 + 0x8000000)
-        // {
-        //         printf(":---ERROR: read_mem = " FMT_WORD_HEX " %zx\n", (word_t)addr, len);
-        //         return EFAULT;
-        // }
-        // if (addr < 0x80000000)
-        // {
-        //         (*((word_t *)val)) = vaddr_read(addr + 0x80000000, len);
-        //         return 0;
-        // }
 
-        // (*((word_t *)val)) = vaddr_read(addr, len);
-
-        // return 0;
 }
 
 static int nemu_write_mem(void *args, size_t addr, size_t len, void *val)
@@ -104,10 +97,7 @@ gdb_action_t nemu_cont(void *args)
         //        execute(1);
         // }
         cpu_exec(-1);
-        printf(nemu_state.state == NEMU_RUNNING ? ":-- STATE: running" : nemu_state.state == NEMU_END ? ":-- STATE: end"
-                                                                     : nemu_state.state == NEMU_ABORT ? ":-- STATE: abort"
-                                                                     : nemu_state.state == NEMU_QUIT  ? ":-- STATE: quit"
-                                                                                                      : ":-- STATE: other");
+        print_nemu_state();
 
         return ACT_RESUME;
 }
@@ -116,6 +106,7 @@ static gdb_action_t nemu_stepi(void *args)
 {
         // cpu_exec(1);
         printf(":---stepi\n");
+        print_nemu_state();
         if (nemu_state.state == NEMU_RUNNING)
                 execute(1);
 
