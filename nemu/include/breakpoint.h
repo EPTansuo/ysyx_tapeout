@@ -5,8 +5,8 @@
 
 void init_bp_pool();
 
-void add_breakpoint(vaddr_t addr);
-void del_breakpoint(vaddr_t addr);
+bool add_breakpoint(vaddr_t addr);
+bool del_breakpoint(vaddr_t addr);
 
 void scan_breakpoint();
 

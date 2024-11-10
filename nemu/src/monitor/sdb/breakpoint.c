@@ -19,27 +19,29 @@ void init_bp_pool() {
 }
 
 
-void add_breakpoint(vaddr_t addr) {
+bool add_breakpoint(vaddr_t addr) {
   for (int i = 0; i < BP_POOL_SIZE; i++) {
     if (!bp_pool[i].valid) {
       bp_pool[i].valid = true;
       bp_pool[i].addr = addr;
       printf("Breakpoint %d: 0x%08x\n", i, addr);
-      return;
+      return true;
     }
   }
   printf("No more space for breakpoint\n");
+  return false;
 }
 
-void del_breakpoint(vaddr_t addr ) {
+bool del_breakpoint(vaddr_t addr ) {
   for (int i = 0; i < BP_POOL_SIZE; i++) {
     if (bp_pool[i].valid && bp_pool[i].addr == addr) {
       bp_pool[i].valid = false;
       printf("Delete breakpoint %d: 0x%08x\n", i, addr);
-      return;
+      return true;
     }
   }
   printf("No such breakpoint\n");
+  return false;
 }
 
 void scan_breakpoint(vaddr_t addr)
