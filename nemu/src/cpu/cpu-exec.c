@@ -84,7 +84,9 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 
 
   scan_watchpoint();
-  scan_breakpoint(_this->snpc);
+  scan_breakpoint(_this->pc);
+  printf("pc: 0x" FMT_WORD_HEX " ", _this->pc);
+  printf("npc: 0x" FMT_WORD_HEX "\n", dnpc);
 }
 
 static void exec_once(Decode *s, vaddr_t pc) {
