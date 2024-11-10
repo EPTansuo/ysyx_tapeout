@@ -187,9 +187,9 @@ void print_gdbstub(const gdbstub_t *gdbstub)
 
 bool init_gdbstub()
 {       
-        Log("GDB Stub Initialization");
-        Log("GDB Stub: %s", gdbstub_valid? ANSI_FMT("ON", ANSI_FG_GREEN): ANSI_FMT("OFF", ANSI_FG_RED));
         
+        Log("GDB Stub: %s", gdbstub_valid? ANSI_FMT("ON", ANSI_FG_GREEN): ANSI_FMT("OFF", ANSI_FG_RED));
+
         if(!gdbstub_valid)
                 return true;
         
