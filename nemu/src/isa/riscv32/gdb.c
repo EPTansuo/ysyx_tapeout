@@ -105,9 +105,10 @@ static gdb_action_t nemu_stepi(void *args)
 {
         printf(":---stepi\n");
         print_nemu_state();
-        if (nemu_state.state == NEMU_RUNNING || nemu_state.state == NEMU_STOP)
+        if (nemu_state.state == NEMU_RUNNING || nemu_state.state == NEMU_STOP){
+                nemu_state.state = NEMU_RUNNING;
                 execute(1);
-
+        }
         return ACT_RESUME;
 }
 
