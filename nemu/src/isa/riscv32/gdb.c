@@ -186,15 +186,18 @@ void print_gdbstub(const gdbstub_t *gdbstub)
 }
 
 bool init_gdbstub()
-{
+{       
+        Log("GDB Stub Initialization");
+        Log("GDB Stub: %s", gdbstub_valid? ANSI_FMT("ON", ANSI_FG_GREEN): ANSI_FMT("OFF", ANSI_FG_RED));
+        
         if(!gdbstub_valid)
                 return true;
         
         char ip_port[32];
         sprintf(ip_port, "%s", "127.0.0.1:9012");
 
-        Log("GDB Stub Initialization\n");
-        printf("Waiting for GDB connection on %s\n", ip_port);
+        
+        printf("Waiting for GDB connection on %s...\n", ip_port);
 
         arch_info_t arch = {
             .reg_byte = 4,
