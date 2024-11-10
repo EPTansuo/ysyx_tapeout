@@ -94,7 +94,7 @@ gdb_action_t nemu_cont(void *args)
 {
         cpu_exec(-1);
         print_nemu_state();
-
+        printf(":---continue over\n");
         return ACT_RESUME;
 }
 
