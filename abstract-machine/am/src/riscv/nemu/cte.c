@@ -12,7 +12,7 @@ Context* __am_irq_handle(Context *c) {
       case 11: ev.event = EVENT_YIELD;   break;
       default: ev.event = EVENT_ERROR;   break;
     }
-
+    printf("ctx->mepc_before=%d\n",c->mepc);
     c = user_handler(ev, c);
     printf("ctx->mepc=%d\n",c->mepc);
     assert(c != NULL);
@@ -40,7 +40,6 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
   stack_top -= stack_top % sizeof(uintptr_t); //对齐
   stack_top -= sizeof(Context);// 为Context结构体留出空间
   Context* ctx = (Context *)stack_top;
-
   ctx->mepc=(uintptr_t)entry;
   ctx->mstatus=0x1800;
   ctx->gpr[10]=(uintptr_t)arg;  //a0
