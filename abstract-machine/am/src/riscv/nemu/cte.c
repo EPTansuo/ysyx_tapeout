@@ -12,9 +12,16 @@ Context* __am_irq_handle(Context *c) {
       case 11: ev.event = EVENT_YIELD;   break;
       default: ev.event = EVENT_ERROR;   break;
     }
-    printf("ctx->mepc_before=%d\n",c->mepc);
+    printf("before:\n");
+    printf("ctx->mepc=%d\n",c->mepc);
+    printf("ctx->mcause=%d\n",c->mcause);
+    printf("ctx->mstatus=%d\n",c->mstatus);
+    printf("ctx->gpr[10]=%d\n",c->gpr[10]);
     c = user_handler(ev, c);
     printf("ctx->mepc=%d\n",c->mepc);
+    printf("ctx->mcause=%d\n",c->mcause);
+    printf("ctx->mstatus=%d\n",c->mstatus);
+    printf("ctx->gpr[10]=%d\n",c->gpr[10]);
     assert(c != NULL);
   }
 
