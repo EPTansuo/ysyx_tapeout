@@ -1,78 +1,103 @@
-TOPNAME = top 
-MAIN = $(TOPNAME).topMain
-BUILD_DIR = ./build
-OBJ_DIR = $(BUILD_DIR)/OBJ_DIR
-
+TOPNAME = cpu
+NXDC_FILES = constr/cpu.nxdc
+#IMG = "/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/tests/am-tests/build/amtest-riscv32e-npc.bin"
+IMG = "/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/leap-year-riscv32e-npc.bin"
+ARGS = -v --diff="/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/nemu/build/riscv32-nemu-interpreter-so"
 
 VERILATOR = verilator
-VERILATOR_COVERAGE = verilator_coverage
-# verilator flags
-VERILATOR_FLAGS += -MMD --trace --build -cc --exe \
-		-O3 --x-assign fast --x-initial fast --noassert -report-unoptflat
+VERILATOR_CFLAGS += -MMD --build -cc --public --trace \
+				-O3 --x-assign fast --x-initial fast --noassert \
+				-I$(YSYX_HOME)/npc/vsrc  --threads 1
 
-# timescale set
-VERILATOR_FLAGS += --timescale 1us/1us
-
-verilog: $(SCALA_FILE)
-	@mkdir -p $(BUILD_DIR)/verilog
-	mill -i $(TOPNAME).runMain $(MAIN) -td $(BUILD_DIR)/verilog --emit-modules verilog
-
-vcd ?=
-ifeq ($(vcd), 1)
-	CXXFLAGS += -DVCD
-endif
-
+BUILD_DIR = ./build
+OBJ_DIR = $(BUILD_DIR)/obj_dir
+BIN = $(BUILD_DIR)/$(TOPNAME)
+VCD_WAVE = wave.vcd
 
 -include .config
 
-# C flags
 INC_PATH +=$(abspath csrc/include)
 INC_PATH +=$(abspath csrc/isa/$(CONFIG_ISA)/include)
 INC_PATH +=$(abspath csrc/isa/$(CONFIG_ISA)/local-include)
 
-INCFLAGS = $(addprefix -I, $(INC_PATH))
-CXXFLAGS += $(INCFLAGS) $(CFLAGS_SIM) -DTOP_NAME="V$(TOPNAME)"
 
-# source file
-TOP_V = $(BUILD_DIR)/verilog/$(TOPNAME).v
-SCALA_FILE = $(shell find ./src/main -name '*.scala')
+
+
+default:$(BIN) 
+
+$(shell mkdir -p $(BUILD_DIR))
+
+# constraint file
+SRC_AUTO_BIND = $(abspath $(BUILD_DIR)/auto_bind.cpp)
+$(SRC_AUTO_BIND): $(NXDC_FILES)
+	python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
+
+# project source
+VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
+#CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
 CSRCS = $(shell find $(abspath ./csrc) \( -path $(abspath ./csrc/device) -prune \) -o \( -name "*.c" -or -name "*.cc" -or -name "*.cpp" \) -print)
+
+CSRCS += $(SRC_AUTO_BIND)
+#CSRCS += $(NEMU_HOME)/src/utils/disasm.cc
+
+-include csrc/device/filelist.mk
+
+
+# rules for verilator
+INCFLAGS = $(addprefix -I, $(INC_PATH))
+CXXFLAGS += -Wall $(INCFLAGS) -g -DTOP_NAME="\"V$(TOPNAME)\"" -fpermissive #$(shell llvm-config --cxxflags) 
+CXXFLAGS += -fmacro-prefix-map=$(PWD)=npc -g
+LDFLAGS += -lreadline
+#LDFLAGS += $(shell llvm-config --ldflags)
+#LDLIBS += $(shell llvm-config --libs)
 
 # rules for NVBoard
 include $(NVBOARD_HOME)/scripts/nvboard.mk
 
 
 
-BIN = $(BUILD_DIR)/$(TOPNAME)
-NPC_EXEC := $(BIN)
+$(shell python3 $(NPC_HOME)/tools/exu_gen/exu_gen.py > $(NPC_HOME)/vsrc/exu.v)
 
-default: $(BIN)
-
-$(BIN): $(CSRCS) verilog
-	$(VERILATOR) $(VERILATOR_FLAGS) -top $(TOPNAME)$(CSRCS) $(wildcard $(BUILD_DIR)/verilog/*.v) \
+$(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE) 
+	echo $(CSRCS)
+	@rm -rf $(OBJ_DIR)
+	$(VERILATOR) $(VERILATOR_CFLAGS) \
+		--top-module $(TOPNAME) $^ \
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
-		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) --top-module $(TOPNAME)
+		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
+all: default
 
-
-
-sim: run
-run: $(BIN)
+run: $(BIN) 
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	bash ./tools/disasm.sh $(IMG) $(BUILD_DIR)
 	$^ $(ARGS) $(IMG)
+#	echo "$(ARGS)" $(IMG)
+#	@$(SIM_EXECUTABLE)
+#	@$(VCD_VIEWER) $(VCD_WAVE)
+	
+sim: run
+
+sync:
+	rsync -av $(NPC_HOME)/vsrc/ $(GZIC_SERVER_USER)@$(GZIC_SERVER_IP):$(GZIC_SERVER_NPC_HOME)/vsrc/
+rsync: sync
+
+remote_sim: sync 
+	ssh $(GZIC_SERVER_USER)@$(GZIC_SERVER_IP) "cd $(GZIC_SERVER_NPC_HOME) && make sim"
+	bash ./tools/mountserver.sh
+	bash ./tools/ln_rm_vcd.sh
 
 # menuconfig and autoconf.h
 include $(NPC_HOME)/csrc/scripts/config.mk
 
+
+	
 clean:
-	-rm -rf $(BUILD_DIR) logs
+	rm -rf $(BUILD_DIR) $(VCD_WAVE)
 
-clean_mill:
-	-rm -rf out
-
-clean_all: clean clean_mill
-
-.PHONY: clean clean_all clean_mill srun run sim verilog
-
+.PHONY: default all clean run
 
 include ../Makefile
+
+
+
+
