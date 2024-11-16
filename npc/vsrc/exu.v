@@ -855,7 +855,9 @@ assign csr_wdata = inst_type == `Inst_addi ? 0 :
                    inst_type == `Inst_mret ? 0 : 
                    0;
 
+wire info;
 
+assign info = inst_type ==  `Inst_mret;
 
 endmodule
 
