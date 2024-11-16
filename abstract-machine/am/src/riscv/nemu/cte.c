@@ -13,7 +13,7 @@ Context* __am_irq_handle(Context *c) {
       default: ev.event = EVENT_ERROR;   break;
     }
     printf("before:\n");
-    printf("ctx->mepc=%x\n",c->mepc);
+    printf("ctx->mepc=%d\n",c->mepc);
     printf("ctx->mcause=%d\n",c->mcause);
     printf("ctx->mstatus=%d\n",c->mstatus);
     printf("ctx->gpr[10]=%d\n",c->gpr[10]);
