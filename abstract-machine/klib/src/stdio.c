@@ -44,6 +44,33 @@ int _print_itoa(int num){
 
 }
 
+int _print_hex_int(int num, bool capital/*是否大写*/) {
+    int digits = 0;
+    unsigned int _num = (unsigned int) num;  // 处理为无符号数以支持完整的32位表示
+
+    if (_num == 0) {
+        putch('0');
+        return 1;
+    }
+
+    int shift;
+    for (shift = 28; shift > 0; shift -= 4) {
+        if ((_num >> shift) & 0xF) {
+            break;
+        }
+    }
+    for (; shift >= 0; shift -= 4) {
+        int hex_digit = (_num >> shift) & 0xF;
+        if (hex_digit >= 10) {
+            putch((capital?'A':'a') + (hex_digit - 10));
+        } else {
+            putch('0' + hex_digit);
+        }
+        digits++;
+    }
+
+    return digits;
+}
 
 
 int vprintf( const char *fmt, va_list ap) {
@@ -60,8 +87,12 @@ int vprintf( const char *fmt, va_list ap) {
       if (*fmt == 'd') {
         int num = va_arg(ap, int);
         len += _print_itoa(num);
-
-      } else if (*fmt == 's') {
+      }
+      else if (*fmt == 'x'|| *fmt == 'X') {
+        int num = va_arg(ap, int);
+        len += _print_hex_int(num, *fmt=='X');
+      }
+      else if (*fmt == 's') {
         const char *str = va_arg(ap, const char *);
         int str_len = strlen(str);
         for (int i = 0; i < str_len; i++) {
