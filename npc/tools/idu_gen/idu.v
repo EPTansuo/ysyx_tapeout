@@ -58,12 +58,12 @@ assign src2 = r_data2;
 
 
 
+wire funct3_000;
 wire funct3_100;
 wire funct3_001;
 wire funct3_101;
 wire funct3_010;
 wire funct3_111;
-wire funct3_000;
 wire funct3_011;
 wire funct3_110;
 
@@ -92,6 +92,7 @@ wire opcode_1110011;
 
 wire inst_pat_auipc;
 wire inst_pat_lui;
+wire inst_pat_lb;
 wire inst_pat_lbu;
 wire inst_pat_lh;
 wire inst_pat_lhu;
@@ -151,12 +152,12 @@ wire inst_pat_ecall;
 wire inst_pat_mret;
 
 
+assign funct3_000 = (funct3 == 3'b000);
 assign funct3_100 = (funct3 == 3'b100);
 assign funct3_001 = (funct3 == 3'b001);
 assign funct3_101 = (funct3 == 3'b101);
 assign funct3_010 = (funct3 == 3'b010);
 assign funct3_111 = (funct3 == 3'b111);
-assign funct3_000 = (funct3 == 3'b000);
 assign funct3_011 = (funct3 == 3'b011);
 assign funct3_110 = (funct3 == 3'b110);
 
@@ -186,6 +187,9 @@ assign opcode_1110011 = (opcode == 7'b1110011);
 assign inst_pat_auipc = opcode_0010111;
 
 assign inst_pat_lui = opcode_0110111;
+
+assign inst_pat_lb = opcode_0000011 &
+                     funct3_000;
 
 assign inst_pat_lbu = opcode_0000011 &
                       funct3_100;
@@ -385,6 +389,7 @@ assign inst_pat_mret = opcode_1110011 &
 assign inst_type = inst == `EBREAK ? `Inst_ebreak : 
                    inst_pat_auipc ? `Inst_auipc : 
                    inst_pat_lui ? `Inst_lui : 
+                   inst_pat_lb ? `Inst_lb : 
                    inst_pat_lbu ? `Inst_lbu : 
                    inst_pat_lh ? `Inst_lh : 
                    inst_pat_lhu ? `Inst_lhu : 
