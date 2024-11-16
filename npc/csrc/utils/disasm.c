@@ -55,7 +55,7 @@ void init_disasm(){
 	strcpy(img_full_name, img_file);
 	char* img_basename = basename(img_full_name);
 	strcat(img_basename,".disasm");
-	sprintf(img_file_path,"%s/%s","/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/npc/build",img_basename);
+	sprintf(img_file_path,"%s/%s","./build",img_basename);
 
 	FILE* fp = fopen(img_file_path,"r");
 
@@ -69,17 +69,23 @@ void init_disasm(){
     	}
 
 	disasm = (Disasm*)malloc(sizeof(Disasm)*lines);
+		if (disasm == NULL) {
+    	fprintf(stderr, "Memory allocation failed.\n");
+    	fclose(fp);
+    	return;
+	}
 	fseek(fp, 0, SEEK_SET);
 	int i =0;
 	while (fgets(line, sizeof(line), fp) != NULL) {
-		if (sscanf(line, "%x %99[^\n]", &disasm[i].pc, &(disasm[i].str[0])) == 2) {
-		//if (sscanf(line, "%x %99[^\n]", &disasm[i].pc, asm_code_buf) == 2) {
-		//printf("Address: 0x%X, Instruction: %s\n", disasm[i].pc, disasm[i].str);
-			//strcpy(&(disasm[i].str[0]),replace_regs_name(asm_code_buf).c_str());
-		} else {
-		fprintf(stderr, "Failed to parse line: %s", line);
-		}
-	i++;
+		// if (sscanf(line, "%x %31[^\n]", &disasm[i].pc, &(disasm[i].str[0])) == 2) {
+		// //if (sscanf(line, "%x %99[^\n]", &disasm[i].pc, asm_code_buf) == 2) {
+		// //printf("Address: 0x%X, Instruction: %s\n", disasm[i].pc, disasm[i].str);
+		// 	//strcpy(&(disasm[i].str[0]),replace_regs_name(asm_code_buf).c_str());
+		// i++;
+		// } else {
+		// fprintf(stderr, "Failed to parse line: %s", line);
+		// }
+		
     	}
 
 }
