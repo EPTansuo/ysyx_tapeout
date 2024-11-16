@@ -99,10 +99,10 @@ void pmem_write(int waddr, int wdata, char wmask){
 #ifdef CONFIG_HAS_SERIAL
       if(waddr == CONFIG_SERIAL_MMIO) {
           //printf(L_PURPLE "%c" NONE "", wdata);
-          //putchar(wdata);
+          putchar(wdata);
           //setbuf(stdout,NULL);
           //printf("%c",wdata);
-          putc(wdata,stdout);
+          // putc(wdata,stdout);
           goto end_pmem_write;
       }
       else 
