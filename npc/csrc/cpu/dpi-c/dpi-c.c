@@ -14,15 +14,9 @@
 #include <time.h>
 #include <verilated.h>
 #include <iostream>
-#include <autoconf.h>
 
 extern Vcpu* top;
 extern unsigned char isa_logo[];
-
-
-// For VGA Device
-uint8_t* vga_get_vmem();
-uint8_t *vga_get_vgactl_port_base();
 
 uint8_t* guest_to_host(paddr_t paddr);
 paddr_t host_to_guest(uint8_t *haddr);
@@ -110,18 +104,6 @@ void pmem_write(int waddr, int wdata, char wmask){
       }
       else 
 #endif 
-#ifdef CONFIG_HAS_VGA
-      if(waddr >= CONFIG_VGA_CTL_MMIO && waddr <= CONFIG_VGA_CTL_MMIO + 4) {
-          memcpy(vga_get_vgactl_port_base+waddr-CONFIG_VGA_CTL_MMIO,
-                  &wdata, wmask == 0x01 ? 1 : wmask == 0x03 ? 2 : wmask ==0x0f ? 4 : 0);
-          goto end_pmem_write;
-      }
-      else if(waddr >= CONFIG_FB_ADDR && waddr <= CONFIG_FB_ADDR + 4*(MUXDEF(CONFIG_VGA_SIZE_800x600, 800, 400)) * (MUXDEF(CONFIG_VGA_SIZE_800x600, 600, 300))) {
-          memcpy(vga_get_vmem() + waddr - CONFIG_FB_ADDR, &wdata, wmask == 0x01 ? 1 : wmask == 0x03 ? 2 : wmask ==0x0f ? 4 : 0);
-          goto end_pmem_write;
-      }
-      else
-#endif
 	  if (waddr > CONFIG_MBASE + CONFIG_MSIZE){
         goto end_pmem_write;
       }
