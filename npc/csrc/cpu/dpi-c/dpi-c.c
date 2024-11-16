@@ -50,6 +50,7 @@ uint64_t get_rtc_time(){
 
 int pmem_read(int raddr){
 
+#ifdef CONFIG_HAS_TIMER
   if(raddr == CONFIG_RTC_MMIO) {
     //获取开机时间
     return (uint32_t)get_time();
@@ -57,6 +58,7 @@ int pmem_read(int raddr){
   else if (raddr == CONFIG_RTC_MMIO + 4) {
     return (uint32_t)(get_time() >> 32);
   }
+#endif
   //printf("readmem at addr :%x \n",raddr );
   if(raddr < CONFIG_MBASE || raddr > CONFIG_MBASE + CONFIG_MSIZE)
     return 0;
@@ -94,12 +96,15 @@ void pmem_write(int waddr, int wdata, char wmask){
       || mwinfo.wmask != wmask || mwinfo.data != wdata 
       || (!regs_equ(top->cpu->gpr1->regs,mwinfo.regs))){
 
+#ifdef CONFIG_HAS_SERIAL
       if(waddr == CONFIG_SERIAL_MMIO) {
           //printf(L_PURPLE "%c" NONE "", wdata);
           putchar(wdata);
           goto end_pmem_write;
       }
-      else if (waddr > CONFIG_MBASE + CONFIG_MSIZE){
+      else 
+#endif 
+	  if (waddr > CONFIG_MBASE + CONFIG_MSIZE){
         goto end_pmem_write;
       }
       
