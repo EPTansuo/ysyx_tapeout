@@ -33,12 +33,17 @@ bool cte_init(Context*(*handler)(Event, Context*)) {
 }
 
 Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
-  Context *ctx = kstack.end - sizeof(Context);
+  //Context *ctx = kstack.end - sizeof(Context);
+
+  uintptr_t stack_top = (uintptr_t)kstack.end;
+  stack_top -= stack_top % sizeof(uintptr_t); //对齐
+  stack_top -= sizeof(Context);// 为Context结构体留出空间
+  Context* ctx = (Context *)stack_top;
+
   ctx->mepc=(uintptr_t)entry;
   ctx->mstatus=0x1800;
-  ctx->mcause=11;
   ctx->gpr[10]=(uintptr_t)arg;  //a0
-  ctx->gpr[2]=(uintptr_t)(kstack.end - sizeof(Context)); //sp
+  ctx->gpr[2]=stack_top; //sp
   return ctx;
 }
 
