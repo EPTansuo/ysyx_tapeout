@@ -55,7 +55,7 @@ void init_disasm(){
 	strcpy(img_full_name, img_file);
 	char* img_basename = basename(img_full_name);
 	strcat(img_basename,".disasm");
-	sprintf(img_file_path,"%s/%s","./build",img_basename);
+	sprintf(img_file_path,"%s/%s","/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/npc/build",img_basename);
 
 	FILE* fp = fopen(img_file_path,"r");
 
