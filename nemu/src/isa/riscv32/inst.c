@@ -91,9 +91,9 @@ void etrace_print_info(){
 //该函数在INSTPAT宏内被调用
 static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_t *imm, int type) {
   uint32_t i = s->isa.inst.val;
-  int rs1 = BITS(i, 19, 15);printf("rs1=%d\n",rs1);
-  int rs2 = BITS(i, 24, 20);printf("rs2=%d\n",rs2);
-  *rd     = BITS(i, 11, 7);printf("rd=%d\n",*rd);
+  int rs1 = BITS(i, 19, 15);
+  int rs2 = BITS(i, 24, 20);
+  *rd     = BITS(i, 11, 7);
   switch (type) {
     case TYPE_I: src1R();          immI(); break;
     case TYPE_U:                   immU(); break;
