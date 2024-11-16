@@ -18,8 +18,7 @@
 `define InstDataBus     31:0            //指令数据线位宽
 `define InstDataWidth   32              //指令数据位宽
 
-`define InstRomSize	131072		//ROM的实际大小为128kB
-`define MemSize 	131072		//MEM的实际大小为128kB
+`define InstRomSize	1048576		//ROM的实际大小为1M
 
 
 `define SHAMT           idu_inst[24:20]

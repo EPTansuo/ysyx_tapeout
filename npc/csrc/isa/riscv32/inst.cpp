@@ -23,12 +23,15 @@ static uint32_t img_default[] = {           //    imm          rs1       rd   op
 	0b00000000000100000000000001110011  // ebreak
 };
 
+#define InstRomSize	1048576	
+
 uint32_t inst_num;
-char img[131072];
+char *img;
 extern char* img_file;
 extern Vcpu *top;
 
 long init_insts_file(){
+	img = (char*)malloc(InstRomSize);
 	long size = 0;
 	FILE* fp = fopen(img_file,"r");
 	if(fp == NULL){
@@ -36,9 +39,9 @@ long init_insts_file(){
 		return 0;
 	}
 	fseek(fp, 0, SEEK_SET);
-	size = fread(img, 1, 131072, fp);
+	size = fread(img, 1, InstRomSize, fp);
 	inst_num = size / 4;
-	for(size_t i = 0; i < 131072; i++){
+	for(size_t i = 0; i < InstRomSize; i++){
 		top->cpu->ifu1->inst_rom1->insts[i] = img[i];
 	}
 	fclose(fp);	
@@ -64,7 +67,7 @@ long init_insts_default(){
 
 void print_inst(word_t pc)
 {	
-	VlUnpacked<unsigned char, 131072>& insts = (top->cpu->ifu1->inst_rom1->insts);
+	VlUnpacked<unsigned char, InstRomSize>& insts = (top->cpu->ifu1->inst_rom1->insts);
 	word_t index = pc - 0x80000000;
 	std::cout << std::hex << std::setw(8) << std::setfill('0')
 		<< pc << ":    ";
