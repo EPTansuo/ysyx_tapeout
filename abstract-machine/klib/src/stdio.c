@@ -83,8 +83,14 @@ int vprintf( const char *fmt, va_list ap) {
       while(*fmt >= '0' && *fmt <= '9'){ //直接忽略类似于%02d中的02
         fmt++;
       }
-
-      if (*fmt == 'd') {
+      if (*fmt == 'l'){
+        fmt++;
+        if(*fmt == 'd'){
+          int num = va_arg(ap, int);
+          len += _print_itoa(num);   //WARNING:先暂时使用int，而不是long int
+        }
+      }
+     else if (*fmt == 'd') {
         int num = va_arg(ap, int);
         len += _print_itoa(num);
       }
