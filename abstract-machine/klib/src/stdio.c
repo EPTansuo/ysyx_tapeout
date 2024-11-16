@@ -68,6 +68,10 @@ int vprintf( const char *fmt, va_list ap) {
           putch(str[i]);
           len++;
         }
+      } else if(*fmt == 'c') {
+          char ch = (char)va_arg(ap, int);
+          putch(ch);
+          len++;
       }
     } else {
       putch(*fmt);
