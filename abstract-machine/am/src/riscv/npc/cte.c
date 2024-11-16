@@ -10,17 +10,17 @@ Context* __am_irq_handle(Context *c) {
     switch (c->mcause) {
       case 11: ev.event = EVENT_YIELD;   break;
       default: ev.event = EVENT_ERROR;   break;
-    }
+    }/*
     printf("before:\n");
     printf("ctx->mepc=%x\n",c->mepc);
     printf("ctx->mcause=%x\n",c->mcause);
     printf("ctx->mstatus=%x\n",c->mstatus);
-    printf("ctx->gpr[10]=%x\n",c->gpr[10]);
+    printf("ctx->gpr[10]=%x\n",c->gpr[10]);*/
     c = user_handler(ev, c);
-    printf("ctx->mepc=%x\n",c->mepc);
-    printf("ctx->mcause=%x\n",c->mcause);
-    printf("ctx->mstatus=%x\n",c->mstatus);
-    printf("ctx->gpr[10]=%x\n",c->gpr[10]);
+    // printf("ctx->mepc=%x\n",c->mepc);
+    // printf("ctx->mcause=%x\n",c->mcause);
+    // printf("ctx->mstatus=%x\n",c->mstatus);
+    // printf("ctx->gpr[10]=%x\n",c->gpr[10]);
     assert(c != NULL);
   }
 
