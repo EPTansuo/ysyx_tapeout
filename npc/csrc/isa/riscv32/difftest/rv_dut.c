@@ -36,7 +36,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   printf("npc:nemu:ref_r->pc==0x%x\n",ref_r->pc);
   if(!first){
     //if(ref_r->pc != npc_cpu.pc){
-    for(i = 0; i < 32; i++){
+    for(i = 0; i < 16; i++){
       if(cpu_state_buf.gpr[i] != npc_cpu.gpr[i]){
         succ = false;
         break;
@@ -47,7 +47,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
       printf("DO NOT SEE CURRENT INSTRATION, SEE PREVIOUS ONE!\n");
       printf("npc:nemu:pc==0x%x\n",cpu_state_buf.pc);
       printf("ref reg info:\n");
-      for (int j = 0; j < 32; j++)
+      for (int j = 0; j < 16; j++)
       {
               if(j==i)
                 printf("$%s = 0x%s"  FMT_WORD_HEX_WIDTH NONE "%s\t", regs[j], L_RED, cpu_state_buf.gpr[j], NONE);
