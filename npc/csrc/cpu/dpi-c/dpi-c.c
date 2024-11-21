@@ -59,11 +59,11 @@ int pmem_read(int raddr){
     return (uint32_t)(get_time() >> 32);
   }
 #endif
-  printf("readmem at addr :%x \n",raddr );
+  
   if(raddr < CONFIG_MBASE || raddr > CONFIG_MBASE + CONFIG_MSIZE)
     return 0;
   word_t data = host_read(guest_to_host(raddr), 4);
-  
+  printf("read 4 bytes at 0x%x, data = 0x%x\n", raddr, data);
   return data;
 }
 void print_memwrite(paddr_t addr, int len, word_t data);
