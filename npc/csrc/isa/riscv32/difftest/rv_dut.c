@@ -19,6 +19,7 @@
 #include <cpu/cpu.h>
 #include <fmt-def.h>
 #include <sim.h>
+#include <color.h>
 
 static CPU_state cpu_state_buf = {}; 
 static int state_index = 0;
@@ -28,6 +29,7 @@ static bool first = true;
 extern const char *regs[];
 
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
+  int i =0;
   bool succ = true;
   if(!first){
     //if(ref_r->pc != npc_cpu.pc){
@@ -35,7 +37,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
       succ = false;
     }
     else {
-      for(int i = 0; i < 32; i++){
+      for(i = 0; i < 32; i++){
         if(cpu_state_buf.gpr[i] != npc_cpu.gpr[i]){
           succ = false;
           break;
@@ -58,10 +60,13 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
       printf("DO NOT SEE CURRENT INSTRATION, SEE PREVIOUS ONE!\n");
       printf("npc:nemu:pc==0x%x\n",cpu_state_buf.pc);
       printf("ref reg info:\n");
-      for (int i = 0; i < 32; i++)
+      for (int j = 0; j < 32; j++)
       {
-              printf("$%s = 0x" FMT_WORD_HEX_WIDTH "\t", regs[i], cpu_state_buf.gpr[i]);
-              if ((i + 1) % 4 == 0)
+              if(j==i)
+                printf("$%s = 0x%s"  FMT_WORD_HEX_WIDTH NONE "%s\t", regs[i], L_RED, cpu_state_buf.gpr[i], NONE);
+              else
+                printf("$%s = 0x" FMT_WORD_HEX_WIDTH "\t", regs[i], cpu_state_buf.gpr[i]);
+              if ((j + 1) % 4 == 0)
                       putchar('\n');
       }
       printf("$pc = 0x" FMT_WORD_HEX_WIDTH "\n", cpu_state_buf.pc);
