@@ -741,7 +741,7 @@ assign csr_raddr = inst_type == `Inst_addi ? 0 :
                    inst_type == `Inst_csrrw ? imm[11:0] : 
                    inst_type == `Inst_csrrs ? imm[11:0] : 
                    inst_type == `Inst_ecall ? `MTVEC_NO : 
-                   inst_type == `Inst_mret ? `MTVEC_NO : 
+                   inst_type == `Inst_mret ? `MEPC_NO : 
                    0;
 
 
