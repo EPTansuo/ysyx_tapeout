@@ -78,7 +78,6 @@ void init_mem() {
   assert(pmem);
 #endif
   IFDEF(CONFIG_MEM_RANDOM, memset(pmem, rand(), CONFIG_MSIZE));
-  //memset(pmem,0x13,CONFIG_MSIZE);
   Log("physical memory area [" FMT_PADDR ", " FMT_PADDR "]", PMEM_LEFT, PMEM_RIGHT);
 }
 
@@ -118,15 +117,7 @@ void paddr_write(paddr_t addr, int len, word_t data) {
   print_memwrite(addr, len, data);
 #endif
 
-  if(addr == 0x80051f70 - 0x1c){
-    printf("Write to .... \n");
-  }
-
-  if (likely(in_pmem(addr))) { pmem_write(addr, len, data);
-    if(addr == 0x80051f70 - 0x1c){
-    printf("Write to, got %x\n",pmem_read(addr,4));
-  }
-   return; }
+  if (likely(in_pmem(addr))) { pmem_write(addr, len, data); return; }
   IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
   #ifdef CONFIG_TARGET_SHARE
 
