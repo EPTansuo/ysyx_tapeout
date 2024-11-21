@@ -122,4 +122,11 @@ void paddr_write(paddr_t addr, int len, word_t data) {
   if (likely(in_pmem(addr))) { pmem_write(addr, len, data); return; }
   IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
   out_of_bound(addr);
+
+  if(pmem_read(addr, len) != data){
+    printf("addr = 0x%08x, len = %d, data = 0x%08x\n", addr, len, data);
+    printf("pmem_read(addr, len) = 0x%08x\n", pmem_read(addr, len));
+    assert(0);
+  }
+
 }
