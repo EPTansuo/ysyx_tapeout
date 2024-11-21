@@ -112,6 +112,10 @@ void paddr_write(paddr_t addr, int len, word_t data) {
     if(addr == 0xa00003f8) {   // SERIAL
       return;  
     }
+    else if(addr >= 0x10000100 && addr <= 0xa0000107){ //VGA
+      return;
+    }
+
 #endif
 
   if (likely(in_pmem(addr))) { pmem_write(addr, len, data); return; }
