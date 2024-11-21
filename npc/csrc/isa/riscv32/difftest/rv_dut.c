@@ -63,9 +63,9 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
       for (int j = 0; j < 32; j++)
       {
               if(j==i)
-                printf("$%s = 0x%s"  FMT_WORD_HEX_WIDTH NONE "%s\t", regs[i], L_RED, cpu_state_buf.gpr[i], NONE);
+                printf("$%s = 0x%s"  FMT_WORD_HEX_WIDTH NONE "%s\t", regs[j], L_RED, cpu_state_buf.gpr[j], NONE);
               else
-                printf("$%s = 0x" FMT_WORD_HEX_WIDTH "\t", regs[i], cpu_state_buf.gpr[i]);
+                printf("$%s = 0x" FMT_WORD_HEX_WIDTH "\t", regs[j], cpu_state_buf.gpr[j]);
               if ((j + 1) % 4 == 0)
                       putchar('\n');
       }
