@@ -101,6 +101,7 @@ assign exu_invalid_inst = rst == `RstEnable ? 0 :
                           inst_type == `Inst_ebreak ? 0 : 
                           inst_type == `Inst_addi ? 0 : 
                           inst_type == `Inst_andi ? 0 : 
+                          inst_type == `Inst_ori ? 0 : 
                           inst_type == `Inst_xori ? 0 : 
                           inst_type == `Inst_auipc ? 0 : 
                           inst_type == `Inst_lui ? 0 : 
@@ -144,6 +145,7 @@ assign exu_invalid_inst = rst == `RstEnable ? 0 :
 
 assign gpr_we = inst_type == `Inst_addi ? `Enable : 
                 inst_type == `Inst_andi ? `Enable : 
+                inst_type == `Inst_ori ? `Enable : 
                 inst_type == `Inst_xori ? `Enable : 
                 inst_type == `Inst_auipc ? `Enable : 
                 inst_type == `Inst_lui ? `Enable : 
@@ -186,6 +188,7 @@ assign gpr_we = inst_type == `Inst_addi ? `Enable :
 
 assign gpr_w_addr = inst_type == `Inst_addi ? rd : 
                     inst_type == `Inst_andi ? rd : 
+                    inst_type == `Inst_ori ? rd : 
                     inst_type == `Inst_xori ? rd : 
                     inst_type == `Inst_auipc ? rd : 
                     inst_type == `Inst_lui ? rd : 
@@ -228,6 +231,7 @@ assign gpr_w_addr = inst_type == `Inst_addi ? rd :
 
 assign gpr_w_data = inst_type == `Inst_addi ? add_src1_imm : 
                     inst_type == `Inst_andi ? src1 & imm : 
+                    inst_type == `Inst_ori ? src1 | imm : 
                     inst_type == `Inst_xori ? src1 ^ imm : 
                     inst_type == `Inst_auipc ? idu_pc+imm : 
                     inst_type == `Inst_lui ? imm : 
@@ -270,6 +274,7 @@ assign gpr_w_data = inst_type == `Inst_addi ? add_src1_imm :
 
 assign pc_offset_en = inst_type == `Inst_addi ? `Disable : 
                       inst_type == `Inst_andi ? `Disable : 
+                      inst_type == `Inst_ori ? `Disable : 
                       inst_type == `Inst_xori ? `Disable : 
                       inst_type == `Inst_auipc ? `Disable : 
                       inst_type == `Inst_lui ? `Disable : 
@@ -312,6 +317,7 @@ assign pc_offset_en = inst_type == `Inst_addi ? `Disable :
 
 assign pc_offset = inst_type == `Inst_addi ? 4 : 
                    inst_type == `Inst_andi ? 4 : 
+                   inst_type == `Inst_ori ? 4 : 
                    inst_type == `Inst_xori ? 4 : 
                    inst_type == `Inst_auipc ? 4 : 
                    inst_type == `Inst_lui ? 4 : 
@@ -354,6 +360,7 @@ assign pc_offset = inst_type == `Inst_addi ? 4 :
 
 assign mem_re = inst_type == `Inst_addi ? `Disable : 
                 inst_type == `Inst_andi ? `Disable : 
+                inst_type == `Inst_ori ? `Disable : 
                 inst_type == `Inst_xori ? `Disable : 
                 inst_type == `Inst_auipc ? `Disable : 
                 inst_type == `Inst_lui ? `Disable : 
@@ -396,6 +403,7 @@ assign mem_re = inst_type == `Inst_addi ? `Disable :
 
 assign mem_r_addr = inst_type == `Inst_addi ? 0 : 
                     inst_type == `Inst_andi ? 0 : 
+                    inst_type == `Inst_ori ? 0 : 
                     inst_type == `Inst_xori ? 0 : 
                     inst_type == `Inst_auipc ? 0 : 
                     inst_type == `Inst_lui ? 0 : 
@@ -438,6 +446,7 @@ assign mem_r_addr = inst_type == `Inst_addi ? 0 :
 
 assign mem_r_mask = inst_type == `Inst_addi ? 0 : 
                     inst_type == `Inst_andi ? 0 : 
+                    inst_type == `Inst_ori ? 0 : 
                     inst_type == `Inst_xori ? 0 : 
                     inst_type == `Inst_auipc ? 0 : 
                     inst_type == `Inst_lui ? 0 : 
@@ -480,6 +489,7 @@ assign mem_r_mask = inst_type == `Inst_addi ? 0 :
 
 assign mem_we = inst_type == `Inst_addi ? `Disable : 
                 inst_type == `Inst_andi ? `Disable : 
+                inst_type == `Inst_ori ? `Disable : 
                 inst_type == `Inst_xori ? `Disable : 
                 inst_type == `Inst_auipc ? `Disable : 
                 inst_type == `Inst_lui ? `Disable : 
@@ -522,6 +532,7 @@ assign mem_we = inst_type == `Inst_addi ? `Disable :
 
 assign mem_w_addr = inst_type == `Inst_addi ? 0 : 
                     inst_type == `Inst_andi ? 0 : 
+                    inst_type == `Inst_ori ? 0 : 
                     inst_type == `Inst_xori ? 0 : 
                     inst_type == `Inst_auipc ? 0 : 
                     inst_type == `Inst_lui ? 0 : 
@@ -564,6 +575,7 @@ assign mem_w_addr = inst_type == `Inst_addi ? 0 :
 
 assign mem_w_data = inst_type == `Inst_addi ? 0 : 
                     inst_type == `Inst_andi ? 0 : 
+                    inst_type == `Inst_ori ? 0 : 
                     inst_type == `Inst_xori ? 0 : 
                     inst_type == `Inst_auipc ? 0 : 
                     inst_type == `Inst_lui ? 0 : 
@@ -606,6 +618,7 @@ assign mem_w_data = inst_type == `Inst_addi ? 0 :
 
 assign mem_w_mask = inst_type == `Inst_addi ? 0 : 
                     inst_type == `Inst_andi ? 0 : 
+                    inst_type == `Inst_ori ? 0 : 
                     inst_type == `Inst_xori ? 0 : 
                     inst_type == `Inst_auipc ? 0 : 
                     inst_type == `Inst_lui ? 0 : 
@@ -648,6 +661,7 @@ assign mem_w_mask = inst_type == `Inst_addi ? 0 :
 
 assign sranum = inst_type == `Inst_addi ? 0 : 
                 inst_type == `Inst_andi ? 0 : 
+                inst_type == `Inst_ori ? 0 : 
                 inst_type == `Inst_xori ? 0 : 
                 inst_type == `Inst_auipc ? 0 : 
                 inst_type == `Inst_lui ? 0 : 
@@ -690,6 +704,7 @@ assign sranum = inst_type == `Inst_addi ? 0 :
 
 assign csr_raddr = inst_type == `Inst_addi ? 0 : 
                    inst_type == `Inst_andi ? 0 : 
+                   inst_type == `Inst_ori ? 0 : 
                    inst_type == `Inst_xori ? 0 : 
                    inst_type == `Inst_auipc ? 0 : 
                    inst_type == `Inst_lui ? 0 : 
@@ -732,6 +747,7 @@ assign csr_raddr = inst_type == `Inst_addi ? 0 :
 
 assign csr_we = inst_type == `Inst_addi ? `Disable : 
                 inst_type == `Inst_andi ? `Disable : 
+                inst_type == `Inst_ori ? `Disable : 
                 inst_type == `Inst_xori ? `Disable : 
                 inst_type == `Inst_auipc ? `Disable : 
                 inst_type == `Inst_lui ? `Disable : 
@@ -774,6 +790,7 @@ assign csr_we = inst_type == `Inst_addi ? `Disable :
 
 assign csr_waddr = inst_type == `Inst_addi ? 0 : 
                    inst_type == `Inst_andi ? 0 : 
+                   inst_type == `Inst_ori ? 0 : 
                    inst_type == `Inst_xori ? 0 : 
                    inst_type == `Inst_auipc ? 0 : 
                    inst_type == `Inst_lui ? 0 : 
@@ -816,6 +833,7 @@ assign csr_waddr = inst_type == `Inst_addi ? 0 :
 
 assign csr_wdata = inst_type == `Inst_addi ? 0 : 
                    inst_type == `Inst_andi ? 0 : 
+                   inst_type == `Inst_ori ? 0 : 
                    inst_type == `Inst_xori ? 0 : 
                    inst_type == `Inst_auipc ? 0 : 
                    inst_type == `Inst_lui ? 0 : 
