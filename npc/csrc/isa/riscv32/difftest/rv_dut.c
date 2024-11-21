@@ -30,11 +30,10 @@ static bool first = true;
 
 extern const char *regs[];
 
+// 为了匹配，所以让ref_r使用cpu_state_buf推迟了一个周期
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   int i =0;
   bool succ = true;
-  printf("nemu:ref_r->pc==0x%x\n",ref_r->pc);
-  printf("sizeof(cpu_state_buf)=%d\n",sizeof(cpu_state_buf));
   if(!first){
     //if(ref_r->pc != npc_cpu.pc){
     for(i = 0; i < 16; i++){
