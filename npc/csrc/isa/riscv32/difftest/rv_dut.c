@@ -59,20 +59,20 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
       return false;
     }
 
-    else if(cpu_state_buf.csr.mepc != npc_cpu.csr.mepc){
-      printf("npc:mepc=0x%x\tnemu:mepc=%x\n",npc_cpu.csr.mepc,cpu_state_buf.csr.mepc);
+    if(cpu_state_buf.csr.mepc != npc_cpu.csr.mepc){
+      printf(L_RED "npc:mepc=0x%x\tnemu:mepc=%x\n" NONE,npc_cpu.csr.mepc,cpu_state_buf.csr.mepc);
       succ = false;
     }
-    else if(cpu_state_buf.csr.mcause != npc_cpu.csr.mcause){
-      printf("npc:mcause=0x%x\tnemu:mcause=%x\n",npc_cpu.csr.mcause,cpu_state_buf.csr.mcause);
+    if(cpu_state_buf.csr.mcause != npc_cpu.csr.mcause){
+      printf(L_RED "npc:mcause=0x%x\tnemu:mcause=%x\n" NONE,npc_cpu.csr.mcause,cpu_state_buf.csr.mcause);
       succ = false;
     }
-    else if(cpu_state_buf.csr.mstatus != npc_cpu.csr.mstatus){
-      printf("npc:mstatus=0x%x\tnemu:mstatus=%x\n",npc_cpu.csr.mstatus,cpu_state_buf.csr.mstatus);
+    if(cpu_state_buf.csr.mstatus != npc_cpu.csr.mstatus){
+      printf(L_RED "npc:mstatus=0x%x\tnemu:mstatus=%x\n NONE",npc_cpu.csr.mstatus,cpu_state_buf.csr.mstatus);
       succ = false;
     }
-    else if(cpu_state_buf.csr.mtvec != npc_cpu.csr.mtvec){
-      printf("npc:mtvec=0x%x\tnemu:mtvec=%x\n",npc_cpu.csr.mtvec,cpu_state_buf.csr.mtvec);
+    if(cpu_state_buf.csr.mtvec != npc_cpu.csr.mtvec){
+      printf(L_RED "npc:mtvec=0x%x\tnemu:mtvec=%x\n" NONE,npc_cpu.csr.mtvec,cpu_state_buf.csr.mtvec);
       succ = false;
     }
 
