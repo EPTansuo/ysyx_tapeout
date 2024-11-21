@@ -55,4 +55,6 @@ typedef uint16_t ioaddr_t;
 
 #include <debug.h>
 
+#define CONFIG_RVE 1
+
 #endif
