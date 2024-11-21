@@ -47,7 +47,6 @@ CSRCS += $(SRC_AUTO_BIND)
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += -Wall $(INCFLAGS) -g -DTOP_NAME="\"V$(TOPNAME)\"" -fpermissive #$(shell llvm-config --cxxflags) 
 CXXFLAGS += -fmacro-prefix-map=$(PWD)=npc -g
-CXXFLAGS += -DCONFIG_RVE=y
 LDFLAGS += -lreadline
 #LDFLAGS += $(shell llvm-config --ldflags)
 #LDLIBS += $(shell llvm-config --libs)
