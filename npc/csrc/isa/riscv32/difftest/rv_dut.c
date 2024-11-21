@@ -68,7 +68,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
       succ = false;
     }
     if(cpu_state_buf.csr.mstatus != npc_cpu.csr.mstatus){
-      printf(L_RED "npc:mstatus=0x%x\tnemu:mstatus=%x\n NONE",npc_cpu.csr.mstatus,cpu_state_buf.csr.mstatus);
+      printf(L_RED "npc:mstatus=0x%x\tnemu:mstatus=%x\n" NONE,npc_cpu.csr.mstatus,cpu_state_buf.csr.mstatus);
       succ = false;
     }
     if(cpu_state_buf.csr.mtvec != npc_cpu.csr.mtvec){
