@@ -102,9 +102,7 @@ word_t paddr_read(paddr_t addr, int len) {
     IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
 
 #ifdef CONFIG_TARGET_SHARE
-  if(addr >= 0xa0000100 && addr <= 0xa0000107){ //VGA
-      return 0;
-    }
+
 #endif 
 
 
