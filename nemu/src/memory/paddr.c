@@ -120,6 +120,7 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 
   if(addr == 0x80051f54){
     printf("Write to .... \n");
+    assert(0);
   }
 
   if (likely(in_pmem(addr))) { pmem_write(addr, len, data); return; }
