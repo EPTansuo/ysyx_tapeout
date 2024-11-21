@@ -79,6 +79,8 @@ void etrace_print_info(){
 }
 
 #define XLEN (MUXDEF(CONFIG_RV64, 64, 32)) 
+
+////CSR(0x341) = mepc 
 /*
 #define MRET() { \
   s->dnpc = cpu.csr.mepc; \

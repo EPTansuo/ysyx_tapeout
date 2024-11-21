@@ -8,8 +8,10 @@ Context* __am_irq_handle(Context *c) {
   if (user_handler) {
     Event ev = {0};
     switch (c->mcause) {
-      case 11: ev.event = EVENT_YIELD;   break;
-      default: ev.event = EVENT_ERROR;   break;
+      case 11: ev.event = EVENT_YIELD; c->mepc += 4; break;  //因为spike上面是11，所以都改成了11
+      default: ev.event = EVENT_ERROR; break;
+    }
+
     }/*
     printf("before:\n");
     printf("ctx->mepc=%x\n",c->mepc);
