@@ -33,6 +33,7 @@ extern const char *regs[];
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   int i =0;
   bool succ = true;
+  printf("npc:nemu:ref_r->pc==0x%x\n",ref_r->pc);
   if(!first){
     //if(ref_r->pc != npc_cpu.pc){
     for(i = 0; i < 32; i++){
