@@ -118,12 +118,12 @@ void paddr_write(paddr_t addr, int len, word_t data) {
   print_memwrite(addr, len, data);
 #endif
 
-  if(addr == 0x80051f70 - 0x20){
+  if(addr == 0x80051f70 - 0x1c){
     printf("Write to .... \n");
   }
 
   if (likely(in_pmem(addr))) { pmem_write(addr, len, data);
-    if(addr == 0x80051f70 - 0x20){
+    if(addr == 0x80051f70 - 0x1c){
     printf("Write to, got %x\n",pmem_read(addr,4));
   }
    return; }
