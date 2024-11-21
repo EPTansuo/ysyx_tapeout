@@ -108,6 +108,12 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 #ifdef CONFIG_MTRACE
   print_memwrite(addr, len, data);
 #endif
+#ifdef CONFIG_TARGET_SHARE
+    if(addr == 0xa00003f8) {   // SERIAL
+      return;  
+    }
+#endif
+
   if (likely(in_pmem(addr))) { pmem_write(addr, len, data); return; }
   IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
   out_of_bound(addr);
