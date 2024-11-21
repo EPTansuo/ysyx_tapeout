@@ -122,7 +122,11 @@ void paddr_write(paddr_t addr, int len, word_t data) {
     printf("Write to .... \n");
   }
 
-  if (likely(in_pmem(addr))) { pmem_write(addr, len, data); return; }
+  if (likely(in_pmem(addr))) { pmem_write(addr, len, data);
+    if(addr == 0x80051f70 - 0x20){
+    printf("Write to, got %x\n",pmem_read(addr,4));
+  }
+   return; }
   IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
   #ifdef CONFIG_TARGET_SHARE
 
