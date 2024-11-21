@@ -113,12 +113,11 @@ void paddr_write(paddr_t addr, int len, word_t data) {
     if(addr == 0xa00003f8) {   // SERIAL
       return;  
     }
-    else if(addr >= 0x10000100 && addr <= 0xa0000107){ //VGA
+    else if(addr >= 0xa0000100 && addr <= 0xa0000107){ //VGA
       return;
     }
 
 #endif
-  printf("pmem_read(addr, len) = 0x%08x\n", pmem_read(addr, len));
   if (likely(in_pmem(addr))) { pmem_write(addr, len, data); return; }
   IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
   out_of_bound(addr);
