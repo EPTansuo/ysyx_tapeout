@@ -63,7 +63,7 @@ int pmem_read(int raddr){
   if(raddr < CONFIG_MBASE || raddr > CONFIG_MBASE + CONFIG_MSIZE)
     return 0;
   word_t data = host_read(guest_to_host(raddr), 4);
-  printf("read 4 bytes at 0x%x, data = 0x%x\n", raddr, data);
+  //printf("read 4 bytes at 0x%x, data = 0x%x\n", raddr, data);
   return data;
 }
 void print_memwrite(paddr_t addr, int len, word_t data);
@@ -121,11 +121,14 @@ void pmem_write(int waddr, int wdata, char wmask){
       switch (wmask)
       {
         case 0x01: host_write(guest_to_host(waddr), 1, wdata); 
-                   printf("write 1 byte at 0x%x, data = 0x%x\n", waddr, wdata);break; 
+                   // printf("write 1 byte at 0x%x, data = 0x%x\n", waddr, wdata);
+                   break; 
         case 0x03: host_write(guest_to_host(waddr), 2, wdata);
-                    printf("write 2 bytes at 0x%x, data = 0x%x\n", waddr, wdata);break;
+                   // printf("write 2 bytes at 0x%x, data = 0x%x\n", waddr, wdata);
+                    break;
         case 0x0f: host_write(guest_to_host(waddr), 4, wdata);
-                    printf("write 4 bytes at 0x%x, data = 0x%x\n", waddr, wdata);break;
+                   // printf("write 4 bytes at 0x%x, data = 0x%x\n", waddr, wdata);
+                    break;
       default:
         printf( L_RED " Can only write for 1/2/4 btyes ()." NONE "\n");
         break;
