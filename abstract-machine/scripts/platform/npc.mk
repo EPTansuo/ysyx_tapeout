@@ -18,12 +18,6 @@ CFLAGS += -DMAINARGS=\"$(mainargs)\"
 
 NPCFLAGS =--diff=$(NEMU_HOME)/build/riscv32-nemu-interpreter-so 
 
-BATCH ?= 0
-ifeq ($(BATCH), 1)
-    NPCFLAGS += -b
-endif
-
-
 .PHONY: $(AM_HOME)/am/src/riscv/npc/trm.c
 
 image: $(IMAGE).elf

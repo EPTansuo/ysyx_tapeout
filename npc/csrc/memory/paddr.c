@@ -79,23 +79,8 @@ void print_memwrite(paddr_t addr, int len, word_t data){
   }
 }
 
-void print_memread(paddr_t addr,int len){
-#ifdef CONFIG_MTRACE
-   word_t mem_read = pmem_read(addr, len);
-#ifdef CONFIG_MTRACE_RANGE_COND
-    if (addr < CONFIG_MTRACE_RANGE_MIN || addr + len > CONFIG_MTRACE_RANGE_MAX) return mem_read;
-#endif
-    printf("\nmemread:\n");
-    for(int i = len-1; i>=0; i--){
-      printf("0x%08x:    ", (paddr_t)addr + i);
-      printf("0x%02x\n", (unsigned int)(mem_read >> (i * 8) & 0xff));
-    }
-#endif
-}
-
 #else 
 void print_memwrite(paddr_t addr, int len, word_t data){};
-void print_memread(paddr_t addr, int len, word_t data){};
 
 #endif
 
@@ -112,7 +97,16 @@ word_t paddr_read(paddr_t addr, int len) {
   word_t mem_read = 0;
   if (likely(in_pmem(addr))) {
     mem_read = pmem_read(addr, len);
-
+#ifdef CONFIG_MTRACE
+#ifdef CONFIG_MTRACE_RANGE_COND
+    if (addr < CONFIG_MTRACE_RANGE_MIN || addr + len > CONFIG_MTRACE_RANGE_MAX) return mem_read;
+#endif
+    printf("\nmemread:\n");
+    for(int i = len-1; i>=0; i--){
+      printf("0x%08x:    ", (paddr_t)addr + i);
+      printf("0x%02x\n", (unsigned int)(mem_read >> (i * 8) & 0xff));
+    }
+#endif
     return mem_read;
   }
   else

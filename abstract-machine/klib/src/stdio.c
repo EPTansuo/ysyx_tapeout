@@ -84,14 +84,7 @@ int vprintf( const char *fmt, va_list ap) {
         fmt++;
       }
 
-      if (*fmt == 'l'){
-        fmt++;
-        if(*fmt == 'd'){
-          int num = va_arg(ap, int);
-          len += _print_itoa(num);   //WARNING:先暂时使用int，而不是long int
-        }
-      }
-     else if (*fmt == 'd') {
+      if (*fmt == 'd') {
         int num = va_arg(ap, int);
         len += _print_itoa(num);
       }
