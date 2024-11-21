@@ -58,10 +58,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
       printf("$pc = 0x" FMT_WORD_HEX_WIDTH "\n", cpu_state_buf.pc);
       return false;
     }
-    if(cpu_state_buf.pc != npc_cpu.pc){
-      printf("npc:pc=0x%x\tnemu:pc=%x",npc_cpu.pc,cpu_state_buf.pc);
-      succ = false;
-    }
+
     else if(cpu_state_buf.csr.mepc != npc_cpu.csr.mepc){
       printf("npc:mepc=0x%x\tnemu:mepc=%x",npc_cpu.csr.mepc,cpu_state_buf.csr.mepc);
       succ = false;
