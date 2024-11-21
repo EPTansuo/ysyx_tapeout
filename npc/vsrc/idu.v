@@ -58,14 +58,14 @@ assign src2 = r_data2;
 
 
 
+wire funct3_110;
+wire funct3_000;
 wire funct3_100;
 wire funct3_001;
 wire funct3_101;
 wire funct3_010;
 wire funct3_111;
-wire funct3_000;
 wire funct3_011;
-wire funct3_110;
 
 
 wire funct7_0000000;
@@ -76,10 +76,10 @@ wire funct7_0000001;
 wire funct7_0011000;
 
 
+wire opcode_0010011;
 wire opcode_0010111;
 wire opcode_0110111;
 wire opcode_0000011;
-wire opcode_0010011;
 wire opcode_0011011;
 wire opcode_1100111;
 wire opcode_0100011;
@@ -90,13 +90,7 @@ wire opcode_0110011;
 wire opcode_1110011;
 
 
-wire inst_pat_auipc;
-wire inst_pat_lui;
-wire inst_pat_lbu;
-wire inst_pat_lh;
-wire inst_pat_lhu;
-wire inst_pat_lw;
-wire inst_pat_ld;
+wire inst_pat_ori;
 wire inst_pat_andi;
 wire inst_pat_addi;
 wire inst_pat_sltiu;
@@ -104,6 +98,14 @@ wire inst_pat_xori;
 wire inst_pat_srai;
 wire inst_pat_srli;
 wire inst_pat_slli;
+wire inst_pat_auipc;
+wire inst_pat_lui;
+wire inst_pat_lb;
+wire inst_pat_lbu;
+wire inst_pat_lh;
+wire inst_pat_lhu;
+wire inst_pat_lw;
+wire inst_pat_ld;
 wire inst_pat_addiw;
 wire inst_pat_srliw;
 wire inst_pat_sraiw;
@@ -151,14 +153,14 @@ wire inst_pat_ecall;
 wire inst_pat_mret;
 
 
+assign funct3_110 = (funct3 == 3'b110);
+assign funct3_000 = (funct3 == 3'b000);
 assign funct3_100 = (funct3 == 3'b100);
 assign funct3_001 = (funct3 == 3'b001);
 assign funct3_101 = (funct3 == 3'b101);
 assign funct3_010 = (funct3 == 3'b010);
 assign funct3_111 = (funct3 == 3'b111);
-assign funct3_000 = (funct3 == 3'b000);
 assign funct3_011 = (funct3 == 3'b011);
-assign funct3_110 = (funct3 == 3'b110);
 
 
 assign funct7_0000000 = (funct7 == 7'b0000000);
@@ -169,10 +171,10 @@ assign funct7_0000001 = (funct7 == 7'b0000001);
 assign funct7_0011000 = (funct7 == 7'b0011000);
 
 
+assign opcode_0010011 = (opcode == 7'b0010011);
 assign opcode_0010111 = (opcode == 7'b0010111);
 assign opcode_0110111 = (opcode == 7'b0110111);
 assign opcode_0000011 = (opcode == 7'b0000011);
-assign opcode_0010011 = (opcode == 7'b0010011);
 assign opcode_0011011 = (opcode == 7'b0011011);
 assign opcode_1100111 = (opcode == 7'b1100111);
 assign opcode_0100011 = (opcode == 7'b0100011);
@@ -183,24 +185,8 @@ assign opcode_0110011 = (opcode == 7'b0110011);
 assign opcode_1110011 = (opcode == 7'b1110011);
 
 
-assign inst_pat_auipc = opcode_0010111;
-
-assign inst_pat_lui = opcode_0110111;
-
-assign inst_pat_lbu = opcode_0000011 &
-                      funct3_100;
-
-assign inst_pat_lh = opcode_0000011 &
-                     funct3_001;
-
-assign inst_pat_lhu = opcode_0000011 &
-                      funct3_101;
-
-assign inst_pat_lw = opcode_0000011 &
-                     funct3_010;
-
-assign inst_pat_ld = opcode_0000011 &
-                     funct3_011;
+assign inst_pat_ori = opcode_0010011 &
+                      funct3_110;
 
 assign inst_pat_andi = opcode_0010011 &
                        funct3_111;
@@ -224,6 +210,28 @@ assign inst_pat_srli = opcode_0010011 &
 
 assign inst_pat_slli = opcode_0010011 &
                        funct3_001;
+
+assign inst_pat_auipc = opcode_0010111;
+
+assign inst_pat_lui = opcode_0110111;
+
+assign inst_pat_lb = opcode_0000011 &
+                     funct3_000;
+
+assign inst_pat_lbu = opcode_0000011 &
+                      funct3_100;
+
+assign inst_pat_lh = opcode_0000011 &
+                     funct3_001;
+
+assign inst_pat_lhu = opcode_0000011 &
+                      funct3_101;
+
+assign inst_pat_lw = opcode_0000011 &
+                     funct3_010;
+
+assign inst_pat_ld = opcode_0000011 &
+                     funct3_011;
 
 assign inst_pat_addiw = opcode_0011011 &
                         funct3_000;
@@ -383,8 +391,10 @@ assign inst_pat_mret = opcode_1110011 &
 
 
 assign inst_type = inst == `EBREAK ? `Inst_ebreak : 
+                   inst_pat_ori ? `Inst_ori : 
                    inst_pat_auipc ? `Inst_auipc : 
                    inst_pat_lui ? `Inst_lui : 
+                   inst_pat_lb ? `Inst_lb : 
                    inst_pat_lbu ? `Inst_lbu : 
                    inst_pat_lh ? `Inst_lh : 
                    inst_pat_lhu ? `Inst_lhu : 
@@ -445,13 +455,13 @@ assign inst_type = inst == `EBREAK ? `Inst_ebreak :
                    `Inst_inv;
 
 
-assign imm = (opcode == 7'b0010111) ? immU : 
-             (opcode == 7'b0110111) ? immU : 
+assign imm = (opcode == 7'b0010011) ? immI : 
              (opcode == 7'b0000011) ? immI : 
-             (opcode == 7'b0010011) ? immI : 
              (opcode == 7'b0011011) ? immI : 
              (opcode == 7'b1100111) ? immI : 
              (opcode == 7'b1110011) ? immI : 
+             (opcode == 7'b0010111) ? immU : 
+             (opcode == 7'b0110111) ? immU : 
              (opcode == 7'b0100011) ? immS : 
              (opcode == 7'b1101111) ? immJ : 
              (opcode == 7'b1100011) ? immB : 

@@ -6,7 +6,7 @@ ARGS = -v --diff="/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/nemu/build
 
 VERILATOR = verilator
 VERILATOR_CFLAGS += -MMD --build -cc --public --trace \
-				-O3 --x-assign fast --x-initial fast --noassert \
+				-O0 --x-assign fast --x-initial fast --noassert \
 				-I$(YSYX_HOME)/npc/vsrc  --threads 1
 
 BUILD_DIR = ./build

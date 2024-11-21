@@ -11,6 +11,7 @@
 #include <watchpoint.h>
 #include <cpu/difftest.h>
 #include <reg.h>
+#include <Vcpu_csr.h>
 
 #define MAX_INST_TO_PRINT 10001
 bool first = true;
@@ -75,10 +76,16 @@ static void exec_once(){
   char logbuf[50];
   cpu_single_cycle();
 
-  for(int i=0; i<32; i++){
+  for(int i=0; i<16; i++){
     npc_cpu.gpr[i] = gpr(i);
   }
   npc_cpu.pc = top->cpu->pc1->pc +4;
+
+  npc_cpu.csr.mepc = top->cpu->csr1->csrs[0];
+  npc_cpu.csr.mcause = top->cpu->csr1->csrs[1];
+  npc_cpu.csr.mstatus = top->cpu->csr1->csrs[2];
+  npc_cpu.csr.mtvec = top->cpu->csr1->csrs[3];
+  
 
   if(g_print_step){
     disassemble(logbuf,50,top->cpu->pc1->pc);

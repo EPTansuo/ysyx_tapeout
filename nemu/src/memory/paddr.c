@@ -78,6 +78,7 @@ void init_mem() {
   assert(pmem);
 #endif
   IFDEF(CONFIG_MEM_RANDOM, memset(pmem, rand(), CONFIG_MSIZE));
+  memset(pmem,0x13,CONFIG_MSIZE);
   Log("physical memory area [" FMT_PADDR ", " FMT_PADDR "]", PMEM_LEFT, PMEM_RIGHT);
 }
 
@@ -108,7 +109,25 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 #ifdef CONFIG_MTRACE
   print_memwrite(addr, len, data);
 #endif
+#ifdef CONFIG_TARGET_SHARE
+    if(addr == 0xa00003f8) {   // SERIAL
+      return;  
+    }
+    else if(addr >= 0x10000100 && addr <= 0xa0000107){ //VGA
+      return;
+    }
+
+#endif
+
   if (likely(in_pmem(addr))) { pmem_write(addr, len, data); return; }
   IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
   out_of_bound(addr);
+
+  if(pmem_read(addr, len) != data){
+    printf("pmem_read != data_write\n");
+    printf("addr = 0x%08x, len = %d, data = 0x%08x\n", addr, len, data);
+    printf("pmem_read(addr, len) = 0x%08x\n", pmem_read(addr, len));
+    assert(0);
+  }
+
 }

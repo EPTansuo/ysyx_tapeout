@@ -1,6 +1,7 @@
 //`define CONFIG_RV64
 `define CONFIG_RV32
 `define CONFIG_RV32E
+`define CONFIG_RVE
 
 `define WriteEnable	1'b1		//写使能
 `define WriteDisable	1'b0		//写失能
@@ -18,8 +19,7 @@
 `define InstDataBus     31:0            //指令数据线位宽
 `define InstDataWidth   32              //指令数据位宽
 
-`define InstRomSize	131072		//ROM的实际大小为128kB
-`define MemSize 	131072		//MEM的实际大小为128kB
+`define InstRomSize	1048576		//ROM的实际大小为1M
 
 
 `define SHAMT           idu_inst[24:20]

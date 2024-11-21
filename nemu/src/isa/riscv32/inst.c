@@ -32,7 +32,9 @@ static vaddr_t *csr_register(word_t imm) {
   }
 }
 
-#define ECALL(dnpc) { bool success; dnpc = (isa_raise_intr(isa_reg_str2val("a7", &success), s->pc)); }
+#define ECALL(dnpc) { bool success; dnpc = (\
+isa_raise_intr(isa_reg_str2val(MUXDEF(CONFIG_RVE,"a5","a7"), &success), s->pc)); }
+
 #define CSR(i) *csr_register(i)
 
 
@@ -79,14 +81,22 @@ void etrace_print_info(){
 #define XLEN (MUXDEF(CONFIG_RV64, 64, 32)) 
 
 ////CSR(0x341) = mepc 
+/*
 #define MRET() { \
-  s->dnpc = CSR(0x341); \
+  s->dnpc = cpu.csr.mepc; \
   cpu.csr.mstatus &= ~(1<<3); \
   cpu.csr.mstatus |= ((cpu.csr.mstatus&(1<<7))>>4); \
   cpu.csr.mstatus |= (1<<7); \
   cpu.csr.mstatus &= ~((3U<<11)); \
-}
+}*/
 
+#define MRET() { \
+  s->dnpc = cpu.csr.mepc;  /* 设置下一个指令的地址为 mepc 的值 */ \
+  uint32_t mstatus = cpu.csr.mstatus; \
+  cpu.csr.mstatus = (mstatus & ~(1 << 3)) | ((mstatus & (1 << 7)) >> 4); /* 复制 MPIE 到 MIE */ \
+  cpu.csr.mstatus |= (1 << 7); /* 设置 MPIE 位为 1 */ \
+  cpu.csr.mstatus &= ~(3U << 11); /* 清除 MPP 位 */ \
+}
 
 //该函数在INSTPAT宏内被调用
 static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_t *imm, int type) {
@@ -141,6 +151,10 @@ static int decode_exec(Decode *s) {
    INSTPAT("??????? ????? ????? 100 ????? 00100 11", xori   , I, R(rd) = src1 ^ imm); //XORI rd, rs1, -1 =  NOT rd, rs
    INSTPAT("??????? ????? ????? 110 ????? 00100 11", ori    , I, R(rd) = src1 | imm); 
   // INSTPAT("??????? ????? ????? 111 ????? 00100 11", andi   , I, R(rd) = src1 & imm);
+   INSTPAT("010000? ????? ????? 101 ????? 00100 11", srai   , I, R(rd) = (sword_t)src1 >> (sword_t)SHAMT_LONG);
+   INSTPAT("000000? ????? ????? 001 ????? 00100 11", slli   , I, R(rd) = src1 << SHAMT_LONG);
+   INSTPAT("0100000 ????? ????? 101 ????? 00110 11", sraiw  , I, R(rd) = SEXT((int32_t)src1 >> (int32_t)SHAMT, 32));
+   INSTPAT("000000? ????? ????? 101 ????? 00100 11", srli   , I, R(rd) = src1 >> SHAMT_LONG);
 
   // //S-type 访存store指令
    INSTPAT("??????? ????? ????? 011 ????? 01000 11", sd     , S, Mw(src1 + imm, 8, src2)); 
@@ -170,16 +184,14 @@ static int decode_exec(Decode *s) {
    INSTPAT("0000000 ????? ????? 001 ????? 01110 11", sllw   , R, R(rd) = SEXT((uint32_t)src1 << BITS(src2, 4, 0), 32));
    INSTPAT("0000000 ????? ????? 011 ????? 01100 11", sltu   , R, R(rd) = ((word_t)src1 < (word_t)src2 ? 1 : 0));
    INSTPAT("0000000 ????? ????? 010 ????? 01100 11", slt    , R, R(rd) = ((sword_t)src1 < (sword_t)src2 ? 1 : 0));
-   INSTPAT("0000000 ????? ????? 101 ????? 00110 11", srliw  , R, R(rd) = SEXT((uint32_t)src1 >> (uint32_t)SHAMT, 32));
-   INSTPAT("0000000 ????? ????? 001 ????? 00110 11", slliw  , R, R(rd) = SEXT((uint32_t)src1 << (uint32_t)SHAMT, 32));
+
    INSTPAT("0100000 ????? ????? 101 ????? 01100 11", sra    , R, R(rd) = (sword_t)src1 >> (sword_t)src2);
    INSTPAT("0000000 ????? ????? 101 ????? 01100 11", srl    , R, R(rd) = (word_t)src1 >> (word_t)src2);
-   INSTPAT("0100000 ????? ????? 101 ????? 00110 11", sraiw  , R, R(rd) = SEXT((int32_t)src1 >> (int32_t)SHAMT, 32));
+   
    INSTPAT("0100000 ????? ????? 101 ????? 01110 11", sraw   , R, R(rd) = SEXT((int32_t)src1 >> (int32_t)BITS(src2, 4, 0), 32));
    INSTPAT("0000000 ????? ????? 101 ????? 01110 11", srlw   , R, R(rd) = SEXT((uint32_t)src1 >> (uint32_t)BITS(src2, 4, 0), 32));
    INSTPAT("0000000 ????? ????? 001 ????? 01100 11", sll    , R, R(rd) = src1 << BITS(src2, 4, 0));
-   INSTPAT("010000? ????? ????? 101 ????? 00100 11", srai   , R, R(rd) = (sword_t)src1 >> (sword_t)SHAMT_LONG);
-   INSTPAT("000000? ????? ????? 001 ????? 00100 11", slli   , R, R(rd) = src1 << SHAMT_LONG);
+
 
 #ifndef CONFIG_RV32                                                            //不可直接转换到int64_t
    INSTPAT("0000001 ????? ????? 001 ????? 01100 11", mulh   , R, R(rd) = BITS((int64_t)(int32_t)src1 * (int64_t)(int32_t)src2, 63,32));
@@ -192,7 +204,7 @@ static int decode_exec(Decode *s) {
    INSTPAT("0000001 ????? ????? 110 ????? 01110 11", remw   , R, R(rd) = SEXT((int32_t)BITS(src1,31,0)%(int32_t)BITS(src2,31,0) ,32));
    INSTPAT("0000001 ????? ????? 111 ????? 01110 11", remuv  , R, R(rd) = SEXT((uint32_t)BITS(src1,31,0)%(uint32_t)BITS(src2,31,0) ,32));
    INSTPAT("0100000 ????? ????? 000 ????? 01110 11", subw   , R, R(rd) = SEXT(BITS(src1 - src2, 31, 0), 32));
-   INSTPAT("000000? ????? ????? 101 ????? 00100 11", srli   , R, R(rd) = src1 >> SHAMT_LONG);
+  
    INSTPAT("0000001 ????? ????? 100 ????? 01100 11", div    , R, R(rd) = ((sword_t)src1 / (sword_t)src2));
    INSTPAT("0000001 ????? ????? 101 ????? 01100 11", divu   , R, R(rd) = ((word_t)src1 / (word_t)src2));
    INSTPAT("0000001 ????? ????? 100 ????? 01110 11", divw   , R, R(rd) = SEXT((int32_t)BITS(src1,31,0)/(int32_t)BITS(src2,31,0),  32));

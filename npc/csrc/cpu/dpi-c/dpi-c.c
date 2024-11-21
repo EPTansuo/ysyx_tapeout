@@ -50,6 +50,7 @@ uint64_t get_rtc_time(){
 
 int pmem_read(int raddr){
 
+#ifdef CONFIG_HAS_TIMER
   if(raddr == CONFIG_RTC_MMIO) {
     //获取开机时间
     return (uint32_t)get_time();
@@ -57,11 +58,12 @@ int pmem_read(int raddr){
   else if (raddr == CONFIG_RTC_MMIO + 4) {
     return (uint32_t)(get_time() >> 32);
   }
-  //printf("readmem at addr :%x \n",raddr );
+#endif
+  
   if(raddr < CONFIG_MBASE || raddr > CONFIG_MBASE + CONFIG_MSIZE)
     return 0;
   word_t data = host_read(guest_to_host(raddr), 4);
-  
+  //printf("read 4 bytes at 0x%x, data = 0x%x\n", raddr, data);
   return data;
 }
 void print_memwrite(paddr_t addr, int len, word_t data);
@@ -94,12 +96,19 @@ void pmem_write(int waddr, int wdata, char wmask){
       || mwinfo.wmask != wmask || mwinfo.data != wdata 
       || (!regs_equ(top->cpu->gpr1->regs,mwinfo.regs))){
 
+#ifdef CONFIG_HAS_SERIAL
       if(waddr == CONFIG_SERIAL_MMIO) {
           //printf(L_PURPLE "%c" NONE "", wdata);
           putchar(wdata);
+          fflush(stdout);      
+          //setbuf(stdout,NULL);
+          //printf("%c",wdata);
+          // putc(wdata,stdout);
           goto end_pmem_write;
       }
-      else if (waddr > CONFIG_MBASE + CONFIG_MSIZE){
+      else 
+#endif 
+	  if (waddr > CONFIG_MBASE + CONFIG_MSIZE){
         goto end_pmem_write;
       }
       
@@ -111,9 +120,15 @@ void pmem_write(int waddr, int wdata, char wmask){
 
       switch (wmask)
       {
-        case 0x01: host_write(guest_to_host(waddr), 1, wdata); break; 
-        case 0x03: host_write(guest_to_host(waddr), 2, wdata); break;
-        case 0x0f: host_write(guest_to_host(waddr), 4, wdata); break;
+        case 0x01: host_write(guest_to_host(waddr), 1, wdata); 
+                   // printf("write 1 byte at 0x%x, data = 0x%x\n", waddr, wdata);
+                   break; 
+        case 0x03: host_write(guest_to_host(waddr), 2, wdata);
+                   // printf("write 2 bytes at 0x%x, data = 0x%x\n", waddr, wdata);
+                    break;
+        case 0x0f: host_write(guest_to_host(waddr), 4, wdata);
+                   // printf("write 4 bytes at 0x%x, data = 0x%x\n", waddr, wdata);
+                    break;
       default:
         printf( L_RED " Can only write for 1/2/4 btyes ()." NONE "\n");
         break;
