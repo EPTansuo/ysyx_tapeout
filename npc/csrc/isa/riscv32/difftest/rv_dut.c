@@ -47,7 +47,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
       printf("DO NOT SEE CURRENT INSTRATION, SEE PREVIOUS ONE!\n");
       printf("npc:nemu:pc==0x%x\n",cpu_state_buf.pc);
       printf("ref reg info:\n");
-      for (int j = 0; j < 16; j++)
+      for (int j = 0; j < MUXDEF(CONFIG_RVE,16,32); j++)
       {
               if(j==i)
                 printf("$%s = 0x%s"  FMT_WORD_HEX_WIDTH NONE "%s\t", regs[j], L_RED, cpu_state_buf.gpr[j], NONE);
