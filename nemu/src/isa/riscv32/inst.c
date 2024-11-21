@@ -79,15 +79,15 @@ void etrace_print_info(){
 }
 
 #define XLEN (MUXDEF(CONFIG_RV64, 64, 32)) 
-
-////CSR(0x341) = mepc 
+/*
+// CSR(0x341) = mepc 
 #define MRET() { \
   s->dnpc = CSR(0x341); \
   cpu.csr.mstatus &= ~(1<<3); \
   cpu.csr.mstatus |= ((cpu.csr.mstatus&(1<<7))>>4); \
   cpu.csr.mstatus |= (1<<7); \
   cpu.csr.mstatus &= ~((3U<<11)); \
-}
+}*/
 
 
 //该函数在INSTPAT宏内被调用
