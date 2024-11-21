@@ -20,6 +20,8 @@
 #include <fmt-def.h>
 #include <sim.h>
 #include <color.h>
+#include <Vcpu_csr.h>
+#include <Vcpu.h>
 
 static CPU_state cpu_state_buf = {}; 
 static int state_index = 0;
@@ -39,10 +41,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
         break;
       }
     }
-    
-
-
-    if(!succ){
+     if(!succ){
       printf("\e[1;31m Difftest ERROR!\e[0m\n ");
       printf("DO NOT SEE CURRENT INSTRATION, SEE PREVIOUS ONE!\n");
       printf("npc:nemu:pc==0x%x\n",cpu_state_buf.pc);
@@ -59,6 +58,28 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
       printf("$pc = 0x" FMT_WORD_HEX_WIDTH "\n", cpu_state_buf.pc);
       return false;
     }
+    if(cpu_state_buf.pc != npc_cpu.pc){
+      printf("npc:pc=0x%x\tnemu:pc=%x",npc_cpu.pc,cpu_state_buf.pc);
+      succ = false;
+    }
+    else if(cpu_state_buf.csr.mepc != npc_cpu.csr.mepc){
+      printf("npc:mepc=0x%x\tnemu:mepc=%x",npc_cpu.csr.mepc,cpu_state_buf.csr.mepc);
+      succ = false;
+    }
+    else if(cpu_state_buf.csr.mcause != npc_cpu.csr.mcause){
+      printf("npc:mcause=0x%x\tnemu:mcause=%x",npc_cpu.csr.mcause,cpu_state_buf.csr.mcause);
+      succ = false;
+    }
+    else if(cpu_state_buf.csr.mstatus != npc_cpu.csr.mstatus){
+      printf("npc:mstatus=0x%x\tnemu:mstatus=%x",npc_cpu.csr.mstatus,cpu_state_buf.csr.mstatus);
+      succ = false;
+    }
+    else if(cpu_state_buf.csr.mtvec != npc_cpu.csr.mtvec){
+      printf("npc:mtvec=0x%x\tnemu:mtvec=%x",npc_cpu.csr.mtvec,cpu_state_buf.csr.mtvec);
+      succ = false;
+    }
+
+   
   }
   first = false;
   memcpy(&cpu_state_buf, ref_r, DIFFTEST_REG_SIZE);
