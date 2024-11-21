@@ -120,9 +120,12 @@ void pmem_write(int waddr, int wdata, char wmask){
 
       switch (wmask)
       {
-        case 0x01: host_write(guest_to_host(waddr), 1, wdata); break; 
-        case 0x03: host_write(guest_to_host(waddr), 2, wdata); break;
-        case 0x0f: host_write(guest_to_host(waddr), 4, wdata); break;
+        case 0x01: host_write(guest_to_host(waddr), 1, wdata); 
+                   printf("write 1 byte at 0x%x, data = 0x%x\n", waddr, wdata);break; 
+        case 0x03: host_write(guest_to_host(waddr), 2, wdata);
+                    printf("write 2 bytes at 0x%x, data = 0x%x\n", waddr, wdata);break;
+        case 0x0f: host_write(guest_to_host(waddr), 4, wdata);
+                    printf("write 4 bytes at 0x%x, data = 0x%x\n", waddr, wdata);break;
       default:
         printf( L_RED " Can only write for 1/2/4 btyes ()." NONE "\n");
         break;
