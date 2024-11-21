@@ -34,6 +34,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   int i =0;
   bool succ = true;
   printf("nemu:ref_r->pc==0x%x\n",ref_r->pc);
+  printf("sizeof(cpu_state_buf)=%d\n",sizeof(cpu_state_buf));
   if(!first){
     //if(ref_r->pc != npc_cpu.pc){
     for(i = 0; i < 16; i++){
