@@ -1,6 +1,7 @@
 //`define CONFIG_RV64
 `define CONFIG_RV32
 `define CONFIG_RV32E
+`define CONFIG_RVE
 
 `define WriteEnable	1'b1		//写使能
 `define WriteDisable	1'b0		//写失能

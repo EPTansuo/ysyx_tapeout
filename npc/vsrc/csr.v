@@ -18,7 +18,7 @@ module csr(
         input [7:0]inst_type,
         input wire [`InstAddrBus] exu_pc,
 
-        //from grp
+        //from gpr
         input [`RegDataBus] gpr_a7_a5 //a7 或 a5
 );
 

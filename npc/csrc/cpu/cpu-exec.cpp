@@ -76,7 +76,7 @@ static void exec_once(){
   char logbuf[50];
   cpu_single_cycle();
 
-  for(int i=0; i<32; i++){
+  for(int i=0; i<16; i++){
     npc_cpu.gpr[i] = gpr(i);
   }
   npc_cpu.pc = top->cpu->pc1->pc +4;
