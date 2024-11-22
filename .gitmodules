@@ -1,0 +1,6 @@
+[submodule "nemu/tools/mini-gdbstub"]
+    path = nemu/tools/mini-gdbstub
+    url = https://github.com/RinHizakura/mini-gdbstub
+[submodule "ysyxSoC"]
+    path = ysyxSoC
+    url = https://github.com/EPTansuo/ysyxSoC
