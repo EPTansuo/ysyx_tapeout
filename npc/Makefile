@@ -15,7 +15,7 @@ VERILATOR_FLAGS += --timescale 1us/1us
 
 verilog: $(SCALA_FILE)
 	@mkdir -p $(BUILD_DIR)/verilog
-	mill -i $(TOPNAME).runMain $(MAIN) -td $(BUILD_DIR)/verilog --emit-modules verilog
+	./mill -i $(TOPNAME).runMain $(MAIN) -td $(BUILD_DIR)/verilog --emit-modules verilog
 
 vcd ?=
 ifeq ($(vcd), 1)
