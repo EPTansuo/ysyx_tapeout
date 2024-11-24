@@ -101,6 +101,7 @@ void init_monitor(int argc, char** argv){
   parse_args(argc, argv);
   init_sim();
   init_mem();
+   printf("init_mem\n");
   IFDEF(CONFIG_DEVICE, init_device());
   cpu_reset(3);
   printf("cpu_reset\n");
