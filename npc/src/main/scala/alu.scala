@@ -23,7 +23,6 @@ class ALUIO(width:Int) extends Bundle {
     val B = Input(UInt(width.W))
     val aluop = Input(UInt(4.W))
     val out = Output(UInt(width.W))
-    val sum = Output(UInt(width.W))
 }
 
 
@@ -50,6 +49,5 @@ class ALU(val width: Int) extends Module{
         )
     )
 
-    io.sum := io.A + Mux(io.aluop(0), -io.B, io.B)
 }
 

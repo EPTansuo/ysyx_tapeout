@@ -43,7 +43,7 @@ class CPU(xlen:Int) extends Module{
   val npc = MuxCase(
     pc + 4.U,  
     IndexedSeq(
-      ((ctrlsig.pc_sel === PC_ALU) || (branch.io.taken)) -> (alu.io.sum >> 1.U << 1.U),  
+      ((ctrlsig.pc_sel === PC_ALU) || (branch.io.taken)) -> (alu.io.out >> 1.U << 1.U),  
       (ctrlsig.pc_sel === PC_0) -> pc  
   )
 )
