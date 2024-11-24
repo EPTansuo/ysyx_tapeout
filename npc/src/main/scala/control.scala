@@ -133,8 +133,9 @@ class Control(xlen: Int) extends Module{
 
   //invaild instruction
   val instInvalid = Module(new InstInvalid)
-  instInvalid.io.isvalid := (ctrlsig(9) === valid.INST_VALID) ||
-                          isebreak || io.in.pc < PC_INIT.U
+ /* instInvalid.io.isvalid := (ctrlsig(9) === valid.INST_VALID) ||
+                          isebreak || io.in.pc < PC_INIT.U*/
+    instInvalid.io.isvalid := 1.U
 }
 
 
