@@ -23,5 +23,5 @@ test_run_dir/
 !*.nxdc
 .ipynb_checkpoints
 !Kconfig
-!*.pu
+!*.py
 !*.vlt
