@@ -21,8 +21,6 @@ def check_table(table):
         return False
 
 
-# In[67]:
-
 def gen_code(table):
     table_isnull = table.isnull()
     code_list2d = []
@@ -40,14 +38,16 @@ def gen_code(table):
                 code_list2d.append([table.iloc[row,col]]);
 
             else:
-                code_list2d[row].append(table.iloc[row,col])
+                if table_isnull.iloc[row,col]:
+                    code_list2d[row].append(table.iloc[table.shape[0]-1,col])
+                else:
+                    code_list2d[row].append(table.iloc[row,col])
 
             max_len = max_len if max_len > len(str(table.iloc[row, col])) else len(str(table.iloc[row, col]))
-
         for row in range(table.shape[0]):
                 code_list2d[row][col-1] += " " * (max_len - len(code_list2d[row][col-1]))
 
-    #print(code_list2d)
+    #
     code = "val map = Array(\n"
     code_default = "val \n";
 
@@ -72,8 +72,7 @@ def gen_code(table):
     code += ")\n"
 
 
-    return code + "\n" + code_default
-
+    return code + code_default
 
 # In[68]:
 
