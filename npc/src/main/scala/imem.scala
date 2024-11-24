@@ -1,17 +1,24 @@
-package top
+package cpu
 
 import chisel3._
 import chisel3.util._
 
-class imem_io extends Bundle{
-    val addr = Input(UInt(32.W))
-    val data = Output(UInt(32.W))
+import  defines._
+
+/* 
+module IMem(
+        input reset,
+        input pc,
+        output reg [`WordBus] data
+);
+ */
+
+class IMemIO(xlen: Int) extends Bundle{
+  val reset = Input(Bool())
+  val pc = Input(UInt(xlen.W))
+  val data = Output(UInt(32.W))
 }
 
-class imem extends Module{
-  val io = IO(new imem_io())
-
-  val memory = Mem(1024, UInt(32.W))
-
-  io.data := memory.read((io.addr-0x8000000.U)(9,0))  // only use the lowest 10 bits now
+class IMem(xlen: Int) extends BlackBox with HasBlackBoxPath {
+  val io = IO(new IMemIO(xlen))
 }

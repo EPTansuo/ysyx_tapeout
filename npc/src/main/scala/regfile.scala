@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.util._
 import chisel3.stage._
 
-class regfile_io(xlen: Int) extends Bundle{
+class RegfileIO(xlen: Int) extends Bundle{
     var raddr1 = Input(UInt(5.W))
     var raddr2 = Input(UInt(5.W))
     var rdata1 = Output(UInt(xlen.W))
@@ -15,8 +15,8 @@ class regfile_io(xlen: Int) extends Bundle{
 }
 
 
-class regfile(xlen: Int) extends Module{
-    val io = IO(new regfile_io(xlen))
+class Regfile(xlen: Int) extends Module{
+    val io = IO(new RegfileIO(xlen))
 
     var regs = Mem(32, UInt(xlen.W))
     io.rdata1 := Mux(io.raddr1 === 0.U, 0.U, regs(io.raddr1))

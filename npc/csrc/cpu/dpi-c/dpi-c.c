@@ -1,21 +1,15 @@
 #include <cpu/cpu.h>
 #include <utils/utils.h>
-#include <Vcpu.h>
-#include <Vcpu_cpu.h>
-#include <Vcpu_pc.h>
-#include <Vcpu_ifu.h>
-#include <Vcpu_gpr.h>
 #include <color.h>
-#include <Vcpu_inst_rom.h>
 #include <inst.h>
-#include "Vcpu__Dpi.h"
 #include <fmt-def.h>
 #include <memory/host.h>
 #include <time.h>
-#include <verilated.h>
 #include <iostream>
 
-extern Vcpu* top;
+#include <verilator.h>
+
+
 extern unsigned char isa_logo[];
 
 uint8_t* guest_to_host(paddr_t paddr);
@@ -23,23 +17,36 @@ paddr_t host_to_guest(uint8_t *haddr);
 
 uint64_t npc_uptime;
 
-void npc_ebreak(){
-	NPCTRAP(top->cpu->pc1->pc, top->cpu->gpr1->regs[10]);
+
+extern "C" int get_inst(int pc){
+  return pmem_read(pc);
 }
 
 
-void inst_invalid(){
+extern "C" void npc_ebreak(){
+	NPCTRAP(PC, REGS[10]);
+}
+
+
+extern "C" void inst_invalid(){
 	if(npc_state.state == NPC_ABORT)
 		return;
-	char logbuf[50];
-	word_t pc = top->cpu->pc1->pc;
-	printf(L_RED "%s" NONE "\n", isa_logo);
-	printf(L_RED "Invalid or Unimplemented Inst" NONE "\n");
-	//print_inst( pc);
-	//disassemble(logbuf, 40, pc, (uint8_t *)(&_img[pc-0x80000000]), 4);
-	disassemble(logbuf, 50, pc );  //top->cpu->ifu1->inst_rom1->insts[pc-0x80000000]);
-	printf("At pc = 0x" FMT_WORD_HEX "\t%s\n", top->cpu->pc1->pc,logbuf);
-	set_npc_state(NPC_ABORT, top->cpu->pc1->pc, -1);
+	char logbuf[64];
+	word_t pc = PC;
+	printf(L_RED "%s" COLOR_NONE "\n", isa_logo);
+	printf(L_RED "Invalid or Unimplemented Inst" COLOR_NONE "\n");
+  printf("0x" FMT_WORD_HEX_WIDTH ":    ", PC);
+  fflush(stdout);
+  
+  
+  
+  for(int j = 3; j >= 0; j--){
+    printf("%02x ", ((uint8_t*)guest_to_host(PC))[j]);
+  }
+  fflush(stdout);
+  disassemble(logbuf, 64, PC , guest_to_host(PC), 4);
+  printf("%s\n", logbuf);
+	set_npc_state(NPC_ABORT, PC, -1);
 }
 
 uint64_t get_rtc_time(){
@@ -48,8 +55,9 @@ uint64_t get_rtc_time(){
 }
 
 
-int pmem_read(int raddr){
+extern "C" int pmem_read(int raddr){
 
+#ifdef CONFIG_HAS_TIMER
   if(raddr == CONFIG_RTC_MMIO) {
     //获取开机时间
     return (uint32_t)get_time();
@@ -57,11 +65,12 @@ int pmem_read(int raddr){
   else if (raddr == CONFIG_RTC_MMIO + 4) {
     return (uint32_t)(get_time() >> 32);
   }
-  //printf("readmem at addr :%x \n",raddr );
+#endif
+  
   if(raddr < CONFIG_MBASE || raddr > CONFIG_MBASE + CONFIG_MSIZE)
     return 0;
   word_t data = host_read(guest_to_host(raddr), 4);
-  
+  //printf("read 4 bytes at 0x%x, data = 0x%x\n", raddr, data);
   return data;
 }
 void print_memwrite(paddr_t addr, int len, word_t data);
@@ -78,6 +87,10 @@ typedef  struct{
 
 
 
+
+
+
+
 // return true is equ
 bool regs_equ(const VlUnpacked<word_t,32>&reg1, const VlUnpacked<word_t,32>&reg2){
   for(int i = 0; i < 32; i++){
@@ -87,19 +100,26 @@ bool regs_equ(const VlUnpacked<word_t,32>&reg1, const VlUnpacked<word_t,32>&reg2
   return true;
 }
 
-void pmem_write(int waddr, int wdata, char wmask){
+extern "C" void pmem_write(int waddr, int wdata, char wmask){
   static memwrite_info mwinfo;   //防止多次输出
   
-  if(mwinfo.pc != top->cpu->pc1->pc || mwinfo.addr != waddr
+  if(mwinfo.pc != PC || mwinfo.addr != waddr
       || mwinfo.wmask != wmask || mwinfo.data != wdata 
-      || (!regs_equ(top->cpu->gpr1->regs,mwinfo.regs))){
+      || (!regs_equ(REGS,mwinfo.regs))){
 
+#ifdef CONFIG_HAS_SERIAL
       if(waddr == CONFIG_SERIAL_MMIO) {
-          //printf(L_PURPLE "%c" NONE "", wdata);
+          //printf(L_PURPLE "%c" COLOR_NONE "", wdata);
           putchar(wdata);
+          fflush(stdout);      
+          //setbuf(stdout,NULL);
+          //printf("%c",wdata);
+          // putc(wdata,stdout);
           goto end_pmem_write;
       }
-      else if (waddr > CONFIG_MBASE + CONFIG_MSIZE){
+      else 
+#endif 
+	  if (waddr > CONFIG_MBASE + CONFIG_MSIZE){
         goto end_pmem_write;
       }
       
@@ -111,19 +131,25 @@ void pmem_write(int waddr, int wdata, char wmask){
 
       switch (wmask)
       {
-        case 0x01: host_write(guest_to_host(waddr), 1, wdata); break; 
-        case 0x03: host_write(guest_to_host(waddr), 2, wdata); break;
-        case 0x0f: host_write(guest_to_host(waddr), 4, wdata); break;
+        case 0x01: host_write(guest_to_host(waddr), 1, wdata); 
+                   // printf("write 1 byte at 0x%x, data = 0x%x\n", waddr, wdata);
+                   break; 
+        case 0x03: host_write(guest_to_host(waddr), 2, wdata);
+                   // printf("write 2 bytes at 0x%x, data = 0x%x\n", waddr, wdata);
+                    break;
+        case 0x0f: host_write(guest_to_host(waddr), 4, wdata);
+                   // printf("write 4 bytes at 0x%x, data = 0x%x\n", waddr, wdata);
+                    break;
       default:
-        printf( L_RED " Can only write for 1/2/4 btyes ()." NONE "\n");
+        printf( L_RED " Can only write for 1/2/4 btyes ()." COLOR_NONE "\n");
         break;
       }
 end_pmem_write:
-      mwinfo.pc = top->cpu->pc1->pc;
+      mwinfo.pc = PC;
       mwinfo.addr = waddr;
       mwinfo.wmask = wmask;
       mwinfo.data = wdata;
-      mwinfo.regs = top->cpu->gpr1->regs;
+      mwinfo.regs = REGS;
   }
 
 

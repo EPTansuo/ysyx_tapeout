@@ -1,27 +1,36 @@
-package top
+package  cpu
 
-import chisel3._
+import  chisel3._
 import chisel3.util._
+import chisel3.experimental._
 
-class dmem_io extends Bundle{
-    val addr = Input(UInt(32.W))
-    val wdata = Input(UInt(32.W))
-    val rdata = Output(UInt(32.W))
-    val we = Input(Bool())
+/* 
+
+module DMem(
+        input clock,
+        input reset,
+
+        input wire we,
+        input wire [`InstAddrBus] waddr,
+        input wire [`InstAddrBus] raddr,
+        input wire [`WordBus] wdata,
+        input wire [7:0] wmask,
+
+        output reg [`WordBus] rdata
+);
+ */
+class DMemIO extends Bundle{
+  val clock = Input(Clock())
+  val reset = Input(Bool())
+  val we = Input(Bool())
+  val waddr = Input(UInt(32.W))
+  val raddr = Input(UInt(32.W))
+  val wdata = Input(UInt(32.W))
+  val wmask = Input(UInt(8.W))
+  val rdata = Output(UInt(32.W))
 }
 
-class dmem extends Module{
-  val io = IO(new dmem_io())
 
-  val memory = Mem(1024*16, UInt(32.W))
-
-  when(io.we) {
-    memory.write(io.addr, io.wdata)
-  }
-
-  io.rdata := 0.U // default value
-  when(! io.we) {
-    io.rdata := memory.read((io.addr-0x8000000.U)(9+4,0))  // only use the lowest 14 bits now
-  }
-
+class DMem extends BlackBox with HasBlackBoxPath {
+  val io = IO(new DMemIO)
 }
