@@ -39,7 +39,7 @@ CXXFLAGS += $(INCFLAGS)
 CXXFLAGS += $(CFLAGS)
 CXXFLAGS += -Wall $(INCFLAGS) -g -DTOP_NAME="\"V$(TOPNAME)\"" -fpermissive
 CXXFLAGS += $(shell llvm-config --cxxflags) -fPIE
-LDFLAGS += $(shell llvm-config --libs)
+LDFLAGS += $(shell llvm-config --libs --ldflags)
 LDFLAGS += -lreadline
 
 # source file
