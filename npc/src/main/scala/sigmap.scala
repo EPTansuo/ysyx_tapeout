@@ -43,7 +43,7 @@ val map = Array(
 	lhu     ->  List(PC_4  , A_RS1, B_IMM, ALU_ADD   , IMM_I, WB_MEM, LD_LHU, ST_XX, MASK_XX, BR_XX , INST_VALID  ),
 	lh      ->  List(PC_4  , A_RS1, B_IMM, ALU_ADD   , IMM_I, WB_MEM, LD_LH , ST_XX, MASK_XX, BR_XX , INST_VALID  ),
 	lb      ->  List(PC_4  , A_RS1, B_IMM, ALU_ADD   , IMM_I, WB_MEM, LD_LB , ST_XX, MASK_XX, BR_XX , INST_VALID  ),
-	lbu     ->  List(PC_4  , A_RS1, B_IMM, ALU_ADD   , IMM_I, WB_XX , LD_LBU, ST_XX, MASK_XX, BR_XX , INST_VALID  ),
+	lbu     ->  List(PC_4  , A_RS1, B_IMM, ALU_ADD   , IMM_I, WB_MEM, LD_LBU, ST_XX, MASK_XX, BR_XX , INST_VALID  ),
 	bne     ->  List(PC_4  , A_PC , B_IMM, ALU_ADD   , IMM_B, WB_XX , LD_XX , ST_XX, MASK_XX, BR_NE , INST_VALID  ),
 	beq     ->  List(PC_4  , A_PC , B_IMM, ALU_ADD   , IMM_B, WB_XX , LD_XX , ST_XX, MASK_XX, BR_EQ , INST_VALID  ),
 	blt     ->  List(PC_4  , A_PC , B_IMM, ALU_ADD   , IMM_B, WB_XX , LD_XX , ST_XX, MASK_XX, BR_LT , INST_VALID  ),
