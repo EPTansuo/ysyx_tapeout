@@ -1,0 +1,3 @@
+`verilator_config
+public -module "Regfile" -var "regs"
+public -module "CPU" -var "pc"
