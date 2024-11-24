@@ -103,7 +103,8 @@ word_t paddr_read(paddr_t addr, int len) {
 #ifdef CONFIG_TARGET_SHARE
   if(addr >= 0xa0000100 && addr <= 0xa0000107){ //VGA
       return 0;
-    }
+  }
+
 #endif 
 
 
@@ -119,11 +120,13 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 
   if (likely(in_pmem(addr))) { pmem_write(addr, len, data); return; }
   IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
-  #ifdef CONFIG_TARGET_SHARE
 
-
+#ifdef CONFIG_TARGET_SHARE
     if(addr == 0xa00003f8) {   // SERIAL
       return;  
+    }
+    else if(addr >= 0xa0000048 && addr <= 0xa000004c){ // TIMER
+      return;
     }
     else if(addr >= 0xa0000100 && addr <= 0xa0000107){ //VGA
       return;
