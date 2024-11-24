@@ -103,6 +103,7 @@ void init_monitor(int argc, char** argv){
   init_mem();
    printf("init_mem\n");
   IFDEF(CONFIG_DEVICE, init_device());
+   printf("init_device\n");
   cpu_reset(3);
   printf("cpu_reset\n");
   long img_size = load_img();
