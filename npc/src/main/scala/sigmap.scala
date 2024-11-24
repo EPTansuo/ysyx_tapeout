@@ -45,6 +45,7 @@ val map = Array(
 	beq     ->  List(PC_4  , A_PC , B_IMM, ALU_ADD   , IMM_B, WB_XX , LD_XX , ST_XX, MASK_XX, BR_EQ , INST_VALID  ),
 	bgeu    ->  List(PC_4  , A_PC , B_IMM, ALU_ADD   , IMM_B, WB_XX , LD_XX , ST_XX, MASK_XX, BR_GEU, INST_VALID  ),
 	bge     ->  List(PC_4  , A_PC , B_IMM, ALU_ADD   , IMM_B, WB_XX , LD_XX , ST_XX, MASK_XX, BR_GE , INST_VALID  ),
+	srai    ->  List(PC_4  , A_RS1, B_IMM, ALU_SRA   , IMM_I, WB_ALU, LD_XX , ST_XX, MASK_XX, BR_XX , INST_VALID  ),
 	slli    ->  List(PC_4  , A_RS1, B_IMM, ALU_SLL   , IMM_I, WB_ALU, LD_XX , ST_XX, MASK_XX, BR_XX , INST_VALID  ),
 	sltiu   ->  List(PC_4  , A_RS1, B_IMM, ALU_SLTU  , IMM_I, WB_ALU, LD_XX , ST_XX, MASK_XX, BR_XX , INST_VALID  ),
 	add     ->  List(PC_4  , A_RS1, B_RS2, ALU_ADD   , IMM_I, WB_ALU, LD_XX , ST_XX, MASK_XX, BR_XX , INST_VALID  ),
