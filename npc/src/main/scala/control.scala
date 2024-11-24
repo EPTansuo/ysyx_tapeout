@@ -101,6 +101,7 @@ class ControlOut(xlen: Int) extends Bundle{
   val ld_sel = Output(UInt(3.W))
   val st_sel = Output(UInt(2.W))
   val mask_sel = Output(UInt(3.W))
+
 }
 
 class ControlIn(xlen: Int) extends Bundle{
@@ -130,7 +131,8 @@ class Control(xlen: Int) extends Module{
 
   //invaild instruction
   val instInvalid = Module(new InstInvalid)
-  instInvalid.io.isvalid := (ctrlsig(9) === valid.INST_VALID) || isebreak
+  instInvalid.io.isvalid := (ctrlsig(9) === valid.INST_VALID) ||
+                          isebreak || reset.asBool()
 }
 
 
