@@ -104,7 +104,6 @@ static void exec_once(){
       printf("%02x ", ((uint8_t*)guest_to_host(PC))[j]);
     }
   
-  printf("\n");
    printf("%s\n", logbuf);
 }
 
