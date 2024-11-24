@@ -109,7 +109,7 @@ class CPU(xlen:Int) extends Module{
   val wb_data = MuxLookup(ctrlsig.wb_sel, default = 0.U(XLEN.W), Array(
       WB_ALU -> alu.io.out,
       WB_MEM -> ld_data,
-      WB_PC  -> pc
+      WB_PC4  -> (pc + 4.U)
       )
   )
 

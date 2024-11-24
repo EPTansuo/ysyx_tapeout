@@ -33,7 +33,7 @@ object imm_sel {
 object wb_sel {
   val WB_ALU = 0.U(2.W)
   val WB_MEM = 1.U(2.W)
-  val WB_PC  = 2.U(2.W)
+  val WB_PC4  = 2.U(2.W)
   val WB_XX  = 3.U(2.W)
 }
 
@@ -85,7 +85,7 @@ val map = Array(
         lui     ->  List(PC_4  , A_RS1, B_IMM, ALU_COPY_B, IMM_U, WB_ALU, LD_XX, ST_XX, MASK_XX, INST_VALID  ),
         auipc   ->  List(PC_4  , A_PC , B_IMM, ALU_ADD   , IMM_U, WB_ALU, LD_XX, ST_XX, MASK_XX, INST_VALID  ),
         addi    ->  List(PC_4  , A_RS1, B_IMM, ALU_ADD   , IMM_I, WB_ALU, LD_XX, ST_XX, MASK_XX, INST_VALID  ),
-        jal     ->  List(PC_ALU, A_PC , B_IMM, ALU_ADD   , IMM_J, WB_PC , LD_XX, ST_XX, MASK_XX, INST_VALID  ),
+        jal     ->  List(PC_ALU, A_PC , B_IMM, ALU_ADD   , IMM_J, WB_PC4 , LD_XX, ST_XX, MASK_XX, INST_VALID  ),
         sw      ->  List(PC_4  , A_RS1, B_IMM, ALU_ADD   , IMM_S, WB_XX , LD_XX, ST_SW, MASK_W , INST_VALID  ),
         lw      ->  List(PC_4  , A_RS1, B_IMM, ALU_ADD   , IMM_I, WB_XX , LD_LW, ST_XX, MASK_XX, INST_VALID  ),
 )
