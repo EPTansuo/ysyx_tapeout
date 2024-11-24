@@ -48,7 +48,7 @@ static void welcome() {
         "If it is not necessary, you can disable it in menuconfig"));
   Log("Dump Wave: %s", MUXDEF(CONFIG_WAVE_DUMP, ANSI_FMT("ON", ANSI_FG_GREEN), ANSI_FMT("OFF", ANSI_FG_RED)));
   Log("Build time: %s, %s", __TIME__, __DATE__);
-  printf("Welcome to %s-NPC!\n", ANSI_FG_YELLOW ANSI_BG_RED CONFIG_ISA NONE);
+  printf("Welcome to %s-NPC!\n", ANSI_FG_YELLOW ANSI_BG_RED CONFIG_ISA COLOR_NONE);
   printf("For help, type \"help\"\n");
   //Log("Exercise: Please remove me in the source code and compile NEMU again.");
   //assert(0);

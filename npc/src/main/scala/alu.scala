@@ -3,13 +3,22 @@ package cpu
 import chisel3._
 import chisel3.util._
 
-object aluop extends Enumeration {
-  val ALU_ADD, ALU_SUB, ALU_AND, ALU_OR, ALU_XOR,
-      ALU_SLL, ALU_SRL, ALU_SRA, ALU_SLT, ALU_SLTU,
-      ALU_COPY_A, ALU_COPY_B = Value
+object aluop {
+  val ALU_ADD     = 0.U(4.W)
+  val ALU_SUB     = 1.U(4.W)
+  val ALU_AND     = 2.U(4.W)
+  val ALU_OR      = 3.U(4.W)
+  val ALU_XOR     = 4.U(4.W)
+  val ALU_SLL     = 5.U(4.W)
+  val ALU_SRL     = 6.U(4.W)
+  val ALU_SRA     = 7.U(4.W)
+  val ALU_SLT     = 8.U(4.W)
+  val ALU_SLTU    = 9.U(4.W)
+  val ALU_COPY_A  = 10.U(4.W)
+  val ALU_COPY_B  = 11.U(4.W)
 }
 
-class alu_io(width:Int) extends Bundle {
+class ALUIO(width:Int) extends Bundle {
     val A = Input(UInt(width.W))
     val B = Input(UInt(width.W))
     val aluop = Input(UInt(4.W))
@@ -17,25 +26,26 @@ class alu_io(width:Int) extends Bundle {
 }
 
 
-class alu(val width: Int) extends Module{
-    val io = IO(new alu_io(width))
+class ALU(val width: Int) extends Module{
+    val io = IO(new ALUIO(width))
 
-    val shamt = io.B(4,0).asUInt
+    // Support 32bit and 64bit
+    val shamt = if(width == 32) io.B(4,0).asUInt else io.B(5,0).asUInt
 
     io.out := MuxLookup(io.aluop, io.B,
         Seq(
-            aluop.ALU_ADD.id.U -> (io.A + io.B),
-            aluop.ALU_SUB.id.U -> (io.A - io.B),
-            aluop.ALU_AND.id.U -> (io.A & io.B),
-            aluop.ALU_OR.id.U  -> (io.A | io.B),
-            aluop.ALU_XOR.id.U -> (io.A ^ io.B),
-            aluop.ALU_SLL.id.U -> (io.A << shamt),
-            aluop.ALU_SRL.id.U -> (io.A >> shamt),
-            aluop.ALU_SRA.id.U -> ((io.A.asSInt >> shamt).asUInt),
-            aluop.ALU_SLT.id.U -> (io.A.asSInt < io.B.asSInt).asUInt,
-            aluop.ALU_SLTU.id.U -> (io.A < io.B).asUInt,
-            aluop.ALU_COPY_A.id.U -> io.A,
-            aluop.ALU_COPY_B.id.U -> io.B
+            aluop.ALU_ADD -> (io.A + io.B),
+            aluop.ALU_SUB -> (io.A - io.B),
+            aluop.ALU_AND -> (io.A & io.B),
+            aluop.ALU_OR  -> (io.A | io.B),
+            aluop.ALU_XOR -> (io.A ^ io.B),
+            aluop.ALU_SLL -> (io.A << shamt),
+            aluop.ALU_SRL -> (io.A >> shamt),
+            aluop.ALU_SRA -> ((io.A.asSInt >> shamt).asUInt),
+            aluop.ALU_SLT -> (io.A.asSInt < io.B.asSInt).asUInt,
+            aluop.ALU_SLTU -> (io.A < io.B).asUInt,
+            aluop.ALU_COPY_A -> io.A,
+            aluop.ALU_COPY_B -> io.B
         )
     )
 }

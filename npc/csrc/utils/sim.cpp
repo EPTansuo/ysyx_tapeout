@@ -1,14 +1,12 @@
-#include <verilated.h>
-#include <verilated_vcd_c.h>
-#include <Vcpu.h>
+#include <sim.h>
 #include <common.h>
 
 VerilatedVcdC *tfp = NULL;
 VerilatedContext *contextp = NULL;
-Vcpu * top = NULL;
+Vnpc* top = NULL;
 
 void init_sim(){
-	top = new Vcpu;
+	top = new Vnpc;
 #ifdef CONFIG_WAVE_DUMP
         Verilated::traceEverOn(true);
 	tfp = new VerilatedVcdC;

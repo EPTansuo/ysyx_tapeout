@@ -1,21 +1,24 @@
-TOPNAME = top 
-MAIN = $(TOPNAME).topMain
+TOPNAME = npc
+MAIN = $(TOPNAME).npcMain
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/OBJ_DIR
 
 
 VERILATOR = verilator
 VERILATOR_COVERAGE = verilator_coverage
-# verilator flags
-VERILATOR_FLAGS += -MMD --trace --build -cc --exe \
-		-O3 --x-assign fast --x-initial fast --noassert -report-unoptflat
+# # verilator flags
+# VERILATOR_FLAGS += -MMD --trace --build -cc --exe \
+# 		-O3 --x-assign fast --x-initial fast --noassert -report-unoptflat
+#
+
+VERILATOR_FLAGS += -MMD --build -cc --public --trace \
+				--x-assign fast --x-initial fast --noassert \
+				-I$(YSYX_HOME)/npc/vsrc  --threads 1
 
 # timescale set
 VERILATOR_FLAGS += --timescale 1us/1us
+VERILATOR_CONFIG = ./scripts/verilator.vlt
 
-verilog: $(SCALA_FILE)
-	@mkdir -p $(BUILD_DIR)/verilog
-	mill -i $(TOPNAME).runMain $(MAIN) -td $(BUILD_DIR)/verilog --emit-modules verilog
 
 vcd ?=
 ifeq ($(vcd), 1)
@@ -31,10 +34,14 @@ INC_PATH +=$(abspath csrc/isa/$(CONFIG_ISA)/include)
 INC_PATH +=$(abspath csrc/isa/$(CONFIG_ISA)/local-include)
 
 INCFLAGS = $(addprefix -I, $(INC_PATH))
-CXXFLAGS += $(INCFLAGS) $(CFLAGS_SIM) -DTOP_NAME="V$(TOPNAME)"
+CXXFLAGS += $(INCFLAGS)
+CXXFLAGS += $(CFLAGS)
+CXXFLAGS += -Wall $(INCFLAGS) -g -DTOP_NAME="\"V$(TOPNAME)\"" -fpermissive
+LDFLAGS += -lreadline
 
 # source file
-TOP_V = $(BUILD_DIR)/verilog/$(TOPNAME).v
+VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
+VSRCS += $(shell find $(abspath ./build/verilog) -name "*.v")
 SCALA_FILE = $(shell find ./src/main -name '*.scala')
 CSRCS = $(shell find $(abspath ./csrc) \( -path $(abspath ./csrc/device) -prune \) -o \( -name "*.c" -or -name "*.cc" -or -name "*.cpp" \) -print)
 
@@ -48,12 +55,15 @@ NPC_EXEC := $(BIN)
 
 default: $(BIN)
 
-$(BIN): $(CSRCS) verilog
-	$(VERILATOR) $(VERILATOR_FLAGS) -top $(TOPNAME)$(CSRCS) $(wildcard $(BUILD_DIR)/verilog/*.v) \
+$(BIN): $(CSRCS) #verilog
+
+	$(VERILATOR) $(VERILATOR_CONFIG) $(VERILATOR_FLAGS) -top $(TOPNAME) $(CSRCS) $(VSRCS) \
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) --top-module $(TOPNAME)
 
-
+verilog: $(SCALA_FILE)
+	@mkdir -p $(BUILD_DIR)/verilog
+	./mill -i $(TOPNAME).runMain $(MAIN) -td $(BUILD_DIR)/verilog --emit-modules verilog
 
 sim: run
 run: $(BIN)
@@ -62,7 +72,7 @@ run: $(BIN)
 	$^ $(ARGS) $(IMG)
 
 # menuconfig and autoconf.h
-include $(NPC_HOME)/csrc/scripts/config.mk
+include $(NPC_HOME)/scripts/config.mk
 
 clean:
 	-rm -rf $(BUILD_DIR) logs

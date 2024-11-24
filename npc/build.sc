@@ -1,7 +1,7 @@
 import mill._, scalalib._
 import os.Path
 
-object top extends ScalaModule {
+object npc extends ScalaModule {
   def scalaVersion = "2.12.12"
   override def millSourcePath = os.pwd
   def scalaOptions = Seq(

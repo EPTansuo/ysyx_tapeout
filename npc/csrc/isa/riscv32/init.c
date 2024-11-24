@@ -14,15 +14,11 @@
 ***************************************************************************************/
 
 #include <cpu/cpu.h>
-#include <Vcpu.h>
-#include <Vcpu_cpu.h>
-#include <Vcpu_gpr.h>
-#include <Vcpu_pc.h>
 #include <isa.h>
 #include <memory/paddr.h>
+#include <verilator.h>
 
 void sdb_mainloop();
-extern Vcpu* top; 
 void engine_start() {
 #ifdef CONFIG_TARGET_AM
   cpu_exec(-1);
@@ -37,10 +33,10 @@ void engine_start() {
 static void restart() {
   /* Set the initial program counter. */
   npc_cpu.pc = RESET_VECTOR;
-  top->cpu->pc1->pc = RESET_VECTOR;
+  PC = RESET_VECTOR;
   
   /* The zero register is always 0. */
-  top->cpu->gpr1->regs[0] = 0;
+  REGS[0] = 0;
   npc_cpu.gpr[0] = 0;
 }
 

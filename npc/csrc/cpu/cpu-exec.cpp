@@ -1,16 +1,12 @@
 #include <cpu/cpu.h>
 #include <isa.h>
-#include <Vcpu.h>
-#include <Vcpu_cpu.h>
-#include <Vcpu_gpr.h>
-#include <Vcpu_pc.h>
 #include <fmt-def.h>
-#include <Vcpu_ifu.h>
-#include <Vcpu_inst_rom.h>
 #include <inst.h>
 #include <watchpoint.h>
 #include <cpu/difftest.h>
 #include <reg.h>
+#include <verilator.h>
+
 
 #define MAX_INST_TO_PRINT 10001
 bool first = true;
@@ -19,7 +15,6 @@ CPU_state npc_cpu = {};
 uint64_t g_nr_guest_inst = 0;
 static bool g_print_step = false;
 
-extern Vcpu* top;
 extern VerilatedVcdC * tfp;
 extern VerilatedContext* contextp;
 
@@ -27,8 +22,8 @@ void disassemble(char* logbuf, size_t logbuf_size, word_t pc);
 void device_update();
 
 static void trace_and_difftest(){
-  //printf("pc=0x%x, dnpc=0x%x\n",top->cpu->pc1->pc, top->cpu->pc1->pc + (top->cpu->pc1->pc_offset_en?top->cpu->pc1->pc_offset:0));
-  //IFDEF(CONFIG_DIFFTEST, difftest_step(top->cpu->pc1->pc, top->cpu->pc1->pc + top->cpu->pc1->pc_offset));
+  //printf("pc=0x%x, dnpc=0x%x\n",PC, PC + (top->cpu->pc1->pc_offset_en?top->cpu->pc1->pc_offset:0));
+  //IFDEF(CONFIG_DIFFTEST, difftest_step(PC, PC + top->cpu->pc1->pc_offset));
   IFDEF(CONFIG_DIFFTEST, difftest_step(0,0));
   scan_watchpoint();
 }
@@ -46,15 +41,15 @@ void cpu_single_cycle(){
 	int i = 2;
 	while((i--))
 	{
-		top->clk = !top->clk;
+		top->clock = !top->clock;
 		cpu_eval_dump();
 	}
 }
 
 void cpu_reset(int n){
-	top->rst = RESET_ENABLE;
+	top->reset = RESET_ENABLE;
 	while(n--)cpu_single_cycle();	
-	top->rst = RESET_DISABLE;
+	top->reset = RESET_DISABLE;
 }
 
 
@@ -75,14 +70,20 @@ static void exec_once(){
   char logbuf[50];
   cpu_single_cycle();
 
-  for(int i=0; i<32; i++){
+  for(int i=0; i<16; i++){
     npc_cpu.gpr[i] = gpr(i);
   }
-  npc_cpu.pc = top->cpu->pc1->pc +4;
+  npc_cpu.pc = PC;
+
+  // npc_cpu.csr.mepc = top->cpu->csr1->csrs[0];
+  // npc_cpu.csr.mcause = top->cpu->csr1->csrs[1];
+  // npc_cpu.csr.mstatus = top->cpu->csr1->csrs[2];
+  // npc_cpu.csr.mtvec = top->cpu->csr1->csrs[3];
+  
 
   if(g_print_step){
-    disassemble(logbuf,50,top->cpu->pc1->pc);
-    print_inst(top->cpu->pc1->pc);
+    disassemble(logbuf,50,PC);
+    print_inst(PC);
     printf("\t%s\n", logbuf);
   }
 }
