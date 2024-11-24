@@ -12,7 +12,7 @@ VERILATOR_COVERAGE = verilator_coverage
 # 		-O3 --x-assign fast --x-initial fast --noassert -report-unoptflat
 #
 
-VERILATOR_FLAGS += -MMD --build -cc --public --trace \
+VERILATOR_FLAGS += -MMD --build -cc --public --trace\
 				--x-assign fast --x-initial fast --noassert \
 				-I$(YSYX_HOME)/npc/vsrc  --threads 1
 
