@@ -3,6 +3,7 @@
 #define CONFIG_RVE 1
 #define CONFIG_CC_O0 1
 #define CONFIG_CC_OPT "-O0"
+#define CONFIG_WAVE_DUMP 1
 #define CONFIG_TRACE 1
 #define CONFIG_TRACE_START 0
 #define CONFIG_TRACE_END 10000
