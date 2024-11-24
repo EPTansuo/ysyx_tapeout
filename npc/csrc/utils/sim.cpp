@@ -7,11 +7,12 @@ Vnpc* top = NULL;
 
 void init_sim(){
 	top = new Vnpc;
+	top->clock = 0;
 #ifdef CONFIG_WAVE_DUMP
-        Verilated::traceEverOn(true);
+    Verilated::traceEverOn(true);
 	tfp = new VerilatedVcdC;
 	contextp = new VerilatedContext;
-        top->trace(tfp, 0);
+    top->trace(tfp, 0);
 	tfp->open("wave.vcd");
 #endif 
 	

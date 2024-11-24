@@ -86,17 +86,7 @@ static void exec_once(){
   //   print_inst(PC);
   //   printf("\t%s\n", logbuf);
   // }
-
-  static const uint32_t img [] = {
-  0x00000297,  // auipc t0,0
-  //0xa9401381,  // addi x1, x0, 10
-  //0x40017300,  // addi x2, x1, 20
-  0x00028823,  // sb  zero,16(t0)
-  0x0102c503,  // lbu a0,16(t0)
-  0x00100073,  // ebreak (used as nemu_trap)
-  0xdeadbeef,  // some data
-};
-
+  if(g_print_step){
    disassemble(logbuf, 64, PC , guest_to_host(PC), 4);
    printf("0x" FMT_WORD_HEX_WIDTH ":    ", PC);
     
@@ -105,6 +95,7 @@ static void exec_once(){
     }
   
    printf("%s\n", logbuf);
+  }
 }
 
 
