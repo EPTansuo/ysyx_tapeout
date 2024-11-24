@@ -105,7 +105,7 @@ word_t paddr_read(paddr_t addr, int len) {
       return 0;
   }
   else if(addr >= 0xa0000048 && addr <= 0xa000004c){ // TIMER
-    return;
+    return 0;
   }
 #endif 
 
