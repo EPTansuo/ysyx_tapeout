@@ -7,6 +7,8 @@
 
 extern bool verbose;
 
+extern Vcpu *top;
+
 
 const char *regs[] = {
     "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
@@ -25,7 +27,7 @@ void isa_reg_display(){
                 if ((i + 1) % 4 == 0)
                         putchar('\n');
         }
-        printf("$pc = 0x" FMT_WORD_HEX_WIDTH "\n", PC);
+        printf("$pc = 0x" FMT_WORD_HEX_WIDTH "\n", top->cpu->pc1->pc);
 }
 
 void print_regs_info(){
@@ -40,7 +42,7 @@ word_t isa_reg_str2val(const char *s, bool *success) {
   if(!strcmp(s, "$pc"))
   {
     *success = true;
-    return  PC;
+    return  top->cpu->pc1->pc;
   }
 
   if(!strcmp(s, "$0"))  //这里匹配$0,后面的for循环代码还可以匹配$$0

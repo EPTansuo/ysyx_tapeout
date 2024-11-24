@@ -48,7 +48,7 @@ static void welcome() {
         "If it is not necessary, you can disable it in menuconfig"));
   Log("Dump Wave: %s", MUXDEF(CONFIG_WAVE_DUMP, ANSI_FMT("ON", ANSI_FG_GREEN), ANSI_FMT("OFF", ANSI_FG_RED)));
   Log("Build time: %s, %s", __TIME__, __DATE__);
-  printf("Welcome to %s-NPC!\n", ANSI_FG_YELLOW ANSI_BG_RED CONFIG_ISA COLOR_NONE);
+  printf("Welcome to %s-NPC!\n", ANSI_FG_YELLOW ANSI_BG_RED CONFIG_ISA NONE);
   printf("For help, type \"help\"\n");
   //Log("Exercise: Please remove me in the source code and compile NEMU again.");
   //assert(0);
@@ -97,21 +97,19 @@ static int parse_args(int argc, char *argv[]) {
 
 
 void init_monitor(int argc, char** argv){
-  Verilated::commandArgs(argc, argv);
-  parse_args(argc, argv);
-  init_sim();
-  init_mem();
-   printf("init_mem\n");
-  IFDEF(CONFIG_DEVICE, init_device());
-   printf("init_device\n");
-  cpu_reset(3);
-  printf("cpu_reset\n");
-  long img_size = load_img();
-  init_difftest(diff_so_file, img_size, 0);  //Do not need to use the  third parameter
-  init_sdb();
-
-  init_disasm(MUXDEF(CONFIG_RV32,"riscv32","riscv64"));
-  welcome();
+        Verilated::commandArgs(argc, argv);
+        parse_args(argc, argv);
+        init_sim();
+        long img_size = load_img();
+        init_mem();
+        IFDEF(CONFIG_DEVICE, init_device());
+        cpu_reset(3);
+        //void cpu_single_cycle();
+        //cpu_single_cycle();
+        init_disasm();
+        init_difftest(diff_so_file, img_size, 0);  //Do not need to use the  third parameter
+        init_sdb();
+        welcome();
        
 }
 
