@@ -97,7 +97,7 @@ static void exec_once(){
   0xdeadbeef,  // some data
 };
 
-   disassemble(logbuf, 64, 0x80000000 , img[0], 4);
+   disassemble(logbuf, 64, 0x80000000 , (uint8_t*)&img[0], 4);
    printf("0x" FMT_WORD_HEX_WIDTH ":    ", PC);
     
     for(int j = 3; j >= 0; j--){
