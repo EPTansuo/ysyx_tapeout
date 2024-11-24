@@ -75,7 +75,6 @@ sigmap: $(NPC_HOME)/tools/control_gen/control_table.xlsx
 sim: run
 run: $(BIN)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
-	bash ./tools/disasm.sh $(IMG) $(BUILD_DIR)
 	$^ $(ARGS) $(IMG)
 
 # menuconfig and autoconf.h
