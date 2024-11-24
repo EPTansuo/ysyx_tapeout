@@ -49,6 +49,8 @@ VSRCS += $(shell find $(abspath ./build/verilog) -name "*.v")
 SCALA_FILE = $(shell find ./src/main -name '*.scala')
 CSRCS = $(shell find $(abspath ./csrc) \( -path $(abspath ./csrc/device) -prune \) -o \( -name "*.c" -or -name "*.cc" -or -name "*.cpp" \) -print)
 
+include $(NPC_HOME)/csrc/device/filelist.mk
+
 # rules for NVBoard
 include $(NVBOARD_HOME)/scripts/nvboard.mk
 
