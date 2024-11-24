@@ -103,12 +103,12 @@ class CPU(xlen:Int) extends Module{
   import ld_sel._
   val ld_data = MuxLookup(ctrlsig.ld_sel, default = 0.U(XLEN.W), Array(
       LD_XX -> 0.U(XLEN.W),
-      LD_LB -> io.dmem.rdata(7, 0).asSInt.asUInt,
-      LD_LH -> io.dmem.rdata(15, 0).asSInt.asUInt,
+      LD_LB -> Cat(Fill(XLEN-8, io.dmem.rdata(7)), io.dmem.rdata(7, 0)),
+      LD_LH -> Cat(Fill(XLEN-16, io.dmem.rdata(15)), io.dmem.rdata(15, 0)),
       LD_LW -> io.dmem.rdata,
       LD_LBU -> io.dmem.rdata(7, 0).asUInt,
       LD_LHU -> io.dmem.rdata(15, 0).asUInt
-      )
+    )
   )
 
   import st_sel._
