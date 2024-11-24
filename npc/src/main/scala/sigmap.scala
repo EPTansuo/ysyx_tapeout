@@ -48,6 +48,7 @@ val map = Array(
 	srai    ->  List(PC_4  , A_RS1, B_IMM, ALU_SRA   , IMM_I, WB_ALU, LD_XX , ST_XX, MASK_XX, BR_XX , INST_VALID  ),
 	slli    ->  List(PC_4  , A_RS1, B_IMM, ALU_SLL   , IMM_I, WB_ALU, LD_XX , ST_XX, MASK_XX, BR_XX , INST_VALID  ),
 	sltiu   ->  List(PC_4  , A_RS1, B_IMM, ALU_SLTU  , IMM_I, WB_ALU, LD_XX , ST_XX, MASK_XX, BR_XX , INST_VALID  ),
+	sll     ->  List(PC_4  , A_RS1, B_RS2, ALU_SLL   , IMM_I, WB_ALU, LD_XX , ST_XX, MASK_XX, BR_XX , INST_VALID  ),
 	add     ->  List(PC_4  , A_RS1, B_RS2, ALU_ADD   , IMM_I, WB_ALU, LD_XX , ST_XX, MASK_XX, BR_XX , INST_VALID  ),
 	sub     ->  List(PC_4  , A_RS1, B_RS2, ALU_SUB   , IMM_I, WB_ALU, LD_XX , ST_XX, MASK_XX, BR_XX , INST_VALID  ),
 )
