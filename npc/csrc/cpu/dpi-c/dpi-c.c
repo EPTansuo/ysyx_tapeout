@@ -35,9 +35,9 @@ extern "C" void inst_invalid(){
 	word_t pc = PC;
 	printf(L_RED "%s" COLOR_NONE "\n", isa_logo);
 	printf(L_RED "Invalid or Unimplemented Inst" COLOR_NONE "\n");
-
-  disassemble(logbuf, 64, PC , guest_to_host(PC), 4);
   printf("0x" FMT_WORD_HEX_WIDTH ":    ", PC);
+  disassemble(logbuf, 64, PC , guest_to_host(PC), 4);
+  
   
   for(int j = 3; j >= 0; j--){
     printf("%02x ", ((uint8_t*)guest_to_host(PC))[j]);
