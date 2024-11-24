@@ -1,8 +1,7 @@
 #ifndef __INST_H_
 #define __INST_H_
 
-#include <verilated.h>
-#include <Vcpu.h>
+#include <verilator.h>
 #include <common.h>
 
 long load_img();

@@ -4,11 +4,6 @@
 
 #include <common.h>
 
-#include <Vcpu.h>
-#include <verilated_vcd_c.h>
-#include <verilated.h>
-
-
 
 void cpu_exec(uint64_t n);
 void print_iringbuf();

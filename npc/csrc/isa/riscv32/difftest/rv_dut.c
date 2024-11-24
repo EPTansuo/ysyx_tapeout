@@ -20,8 +20,8 @@
 #include <fmt-def.h>
 #include <sim.h>
 #include <color.h>
-#include <Vcpu_csr.h>
-#include <Vcpu.h>
+
+#include <verilator.h>
 
 static CPU_state cpu_state_buf = {}; 
 static int state_index = 0;
@@ -50,7 +50,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
       for (int j = 0; j < MUXDEF(CONFIG_RVE,16,32); j++)
       {
               if(j==i)
-                printf("$%s = 0x%s"  FMT_WORD_HEX_WIDTH NONE "%s\t", regs[j], L_RED, cpu_state_buf.gpr[j], NONE);
+                printf("$%s = 0x%s"  FMT_WORD_HEX_WIDTH COLOR_NONE "%s\t", regs[j], L_RED, cpu_state_buf.gpr[j], COLOR_NONE);
               else
                 printf("$%s = 0x" FMT_WORD_HEX_WIDTH "\t", regs[j], cpu_state_buf.gpr[j]);
               if ((j + 1) % 4 == 0)
@@ -60,19 +60,19 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
     }
 
     if(cpu_state_buf.csr.mepc != npc_cpu.csr.mepc){
-      printf(L_RED "npc: mepc   = 0x"FMT_WORD_HEX_WIDTH"\tnemu: mepc     = " FMT_WORD_HEX_WIDTH "\n" NONE,npc_cpu.csr.mepc,cpu_state_buf.csr.mepc);
+      printf(L_RED "npc: mepc   = 0x" FMT_WORD_HEX_WIDTH "\tnemu: mepc     = " FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.csr.mepc,cpu_state_buf.csr.mepc);
       succ = false;
     }
     if(cpu_state_buf.csr.mcause != npc_cpu.csr.mcause){
-      printf(L_RED "npc: mcause = 0x" FMT_WORD_HEX_WIDTH "\tnemu: mcause = " FMT_WORD_HEX_WIDTH "\n" NONE,npc_cpu.csr.mcause,cpu_state_buf.csr.mcause);
+      printf(L_RED "npc: mcause = 0x" FMT_WORD_HEX_WIDTH "\tnemu: mcause = " FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.csr.mcause,cpu_state_buf.csr.mcause);
       succ = false;
     }
     if(cpu_state_buf.csr.mstatus != npc_cpu.csr.mstatus){
-      printf(L_RED "npc: mstatus= 0x" FMT_WORD_HEX_WIDTH "\tnemu: mstatus= " FMT_WORD_HEX_WIDTH "\n" NONE,npc_cpu.csr.mstatus,cpu_state_buf.csr.mstatus);
+      printf(L_RED "npc: mstatus= 0x" FMT_WORD_HEX_WIDTH "\tnemu: mstatus= " FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.csr.mstatus,cpu_state_buf.csr.mstatus);
       succ = false;
     }
     if(cpu_state_buf.csr.mtvec != npc_cpu.csr.mtvec){
-      printf(L_RED "npc: mtvec  = 0x" FMT_WORD_HEX_WIDTH "\tnemu: mtvec  = " FMT_WORD_HEX_WIDTH "\n" NONE,npc_cpu.csr.mtvec,cpu_state_buf.csr.mtvec);
+      printf(L_RED "npc: mtvec  = 0x" FMT_WORD_HEX_WIDTH "\tnemu: mtvec  = " FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.csr.mtvec,cpu_state_buf.csr.mtvec);
       succ = false;
     }
 
