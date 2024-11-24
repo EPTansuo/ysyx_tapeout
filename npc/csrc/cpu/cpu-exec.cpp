@@ -6,7 +6,7 @@
 #include <cpu/difftest.h>
 #include <reg.h>
 #include <verilator.h>
-
+#include <memory/paddr.h>
 
 #define MAX_INST_TO_PRINT 10001
 bool first = true;
@@ -18,7 +18,7 @@ static bool g_print_step = false;
 extern VerilatedVcdC * tfp;
 extern VerilatedContext* contextp;
 
-void disassemble(char* logbuf, size_t logbuf_size, word_t pc);
+void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
 void device_update();
 
 static void trace_and_difftest(){
@@ -67,10 +67,10 @@ void assert_fail_msg() {
 }
 
 static void exec_once(){
-  char logbuf[50];
+  char logbuf[64];
   cpu_single_cycle();
 
-  for(int i=0; i<16; i++){
+  for(int i=0; i<MUXDEF(CONFIG_RVE,16,32); i++){
     npc_cpu.gpr[i] = gpr(i);
   }
   npc_cpu.pc = PC;
@@ -81,11 +81,21 @@ static void exec_once(){
   // npc_cpu.csr.mtvec = top->cpu->csr1->csrs[3];
   
 
-  if(g_print_step){
-    disassemble(logbuf,50,PC);
-    print_inst(PC);
-    printf("\t%s\n", logbuf);
-  }
+  // if(g_print_step){
+  //   disassemble(logbuf,60,PC);
+  //   print_inst(PC);
+  //   printf("\t%s\n", logbuf);
+  // }
+
+   disassemble(logbuf, 64, PC , guest_to_host(PC), 4);
+   printf("0x" FMT_WORD_HEX_WIDTH ":    ", PC);
+    
+    for(int j = 3; j >= 0; j--){
+      printf("%02x ", ((uint8_t*)guest_to_host(PC))[j]);
+    }
+  
+
+    printf("%s\n", logbuf);
 }
 
 

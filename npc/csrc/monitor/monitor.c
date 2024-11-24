@@ -97,18 +97,26 @@ static int parse_args(int argc, char *argv[]) {
 
 
 void init_monitor(int argc, char** argv){
-        Verilated::commandArgs(argc, argv);
-        parse_args(argc, argv);
-        init_sim();
-        long img_size = load_img();
-        init_mem();
-        IFDEF(CONFIG_DEVICE, init_device());
-        cpu_reset(3);
-        //void cpu_single_cycle();
-        //cpu_single_cycle();
-        init_disasm();
-        init_difftest(diff_so_file, img_size, 0);  //Do not need to use the  third parameter
-        init_sdb();
+  Verilated::commandArgs(argc, argv);
+  parse_args(argc, argv);
+  init_sim();
+  init_mem();
+  IFDEF(CONFIG_DEVICE, init_device());
+  cpu_reset(3);
+  long img_size = load_img();
+  init_difftest(diff_so_file, img_size, 0);  //Do not need to use the  third parameter
+  init_sdb();
+
+#ifndef CONFIG_ISA_loongarch32r
+  IFDEF(CONFIG_ITRACE, init_disasm(
+    MUXDEF(CONFIG_ISA_x86,     "i686",
+    MUXDEF(CONFIG_ISA_mips32,  "mipsel",
+    MUXDEF(CONFIG_ISA_riscv,
+      MUXDEF(CONFIG_RV64,      "riscv64",
+                               "riscv32"),
+                               "bad"))) "-pc-linux-gnu"
+  ));
+#endif
         welcome();
        
 }

@@ -38,6 +38,8 @@ INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS)
 CXXFLAGS += $(CFLAGS)
 CXXFLAGS += -Wall $(INCFLAGS) -g -DTOP_NAME="\"V$(TOPNAME)\"" -fpermissive
+CXXFLAGS += $(shell llvm-config --cxxflags) -fPIE
+LDFLAGS += $(shell llvm-config --libs)
 LDFLAGS += -lreadline
 
 # source file
@@ -56,7 +58,7 @@ NPC_EXEC := $(BIN)
 
 default: $(BIN)
 
-$(BIN): $(CSRCS) verilog
+$(BIN): $(CSRCS) #verilog
 
 	$(VERILATOR) $(VERILATOR_CONFIG) $(VERILATOR_FLAGS) -top $(TOPNAME) $(CSRCS) $(VSRCS) \
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \

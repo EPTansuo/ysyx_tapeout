@@ -31,14 +31,20 @@ extern "C" void npc_ebreak(){
 extern "C" void inst_invalid(){
 	if(npc_state.state == NPC_ABORT)
 		return;
-	char logbuf[50];
+	char logbuf[64];
 	word_t pc = PC;
 	printf(L_RED "%s" COLOR_NONE "\n", isa_logo);
 	printf(L_RED "Invalid or Unimplemented Inst" COLOR_NONE "\n");
-	//print_inst( pc);
-	//disassemble(logbuf, 40, pc, (uint8_t *)(&_img[pc-0x80000000]), 4);
-	disassemble(logbuf, 50, pc );  //top->cpu->ifu1->inst_rom1->insts[pc-0x80000000]);
-	printf("At pc = 0x" FMT_WORD_HEX "\t%s\n", PC,logbuf);
+
+  disassemble(logbuf, 64, PC , guest_to_host(PC), 4);
+  printf("0x" FMT_WORD_HEX_WIDTH ":    ", PC);
+  
+  for(int j = 3; j >= 0; j--){
+    printf("%02x ", ((uint8_t*)guest_to_host(PC))[j]);
+  }
+
+
+  printf("%s\n", logbuf);
 	set_npc_state(NPC_ABORT, PC, -1);
 }
 
