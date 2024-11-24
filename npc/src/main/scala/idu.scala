@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.util._
 
 
-import Control._
+
 import defines._
 
 class IDU(xlen: Int) extends Module {

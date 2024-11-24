@@ -66,35 +66,6 @@ object valid {
 }
 
 
-object Control {
-
-
-  import pc_sel._
-  import A_sel._
-  import B_sel._
-  import imm_sel._
-  import aluop._ 
-  import wb_sel._ 
-  import valid._
-  import mask_sel._
-  import st_sel._
-  import ld_sel._
-
-
-val map = Array(
-        lui     ->  List(PC_4  , A_RS1, B_IMM, ALU_COPY_B, IMM_U, WB_ALU, LD_XX, ST_XX, MASK_XX, INST_VALID  ),
-        auipc   ->  List(PC_4  , A_PC , B_IMM, ALU_ADD   , IMM_U, WB_ALU, LD_XX, ST_XX, MASK_XX, INST_VALID  ),
-        addi    ->  List(PC_4  , A_RS1, B_IMM, ALU_ADD   , IMM_I, WB_ALU, LD_XX, ST_XX, MASK_XX, INST_VALID  ),
-        jalr    ->  List(PC_ALU, A_RS1, B_IMM, ALU_ADD   , IMM_I, WB_PC4, LD_XX, ST_XX, MASK_XX, INST_VALID),
-        jal     ->  List(PC_ALU, A_PC , B_IMM, ALU_ADD   , IMM_J, WB_PC4, LD_XX, ST_XX, MASK_XX, INST_VALID  ),
-        sw      ->  List(PC_4  , A_RS1, B_IMM, ALU_ADD   , IMM_S, WB_XX , LD_XX, ST_SW, MASK_W , INST_VALID  ),
-        lw      ->  List(PC_4  , A_RS1, B_IMM, ALU_ADD   , IMM_I, WB_XX , LD_LW, ST_XX, MASK_XX, INST_VALID  ),
-)
-val 
-        default  =  List(PC_4  , A_RS1, B_IMM, ALU_ADD   , IMM_I, WB_XX , LD_XX, ST_XX, MASK_XX, INST_INVALID)
-
-
-}
 
 class ControlOut(xlen: Int) extends Bundle{
   val pc_sel = Output(UInt(2.W))
@@ -119,7 +90,7 @@ class Control(xlen: Int) extends Module{
     val out = Output(new ControlOut(xlen))
     val in = Input(new ControlIn(xlen))
   })
-  val ctrlsig = ListLookup(io.in.inst, Control.default, Control.map)
+  val ctrlsig = ListLookup(io.in.inst, SigMap.default, SigMap.map)
   io.out.pc_sel := ctrlsig(0)
   io.out.B_sel := ctrlsig(2)
   io.out.A_sel := ctrlsig(1)
