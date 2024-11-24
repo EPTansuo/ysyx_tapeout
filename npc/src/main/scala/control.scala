@@ -103,7 +103,7 @@ class ControlOut(xlen: Int) extends Bundle{
   val wb_sel = Output(UInt(2.W))
   val ld_sel = Output(UInt(3.W))
   val st_sel = Output(UInt(2.W))
-  val mask_sel = Output(UInt(3.W))
+  val mask_sel = Output(UInt(8.W))
 
 }
 
