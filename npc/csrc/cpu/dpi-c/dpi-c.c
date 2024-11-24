@@ -36,14 +36,15 @@ extern "C" void inst_invalid(){
 	printf(L_RED "%s" COLOR_NONE "\n", isa_logo);
 	printf(L_RED "Invalid or Unimplemented Inst" COLOR_NONE "\n");
   printf("0x" FMT_WORD_HEX_WIDTH ":    ", PC);
-  disassemble(logbuf, 64, PC , guest_to_host(PC), 4);
+  fflush(stdout);
+  
   
   
   for(int j = 3; j >= 0; j--){
     printf("%02x ", ((uint8_t*)guest_to_host(PC))[j]);
   }
-
-
+  fflush(stdout);
+  disassemble(logbuf, 64, PC , guest_to_host(PC), 4);
   printf("%s\n", logbuf);
 	set_npc_state(NPC_ABORT, PC, -1);
 }
