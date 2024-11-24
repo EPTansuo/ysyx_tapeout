@@ -104,9 +104,7 @@ word_t paddr_read(paddr_t addr, int len) {
   if(addr >= 0xa0000100 && addr <= 0xa0000107){ //VGA
       return 0;
   }
-  else if(addr >= 0xa0000048 && addr <= 0xa000004c){ // TIMER
-    return 0;
-  }
+
 #endif 
 
 
