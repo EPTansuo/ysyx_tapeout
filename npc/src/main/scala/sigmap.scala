@@ -31,6 +31,7 @@ val map = Array(
 	lui     ->  List(PC_4  , A_RS1, B_IMM, ALU_COPY_B, IMM_U, WB_ALU, LD_XX, ST_XX, MASK_XX, BR_XX , INST_VALID  ),
 	auipc   ->  List(PC_4  , A_PC , B_IMM, ALU_ADD   , IMM_U, WB_ALU, LD_XX, ST_XX, MASK_XX, BR_XX , INST_VALID  ),
 	addi    ->  List(PC_4  , A_RS1, B_IMM, ALU_ADD   , IMM_I, WB_ALU, LD_XX, ST_XX, MASK_XX, BR_XX , INST_VALID  ),
+	andi    ->  List(PC_4  , A_RS1, B_IMM, ALU_AND   , IMM_I, WB_ALU, LD_XX, ST_XX, MASK_XX, BR_XX , INST_VALID  ),
 	jalr    ->  List(PC_ALU, A_RS1, B_IMM, ALU_ADD   , IMM_I, WB_PC4, LD_XX, ST_XX, MASK_XX, BR_XX , INST_VALID  ),
 	jal     ->  List(PC_ALU, A_PC , B_IMM, ALU_ADD   , IMM_J, WB_PC4, LD_XX, ST_XX, MASK_XX, BR_XX , INST_VALID  ),
 	sw      ->  List(PC_4  , A_RS1, B_IMM, ALU_ADD   , IMM_S, WB_XX , LD_XX, ST_SW, MASK_W , BR_XX , INST_VALID  ),
