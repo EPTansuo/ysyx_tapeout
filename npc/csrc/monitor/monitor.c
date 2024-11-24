@@ -110,17 +110,8 @@ void init_monitor(int argc, char** argv){
   init_difftest(diff_so_file, img_size, 0);  //Do not need to use the  third parameter
   init_sdb();
 
-#ifndef CONFIG_ISA_loongarch32r
-  IFDEF(CONFIG_ITRACE, init_disasm(
-    MUXDEF(CONFIG_ISA_x86,     "i686",
-    MUXDEF(CONFIG_ISA_mips32,  "mipsel",
-    MUXDEF(CONFIG_ISA_riscv,
-      MUXDEF(CONFIG_RV64,      "riscv64",
-                               "riscv32"),
-                               "bad"))) "-pc-linux-gnu"
-  ));
-#endif
-        welcome();
+  init_disasm(MUXDEF(CONFIG_RV32,"riscv32","riscv64"));
+  welcome();
        
 }
 
