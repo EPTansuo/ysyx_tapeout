@@ -76,12 +76,43 @@ def gen_code(table):
 
 # In[68]:
 
+prev_code = """
+/****************************************************
+*
+* Automatically generated file; DO NOT EDIT.
+*
+*****************************************************/
+
+package  cpu
+
+
+import chisel3._
+import chisel3.util._
+import insts._
+
+object SigMap{
+
+
+  import pc_sel._
+  import A_sel._
+  import B_sel._
+  import imm_sel._
+  import aluop._
+  import wb_sel._
+  import valid._
+  import mask_sel._
+  import st_sel._
+  import ld_sel._
+
+"""
+end_code = "\n}\n\n"
+
 
 table = pd.read_excel("control_table.xlsx")
 check_table(table)
 # for col in range(table.shape[1]):
 #     for row in range(table.shape[0]):
 #         print(f"{row},{col}: {table.iloc[row,col]}")
-print(gen_code(table))
+print(prev_code + gen_code(table) + end_code)
 #print(gen_assign(table, 4))
 

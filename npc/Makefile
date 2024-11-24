@@ -64,9 +64,13 @@ $(BIN): $(CSRCS) verilog
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) --top-module $(TOPNAME)
 
-verilog: $(SCALA_FILE)
+verilog: $(SCALA_FILE) sigmap
 	@mkdir -p $(BUILD_DIR)/verilog
 	./mill -i $(TOPNAME).runMain $(MAIN) -td $(BUILD_DIR)/verilog --emit-modules verilog
+
+sigmap: $(NPC_HOME)/tools/control_gen/control_table.xlsx
+	cd $(NPC_HOME)/tools/control_gen/ && python control_gen.py > $(NPC_HOME)/src/main/scala/sigmap.scala
+
 
 sim: run
 run: $(BIN)
