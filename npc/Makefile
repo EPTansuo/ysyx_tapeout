@@ -2,7 +2,7 @@ TOPNAME = npc
 MAIN = $(TOPNAME).npcMain
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/OBJ_DIR
-IMG = "/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/add.bin"
+IMG = "/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/add-riscv32e-npc.bin"
 ARGS = -v --diff="/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/nemu/build/riscv32-nemu-interpreter-so"
 
 VERILATOR = verilator
