@@ -23,12 +23,13 @@ class CPU(xlen:Int) extends Module{
 
   val alu = Module(new ALU(xlen))
   val idu = Module(new IDU(xlen))
+  
   val ctrlsig = idu.io.out
 
 
   // pc 
-  //val pc = RegInit(PC_INIT.U(xlen.W) - 4.U(xlen.W))
-  val pc = RegInit(PC_INIT.U(xlen.W))
+  val pc = RegInit(PC_INIT.U(xlen.W) - 4.U(xlen.W))
+  //val pc = RegInit(PC_INIT.U(xlen.W))
   import pc_sel._
   val npc = MuxLookup(ctrlsig.pc_sel, default = pc, Seq(
       PC_4   -> (pc + 4.U),
@@ -36,7 +37,8 @@ class CPU(xlen:Int) extends Module{
       PC_ALU -> alu.io.out
   ))
   pc := npc
-  
+  idu.io.pc := pc
+
   // ifu
   val ifu = Module(new IFU(xlen))
   ifu.io.pc_in := pc

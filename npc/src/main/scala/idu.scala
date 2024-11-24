@@ -10,6 +10,7 @@ import defines._
 class IDU(xlen: Int) extends Module {
     val io = IO(new Bundle {
         val inst = Input(UInt(xlen.W))
+        val pc = Input(UInt(xlen.W))
         val out = Output(new ControlOut(xlen))
     })
 
@@ -18,5 +19,6 @@ class IDU(xlen: Int) extends Module {
 
     control.io.in.inst := io.inst
     control.io.out <> io.out
+    control.io.in.pc := io.pc
 
 }

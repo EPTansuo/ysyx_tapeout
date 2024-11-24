@@ -3,6 +3,7 @@ package cpu
 import chisel3._
 import chisel3.util._
 import insts._
+import defines._
 
 object pc_sel {
   val PC_4  = 0.U(2.W)
@@ -106,6 +107,7 @@ class ControlOut(xlen: Int) extends Bundle{
 
 class ControlIn(xlen: Int) extends Bundle{
     val inst = Input(UInt(xlen.W))
+    val pc = Input(UInt(xlen.W))
 }
 
 class Control(xlen: Int) extends Module{
@@ -132,7 +134,7 @@ class Control(xlen: Int) extends Module{
   //invaild instruction
   val instInvalid = Module(new InstInvalid)
   instInvalid.io.isvalid := (ctrlsig(9) === valid.INST_VALID) ||
-                          isebreak || reset.asBool()
+                          isebreak || io.in.pc < PC_INIT.U
 }
 
 
