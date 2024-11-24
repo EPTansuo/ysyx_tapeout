@@ -53,11 +53,22 @@ object ld_sel {
   val LD_XX  = 5.U(3.W)
 }
 
+
 object mask_sel {
   val MASK_XX = 0x0.U(8.W)
   val MASK_B  = 0x01.U(8.W)
   val MASK_H  = 0x03.U(8.W)
   val MASK_W  = 0x0f.U(8.W)
+}
+
+object br_sel {
+  val BR_EQ  = 0.U(3.W)
+  val BR_NE  = 1.U(3.W)
+  val BR_LTU = 2.U(3.W)
+  val BR_GE  = 3.U(3.W)
+  val BR_GEU = 4.U(3.W)
+  val BR_LT  = 5.U(3.W)
+  val BR_XX  = 6.U(3.W)
 }
 
 object valid {
@@ -77,7 +88,7 @@ class ControlOut(xlen: Int) extends Bundle{
   val ld_sel = Output(UInt(3.W))
   val st_sel = Output(UInt(2.W))
   val mask_sel = Output(UInt(8.W))
-
+  val br_sel =  Output(UInt(3.W))
 }
 
 class ControlIn(xlen: Int) extends Bundle{
@@ -100,7 +111,7 @@ class Control(xlen: Int) extends Module{
   io.out.ld_sel := ctrlsig(6)
   io.out.st_sel := ctrlsig(7)
   io.out.mask_sel := ctrlsig(8)
-
+  io.out.br_sel := ctrlsig(9)
   //Ebreak
   val ebreak_ = Module(new Ebreak)
   val isebreak = io.in.inst === insts.ebreak
@@ -108,7 +119,7 @@ class Control(xlen: Int) extends Module{
 
   //invaild instruction
   val instInvalid = Module(new InstInvalid)
-  instInvalid.io.isvalid := (ctrlsig(9) === valid.INST_VALID) ||
+  instInvalid.io.isvalid := (ctrlsig(10) === valid.INST_VALID) ||
                           isebreak || io.in.pc < PC_INIT
 }
 

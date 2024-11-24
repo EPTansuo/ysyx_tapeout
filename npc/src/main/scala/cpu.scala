@@ -27,15 +27,26 @@ class CPU(xlen:Int) extends Module{
   val ctrlsig = idu.io.out
 
   
+  val branch = Module(new Branch(xlen))
+  branch.io.br_sel := ctrlsig.br_sel
+
+
   // pc 
   val pc = RegInit(PC_INIT - 4.U(xlen.W))
   //val pc = RegInit(PC_INIT.U(xlen.W))
   import pc_sel._
-  val npc = MuxLookup(ctrlsig.pc_sel, default = pc, Seq(
-      PC_4   -> (pc + 4.U),
-      PC_0   -> pc,
-      PC_ALU -> alu.io.out
-  ))
+  // val npc = MuxLookup(ctrlsig.pc_sel, default = pc, Seq(
+  //     PC_4   -> (pc + 4.U),
+  //     PC_0   -> pc,
+  //     (PC_ALU) -> alu.io.out
+  // ))
+  val npc = MuxCase(
+    pc + 4.U,  
+    IndexedSeq(
+      ((ctrlsig.pc_sel === PC_ALU) || (branch.io.taken)) -> (alu.io.sum >> 1.U << 1.U),  // 如果 ALU 被选中或分支被采纳，进行地址对齐操作后跳转
+      (ctrlsig.pc_sel === PC_0) -> pc  // 如果选择 PC_0，则维持当前 pc
+  )
+)
   pc := npc
   idu.io.pc := pc
 
@@ -58,7 +69,12 @@ class CPU(xlen:Int) extends Module{
   regfile.io.raddr2 := rs2_addr
   regfile.io.waddr := rd_addr
   
+  val src1 = regfile.io.rdata1
+  val src2 = regfile.io.rdata2
 
+  branch.io.src1 := src1
+  branch.io.src2 := src2
+  
   // immgen
   val immGen = Module(new ImmGen(xlen))
   immGen.io.inst := inst
@@ -69,14 +85,14 @@ class CPU(xlen:Int) extends Module{
   
   import A_sel._
   alu.io.A := MuxLookup(ctrlsig.A_sel, default = 0.U(XLEN.W), Array(
-      A_RS1 -> regfile.io.rdata1,
+      A_RS1 -> src1,
       A_PC  -> pc
       )
   )
 
   import B_sel._
   alu.io.B := MuxLookup(ctrlsig.B_sel, default = 0.U(XLEN.W), Array(
-      B_RS2 -> regfile.io.rdata2,
+      B_RS2 -> src2,
       B_IMM -> immGen.io.out
       )
   )
@@ -98,9 +114,9 @@ class CPU(xlen:Int) extends Module{
   import st_sel._
   val st_data = MuxLookup(ctrlsig.st_sel, default = 0.U(XLEN.W), Array(
       ST_XX -> 0.U(XLEN.W),
-      ST_SB -> regfile.io.rdata2(7, 0),
-      ST_SH -> regfile.io.rdata2(15, 0),
-      ST_SW -> regfile.io.rdata2
+      ST_SB -> src2(7, 0),
+      ST_SH -> src2(15, 0),
+      ST_SW -> src2
       )
   )
 
@@ -113,7 +129,7 @@ class CPU(xlen:Int) extends Module{
       )
   )
 
-  
+
 
   regfile.io.wdata := wb_data
   regfile.io.we := ctrlsig.wb_sel =/= WB_XX;

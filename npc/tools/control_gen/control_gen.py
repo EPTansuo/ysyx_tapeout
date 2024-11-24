@@ -103,6 +103,7 @@ object SigMap{
   import mask_sel._
   import st_sel._
   import ld_sel._
+  import br_sel._
 
 """
 end_code = "\n}\n\n"
