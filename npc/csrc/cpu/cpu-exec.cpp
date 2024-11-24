@@ -87,15 +87,15 @@ static void exec_once(){
   //   printf("\t%s\n", logbuf);
   // }
 
-   disassemble(logbuf, 64, PC , guest_to_host(PC), 4);
+ //  disassemble(logbuf, 64, PC , guest_to_host(PC), 4);
    printf("0x" FMT_WORD_HEX_WIDTH ":    ", PC);
     
     for(int j = 3; j >= 0; j--){
       printf("%02x ", ((uint8_t*)guest_to_host(PC))[j]);
     }
   
-
-    printf("%s\n", logbuf);
+  printf("\n");
+   // printf("%s\n", logbuf);
 }
 
 
