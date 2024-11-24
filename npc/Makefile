@@ -49,6 +49,8 @@ VSRCS += $(shell find $(abspath ./build/verilog) -name "*.v")
 SCALA_FILE = $(shell find ./src/main -name '*.scala')
 CSRCS = $(shell find $(abspath ./csrc) \( -path $(abspath ./csrc/device) -prune \) -o \( -name "*.c" -or -name "*.cc" -or -name "*.cpp" \) -print)
 
+include $(NPC_HOME)/csrc/device/filelist.mk
+
 # rules for NVBoard
 include $(NVBOARD_HOME)/scripts/nvboard.mk
 
@@ -60,7 +62,6 @@ NPC_EXEC := $(BIN)
 default: $(BIN)
 
 $(BIN): $(CSRCS) verilog
-
 	$(VERILATOR) $(VERILATOR_CONFIG) $(VERILATOR_FLAGS) -top $(TOPNAME) $(CSRCS) $(VSRCS) \
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) --top-module $(TOPNAME)
