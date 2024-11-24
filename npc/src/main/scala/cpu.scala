@@ -28,7 +28,7 @@ class CPU(xlen:Int) extends Module{
 
   
   // pc 
-  val pc = RegInit(PC_INIT)// - 4.U(xlen.W))
+  val pc = RegInit(PC_INIT - 4.U(xlen.W))
   //val pc = RegInit(PC_INIT.U(xlen.W))
   import pc_sel._
   val npc = MuxLookup(ctrlsig.pc_sel, default = pc, Seq(
