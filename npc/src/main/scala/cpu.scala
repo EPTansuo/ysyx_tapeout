@@ -43,8 +43,8 @@ class CPU(xlen:Int) extends Module{
   val npc = MuxCase(
     pc + 4.U,  
     IndexedSeq(
-      ((ctrlsig.pc_sel === PC_ALU) || (branch.io.taken)) -> (alu.io.sum >> 1.U << 1.U),  // 如果 ALU 被选中或分支被采纳，进行地址对齐操作后跳转
-      (ctrlsig.pc_sel === PC_0) -> pc  // 如果选择 PC_0，则维持当前 pc
+      ((ctrlsig.pc_sel === PC_ALU) || (branch.io.taken)) -> (alu.io.out >> 1.U << 1.U),  
+      (ctrlsig.pc_sel === PC_0) -> pc  
   )
 )
   pc := npc
@@ -103,12 +103,12 @@ class CPU(xlen:Int) extends Module{
   import ld_sel._
   val ld_data = MuxLookup(ctrlsig.ld_sel, default = 0.U(XLEN.W), Array(
       LD_XX -> 0.U(XLEN.W),
-      LD_LB -> io.dmem.rdata(7, 0).asSInt.asUInt,
-      LD_LH -> io.dmem.rdata(15, 0).asSInt.asUInt,
+      LD_LB -> Cat(Fill(XLEN-8, io.dmem.rdata(7)), io.dmem.rdata(7, 0)),
+      LD_LH -> Cat(Fill(XLEN-16, io.dmem.rdata(15)), io.dmem.rdata(15, 0)),
       LD_LW -> io.dmem.rdata,
       LD_LBU -> io.dmem.rdata(7, 0).asUInt,
       LD_LHU -> io.dmem.rdata(15, 0).asUInt
-      )
+    )
   )
 
   import st_sel._

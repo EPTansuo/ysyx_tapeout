@@ -19,10 +19,11 @@ class Regfile(xlen: Int) extends Module{
     val io = IO(new RegfileIO(xlen))
 
     var regs = Mem(32, UInt(xlen.W))
-    io.rdata1 := Mux(io.raddr1 === 0.U, 0.U, regs(io.raddr1))
-    io.rdata2 := Mux(io.raddr1 === 0.U, 0.U, regs(io.raddr2))
+
+    io.rdata1 := regs(io.raddr1)
+    io.rdata2 := regs(io.raddr2)
 
     when(io.we) {
-        regs(io.waddr) := io.wdata
+        regs(io.waddr) := Mux(io.waddr === 0.U, 0.U, io.wdata)
     }
 }
