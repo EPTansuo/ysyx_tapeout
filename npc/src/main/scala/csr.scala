@@ -75,7 +75,13 @@ class CSR(xlen:Int) extends Module{
     mcause := io.in
     io.epc := mtvec
   }.elsewhen(is_mret){
-    mstatus := Cat(mstatus(31,13), 2.U(2.W),mstatus(10,8),mstatus(3),mstatus(6,4),0.U(1.W),mstatus(2,0))
+      mstatus := Cat(mstatus(31, 13), 
+                 2.U(2.W),            
+                 mstatus(10, 8),  
+                 mstatus(3),      
+                 mstatus(6, 4),   
+                 0.U(1.W),        
+                 mstatus(2, 0))   
     io.epc := mepc
   }.otherwise{
     io.epc := 0.U
