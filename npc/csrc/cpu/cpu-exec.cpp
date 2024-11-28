@@ -75,17 +75,12 @@ static void exec_once(){
   }
   npc_cpu.pc = PC;
 
-  // npc_cpu.csr.mepc = top->cpu->csr1->csrs[0];
-  // npc_cpu.csr.mcause = top->cpu->csr1->csrs[1];
-  // npc_cpu.csr.mstatus = top->cpu->csr1->csrs[2];
-  // npc_cpu.csr.mtvec = top->cpu->csr1->csrs[3];
+  npc_cpu.csr.mepc = CSR->mepc;
+  npc_cpu.csr.mcause = CSR->mcause;
+  npc_cpu.csr.mstatus = CSR->mstatus;
+  npc_cpu.csr.mtvec = CSR->mtvec;
   
 
-  // if(g_print_step){
-  //   disassemble(logbuf,60,PC);
-  //   print_inst(PC);
-  //   printf("\t%s\n", logbuf);
-  // }
   if(g_print_step){
    disassemble(logbuf, 64, PC , guest_to_host(PC), 4);
    printf("0x" FMT_WORD_HEX_WIDTH ":    ", PC);

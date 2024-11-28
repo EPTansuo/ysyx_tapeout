@@ -9,11 +9,13 @@
 #include "Vnpc_CPU.h"
 #include "Vnpc__Dpi.h"
 #include "Vnpc_Regfile.h"
+#include "Vnpc_CSR.h"
 
 extern Vnpc* top;
 
 #define REGS (top->npc->cpu->regfile->regs)
 #define PC (top->npc->cpu->pc)
+#define CSR (top->npc->cpu->csr)
 
 #endif // !_VERILATOR_H_
 
