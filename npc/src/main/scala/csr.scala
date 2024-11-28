@@ -76,7 +76,7 @@ class CSR(xlen:Int) extends Module{
     io.epc := mtvec
   }.elsewhen(is_mret){
       mstatus := Cat(mstatus(31, 13), 
-                 1.U(2.W),            
+                 0.U(2.W),            
                  mstatus(10, 8),  
                  mstatus(3),      // MPIE
                  mstatus(6, 4),   
