@@ -73,7 +73,7 @@ class CPU(xlen:Int) extends Module{
   val rd_addr = inst(11, 7)
   val rs1_addr = inst(19, 15)
   val rs2_addr = inst(24, 20)
-  regfile.io.raddr1 := rs1_addr
+  regfile.io.raddr1 := Mux(ctrlsig.csr_cmd === csr_cmd.CSR_P, 15.U,rs1_addr)
   regfile.io.raddr2 := rs2_addr
   regfile.io.waddr := rd_addr
   

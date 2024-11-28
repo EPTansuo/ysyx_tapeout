@@ -72,7 +72,7 @@ class CSR(xlen:Int) extends Module{
     mepc := io.pc >> 2 << 2
     //mcause := 0x8000000000000000.U
     mstatus := 0x1800.U
-
+    mcause := io.in
     io.epc := mtvec
   }.elsewhen(is_mret){
     val bools = VecInit(mstatus.asBools)
@@ -80,6 +80,7 @@ class CSR(xlen:Int) extends Module{
     bools(7) := 1.U
     bools(12) := 0.U
     bools(11) := 0.U
+    
     mstatus := bools.asUInt
     io.epc := mepc
   }.otherwise{
