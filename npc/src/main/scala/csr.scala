@@ -24,9 +24,9 @@ class CSR(xlen:Int) extends Module{
   
   val mepc = RegInit(0.U(xlen.W))
   val mcause = RegInit(0.U(xlen.W))
-  //val mtvec = RegInit(Mux((xlen.U === 32.U), 0x1000.U(32.W), 0x80000000L.U(64.W)))
+  //val mtvec = RegInit(Mux((xlen.U === 32.U), 0x100.U(32.W), 0x80000000L.U(64.W)))
   //val mstatus = RegInit(Mux((xlen.U === 32.U), 0x1800.U(32.W), 0xa00001800L.U(64.W)))
-  val mtvec = RegInit(0x1000.U(32.W))
+  val mtvec = RegInit(0x100.U(32.W))
   val mstatus = RegInit(0x1800.U(32.W))
 
   var csr_regs = Seq(

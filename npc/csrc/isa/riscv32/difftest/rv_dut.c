@@ -62,10 +62,10 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
 
     if(succ && cpu_state_buf.pc != npc_cpu.gpr[i]){
         succ = false;
-        printf(L_RED "npc: pc = 0x" FMT_WORD_HEX_WIDTH "\tnemu: pc = " FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.pc,cpu_state_buf.pc);
+        printf(L_RED "npc: pc = 0x" FMT_WORD_HEX_WIDTH "\tnemu: pc = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.pc,cpu_state_buf.pc);
       }
     if(cpu_state_buf.csr.mepc != npc_cpu.csr.mepc){
-      printf(L_RED "npc: mepc   = 0x" FMT_WORD_HEX_WIDTH "\tnemu: mepc     = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.csr.mepc,cpu_state_buf.csr.mepc);
+      printf(L_RED "npc: mepc   = 0x" FMT_WORD_HEX_WIDTH "\tnemu: mepc   = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.csr.mepc,cpu_state_buf.csr.mepc);
       succ = false;
     }
     if(cpu_state_buf.csr.mcause != npc_cpu.csr.mcause){
@@ -77,7 +77,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
       succ = false;
     }
     if(cpu_state_buf.csr.mtvec != npc_cpu.csr.mtvec){
-      printf(L_RED "npc: mtvec  = 0x" FMT_WORD_HEX_WIDTH "\tnemu: mtvec  = " FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.csr.mtvec,cpu_state_buf.csr.mtvec);
+      printf(L_RED "npc: mtvec  = 0x" FMT_WORD_HEX_WIDTH "\tnemu: mtvec  = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.csr.mtvec,cpu_state_buf.csr.mtvec);
       succ = false;
     }
 
