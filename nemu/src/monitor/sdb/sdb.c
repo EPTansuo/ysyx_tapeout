@@ -169,6 +169,11 @@ static int cmd_info(char *args){
     //打印ftrace信息
     ftrace_func_call_list_print();
   }
+  else if(!strcmp(arg, "c"))
+  {
+    //打印csr信息
+    isa_csr_display();
+  }
   else{
     printf("Unrecognized option: %s\n", args);
   }
