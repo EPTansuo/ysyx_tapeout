@@ -78,9 +78,9 @@ class CSR(xlen:Int) extends Module{
       mstatus := Cat(mstatus(31, 13), 
                  0.U(2.W),            
                  mstatus(10, 8),  
-                 mstatus(3),      // MPIE
+                 1.U(1.W),      // MPIE
                  mstatus(6, 4),   
-                 0.U(1.W),        // MIE
+                 mstatus(7),        // MIE
                  mstatus(2, 0))   
     io.epc := mepc
   }.otherwise{
