@@ -24,15 +24,22 @@ class CPU(xlen:Int) extends Module{
   val alu = Module(new ALU(xlen))
   val idu = Module(new IDU(xlen))
   
+
   val ctrlsig = idu.io.out
 
   
   val branch = Module(new Branch(xlen))
   branch.io.br_sel := ctrlsig.br_sel
-
-
-  // pc 
+  
   val pc = RegInit(PC_INIT - 4.U(xlen.W))
+
+
+  val csr = Module(new CSR(xlen))
+  csr.io.cmd := ctrlsig.csr_cmd
+  csr.io.inst := idu.io.inst
+  csr.io.pc := pc
+  
+
   //val pc = RegInit(PC_INIT.U(xlen.W))
   import pc_sel._
   // val npc = MuxLookup(ctrlsig.pc_sel, default = pc, Seq(
@@ -43,8 +50,9 @@ class CPU(xlen:Int) extends Module{
   val npc = MuxCase(
     pc + 4.U,  
     IndexedSeq(
-      ((ctrlsig.pc_sel === PC_ALU) || (branch.io.taken)) -> (alu.io.out >> 1.U << 1.U),  
-      (ctrlsig.pc_sel === PC_0) -> pc  
+      ((ctrlsig.pc_sel === PC_ALU) || (branch.io.taken)) -> (alu.io.out >> 1.U << 1.U),  //对齐
+      (ctrlsig.pc_sel === PC_0) -> pc, 
+      (ctrlsig.pc_sel === PC_EPC) -> csr.io.epc
   )
 )
   pc := npc
@@ -75,6 +83,8 @@ class CPU(xlen:Int) extends Module{
   branch.io.src1 := src1
   branch.io.src2 := src2
   
+  csr.io.in := src1  //目前还未用到立即数  WARNING
+
   // immgen
   val immGen = Module(new ImmGen(xlen))
   immGen.io.inst := inst
@@ -125,11 +135,12 @@ class CPU(xlen:Int) extends Module{
   val wb_data = MuxLookup(ctrlsig.wb_sel, default = 0.U(XLEN.W), Array(
       WB_ALU -> alu.io.out,
       WB_MEM -> ld_data,
-      WB_PC4  -> (pc + 4.U)
+      WB_PC4  -> (pc + 4.U),
+      WB_CSR -> csr.io.out,
       )
   )
 
-
+  
 
   regfile.io.wdata := wb_data
   regfile.io.we := ctrlsig.wb_sel =/= WB_XX;
