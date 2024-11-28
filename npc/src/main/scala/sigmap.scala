@@ -66,7 +66,7 @@ val map = Array(
 	or      ->  List(PC_4  , A_RS1, B_RS2, ALU_OR    , IMM_I, WB_ALU, LD_XX , ST_XX, MASK_XX, BR_XX , CSR_XX, INST_VALID  ),
 	csrrw   ->  List(PC_4  , A_RS1, B_RS2, ALU_ADD   , IMM_I, WB_CSR, LD_XX , ST_XX, MASK_XX, BR_XX , CSR_W , INST_VALID  ),
 	csrrs   ->  List(PC_4  , A_RS1, B_RS2, ALU_ADD   , IMM_I, WB_CSR, LD_XX , ST_XX, MASK_XX, BR_XX , CSR_S , INST_VALID  ),
-	ecall   ->  List(PC_4  , A_RS1, B_IMM, ALU_ADD   , IMM_I, WB_CSR, LD_XX , ST_XX, MASK_XX, BR_XX , CSR_P , INST_VALID  ),
+	ecall   ->  List(PC_EPC, A_RS1, B_IMM, ALU_ADD   , IMM_I, WB_CSR, LD_XX , ST_XX, MASK_XX, BR_XX , CSR_P , INST_VALID  ),
 	mret    ->  List(PC_EPC, A_RS1, B_IMM, ALU_ADD   , IMM_I, WB_CSR, LD_XX , ST_XX, MASK_XX, BR_XX , CSR_P , INST_VALID  ),
 )
 val 
