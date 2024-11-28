@@ -13,7 +13,7 @@ object pc_sel {
   val PC_4  = 0.U(2.W)
   val PC_0  = 1.U(2.W)
   val PC_ALU = 2.U(2.W)
-  val PC_EPC = 3.U(2.W)
+  val PC_CSR = 3.U(2.W)
 }
 
 object A_sel {

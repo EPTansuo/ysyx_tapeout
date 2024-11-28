@@ -15,7 +15,7 @@ class CSRIO(xlen:Int) extends Bundle{
   
   val inst = Input(UInt(32.W))
   val pc = Input(UInt(xlen.W))
-  val epc = Output(UInt(xlen.W))
+  val target_pc = Output(UInt(xlen.W))
 }
 
 class CSR(xlen:Int) extends Module{
@@ -73,7 +73,7 @@ class CSR(xlen:Int) extends Module{
     //mcause := 0x8000000000000000.U
     mstatus := 0x1800.U
     mcause := io.in
-    io.epc := mtvec
+    io.target_pc := mtvec
   }.elsewhen(is_mret){
       mstatus := Cat(mstatus(31, 13), 
                  0.U(2.W),            
@@ -82,9 +82,9 @@ class CSR(xlen:Int) extends Module{
                  mstatus(6, 4),   
                  mstatus(7),        // MIE
                  mstatus(2, 0))   
-    io.epc := mepc
+    io.target_pc := mepc
   }.otherwise{
-    io.epc := 0.U
+    io.target_pc := 0.U
   }
 
 }

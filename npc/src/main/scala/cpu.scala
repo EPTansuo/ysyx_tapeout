@@ -52,7 +52,7 @@ class CPU(xlen:Int) extends Module{
     IndexedSeq(
       ((ctrlsig.pc_sel === PC_ALU) || (branch.io.taken)) -> (alu.io.out >> 1.U << 1.U),  //对齐
       (ctrlsig.pc_sel === PC_0) -> pc, 
-      (ctrlsig.pc_sel === PC_EPC) -> csr.io.epc
+      (ctrlsig.pc_sel === PC_CSR) -> csr.io.target_pc
   )
 )
   pc := npc
