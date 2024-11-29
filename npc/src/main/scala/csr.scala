@@ -44,8 +44,10 @@ class CSR(xlen:Int) extends Module{
   
 
   // ebreak 在 control.scal 由dpi-c实现
-  val is_ecall = io.inst === insts.ecall  // INFO 这里还可以优化很多地方
-  val is_mret = io.inst === insts.mret
+  //val is_ecall = io.inst === insts.ecall  // INFO 这里还可以优化很多地方
+  val is_ecall = io.cmd === CSR_P && io.inst(21,20) === 0x0.U
+  //val is_mret = io.inst === insts.mret
+  val is_mret = io.cmd === CSR_P && io.inst(21,20) === 0x1.U
 
   val rs1_addr = io.inst(19, 15)
 
