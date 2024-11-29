@@ -12,9 +12,12 @@ VERILATOR_COVERAGE = verilator_coverage
 # 		-O3 --x-assign fast --x-initial fast --noassert -report-unoptflat
 #
 
+V_INCPATH+=$(abspath $(YSYX_HOME)/npc/vsrc)
+V_INCPATH+=$(shell find $(YSYX_HOME)/ysyxSoC/perip -type f -name '*defines*.v' -exec dirname {} \;)
+V_INCFLAGS=$(addprefix -I, $(V_INCPATH))
 VERILATOR_FLAGS += -MMD --build -cc --public --trace\
 				--x-assign fast --x-initial fast --noassert \
-				-I$(YSYX_HOME)/npc/vsrc  --threads 1
+				$(V_INCFLAGS) --threads 1
 
 # timescale set
 VERILATOR_FLAGS += --timescale 1us/1us
