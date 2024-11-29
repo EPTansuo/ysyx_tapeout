@@ -2,8 +2,8 @@ TOPNAME = npc
 MAIN = $(TOPNAME).npcMain
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/OBJ_DIR
-IMG = "/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/add-riscv32e-npc.bin"
-ARGS = -v --diff="/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/nemu/build/riscv32-nemu-interpreter-so"
+IMG = "$(YSYX_HOME)/am-kernels/tests/cpu-tests/build/add-riscv32e-npc.bin"
+ARGS = -v --diff="$(NEMU_HOME)/build/riscv32-nemu-interpreter-so"
 
 VERILATOR = verilator
 VERILATOR_COVERAGE = verilator_coverage
@@ -12,9 +12,12 @@ VERILATOR_COVERAGE = verilator_coverage
 # 		-O3 --x-assign fast --x-initial fast --noassert -report-unoptflat
 #
 
+V_INCPATH+=$(abspath $(YSYX_HOME)/npc/vsrc)
+V_INCPATH+=$(shell find $(YSYX_HOME)/ysyxSoC/perip -type f -name '*defines*.v' -exec dirname {} \;)
+V_INCFLAGS=$(addprefix -I, $(V_INCPATH))
 VERILATOR_FLAGS += -MMD --build -cc --public --trace\
 				--x-assign fast --x-initial fast --noassert \
-				-I$(YSYX_HOME)/npc/vsrc  --threads 1
+				$(V_INCFLAGS) --threads 1
 
 # timescale set
 VERILATOR_FLAGS += --timescale 1us/1us
@@ -45,14 +48,16 @@ LDFLAGS += -lreadline
 
 # source file
 VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
+VSRCS += $(shell find $(YSYX_HOME)/ysyxSoC/perip -name "*.v")
+VSRCS += $(shell find $(YSYX_HOME)/ysyxSoC/build -name "*.v")
 VSRCS += $(shell find $(abspath ./build/verilog) -name "*.v")
+
 SCALA_FILE = $(shell find ./src/main -name '*.scala')
+
 CSRCS = $(shell find $(abspath ./csrc) \( -path $(abspath ./csrc/device) -prune \) -o \( -name "*.c" -or -name "*.cc" -or -name "*.cpp" \) -print)
 
 include $(NPC_HOME)/csrc/device/filelist.mk
 
-# rules for NVBoard
-include $(NVBOARD_HOME)/scripts/nvboard.mk
 
 
 
@@ -92,5 +97,7 @@ clean_all: clean clean_mill
 
 .PHONY: clean clean_all clean_mill srun run sim verilog
 
+# rules for NVBoard
+include $(NVBOARD_HOME)/scripts/nvboard.mk
 
 include ../Makefile
