@@ -48,8 +48,8 @@ LDFLAGS += -lreadline
 
 # source file
 VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
-VSRCS += $(shell find $(YSYX_HOME)/ysyxSoC/perip -name "*.v")
-VSRCS += $(shell find $(YSYX_HOME)/ysyxSoC/build -name "*.v")
+#VSRCS += $(shell find $(YSYX_HOME)/ysyxSoC/perip -name "*.v")
+#VSRCS += $(shell find $(YSYX_HOME)/ysyxSoC/build -name "*.v")
 VSRCS += $(shell find $(abspath ./build/verilog) -name "*.v")
 
 SCALA_FILE = $(shell find ./src/main -name '*.scala')
