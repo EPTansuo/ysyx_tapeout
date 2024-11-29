@@ -1,8 +1,4 @@
-!*.sh
-!*.ipynb
-!*.py
-!/npc/tools/*
-!/npc/.config
+
 *.*
 *
 !*/
@@ -23,3 +19,10 @@
 .virtual_documents/
 .ipynb_checkpoints/
 /nvboard
+!/npc/tools/*
+!*.sh
+!*.c
+!*.h
+!*.ipynb
+!*.py
+!.gitmodules

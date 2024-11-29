@@ -61,8 +61,8 @@ uint64_t get_time();
 
 
 
-void disassemble(char* logbuf, size_t logbuf_size, word_t pc);
-void init_disasm();
+extern "C" void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
+extern "C" void init_disasm(const char *triple);
 
 
 

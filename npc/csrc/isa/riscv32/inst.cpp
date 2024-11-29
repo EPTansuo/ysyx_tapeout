@@ -1,15 +1,11 @@
 #include <common.h>
-#include <verilated.h>
-#include <Vcpu.h>
-#include <Vcpu_inst_rom.h>
-#include <Vcpu_ifu.h>
-#include <Vcpu_cpu.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
 #include <color.h>
 #include <iomanip>
 #include <memory/paddr.h>
+
 
 //const char * img_file = NULL;
 
@@ -28,46 +24,10 @@ static uint32_t img_default[] = {           //    imm          rs1       rd   op
 uint32_t inst_num;
 char *img;
 extern char* img_file;
-extern Vcpu *top;
-
-long init_insts_file(){
-	img = (char*)malloc(InstRomSize);
-	long size = 0;
-	FILE* fp = fopen(img_file,"r");
-	if(fp == NULL){
-		printf(L_RED "Can not open init insts!\n" NONE);
-		return 0;
-	}
-	fseek(fp, 0, SEEK_SET);
-	size = fread(img, 1, InstRomSize, fp);
-	inst_num = size / 4;
-	for(size_t i = 0; i < InstRomSize; i++){
-		top->cpu->ifu1->inst_rom1->insts[i] = img[i];
-	}
-	fclose(fp);	
-	return size;
-}
-
-long init_insts_default(){
-	
-	//uint8_t *insts = new uint8_t[sizeof(img)];
-	long size = sizeof(img_default);
-
-	inst_num = size/sizeof(uint32_t);
-
-	for (size_t i = 0; i < inst_num; i++)
-	{
-		for(size_t j=0; j < 4; j++){
-			top->cpu->ifu1->inst_rom1->insts[i*4+j] = img_default[i] >> (j*8) & 0xff;
-		}
-	}
-
-	return size;
-}
 
 void print_inst(word_t pc)
 {	
-	VlUnpacked<unsigned char, InstRomSize>& insts = (top->cpu->ifu1->inst_rom1->insts);
+	uint8_t* insts = guest_to_host(pc);
 	word_t index = pc - 0x80000000;
 	std::cout << std::hex << std::setw(8) << std::setfill('0')
 		<< pc << ":    ";
@@ -89,34 +49,25 @@ void print_all_insts(){
 }
 
 
-long load_img(){
-	if(top == NULL){
-		top = new Vcpu;
-	}
-	if(img_file == NULL){
-		return init_insts_default();
-	}
-	else{
-		init_insts_file();
-		if (img_file == NULL) {
-		Log("No image is given. Use the default build-in image.");
-		return 4096; // built-in image size
-		}
 
-		FILE *fp = fopen(img_file, "rb");
-		Assert(fp, "Can not open '%s'", img_file);
+long load_img() {
+  if (img_file == NULL) {
+    Log("No image is given. Use the default build-in image.");
+    return 4096; // built-in image size
+  }
 
-		fseek(fp, 0, SEEK_END);
-		long size = ftell(fp);
+  FILE *fp = fopen(img_file, "rb");
+  Assert(fp, "Can not open '%s'", img_file);
 
-		Log("The image is %s, size = %ld", img_file, size);
+  fseek(fp, 0, SEEK_END);
+  long size = ftell(fp);
 
-		fseek(fp, 0, SEEK_SET);
-		int ret = fread(guest_to_host(RESET_VECTOR), size, 1, fp);
-		assert(ret == 1);
+  Log("The image is %s, size = %ld", img_file, size);
 
-		fclose(fp);
-		return size;
-		
-	}
+  fseek(fp, 0, SEEK_SET);
+  int ret = fread(guest_to_host(RESET_VECTOR), size, 1, fp);
+  assert(ret == 1);
+
+  fclose(fp);
+  return size;
 }

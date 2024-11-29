@@ -78,7 +78,6 @@ void init_mem() {
   assert(pmem);
 #endif
   IFDEF(CONFIG_MEM_RANDOM, memset(pmem, rand(), CONFIG_MSIZE));
-  memset(pmem,0x13,CONFIG_MSIZE);
   Log("physical memory area [" FMT_PADDR ", " FMT_PADDR "]", PMEM_LEFT, PMEM_RIGHT);
 }
 
@@ -102,9 +101,10 @@ word_t paddr_read(paddr_t addr, int len) {
     IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
 
 #ifdef CONFIG_TARGET_SHARE
-  // if(addr >= 0xa0000100 && addr <= 0xa0000107){ //VGA
-  //     return 0;
-  //   }
+  if(addr >= 0xa0000100 && addr <= 0xa0000107){ //VGA
+      return 0;
+  }
+
 #endif 
 
 
@@ -117,16 +117,21 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 #ifdef CONFIG_MTRACE
   print_memwrite(addr, len, data);
 #endif
+
+  if (likely(in_pmem(addr))) { pmem_write(addr, len, data); return; }
+  IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
+
 #ifdef CONFIG_TARGET_SHARE
     if(addr == 0xa00003f8) {   // SERIAL
       return;  
+    }
+    else if(addr >= 0xa0000048 && addr <= 0xa000004c){ // TIMER
+      return;
     }
     else if(addr >= 0xa0000100 && addr <= 0xa0000107){ //VGA
       return;
     }
 
 #endif
-  if (likely(in_pmem(addr))) { pmem_write(addr, len, data); return; }
-  IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
   out_of_bound(addr);
 }

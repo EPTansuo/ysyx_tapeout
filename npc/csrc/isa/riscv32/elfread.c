@@ -8,7 +8,7 @@ inline const char *get_elf_type(ElfN_Half e_type)
 {
 	switch (e_type)
 	{
-		case ET_NONE: return "NONE (None)";
+		case ET_NONE: return "COLOR_NONE (None)";
 		case ET_REL: return "REL (Relocatable file)";
 		case ET_EXEC: return "EXEC (Executable file)";
 		case ET_DYN: return "DYN (Shared object file)";
