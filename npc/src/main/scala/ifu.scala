@@ -4,8 +4,8 @@ import chisel3._
 import chisel3.util._
 import defines._ 
 
-import state_m._
-import state_s._
+
+
 
 class IFU(xlen:Int) extends Module {
   val io = IO(new Bundle { 

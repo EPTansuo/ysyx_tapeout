@@ -11,8 +11,8 @@ import imm_sel._
 import br_sel._
 import csr_cmd._
 
-import state_s._
-import state_m._
+
+
 
 class EXU(xlen: Int) extends Module{
     var io = IO(new Bundle{

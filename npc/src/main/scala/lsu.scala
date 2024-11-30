@@ -7,8 +7,8 @@ import st_sel._
 import ld_sel._
 
 
-import state_m._
-import state_s._
+
+
 
 class LSU(xlen: Int) extends Module {
     val io = IO(new Bundle {
