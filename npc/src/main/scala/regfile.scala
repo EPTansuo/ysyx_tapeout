@@ -4,14 +4,21 @@ import chisel3._
 import chisel3.util._
 import chisel3.stage._
 
+class RegfileReadIO(xlen:Int) extends Bundle{
+    var addr = Input(UInt(5.W))
+    var data = Output(UInt(xlen.W))
+}
+
+class RegfileWriteIO(xlen:Int) extends Bundle{
+    var en = Input(Bool())
+    var addr = Input(UInt(5.W))
+    var data = Input(UInt(xlen.W))
+}
+
 class RegfileIO(xlen: Int) extends Bundle{
-    var raddr1 = Input(UInt(5.W))
-    var raddr2 = Input(UInt(5.W))
-    var rdata1 = Output(UInt(xlen.W))
-    var rdata2 = Output(UInt(xlen.W))
-    var we = Input(Bool())
-    var waddr = Input(UInt(5.W))
-    var wdata = Input(UInt(xlen.W))
+    val read1 = new RegfileReadIO(xlen)
+    val read2 = new RegfileReadIO(xlen)
+    val write = new RegfileWriteIO(xlen)
 }
 
 
@@ -20,10 +27,10 @@ class Regfile(xlen: Int) extends Module{
 
     var regs = Mem(32, UInt(xlen.W))
 
-    io.rdata1 := regs(io.raddr1)
-    io.rdata2 := regs(io.raddr2)
+    io.read1.data := regs(io.read1.addr)
+    io.read2.data := regs(io.read2.addr)
 
-    when(io.we) {
-        regs(io.waddr) := Mux(io.waddr === 0.U, 0.U, io.wdata)
+    when(io.write.en) {
+        regs(io.write.addr) := Mux(io.write.addr === 0.U, 0.U, io.write.data)
     }
 }
