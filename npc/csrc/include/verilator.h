@@ -12,11 +12,12 @@
 #include "Vnpc_CSR.h"
 #include "Vnpc_WBU.h"
 #include "Vnpc_EXU.h"
+#include "Vnpc_IFU.h"
 
 extern Vnpc* top;
 
 #define REGS (top->npc->cpu->regfile->regs)
-#define PC (top->npc->cpu->wbu->io_out_bits_npc)
+#define PC (top->npc->cpu->ifu->pc)
 #define CSR (top->npc->cpu->csr)
 #define WBU_VALID (top->npc->cpu->wbu->wbu_valid)
 
