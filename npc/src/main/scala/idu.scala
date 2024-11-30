@@ -27,7 +27,7 @@ class IDU(xlen: Int) extends Module {
     fsm_s.io.valid := io.in.valid
     fsm_s.io.ready := io.in.ready
 
-    io.in.ready := 1.U //state_s === wait_valid_s
+    io.in.ready := state_s === read_s
 
     val fsm_m = Module(new ComFSM_M)
     val state_m = fsm_m.io.state
