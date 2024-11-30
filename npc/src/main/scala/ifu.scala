@@ -4,8 +4,8 @@ import chisel3._
 import chisel3.util._
 import defines._ 
 
-import state_m._
-import state_s._
+
+
 
 class IFU(xlen:Int) extends Module {
   val io = IO(new Bundle { 
@@ -15,30 +15,28 @@ class IFU(xlen:Int) extends Module {
     val mem_inst = Input(UInt(32.W))
   })
 
+  val isFirst = RegInit(true.B)
+  when(isFirst){
+    isFirst := false.B
+  }
+  val in_valid = Mux(isFirst, true.B, io.in.valid)
+  val in_ready = io.in.ready
+
+
+  val s_idle :: s_wait_ready :: Nil = Enum(2)
+
+  val state = RegInit(s_idle)         
+  state := MuxLookup(state, s_idle, Seq(
+    s_idle -> Mux(in_valid, s_wait_ready, s_idle),
+    s_wait_ready -> Mux(io.out.ready, s_idle, s_wait_ready)
+  ))
 
   
-  val fsm_s = Module(new ComFSM_S)
-  val state_s = fsm_s.io.state
-  fsm_s.io.valid := io.in.valid
-  fsm_s.io.ready := io.in.ready
-
-  // when(state_s === read_s){
-  //   in_reg := io.in
-  // }
-  io.in.ready := state_s === read_s
-
-  //io.out.valid := 1.U
-  val fsm_m = Module(new ComFSM_M)
-  val state_m = fsm_m.io.state
-  fsm_m.io.out_valid := io.out.valid
-  fsm_m.io.out_ready := io.out.ready
-  fsm_m.io.in_valid := io.in.valid 
-  fsm_m.io.in_ready := io.in.ready
-
-  io.out.valid := state_m === idle_m || state_m === wait_ready_m || state_m === write_m
+  io.out.valid := state === s_wait_ready
+  io.in.ready := state === s_idle
 
   val pc = RegInit(PC_INIT)
-  when( state_s === read_s){
+  when( io.in.valid && io.in.ready){
       pc := io.in.bits.npc
   }
 
