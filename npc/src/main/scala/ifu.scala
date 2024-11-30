@@ -40,7 +40,7 @@ class IFU(xlen:Int) extends Module {
   fsm_m.io.in_ready := io.in.ready
 
   //io.out.valid := state_m === idle_m || state_m === wait_ready_m 
-  io.out.valid := io.in.ready 
+  io.out.valid := RegNext(io.in.ready)
 
   
 
