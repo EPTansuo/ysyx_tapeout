@@ -16,7 +16,7 @@
 extern Vnpc* top;
 
 #define REGS (top->npc->cpu->regfile->regs)
-#define PC (top->npc->cpu->exu->npc)
+#define PC (top->npc->cpu->wbu->in_reg_bits_pc)
 #define CSR (top->npc->cpu->csr)
 #define WBU_VALID (top->npc->cpu->wbu->wbu_valid)
 
