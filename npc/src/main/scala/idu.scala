@@ -3,7 +3,8 @@ package cpu
 import chisel3._
 import chisel3.util._
 
-
+import state_m._
+import state_s._
 
 import defines._
 
@@ -35,8 +36,14 @@ class IDU(xlen: Int) extends Module {
     io.out.bits.exu.br_sel := control.io.out.br_sel
     io.out.bits.exu.pc_sel := control.io.out.pc_sel
 
+    val fsm_s = Module(new ComFSM_S)
+    val state_s = fsm_s.io.state
+    fsm_s.io.valid := io.in.valid
+    fsm_s.io.ready := io.in.ready
 
-    io.in.ready := 1.U
+    io.in.ready := state_s === wait_valid_s
+
+    
     io.out.valid := 1.U
 
 }
