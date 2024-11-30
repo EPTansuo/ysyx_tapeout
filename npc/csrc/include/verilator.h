@@ -6,7 +6,7 @@
 
 #include "Vnpc.h"
 #include "Vnpc_npc.h"
-#include "Vnpc_CPU.h"
+#include "Vnpc_ysyx_npc.h"
 #include "Vnpc__Dpi.h"
 #include "Vnpc_Regfile.h"
 #include "Vnpc_CSR.h"

@@ -12,7 +12,7 @@ class npcIO extends Bundle {
 
 class npc extends Module {
   val io = IO(new npcIO)
-  val cpu = Module(new CPU(32))
+  val cpu = Module(new ysyx_npc(32))
   val imem = Module(new IMem(32))
   val dmem = Module(new DMem())
   cpu.io.imem <> imem.io
