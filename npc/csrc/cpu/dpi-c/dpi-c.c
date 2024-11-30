@@ -104,7 +104,8 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask){
   static memwrite_info mwinfo;   //防止多次输出
   
   if(waddr == 0){
-    printf("WARNING: %s: waddr = 0!",__func__);
+    printf("WARNING: %s: waddr = 0!\n",__func__);
+    return;
   }
 
   if(mwinfo.pc != PC || mwinfo.addr != waddr
