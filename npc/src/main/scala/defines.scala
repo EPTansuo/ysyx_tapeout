@@ -45,10 +45,11 @@ object wb_sel {
 }
 
 object st_sel {
-  val ST_SW  = 0.U(2.W)
-  val ST_SH  = 1.U(2.W)
-  val ST_SB  = 2.U(2.W)
-  val ST_XX  = 3.U(2.W)
+  val ST_XX  = 0.U(2.W)
+  val ST_SW  = 1.U(2.W)
+  val ST_SH  = 2.U(2.W)
+  val ST_SB  = 3.U(2.W)
+  
 }
 
 object ld_sel {
