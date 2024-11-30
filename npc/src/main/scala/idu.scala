@@ -28,10 +28,9 @@ class IDU(xlen: Int) extends Module {
     when(state_m === idle_m){
         pc := io.in.bits.pc
         inst := io.in.bits.inst
-        io.out.valid := 1.U
     }.otherwise{
-        io.out.valid := 0.U
     }
+    io.out.valid := io.in.ready
 
     val fsm_s = Module(new ComFSM_S)
     val state_s = fsm_s.io.state
@@ -44,7 +43,7 @@ class IDU(xlen: Int) extends Module {
         io.in.ready := 0.U 
     }
 
-
+    
 
     control.io.in.inst := inst 
     control.io.in.pc := pc 
