@@ -50,8 +50,12 @@ void cpu_single_inst(){
   do{
     cpu_single_cycle();
   }while(!WBU_VALID);
-    
-    
+   do{
+    cpu_single_cycle();
+  }while(!WBU_VALID); 
+    do{
+    cpu_single_cycle();
+  }while(!WBU_VALID);
 }
 
 void cpu_reset(int n){
