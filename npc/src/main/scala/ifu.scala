@@ -16,16 +16,20 @@ class IFU(xlen:Int) extends Module {
   })
 
 
-  
-  val fsm_s = Module(new ComFSM_S)
-  val state_s = fsm_s.io.state
-  fsm_s.io.valid := io.in.valid
-  fsm_s.io.ready := io.in.ready
+  val pc = RegInit(PC_INIT)
 
-  // when(state_s === read_s){
-  //   in_reg := io.in
-  // }
-  io.in.ready := state_s === read_s
+
+  // val fsm_s = Module(new ComFSM_S)
+  // val state_s = fsm_s.io.state
+  // fsm_s.io.valid := io.in.valid
+  // fsm_s.io.ready := io.in.ready
+
+  // io.in.ready := state_s === read_s
+
+  io.in.ready := io.in.valid
+  when(io.in.ready){
+    pc := io.in.bits.npc
+  }
 
   //io.out.valid := 1.U
   val fsm_m = Module(new ComFSM_M)
@@ -37,11 +41,7 @@ class IFU(xlen:Int) extends Module {
 
   io.out.valid := state_m === idle_m || state_m === wait_ready_m || state_m === write_m
 
-  val pc = RegInit(PC_INIT)
-  when( state_s === read_s){
-      pc := io.in.bits.npc
-  }
-
+  
 
   io.mem_pc := pc
 
