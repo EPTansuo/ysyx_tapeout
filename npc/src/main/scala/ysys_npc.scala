@@ -49,7 +49,7 @@ class ysyx_npc(xlen:Int) extends Module {
     csr.io.pc := pc
     csr.io.in := wbu.io.csr_in
     exu.io.csr_pc := csr.io.target_pc
-   wbu.io.csr_out := csr.io.out
+    wbu.io.csr_out := csr.io.out
 
 
    io.imem.pc := ifu.io.mem_pc 
