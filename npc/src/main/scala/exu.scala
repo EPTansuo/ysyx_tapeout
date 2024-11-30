@@ -124,8 +124,6 @@ class EXU(xlen: Int) extends Module{
     io.out.bits.wbu <> io.in.bits.wbu
     io.out.bits.lsu <> io.in.bits.lsu
 
-    io.in.ready := 1.U
 
-    io.out.valid := 1.U
 
 }
