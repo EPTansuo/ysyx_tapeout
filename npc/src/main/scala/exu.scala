@@ -11,6 +11,9 @@ import imm_sel._
 import br_sel._
 import csr_cmd._
 
+import state_s._
+import state_m._
+
 class EXU(xlen: Int) extends Module{
     var io = IO(new Bundle{
         val in = Flipped(Decoupled(new SigIO_IDU_EXU(xlen)))
@@ -25,10 +28,24 @@ class EXU(xlen: Int) extends Module{
 
     val alu = Module(new ALU(xlen))
     val immGen = Module(new ImmGen(xlen))
-    
-    val ctrlsig = io.in.bits.exu
-    val pc = io.in.bits.pc
-    val inst = io.in.bits.inst 
+
+    val in_reg = Reg(Output(chiselTypeOf(io.in)))
+    val pc = in_reg.bits.pc
+    val inst = in_reg.bits.inst
+    val ctrlsig = in_reg.bits.exu
+
+    val fsm_s = Module(new ComFSM_S)
+    val state_s = fsm_s.io.state
+    fsm_s.io.valid := io.in.valid
+    fsm_s.io.ready := io.in.ready
+
+    when(state_s === read_s){
+        in_reg := io.in
+    }
+    io.in.ready := state_s === read_s
+
+    io.out.valid := 1.U
+
 
     // regfile
     val rd_addr = inst(11, 7)
@@ -87,8 +104,5 @@ class EXU(xlen: Int) extends Module{
     io.out.bits.wbu <> io.in.bits.wbu
     io.out.bits.lsu <> io.in.bits.lsu
 
-    io.in.ready := 1.U
-
-    io.out.valid := 1.U
 
 }
