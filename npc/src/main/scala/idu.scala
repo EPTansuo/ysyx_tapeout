@@ -3,7 +3,8 @@ package cpu
 import chisel3._
 import chisel3.util._
 
-
+import state_m._
+import state_s._
 
 import defines._
 
@@ -16,8 +17,36 @@ class IDU(xlen: Int) extends Module {
 
 
     val control = Module(new Control(xlen))
-    val inst = io.in.bits.inst 
-    val pc = io.in.bits.pc
+    val inst = Reg(UInt(32.W))
+    val pc = Reg(UInt(xlen.W))
+    
+    val fsm_m = Module(new ComFSM_M)
+    val state_m = fsm_m.io.state
+    fsm_m.io.valid := io.out.valid
+    fsm_m.io.ready := io.out.ready
+
+    when(state_m === idle_m){
+        pc := io.in.bits.pc
+        inst := io.in.bits.inst
+        io.out.valid := 1.U
+    }.otherwise{
+        io.out.valid := 0.U
+    }
+
+    val fsm_s = Module(new ComFSM_S)
+    val state_s = fsm_s.io.state
+    fsm_s.io.valid := io.in.valid
+    fsm_s.io.ready := io.in.ready
+
+    when(state_s === idle_s){
+        io.in.ready := 1.U
+    }.otherwise{
+        io.in.ready := 1.U   //无需等待就能接收
+    }
+
+
+    io.in.ready := 1.U
+    io.out.valid := 1.U
 
     control.io.in.inst := inst 
     control.io.in.pc := pc 
@@ -36,7 +65,6 @@ class IDU(xlen: Int) extends Module {
     io.out.bits.exu.pc_sel := control.io.out.pc_sel
 
 
-    io.in.ready := 1.U
-    io.out.valid := 1.U
+    
 
 }

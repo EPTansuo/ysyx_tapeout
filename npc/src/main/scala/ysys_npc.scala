@@ -26,6 +26,7 @@ class ysyx_npc(xlen:Int) extends Module {
     val lsu = Module(new LSU(xlen))
     val wbu = Module(new WBU(xlen))
 
+ //  ifu.io.in <> wbu.io.out
     idu.io.in <> ifu.io.out
     exu.io.in <> idu.io.out
     lsu.io.in <> exu.io.out 
