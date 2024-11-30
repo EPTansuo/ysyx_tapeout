@@ -12,6 +12,7 @@ import state_m._
 class WBU(xlen: Int) extends Module {
     val io = IO(new Bundle {
         val in = Flipped(Decoupled(new SigIO_LSU_WBU(xlen)))
+        val out = Decoupled(new SigIO_WBU_IFU(xlen))
         val reg_write = Flipped(new RegfileWriteIO(xlen))
         val csr_out = Input(UInt(xlen.W))
         val csr_in = Output(UInt(xlen.W))
@@ -36,6 +37,16 @@ class WBU(xlen: Int) extends Module {
     io.in.ready := state_s === read_s
 
    
+    val fsm_m = Module(new ComFSM_M)
+    val state_m = fsm_m.io.state
+
+    fsm_m.io.out_valid := io.out.valid
+    fsm_m.io.out_ready := io.out.ready
+    fsm_m.io.in_valid := io.in.valid
+    fsm_m.io.in_ready := io.in.ready
+
+    io.out.valid := state_m === wait_ready_m || state_m === write_m
+    
 
     io.reg_write.addr := rd_addr
     io.reg_write.en := ctrlsig.wb_sel =/= WB_XX;

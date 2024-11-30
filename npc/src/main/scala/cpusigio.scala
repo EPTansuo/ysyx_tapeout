@@ -64,3 +64,7 @@ class SigIO_LSU_WBU(xlen: Int) extends Bundle{
     val rd_addr = Input(UInt(5.W))
     val src1 = Input(UInt(xlen.W))
 }
+
+class SigIO_WBU_IFU(xlen: Int) extends Bundle{
+    
+}
