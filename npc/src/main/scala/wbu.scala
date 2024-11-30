@@ -53,6 +53,7 @@ class WBU(xlen: Int) extends Module {
     val valid_old = RegNext(io.out.valid)
     val wbu_valid = !valid_old && io.out.valid 
     dontTouch(wbu_valid) // Used for simulation
+    dontTouch(pc)
 
     io.reg_write.addr := rd_addr
     io.reg_write.en := ctrlsig.wb_sel =/= WB_XX;
