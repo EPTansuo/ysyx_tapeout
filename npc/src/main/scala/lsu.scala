@@ -50,7 +50,7 @@ class LSU(xlen: Int) extends Module {
     when(state_s === idle_s){
         io.in.ready := 1.U
     }.otherwise{
-        io.in.ready := 1.U   //无需等待就能接收
+        io.in.ready := 0.U 
     }
 
 
@@ -104,6 +104,4 @@ class LSU(xlen: Int) extends Module {
     io.out.bits.wbu <> io.in.bits.wbu
     
 
-    io.out.valid := 1.U
-    io.in.ready := 1.U
 }

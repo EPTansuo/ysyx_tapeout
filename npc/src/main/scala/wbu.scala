@@ -32,7 +32,7 @@ class WBU(xlen: Int) extends Module {
     when(state_s === idle_s){
         io.in.ready := 1.U
     }.otherwise{
-        io.in.ready := 1.U   //无需等待就能接收
+        io.in.ready := 0.U 
     }
 
 
@@ -51,6 +51,4 @@ class WBU(xlen: Int) extends Module {
 
     io.csr_in := src1  //目前还未用到立即数  WARNING
 
-    io.in.ready := 1.U
-    
 }

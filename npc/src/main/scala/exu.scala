@@ -58,7 +58,7 @@ class EXU(xlen: Int) extends Module{
     when(state_s === idle_s){
         io.in.ready := 1.U
     }.otherwise{
-        io.in.ready := 1.U   //无需等待就能接收
+        io.in.ready := 0.U 
     }
 
 

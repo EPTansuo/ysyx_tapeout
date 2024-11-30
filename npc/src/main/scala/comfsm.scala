@@ -43,7 +43,8 @@ class ComFSM_S extends Module {
     val state_s = RegInit(idle_s)          // Slave 状态寄存器
     state_s := MuxLookup(state_s, idle_s, Seq(
         (idle_s       -> Mux(io.ready, wait_valid_s, idle_s)),
-        (wait_valid_s -> Mux(io.ready & io.valid, idle_s, wait_valid_s))
+        //(wait_valid_s -> Mux(io.ready & io.valid, idle_s, wait_valid_s))
+        (wait_valid_s -> Mux(io.valid, idle_s, wait_valid_s))
 ))
 
     io.state := state_s
