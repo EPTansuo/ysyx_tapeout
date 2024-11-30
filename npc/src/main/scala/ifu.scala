@@ -26,7 +26,7 @@ class IFU(xlen:Int) extends Module {
     pc := io.pc_in
     io.out.valid := 1.U
   }.otherwise{
-    io.out.valid := 0.U
+    io.out.valid := 1.U
   }
 
 
