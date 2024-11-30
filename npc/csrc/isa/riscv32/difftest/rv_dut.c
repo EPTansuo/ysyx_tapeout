@@ -60,10 +60,10 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
     }
 
 
-    // if(succ && cpu_state_buf.pc != npc_cpu.gpr[i]){
-    //     succ = false;
-    //     printf(L_RED "npc: pc = 0x" FMT_WORD_HEX_WIDTH "\tnemu: pc = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.pc,cpu_state_buf.pc);
-    //   }
+    if(succ && cpu_state_buf.pc != npc_cpu.gpr[i]){
+        succ = false;
+        printf(L_RED "npc: pc = 0x" FMT_WORD_HEX_WIDTH "\tnemu: pc = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.pc,cpu_state_buf.pc);
+      }
     if(cpu_state_buf.csr.mepc != npc_cpu.csr.mepc){
       printf(L_RED "npc: mepc   = 0x" FMT_WORD_HEX_WIDTH "\tnemu: mepc   = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.csr.mepc,cpu_state_buf.csr.mepc);
       succ = false;
