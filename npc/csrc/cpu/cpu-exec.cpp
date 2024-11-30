@@ -49,7 +49,7 @@ void cpu_single_cycle(){
 void cpu_single_inst(){
   do{
     cpu_single_cycle();
-  }while(WBU_READY);
+  }while(WBU_VALID);
     
     
 }

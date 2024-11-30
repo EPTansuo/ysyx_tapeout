@@ -18,7 +18,7 @@ extern Vnpc* top;
 #define REGS (top->npc->cpu->regfile->regs)
 #define PC (top->npc->cpu->exu->npc)
 #define CSR (top->npc->cpu->csr)
-#define WBU_READY (top->npc->cpu->wbu->io_out_ready)
+#define WBU_VALID (top->npc->cpu->wbu->io_out_valid)
 
 #endif // !_VERILATOR_H_
 
