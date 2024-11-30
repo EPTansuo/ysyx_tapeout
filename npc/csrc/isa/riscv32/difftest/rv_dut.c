@@ -31,10 +31,11 @@ static bool first = true;
 extern const char *regs[];
 
 
+// 为了匹配，所以让ref_r使用cpu_state_buf推迟了一个周期
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   int i =0;
   bool succ = true;
-  if(first){
+  if(!first){
     
     //if(ref_r->pc != npc_cpu.pc){
     for(i = 0; i < 16; i++){
@@ -82,17 +83,17 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
     }
 
    
-  
+  }
   if(!succ){
       printf("\e[1;31m Difftest ERROR!\e[0m\n ");
       printf("DO NOT SEE CURRENT INSTRATION, SEE PREVIOUS ONE!\n");
-  }
   }
   first = false;
   memcpy(&cpu_state_buf, ref_r, DIFFTEST_REG_SIZE);
  // printf("npc:nemu:ref_r->pc==0x%x\n",ref_r->pc);
   return succ;
 }
+
 
 void isa_difftest_attach() {
 }
