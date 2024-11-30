@@ -22,28 +22,23 @@ class IDU(xlen: Int) extends Module {
     val inst = RegInit(0.U(32.W))
     val pc = RegInit(0.U(32.W))
 
-    val fsm_s = Module(new ComFSM_S)
-    val state_s = fsm_s.io.state
-    fsm_s.io.valid := io.in.valid
-    fsm_s.io.ready := io.in.ready
+    val s_idle :: s_wait_ready :: Nil = Enum(2)
 
-    io.in.ready := state_s === read_s
+    val state = RegInit(s_idle)         
+    state := MuxLookup(state, s_idle, Seq(
+        s_idle -> Mux(io.in.valid, s_wait_ready, s_idle),
+        s_wait_ready -> Mux(io.out.ready, s_idle, s_wait_ready)
+    ))
 
 
-    when(state_s === read_s){
+    io.out.valid := state === s_wait_ready
+    io.in.ready := state === s_idle
+
+    when( io.in.valid && io.in.ready){
         inst := io.in.bits.inst
         pc := io.in.bits.pc
     }
 
-    val fsm_m = Module(new ComFSM_M)
-    val state_m = fsm_m.io.state
-    fsm_m.io.out_valid := io.out.valid
-    fsm_m.io.out_ready := io.out.ready
-    fsm_m.io.in_valid := io.in.valid 
-    fsm_m.io.in_ready := io.in.ready
-
-    io.out.valid := state_m === wait_ready_m || state_m === write_m || state_m === idle_m
-    
     control.io.in.inst := inst 
     control.io.in.pc := pc 
 
