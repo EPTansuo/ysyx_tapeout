@@ -89,7 +89,7 @@ static void exec_once(){
   npc_cpu.csr.mstatus = CSR->mstatus;
   npc_cpu.csr.mtvec = CSR->mtvec;
   
-#ifdef CONFIG_ITRACE
+#ifdef CONFIG_TRACE
   char logbuf[64];
   if(g_print_step){
    disassemble(logbuf, 64, PC , guest_to_host(PC), 4);
