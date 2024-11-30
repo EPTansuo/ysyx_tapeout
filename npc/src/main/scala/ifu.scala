@@ -24,7 +24,7 @@ class IFU(xlen:Int) extends Module {
   val fsm_m = Module(new ComFSM_M)
   val state_m = fsm_m.io.state
   fsm_m.io.valid := io.out.valid
-  fsm_m.io.ready := io.out.ready
+  fsm_m.io.ready := 1.U
 
   io.out.valid := state_m === write_m
 
