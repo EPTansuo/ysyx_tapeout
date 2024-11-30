@@ -103,8 +103,8 @@ bool regs_equ(const VlUnpacked<word_t,32>&reg1, const VlUnpacked<word_t,32>&reg2
 extern "C" void pmem_write(int waddr, int wdata, char wmask){
   static memwrite_info mwinfo;   //防止多次输出
   
-  if(waddr == 0){
-    printf("WARNING: %s: waddr = 0!\n",__func__);
+  if(waddr < CONFIG_MBASE){
+    printf("WARNING: %s: waddr < CONFIG_MBASE!\n",__func__);
     return;
   }
 
