@@ -48,14 +48,14 @@ class LSU(xlen: Int) extends Module {
     fsm_s.io.valid := io.in.valid
     fsm_s.io.ready := io.in.ready
 
-    when(state_s === idle_s){
-        io.in.ready := 1.U
-    }.otherwise{
-        io.in.ready := 0.U 
-    }
+    // when(state_s === idle_s){
+    //     io.in.ready := 1.U
+    // }.otherwise{
+    //     io.in.ready := 0.U 
+    // }
 
 
-
+io.in.ready := io.out.ready 
 
 
 
