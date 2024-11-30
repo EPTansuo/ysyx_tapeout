@@ -80,7 +80,7 @@ static void exec_once(){
   npc_cpu.csr.mstatus = CSR->mstatus;
   npc_cpu.csr.mtvec = CSR->mtvec;
   
-#ifdef CONFIG_ITRACE
+
   if(g_print_step){
    disassemble(logbuf, 64, PC , guest_to_host(PC), 4);
    printf("0x" FMT_WORD_HEX_WIDTH ":    ", PC);
@@ -91,7 +91,6 @@ static void exec_once(){
   
    printf("%s\n", logbuf);
   }
-#endif CONFIG_ITRACE
 }
 
 
