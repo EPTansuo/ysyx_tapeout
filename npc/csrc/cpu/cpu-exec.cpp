@@ -46,6 +46,14 @@ void cpu_single_cycle(){
 	}
 }
 
+void cpu_single_inst(){
+  do{
+    cpu_single_cycle();
+  }while(WBU_READY);
+    
+    
+}
+
 void cpu_reset(int n){
 	top->reset = RESET_ENABLE;
 	while(n--)cpu_single_cycle();	
@@ -67,8 +75,9 @@ void assert_fail_msg() {
 }
 
 static void exec_once(){
-  char logbuf[64];
-  cpu_single_cycle();
+  
+  //cpu_single_cycle();
+  cpu_single_inst();
 
   for(int i=0; i<MUXDEF(CONFIG_RVE,16,32); i++){
     npc_cpu.gpr[i] = gpr(i);
@@ -81,6 +90,7 @@ static void exec_once(){
   npc_cpu.csr.mtvec = CSR->mtvec;
   
 #ifdef CONFIG_ITRACE
+  char logbuf[64];
   if(g_print_step){
    disassemble(logbuf, 64, PC , guest_to_host(PC), 4);
    printf("0x" FMT_WORD_HEX_WIDTH ":    ", PC);
