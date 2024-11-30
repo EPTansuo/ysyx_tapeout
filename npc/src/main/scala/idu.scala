@@ -22,15 +22,15 @@ class IDU(xlen: Int) extends Module {
     val inst = RegInit(0.U(32.W))
     val pc = RegInit(0.U(32.W))
 
-    val fsm_s = Module(new ComFSM_S)
-    val state_s = fsm_s.io.state
-    fsm_s.io.valid := io.in.valid
-    fsm_s.io.ready := io.in.ready
+    // val fsm_s = Module(new ComFSM_S)
+    // val state_s = fsm_s.io.state
+    // fsm_s.io.valid := io.in.valid
+    // fsm_s.io.ready := io.in.ready
 
-    io.in.ready := state_s === read_s
+    io.in.ready := io.in.valid 
 
 
-    when(state_s === read_s){
+    when(io.in.ready){
         inst := io.in.bits.inst
         pc := io.in.bits.pc
     }
