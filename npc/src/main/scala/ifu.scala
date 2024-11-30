@@ -15,11 +15,19 @@ class IFU(xlen:Int) extends Module {
     val mem_inst = Input(UInt(32.W))
   })
 
+  val isFirst = RegInit(true.B)
+  when(isFirst){
+    isFirst := false.B
+  }
+  val in_valid = Mux(isFirst, true.B, io.in.valid)
+  val in_ready = io.in.ready
+
+
   val s_idle :: s_wait_ready :: Nil = Enum(2)
 
   val state = RegInit(s_idle)         
   state := MuxLookup(state, s_idle, Seq(
-    s_idle -> Mux(io.in.valid, s_wait_ready, s_idle),
+    s_idle -> Mux(in_valid, s_wait_ready, s_idle),
     s_wait_ready -> Mux(io.out.ready, s_idle, s_wait_ready)
   ))
 
