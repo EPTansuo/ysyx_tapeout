@@ -33,15 +33,20 @@ class EXU(xlen: Int) extends Module{
     val inst = in_reg.bits.inst
     val ctrlsig = in_reg.bits.exu
 
-    val fsm_s = Module(new ComFSM_S)
-    val state_s = fsm_s.io.state
-    fsm_s.io.valid := io.in.valid
-    fsm_s.io.ready := io.in.ready
+    // val fsm_s = Module(new ComFSM_S)
+    // val state_s = fsm_s.io.state
+    // fsm_s.io.valid := io.in.valid
+    // fsm_s.io.ready := io.in.ready
 
-    when(state_s === read_s){
+    // when(state_s === read_s){
+    //     in_reg := io.in
+    // }
+    // io.in.ready := state_s === read_s
+
+    io.in.ready := io.in.valid
+    when(io.in.ready){
         in_reg := io.in
     }
-    io.in.ready := state_s === read_s
 
     val fsm_m = Module(new ComFSM_M)
     val state_m = fsm_m.io.state
