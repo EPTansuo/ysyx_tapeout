@@ -32,26 +32,21 @@ class LSU(xlen: Int) extends Module {
     val wbu_data = in_reg.bits.wbu
     val npc = in_reg.bits.npc
 
-    val fsm_s = Module(new ComFSM_S)
-    val state_s = fsm_s.io.state
-    fsm_s.io.valid := io.in.valid
-    fsm_s.io.ready := io.in.ready
+    val s_idle :: s_wait_ready :: Nil = Enum(2)
 
-    when(state_s === read_s){
+    val state = RegInit(s_idle)         
+    state := MuxLookup(state, s_idle, Seq(
+        s_idle -> Mux(io.in.valid, s_wait_ready, s_idle),
+        s_wait_ready -> Mux(io.out.ready, s_idle, s_wait_ready)
+    ))
+
+
+    io.out.valid := state === s_wait_ready
+    io.in.ready := state === s_idle
+
+    when( io.in.valid && io.in.ready){
         in_reg := io.in
     }
-    io.in.ready := state_s === read_s
-
-    val fsm_m = Module(new ComFSM_M)
-    val state_m = fsm_m.io.state
-
-    fsm_m.io.out_valid := io.out.valid
-    fsm_m.io.out_ready := io.out.ready
-    fsm_m.io.in_valid := io.in.valid
-    fsm_m.io.in_ready := io.in.ready
-
-    io.out.valid := state_m === wait_ready_m || state_m === write_m
-
 
      
     val st_data = MuxLookup(ctrlsig.st_sel, default = 0.U(xlen.W), Array(
