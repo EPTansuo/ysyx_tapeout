@@ -25,6 +25,7 @@ class WBU(xlen: Int) extends Module {
     val alu_out = in_reg.bits.alu_out
     val ld_data = in_reg.bits.ld_data
     val rd_addr = in_reg.bits.rd_addr
+    val npc = in_reg.bits.npc
 
     val fsm_s = Module(new ComFSM_S)
     val state_s = fsm_s.io.state
@@ -54,6 +55,7 @@ class WBU(xlen: Int) extends Module {
     val wbu_valid = !valid_old && io.out.valid 
     dontTouch(wbu_valid) // Used for simulation
     dontTouch(pc)
+    dontTouch(npc)
 
     io.reg_write.addr := rd_addr
     io.reg_write.en := ctrlsig.wb_sel =/= WB_XX;
@@ -70,5 +72,5 @@ class WBU(xlen: Int) extends Module {
 
     io.csr_in := src1  //目前还未用到立即数  WARNING
 
-    
+    io.out.bits.npc := npc
 }

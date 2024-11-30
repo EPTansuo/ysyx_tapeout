@@ -30,6 +30,7 @@ class LSU(xlen: Int) extends Module {
     val alu_out = in_reg.bits.alu_out
     val rd_addr = in_reg.bits.rd_addr
     val wbu_data = in_reg.bits.wbu
+    val npc = in_reg.bits.npc
 
     val fsm_s = Module(new ComFSM_S)
     val state_s = fsm_s.io.state
@@ -96,6 +97,7 @@ class LSU(xlen: Int) extends Module {
     io.out.bits.ld_data := ld_data
     io.out.bits.src1 := src1
     io.out.bits.wbu <> wbu_data
+    io.out.bits.npc := npc 
     
 
 

@@ -20,7 +20,6 @@ class EXU(xlen: Int) extends Module{
         val out = (Decoupled(new SigIO_EXU_LSU(xlen)))
         val reg_read1 = Flipped(new RegfileReadIO(xlen))
         val reg_read2 = Flipped(new RegfileReadIO(xlen))
-        val npc = Output(UInt(xlen.W))
         val csr_pc = Input(UInt(xlen.W))
         val csr_inst = Output(UInt(32.W))
         val csr_cmd = Output(UInt(3.W))
@@ -98,7 +97,7 @@ class EXU(xlen: Int) extends Module{
         (ctrlsig.pc_sel === PC_CSR) -> io.csr_pc
         )
     )
-    io.npc := npc 
+    io.out.bits.npc := npc
     
     io.csr_inst := io.in.bits.inst 
     io.csr_cmd := ctrlsig.csr_cmd
