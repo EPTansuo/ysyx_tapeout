@@ -26,7 +26,7 @@ class IFU(xlen:Int) extends Module {
   fsm_m.io.valid := io.out.valid
   fsm_m.io.ready := io.out.ready
 
-  io.out.valid := state_m === state_m
+  io.out.valid := state_m === write_m
 
 
 

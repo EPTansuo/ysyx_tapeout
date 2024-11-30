@@ -17,9 +17,31 @@ class IDU(xlen: Int) extends Module {
 
 
     val control = Module(new Control(xlen))
-    val inst = io.in.bits.inst 
-    val pc = io.in.bits.pc
+    //val inst = io.in.bits.inst 
+    //val pc = io.in.bits.pc
+    val inst = RegInit(0.U(32.W))
+    val pc = RegInit(0.U(32.W))
 
+    val fsm_s = Module(new ComFSM_S)
+    val state_s = fsm_s.io.state
+    fsm_s.io.valid := io.in.valid
+    fsm_s.io.ready := io.in.ready
+
+    io.in.ready := state_s === wait_valid_s
+
+    val fsm_m = Module(new ComFSM_M)
+    val state_m = fsm_m.io.state
+    fsm_m.io.valid := io.out.valid
+    fsm_m.io.ready := io.out.ready
+
+    io.out.valid := state_m === write_m
+
+    when(state_s === read_s){
+        inst := io.in.bits.inst
+        pc := io.in.bits.pc
+    }
+
+    
     control.io.in.inst := inst 
     control.io.in.pc := pc 
 
@@ -36,18 +58,6 @@ class IDU(xlen: Int) extends Module {
     io.out.bits.exu.br_sel := control.io.out.br_sel
     io.out.bits.exu.pc_sel := control.io.out.pc_sel
 
-    val fsm_s = Module(new ComFSM_S)
-    val state_s = fsm_s.io.state
-    fsm_s.io.valid := io.in.valid
-    fsm_s.io.ready := io.in.ready
 
-    io.in.ready := state_s === wait_valid_s
-
-    val fsm_m = Module(new ComFSM_M)
-    val state_m = fsm_m.io.state
-    fsm_m.io.valid := io.out.valid
-    fsm_m.io.ready := io.out.ready
-
-    io.out.valid := state_m === idle_m
 
 }
