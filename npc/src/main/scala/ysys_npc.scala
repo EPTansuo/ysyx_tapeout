@@ -26,11 +26,6 @@ class ysyx_npc(xlen:Int) extends Module {
     val lsu = Module(new LSU(xlen))
     val wbu = Module(new WBU(xlen))
 
-    val isPipe = false
-    // ModuleConnect(ifu, idu, isPipe)
-    // ModuleConnect(idu, exu, isPipe)
-    // ModuleConnect(exu, lsu, isPipe)
-    // ModuleConnect(lsu, wbu, isPipe)
     idu.io.in <> ifu.io.out
     exu.io.in <> idu.io.out
     lsu.io.in <> exu.io.out 
@@ -44,8 +39,6 @@ class ysyx_npc(xlen:Int) extends Module {
     exu.io.reg_read1 <> regfile.io.read1
     exu.io.reg_read2 <> regfile.io.read2
     wbu.io.reg_write <> regfile.io.write
-
-
 
 
     val csr = Module(new CSR(xlen))
