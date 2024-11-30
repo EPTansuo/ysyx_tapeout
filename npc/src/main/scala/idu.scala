@@ -3,7 +3,8 @@ package cpu
 import chisel3._
 import chisel3.util._
 
-
+import state_m._
+import state_s._
 
 import defines._
 
@@ -16,9 +17,33 @@ class IDU(xlen: Int) extends Module {
 
 
     val control = Module(new Control(xlen))
-    val inst = io.in.bits.inst 
-    val pc = io.in.bits.pc
+    //val inst = io.in.bits.inst 
+    //val pc = io.in.bits.pc
+    val inst = RegInit(0.U(32.W))
+    val pc = RegInit(0.U(32.W))
 
+    val fsm_s = Module(new ComFSM_S)
+    val state_s = fsm_s.io.state
+    fsm_s.io.valid := io.in.valid
+    fsm_s.io.ready := io.in.ready
+
+    io.in.ready := state_s === read_s
+
+
+    when(state_s === read_s){
+        inst := io.in.bits.inst
+        pc := io.in.bits.pc
+    }
+
+    val fsm_m = Module(new ComFSM_M)
+    val state_m = fsm_m.io.state
+    fsm_m.io.out_valid := io.out.valid
+    fsm_m.io.out_ready := io.out.ready
+    fsm_m.io.in_valid := io.in.valid 
+    fsm_m.io.in_ready := io.in.ready
+
+    io.out.valid := state_m === wait_ready_m || state_m === write_m || state_m === idle_m
+    
     control.io.in.inst := inst 
     control.io.in.pc := pc 
 
@@ -36,7 +61,5 @@ class IDU(xlen: Int) extends Module {
     io.out.bits.exu.pc_sel := control.io.out.pc_sel
 
 
-    io.in.ready := 1.U
-    io.out.valid := 1.U
 
 }

@@ -6,6 +6,10 @@ import chisel3.util._
 import st_sel._
 import ld_sel._
 
+
+import state_m._
+import state_s._
+
 class LSU(xlen: Int) extends Module {
     val io = IO(new Bundle {
         val in = Flipped(Decoupled(new SigIO_EXU_LSU(xlen)))
@@ -13,12 +17,42 @@ class LSU(xlen: Int) extends Module {
         val dmem = Flipped(new DMemIO())
     })
 
-    val  ctrlsig = io.in.bits.lsu 
-    val src1 = io.in.bits.src1
-    val src2 = io.in.bits.src2 
-    val pc = io.in.bits.pc
-    val inst = io.in.bits.inst 
-    val alu_out = io.in.bits.alu_out
+
+
+
+
+    val in_reg = Reg(Output(chiselTypeOf(io.in)))
+    val pc = in_reg.bits.pc
+    val inst = in_reg.bits.inst
+    val ctrlsig = in_reg.bits.lsu
+    val src1 = in_reg.bits.src1
+    val src2 = in_reg.bits.src2 
+    val alu_out = in_reg.bits.alu_out
+    val rd_addr = in_reg.bits.rd_addr
+    val wbu_data = in_reg.bits.wbu
+    val npc = in_reg.bits.npc
+
+    val fsm_s = Module(new ComFSM_S)
+    val state_s = fsm_s.io.state
+    fsm_s.io.valid := io.in.valid
+    fsm_s.io.ready := io.in.ready
+
+    when(state_s === read_s){
+        in_reg := io.in
+    }
+    io.in.ready := state_s === read_s
+
+    val fsm_m = Module(new ComFSM_M)
+    val state_m = fsm_m.io.state
+
+    fsm_m.io.out_valid := io.out.valid
+    fsm_m.io.out_ready := io.out.ready
+    fsm_m.io.in_valid := io.in.valid
+    fsm_m.io.in_ready := io.in.ready
+
+    io.out.valid := state_m === wait_ready_m || state_m === write_m
+
+
      
     val st_data = MuxLookup(ctrlsig.st_sel, default = 0.U(xlen.W), Array(
         ST_XX -> 0.U(xlen.W),
@@ -59,12 +93,12 @@ class LSU(xlen: Int) extends Module {
     io.out.bits.inst := inst
     io.out.bits.pc := pc
     io.out.bits.alu_out := alu_out
-    io.out.bits.rd_addr := io.in.bits.rd_addr
+    io.out.bits.rd_addr := rd_addr
     io.out.bits.ld_data := ld_data
     io.out.bits.src1 := src1
-    io.out.bits.wbu <> io.in.bits.wbu
+    io.out.bits.wbu <> wbu_data
+    io.out.bits.npc := npc 
     
 
-    io.out.valid := 1.U
-    io.in.ready := 1.U
+
 }

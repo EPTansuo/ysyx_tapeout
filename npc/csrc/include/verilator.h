@@ -10,12 +10,15 @@
 #include "Vnpc__Dpi.h"
 #include "Vnpc_Regfile.h"
 #include "Vnpc_CSR.h"
+#include "Vnpc_WBU.h"
+#include "Vnpc_EXU.h"
 
 extern Vnpc* top;
 
 #define REGS (top->npc->cpu->regfile->regs)
-#define PC (top->npc->cpu->pc)
+#define PC (top->npc->cpu->wbu->io_out_bits_npc)
 #define CSR (top->npc->cpu->csr)
+#define WBU_VALID (top->npc->cpu->wbu->wbu_valid)
 
 #endif // !_VERILATOR_H_
 

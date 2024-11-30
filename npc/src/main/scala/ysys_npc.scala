@@ -26,14 +26,14 @@ class ysyx_npc(xlen:Int) extends Module {
     val lsu = Module(new LSU(xlen))
     val wbu = Module(new WBU(xlen))
 
+    ifu.io.in <> wbu.io.out
     idu.io.in <> ifu.io.out
     exu.io.in <> idu.io.out
     lsu.io.in <> exu.io.out 
     wbu.io.in <> lsu.io.out
 
-    val pc = RegInit(PC_INIT - 4.U(xlen.W))
-    pc := exu.io.npc 
-    ifu.io.pc_in := pc 
+
+
 
     val regfile = Module(new Regfile(xlen))
     exu.io.reg_read1 <> regfile.io.read1
@@ -44,10 +44,10 @@ class ysyx_npc(xlen:Int) extends Module {
     val csr = Module(new CSR(xlen))
     csr.io.cmd := exu.io.csr_cmd
     csr.io.inst := exu.io.csr_inst
-    csr.io.pc := pc
+    csr.io.pc := ifu.io.out.bits.pc
     csr.io.in := wbu.io.csr_in
     exu.io.csr_pc := csr.io.target_pc
-   wbu.io.csr_out := csr.io.out
+    wbu.io.csr_out := csr.io.out
 
 
    io.imem.pc := ifu.io.mem_pc 

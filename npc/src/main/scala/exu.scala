@@ -11,13 +11,15 @@ import imm_sel._
 import br_sel._
 import csr_cmd._
 
+import state_s._
+import state_m._
+
 class EXU(xlen: Int) extends Module{
     var io = IO(new Bundle{
         val in = Flipped(Decoupled(new SigIO_IDU_EXU(xlen)))
         val out = (Decoupled(new SigIO_EXU_LSU(xlen)))
         val reg_read1 = Flipped(new RegfileReadIO(xlen))
         val reg_read2 = Flipped(new RegfileReadIO(xlen))
-        val npc = Output(UInt(xlen.W))
         val csr_pc = Input(UInt(xlen.W))
         val csr_inst = Output(UInt(32.W))
         val csr_cmd = Output(UInt(3.W))
@@ -25,10 +27,32 @@ class EXU(xlen: Int) extends Module{
 
     val alu = Module(new ALU(xlen))
     val immGen = Module(new ImmGen(xlen))
-    
-    val ctrlsig = io.in.bits.exu
-    val pc = io.in.bits.pc
-    val inst = io.in.bits.inst 
+
+    val in_reg = Reg(Output(chiselTypeOf(io.in)))
+    val pc = in_reg.bits.pc
+    val inst = in_reg.bits.inst
+    val ctrlsig = in_reg.bits.exu
+
+    val fsm_s = Module(new ComFSM_S)
+    val state_s = fsm_s.io.state
+    fsm_s.io.valid := io.in.valid
+    fsm_s.io.ready := io.in.ready
+
+    when(state_s === read_s){
+        in_reg := io.in
+    }
+    io.in.ready := state_s === read_s
+
+    val fsm_m = Module(new ComFSM_M)
+    val state_m = fsm_m.io.state
+
+    fsm_m.io.out_valid := io.out.valid
+    fsm_m.io.out_ready := io.out.ready
+    fsm_m.io.in_valid := io.in.valid
+    fsm_m.io.in_ready := io.in.ready
+
+    io.out.valid := state_m === wait_ready_m || state_m === write_m || state_m === idle_m
+
 
     // regfile
     val rd_addr = inst(11, 7)
@@ -73,7 +97,7 @@ class EXU(xlen: Int) extends Module{
         (ctrlsig.pc_sel === PC_CSR) -> io.csr_pc
         )
     )
-    io.npc := npc 
+    io.out.bits.npc := npc
     
     io.csr_inst := io.in.bits.inst 
     io.csr_cmd := ctrlsig.csr_cmd
@@ -87,8 +111,5 @@ class EXU(xlen: Int) extends Module{
     io.out.bits.wbu <> io.in.bits.wbu
     io.out.bits.lsu <> io.in.bits.lsu
 
-    io.in.ready := 1.U
-
-    io.out.valid := 1.U
 
 }

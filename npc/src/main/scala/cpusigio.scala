@@ -53,6 +53,7 @@ class SigIO_EXU_LSU(xlen: Int) extends Bundle{
     val src1 = Input(UInt(xlen.W))
     val src2 = Input(UInt(xlen.W))
     var rd_addr = Input(UInt(5.W))
+    val npc = Input(UInt(xlen.W))
 }
 
 class SigIO_LSU_WBU(xlen: Int) extends Bundle{
@@ -63,4 +64,9 @@ class SigIO_LSU_WBU(xlen: Int) extends Bundle{
     val ld_data = Input(UInt(xlen.W))
     val rd_addr = Input(UInt(5.W))
     val src1 = Input(UInt(xlen.W))
+    val npc = Input(UInt(xlen.W))
+}
+
+class SigIO_WBU_IFU(xlen: Int) extends Bundle{
+    val npc = Input(UInt(xlen.W))
 }
