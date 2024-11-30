@@ -7,17 +7,18 @@ import chisel3.util._
 
 object state_m {
     //val idle_m :: wait_ready_m = Enum(2) // Master 状态
-    val write_m = 0.U(1.W)
-    val wait_ready_m = 1.U(1.W)
+    val write_m = 0.U(2.W)
+    val wait_ready_m = 1.U(2.W)
+    val idle_m = 2.U(2.W)
 }
 
 object state_s {
     //val idle_s :: wait_valid_s = Enum(2) // Slave 状态
-    val read_s = 0.U(1.W)
-    val wait_valid_s = 1.U(1.W)
+    val read_s = 0.U(2.W)
+    val wait_valid_s = 1.U(2.W)
 }
 
-class ComFSMIO extends Bundle{
+class ComFSM_MIO extends Bundle{
     val valid = Input(Bool())
     val ready = Input(Bool())
     val state = Output(UInt(1.W))
