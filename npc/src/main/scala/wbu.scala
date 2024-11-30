@@ -27,21 +27,16 @@ class WBU(xlen: Int) extends Module {
     val rd_addr = in_reg.bits.rd_addr
     val npc = in_reg.bits.npc
 
-    // val fsm_s = Module(new ComFSM_S)
-    // val state_s = fsm_s.io.state
-    // fsm_s.io.valid := io.in.valid
-    // fsm_s.io.ready := io.in.ready
+    val fsm_s = Module(new ComFSM_S)
+    val state_s = fsm_s.io.state
+    fsm_s.io.valid := io.in.valid
+    fsm_s.io.ready := io.in.ready
 
-    // when(state_s === read_s){
-    //     in_reg := io.in
-    // }
-    // io.in.ready := state_s === read_s
-
-
-    io.in.ready := io.in.valid
-    when(io.in.ready){
+    when(state_s === read_s){
         in_reg := io.in
     }
+    io.in.ready := state_s === read_s
+
    
     val fsm_m = Module(new ComFSM_M)
     val state_m = fsm_m.io.state
