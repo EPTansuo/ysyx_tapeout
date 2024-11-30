@@ -40,13 +40,19 @@ class WBU(xlen: Int) extends Module {
     val fsm_m = Module(new ComFSM_M)
     val state_m = fsm_m.io.state
 
+
+
     fsm_m.io.out_valid := io.out.valid
     fsm_m.io.out_ready := io.out.ready
     fsm_m.io.in_valid := io.in.valid
     fsm_m.io.in_ready := io.in.ready
 
     io.out.valid := state_m === wait_ready_m || state_m === write_m
-    
+   
+
+    val valid_old = RegNext(io.out.valid)
+    val wbu_valid = !valid_old && io.out.valid 
+    dontTouch(wbu_valid) // Used for simulation
 
     io.reg_write.addr := rd_addr
     io.reg_write.en := ctrlsig.wb_sel =/= WB_XX;
