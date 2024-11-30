@@ -33,7 +33,8 @@ class ysyx_npc(xlen:Int) extends Module {
     wbu.io.in <> lsu.io.out
 
 
-    val pc = RegInit(PC_INIT - 4.U(xlen.W))
+    //val pc = RegInit(PC_INIT - 4.U(xlen.W))
+    val pc = RegInit(PC_INIT)
     when(exu.io.out.valid){
         pc := exu.io.npc 
     }
