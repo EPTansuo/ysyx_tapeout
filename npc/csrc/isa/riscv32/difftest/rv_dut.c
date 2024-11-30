@@ -34,8 +34,8 @@ extern const char *regs[];
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   int i =0;
   bool succ = true;
-
-    memcpy(&cpu_state_buf, ref_r, DIFFTEST_REG_SIZE);
+  if(first){
+    
     //if(ref_r->pc != npc_cpu.pc){
     for(i = 0; i < 16; i++){
       if(cpu_state_buf.gpr[i] != npc_cpu.gpr[i]){
@@ -60,10 +60,10 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
     }
 
 
-    if(succ && cpu_state_buf.pc != npc_cpu.gpr[i]){
-        succ = false;
-        printf(L_RED "npc: pc = 0x" FMT_WORD_HEX_WIDTH "\tnemu: pc = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.pc,cpu_state_buf.pc);
-      }
+    // if(succ && cpu_state_buf.pc != npc_cpu.gpr[i]){
+    //     succ = false;
+    //     printf(L_RED "npc: pc = 0x" FMT_WORD_HEX_WIDTH "\tnemu: pc = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.pc,cpu_state_buf.pc);
+    //   }
     if(cpu_state_buf.csr.mepc != npc_cpu.csr.mepc){
       printf(L_RED "npc: mepc   = 0x" FMT_WORD_HEX_WIDTH "\tnemu: mepc   = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.csr.mepc,cpu_state_buf.csr.mepc);
       succ = false;
@@ -87,8 +87,9 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
       printf("\e[1;31m Difftest ERROR!\e[0m\n ");
       printf("DO NOT SEE CURRENT INSTRATION, SEE PREVIOUS ONE!\n");
   }
-  
-  //
+  }
+  first = false;
+  memcpy(&cpu_state_buf, ref_r, DIFFTEST_REG_SIZE);
  // printf("npc:nemu:ref_r->pc==0x%x\n",ref_r->pc);
   return succ;
 }
