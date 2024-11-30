@@ -36,11 +36,12 @@ object imm_sel {
 
 // wb from alu, mem, pc or xx
 object wb_sel {
-  val WB_ALU = 0.U(3.W)
-  val WB_MEM = 1.U(3.W)
-  val WB_PC4  = 2.U(3.W)
-  val WB_CSR = 3.U(3.W)
-  val WB_XX  = 4.U(3.W)
+  val WB_XX  = 0.U(3.W)
+  val WB_ALU = 1.U(3.W)
+  val WB_MEM = 2.U(3.W)
+  val WB_PC4  = 3.U(3.W)
+  val WB_CSR = 4.U(3.W)
+  
 }
 
 object st_sel {
