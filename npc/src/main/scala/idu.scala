@@ -29,19 +29,20 @@ class IDU(xlen: Int) extends Module {
 
     io.in.ready := state_s === read_s
 
-    val state_m = RegInit(write_m)
-
-    state_m := MuxLookup(state_m, write_m, Seq(
-        (write_m -> Mux(io.out.ready, wait_ready_m, write_m)),
-        (wait_ready_m -> Mux(io.out.valid, write_m, wait_ready_m))
-    ))
-
-    io.out.valid := state_m === write_m
 
     when(state_s === read_s){
         inst := io.in.bits.inst
         pc := io.in.bits.pc
     }
+
+    val fsm_m = Module(new ComFSM_M)
+    val state_m = fsm_m.io.state
+    fsm_m.io.out_valid := io.out.valid
+    fsm_m.io.out_ready := io.out.ready
+    fsm_m.io.in_valid := io.in.valid 
+    fsm_m.io.in_ready := io.in.ready
+
+    io.out.valid := state_m === wait_ready_m
 
     
     control.io.in.inst := inst 

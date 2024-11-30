@@ -18,20 +18,30 @@ object state_s {
     val wait_valid_s = 1.U(2.W)
 }
 
-class ComFSM_MIO extends Bundle{
+class ComFSMIO extends Bundle{
     val valid = Input(Bool())
     val ready = Input(Bool())
-    val state = Output(UInt(1.W))
+    val state = Output(UInt(2.W))
 }
+
+class ComFSM_M_IO extends Bundle{
+    val in_valid = Input(Bool())
+    val in_ready = Input(Bool())
+    val out_valid = Input(Bool())
+    val out_ready = Input(Bool())
+    val state = Output(UInt(2.W))
+}
+
 
 import state_m._
 
 class ComFSM_M extends Module {
-    val io = IO(new ComFSMIO)
-    val state_m = RegInit(write_m)          // Master 状态寄存器
-    state_m := MuxLookup(state_m, write_m, Seq(
-        (write_m       -> Mux(io.valid, wait_ready_m, write_m)),
-        (wait_ready_m -> Mux(io.ready, write_m, wait_ready_m))
+    val io = IO(new ComFSM_M_IO)
+    val state_m = RegInit(idle_m)          // Master 状态寄存器
+    state_m := MuxLookup(state_m, idle_m, Seq(
+        (idle_m       -> Mux(io.in_valid & io.in_ready, wait_ready_m, idle_m)),
+        (wait_ready_m -> Mux(io.out_valid, write_m, wait_ready_m)),
+        (write_m       -> Mux(io.out_ready, idle_m, write_m))
 ))
 
     io.state := state_m
