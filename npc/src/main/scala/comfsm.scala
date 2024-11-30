@@ -40,7 +40,7 @@ import state_s._
 
 class ComFSM_S extends Module {
     val io = IO(new ComFSMIO)
-    val state_s = RegInit(idle_s)          // Slave 状态寄存器
+    val state_s = RegInit(wait_valid_s)          // Slave 状态寄存器
     state_s := MuxLookup(state_s, idle_s, Seq(
         (idle_s       -> Mux(io.ready, wait_valid_s, idle_s)),
         //(wait_valid_s -> Mux(io.ready & io.valid, idle_s, wait_valid_s))
