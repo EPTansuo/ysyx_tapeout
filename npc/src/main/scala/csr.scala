@@ -75,7 +75,7 @@ class CSR(xlen:Int) extends Module{
 
   //防止一条指令内变化多次
   val mstatus_tmp = RegInit(MSTATUS_INIT.U(32.W))
-  when(io.update_enable){
+  when(io.update_enable && is_mret){
     mstatus := mstatus_tmp
   }
 
