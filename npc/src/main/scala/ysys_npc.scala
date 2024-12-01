@@ -1,6 +1,6 @@
 package cpu
 
-
+import AXI4._
 import chisel3._
 import chisel3.util._
 import defines._ 
@@ -16,8 +16,9 @@ import defines._
 
 class ysyx_npc(xlen:Int) extends Module {
     val io = IO(new Bundle {
-        val imem = Flipped(new IMemIO(xlen))
-        val dmem = Flipped(new DMemIO())
+        // val imem = Flipped(new IMemIO(xlen))
+        // val dmem = Flipped(new DMemIO())
+        val AXILite = AXILiteMasterIF(addrWidthBits = 32, dataWidthBits = 32)
     })
 
     val ifu = Module(new IFU(xlen))
@@ -33,18 +34,15 @@ class ysyx_npc(xlen:Int) extends Module {
     wbu.io.in <> lsu.io.out
 
 
-
-
     val regfile = Module(new Regfile(xlen))
     exu.io.reg_read1 <> regfile.io.read1
     exu.io.reg_read2 <> regfile.io.read2
     wbu.io.reg_write <> regfile.io.write
 
 
-   io.imem.pc := ifu.io.mem_pc 
-   io.imem.reset := reset
-   ifu.io.mem_inst := io.imem.data 
-   
-   io.dmem <> lsu.io.dmem
+    val axi4lite_arbiter = Module(new AXI4LiteArbiter(2, 32, 32))
+
+    axi4lite_arbiter.io.masters(0) <> ifu.io.imem
+    axi4lite_arbiter.io.masters(1) <> lsu.io.dmem
 
 }
