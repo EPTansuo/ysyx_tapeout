@@ -41,15 +41,6 @@ class ysyx_npc(xlen:Int) extends Module {
     wbu.io.reg_write <> regfile.io.write
 
 
-    val csr = Module(new CSR(xlen))
-    csr.io.cmd := wbu.io.csr_cmd
-    csr.io.inst := exu.io.csr_inst
-    csr.io.pc := ifu.io.out.bits.pc
-    csr.io.in := wbu.io.csr_in
-    exu.io.csr_pc := csr.io.target_pc
-    wbu.io.csr_out := csr.io.out
-
-
    io.imem.pc := ifu.io.mem_pc 
    io.imem.reset := reset
    ifu.io.mem_inst := io.imem.data 

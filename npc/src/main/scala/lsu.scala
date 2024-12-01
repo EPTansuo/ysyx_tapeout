@@ -93,6 +93,6 @@ class LSU(xlen: Int) extends Module {
     io.out.bits.src1 := src1
     io.out.bits.wbu <> wbu_data
     io.out.bits.npc := npc 
-    
+    io.out.bits.csr_out := io.in.bits.csr_out
 
 }

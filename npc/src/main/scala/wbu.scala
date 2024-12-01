@@ -14,9 +14,6 @@ class WBU(xlen: Int) extends Module {
         val in = Flipped(Decoupled(new SigIO_LSU_WBU(xlen)))
         val out = Decoupled(new SigIO_WBU_IFU(xlen))
         val reg_write = Flipped(new RegfileWriteIO(xlen))
-        val csr_out = Input(UInt(xlen.W))
-        val csr_in = Output(UInt(xlen.W))
-        val csr_cmd = Output(UInt(3.W))
     })
 
     val in_reg = Reg(Output(chiselTypeOf(io.in)))
@@ -27,6 +24,7 @@ class WBU(xlen: Int) extends Module {
     val ld_data = in_reg.bits.ld_data
     val rd_addr = in_reg.bits.rd_addr
     val npc = in_reg.bits.npc
+    val csr_out = in_reg.bits.csr_out
 
     val s_idle :: s_wait_ready :: Nil = Enum(2)
 
@@ -58,14 +56,12 @@ class WBU(xlen: Int) extends Module {
         WB_ALU -> alu_out,
         WB_MEM -> ld_data,
         WB_PC4  -> (pc + 4.U),
-        WB_CSR -> io.csr_out,
+        WB_CSR -> csr_out,
         )
     )
     io.reg_write.data := wb_data
 
 
-    io.csr_in := src1  //目前还未用到立即数  WARNING
-
     io.out.bits.npc := npc
-    io.csr_cmd := ctrlsig.csr_cmd
+
 }

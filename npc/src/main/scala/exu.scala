@@ -20,8 +20,6 @@ class EXU(xlen: Int) extends Module{
         val out = (Decoupled(new SigIO_EXU_LSU(xlen)))
         val reg_read1 = Flipped(new RegfileReadIO(xlen))
         val reg_read2 = Flipped(new RegfileReadIO(xlen))
-        val csr_pc = Input(UInt(xlen.W))
-        val csr_inst = Output(UInt(32.W))
     })
 
     val alu = Module(new ALU(xlen))
@@ -82,6 +80,14 @@ class EXU(xlen: Int) extends Module{
 
 
 
+    val csr = Module(new CSR(xlen))
+    csr.io.inst := inst
+    csr.io.pc := pc
+    csr.io.cmd := sig_csr_cmd
+    csr.io.in := src1  //目前还未用到立即数  WARNING
+
+
+
     val branch = Module(new Branch(xlen))
     branch.io.br_sel := ctrlsig.br_sel
     branch.io.src1 := src1
@@ -92,13 +98,12 @@ class EXU(xlen: Int) extends Module{
         IndexedSeq(
         ((ctrlsig.pc_sel === PC_ALU) || (branch.io.taken)) -> (alu.io.out >> 1.U << 1.U),  //对齐
         (ctrlsig.pc_sel === PC_0) -> pc, 
-        (ctrlsig.pc_sel === PC_CSR) -> io.csr_pc
+        (ctrlsig.pc_sel === PC_CSR) -> csr.io.target_pc
         )
     )
     io.out.bits.npc := npc
     
-    io.csr_inst := io.in.bits.inst 
-
+    io.out.bits.csr_out  := csr.io.out
     io.out.bits.rd_addr := rd_addr
     io.out.bits.src1 := src1
     io.out.bits.src2 := src2
