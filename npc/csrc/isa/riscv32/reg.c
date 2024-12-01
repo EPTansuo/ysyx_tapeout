@@ -60,3 +60,10 @@ word_t isa_reg_str2val(const char *s, bool *success) {
   return 0;
 }
 
+void isa_csr_display(){
+  printf("csr info:\n");
+  printf("mepc = 0x"FMT_WORD_HEX_WIDTH"\n", CSR->mepc);
+  printf("mcause = 0x"FMT_WORD_HEX_WIDTH"\n", CSR->mcause);
+  printf("mstatus = 0x"FMT_WORD_HEX_WIDTH"\n", CSR->mstatus);
+  printf("mtvec = 0x"FMT_WORD_HEX_WIDTH"\n", CSR->mtvec);
+}
