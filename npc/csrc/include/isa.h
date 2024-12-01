@@ -41,6 +41,8 @@ extern CPU_state npc_cpu;
 void isa_reg_display();
 word_t isa_reg_str2val(const char *name, bool *success);
 
+// csr 
+void isa_csr_display();
 // // exec
 // struct Decode;
 // int isa_exec_once(struct Decode *s);
