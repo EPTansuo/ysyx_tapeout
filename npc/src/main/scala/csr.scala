@@ -6,6 +6,7 @@ import chisel3.util._
 
 import csr_addr._
 import csr_cmd._
+import defines._
 
 class CSRIO(xlen:Int) extends Bundle{
   val cmd = Input(UInt(3.W))
@@ -16,6 +17,8 @@ class CSRIO(xlen:Int) extends Bundle{
   val inst = Input(UInt(32.W))
   val pc = Input(UInt(xlen.W))
   val target_pc = Output(UInt(xlen.W))
+
+  val update_enable = Input(Bool()) 
 }
 
 class CSR(xlen:Int) extends Module{
@@ -26,8 +29,8 @@ class CSR(xlen:Int) extends Module{
   val mcause = RegInit(0.U(xlen.W))
   //val mtvec = RegInit(Mux((xlen.U === 32.U), 0x100.U(32.W), 0x80000000L.U(64.W)))
   //val mstatus = RegInit(Mux((xlen.U === 32.U), 0x1800.U(32.W), 0xa00001800L.U(64.W)))
-  val mtvec = RegInit(0x100.U(32.W))
-  val mstatus = RegInit(0x1800.U(32.W))
+  val mtvec = RegInit(MTVEC_INIT.U(32.W))
+  val mstatus = RegInit(MSTATUS_INIT.U(32.W))
 
   var csr_regs = Seq(
     BitPat(CSR_MEPC) -> mepc,
@@ -70,6 +73,12 @@ class CSR(xlen:Int) extends Module{
   .elsewhen(addr === CSR_MSTATUS) { mstatus := wdata }
   }
 
+  //防止一条指令内变化多次
+  val mstatus_tmp = RegInit(MSTATUS_INIT.U(32.W))
+  when(io.update_enable){
+    mstatus := mstatus_tmp
+  }
+
   when(is_ecall){
     mepc := io.pc >> 2 << 2
     //mcause := 0x8000000000000000.U
@@ -77,7 +86,7 @@ class CSR(xlen:Int) extends Module{
     mcause := io.in
     io.target_pc := mtvec
   }.elsewhen(is_mret){
-      mstatus := Cat(mstatus(31, 13), 
+      mstatus_tmp := Cat(mstatus(31, 13), 
                  0.U(2.W),            
                  mstatus(10, 8),  
                  1.U(1.W),      // MPIE

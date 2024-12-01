@@ -85,7 +85,7 @@ class EXU(xlen: Int) extends Module{
     csr.io.pc := pc
     csr.io.cmd := sig_csr_cmd
     csr.io.in := src1  //目前还未用到立即数  WARNING
-
+    csr.io.update_enable := RegNext(io.out.valid)
 
 
     val branch = Module(new Branch(xlen))

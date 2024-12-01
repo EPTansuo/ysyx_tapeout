@@ -5,6 +5,8 @@ import chisel3._
 object defines {
   val XLEN = 32
   val PC_INIT = "h80000000".U(XLEN.W)
+  val MSTATUS_INIT = 0x1800
+  val MTVEC_INIT = 0x100
 }
 
 
