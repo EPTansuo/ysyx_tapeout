@@ -95,5 +95,4 @@ class LSU(xlen: Int) extends Module {
     io.out.bits.npc := npc 
     
 
-
 }

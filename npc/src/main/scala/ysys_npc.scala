@@ -42,7 +42,7 @@ class ysyx_npc(xlen:Int) extends Module {
 
 
     val csr = Module(new CSR(xlen))
-    csr.io.cmd := exu.io.csr_cmd
+    csr.io.cmd := wbu.io.csr_cmd
     csr.io.inst := exu.io.csr_inst
     csr.io.pc := ifu.io.out.bits.pc
     csr.io.in := wbu.io.csr_in

@@ -12,7 +12,7 @@ class Sig_EXU extends Bundle{
     val B_sel = Input(UInt(1.W))
     val alu_op = Input(UInt(4.W))
     val imm_sel = Input(UInt(3.W))
-    val csr_cmd = Input(UInt(3.W))
+   // val csr_cmd = Input(UInt(3.W))
     var br_sel = Input(UInt(3.W))
     val pc_sel = Input(UInt(2.W))
 }
@@ -20,11 +20,13 @@ class Sig_EXU extends Bundle{
 class Sig_LSU(xlen:Int) extends  Bundle{
     val ld_sel = Input(UInt(3.W))
     val st_sel = Input(UInt(2.W))
+    //val csr_cmd = Input(UInt(3.W))
 
 }
 
 class Sig_WBU extends Bundle{
     val wb_sel = Input(UInt(3.W))
+    val csr_cmd = Input(UInt(3.W)) 
 }
 
 class Sig_CSR extends Bundle{

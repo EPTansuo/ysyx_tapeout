@@ -16,6 +16,7 @@ class WBU(xlen: Int) extends Module {
         val reg_write = Flipped(new RegfileWriteIO(xlen))
         val csr_out = Input(UInt(xlen.W))
         val csr_in = Output(UInt(xlen.W))
+        val csr_cmd = Output(UInt(3.W))
     })
 
     val in_reg = Reg(Output(chiselTypeOf(io.in)))
@@ -66,4 +67,5 @@ class WBU(xlen: Int) extends Module {
     io.csr_in := src1  //目前还未用到立即数  WARNING
 
     io.out.bits.npc := npc
+    io.csr_cmd := ctrlsig.csr_cmd
 }

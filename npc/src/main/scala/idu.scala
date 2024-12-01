@@ -51,7 +51,7 @@ class IDU(xlen: Int) extends Module {
     io.out.bits.lsu.ld_sel := control.io.out.ld_sel
     io.out.bits.lsu.st_sel := control.io.out.st_sel
     io.out.bits.wbu.wb_sel := control.io.out.wb_sel
-    io.out.bits.exu.csr_cmd := control.io.out.csr_cmd
+    io.out.bits.wbu.csr_cmd := control.io.out.csr_cmd
     io.out.bits.exu.br_sel := control.io.out.br_sel
     io.out.bits.exu.pc_sel := control.io.out.pc_sel
 

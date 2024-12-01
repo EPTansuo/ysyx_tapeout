@@ -22,7 +22,6 @@ class EXU(xlen: Int) extends Module{
         val reg_read2 = Flipped(new RegfileReadIO(xlen))
         val csr_pc = Input(UInt(xlen.W))
         val csr_inst = Output(UInt(32.W))
-        val csr_cmd = Output(UInt(3.W))
     })
 
     val alu = Module(new ALU(xlen))
@@ -32,7 +31,7 @@ class EXU(xlen: Int) extends Module{
     val pc = in_reg.bits.pc
     val inst = in_reg.bits.inst
     val ctrlsig = in_reg.bits.exu
-
+    val sig_csr_cmd = in_reg.bits.wbu.csr_cmd
 
     val s_idle :: s_wait_ready :: Nil = Enum(2)
 
@@ -56,7 +55,8 @@ class EXU(xlen: Int) extends Module{
     val rd_addr = inst(11, 7)
     val rs1_addr = inst(19, 15)
     val rs2_addr = inst(24, 20)
-    io.reg_read1.addr := Mux(ctrlsig.csr_cmd === csr_cmd.CSR_P, 15.U,rs1_addr)
+    
+    io.reg_read1.addr := Mux(sig_csr_cmd === csr_cmd.CSR_P, 15.U,rs1_addr)
     io.reg_read2.addr := rs2_addr
     val src1 = io.reg_read1.data
     val src2 = io.reg_read2.data
@@ -98,7 +98,6 @@ class EXU(xlen: Int) extends Module{
     io.out.bits.npc := npc
     
     io.csr_inst := io.in.bits.inst 
-    io.csr_cmd := ctrlsig.csr_cmd
 
     io.out.bits.rd_addr := rd_addr
     io.out.bits.src1 := src1
@@ -106,8 +105,8 @@ class EXU(xlen: Int) extends Module{
     io.out.bits.alu_out := alu.io.out
     io.out.bits.pc := pc
     io.out.bits.inst := inst
-    io.out.bits.wbu <> io.in.bits.wbu
-    io.out.bits.lsu <> io.in.bits.lsu
+    io.out.bits.wbu <> in_reg.bits.wbu
+    io.out.bits.lsu <> in_reg.bits.lsu
 
 
 }
