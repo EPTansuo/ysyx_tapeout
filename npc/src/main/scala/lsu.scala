@@ -38,7 +38,7 @@ class LSU(xlen: Int) extends Module {
     state := MuxLookup(state, s_idle, Seq(
         s_idle -> Mux(load_en, s_read, Mux(store_en, s_write, Mux(io.in.valid, s_wait_ready, s_idle))),
         s_read -> Mux(io.dmem.ar.ready, s_wait_ready, s_read),
-        s_write -> Mux(io.dmem.aw.ready && io.dmem.ar.ready, s_wait_write, s_write),
+        s_write -> Mux(io.dmem.aw.ready && io.dmem.w.ready, s_wait_write, s_write),
         s_wait_read  -> Mux(io.dmem.r.valid,s_wait_ready, s_wait_read),
         s_wait_write -> Mux(io.dmem.b.valid, s_wait_ready, s_wait_write),
         s_wait_ready -> Mux(io.out.ready, s_idle, s_wait_ready)
