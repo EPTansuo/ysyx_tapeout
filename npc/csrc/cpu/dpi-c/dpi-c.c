@@ -84,8 +84,17 @@ extern "C" int pmem_read(int raddr){
   
   if(raddr < CONFIG_MBASE || raddr > CONFIG_MBASE + CONFIG_MSIZE)
     return 0;
+  
+#ifdef CONFIG_MTRACE
+  word_t addr_last  = 0;
+  if(addr_last != raddr){
+    printf("--------MTRACE---------\n");
+    print_memread(addr_last, 4);
+    addr_last = raddr;
+  }
+#endif // DEBUG
+  
   word_t data = host_read(guest_to_host(raddr), 4);
-  print_memread(raddr, 4);
   return data;
 }
 
