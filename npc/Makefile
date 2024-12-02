@@ -75,11 +75,12 @@ $(BIN): $(CSRCS) verilog
 
 
 SCALA_TIME = $(shell find $(SCALA_DIR) -type f -exec stat --format '%Y' {} \; | sort -n | tail -n 1)
+$(shell mkdir -p $(BUILD_DIR)/verilog)
 VERILOG_TIME = $(shell find $(VERILOG_DIR) -type f -exec stat --format '%Y' {} \; | sort -n | tail -n 1)
-
+VERILOG_TIME := 0
 
 verilog: $(SCALA_FILE) sigmap
-	@mkdir -p $(BUILD_DIR)
+
 	@if [ "$(SCALA_TIME)" -gt "$(VERILOG_TIME)" ]; then \
 		echo "Scala directory changed or Verilog directory missing, generating Verilog..."; \
 		./mill -i $(TOPNAME).runMain $(MAIN) -td $(VERILOG_DIR) --emit-modules verilog; \
