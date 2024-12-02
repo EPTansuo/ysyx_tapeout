@@ -26,3 +26,4 @@
 !*.ipynb
 !*.py
 !.gitmodules
+!*.cc
