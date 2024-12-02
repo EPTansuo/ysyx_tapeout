@@ -5,6 +5,9 @@ OBJ_DIR = $(BUILD_DIR)/OBJ_DIR
 IMG = "$(YSYX_HOME)/am-kernels/tests/cpu-tests/build/add-riscv32e-npc.bin"
 ARGS = -v --diff="$(NEMU_HOME)/build/riscv32-nemu-interpreter-so"
 
+SCALA_DIR := ./src/main/scala
+VERILOG_DIR := $(BUILD_DIR)/verilog
+
 VERILATOR = verilator
 VERILATOR_COVERAGE = verilator_coverage
 # # verilator flags
@@ -60,7 +63,6 @@ include $(NPC_HOME)/csrc/device/filelist.mk
 
 
 
-
 BIN = $(BUILD_DIR)/$(TOPNAME)
 NPC_EXEC := $(BIN)
 
@@ -71,12 +73,31 @@ $(BIN): $(CSRCS) verilog
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) --top-module $(TOPNAME)
 
+
+SCALA_TIME = $(shell find $(SCALA_DIR) -type f -exec stat --format '%Y' {} \; | sort -n | tail -n 1)
+$(shell mkdir -p $(BUILD_DIR)/verilog)
+VERILOG_TIME = $(shell find $(VERILOG_DIR) -type f -exec stat --format '%Y' {} \; | sort -n | tail -n 1)
+VERILOG_TIME := $(if $(VERILOG_TIME),$(VERILOG_TIME),0)
+
 verilog: $(SCALA_FILE) sigmap
-	@mkdir -p $(BUILD_DIR)/verilog
-	./mill -i $(TOPNAME).runMain $(MAIN) -td $(BUILD_DIR)/verilog --emit-modules verilog
+
+	@if [ "$(SCALA_TIME)" -gt "$(VERILOG_TIME)" ]; then \
+		echo "Scala directory changed or Verilog directory missing, generating Verilog..."; \
+		./mill -i $(TOPNAME).runMain $(MAIN) -td $(VERILOG_DIR) --emit-modules verilog; \
+	else \
+		echo "No changes detected in Scala directory, skipping Verilog generation."; \
+	fi
+
+SIGMAP_TIME = $(shell find $(SCALA_DIR) -name sigmap.scala -exec stat --format '%Y' {} \; | sort -n | tail -n 1)
+SIGMAP_TABLE_TIME = $(shell find $(NPC_HOME)/tools -name control_table.xlsx -exec stat --format '%Y' {} \; | sort -n | tail -n 1)
 
 sigmap: $(NPC_HOME)/tools/control_gen/control_table.xlsx
-	cd $(NPC_HOME)/tools/control_gen/ && python control_gen.py > $(NPC_HOME)/src/main/scala/sigmap.scala
+	@if [ "$(SIGMAP_TABLE_TIME)" -gt "$(SIGMAP_TIME)" ]; then \
+		echo "Sigmap (Control Signal) Table Changed, Generating Code..."; \
+		cd $(NPC_HOME)/tools/control_gen/ && python control_gen.py > $(NPC_HOME)/src/main/scala/sigmap.scala; \
+	else \
+		echo "No changes detected in Sigmap (Control Signal) Table"; \
+	fi
 
 
 sim: run

@@ -15,6 +15,19 @@ extern unsigned char isa_logo[];
 uint8_t* guest_to_host(paddr_t paddr);
 paddr_t host_to_guest(uint8_t *haddr);
 
+void print_memread(paddr_t addr,int len);
+void print_memwrite_wmask(paddr_t addr, word_t data, char wmask);
+
+
+typedef  struct{
+  paddr_t addr;
+  char wmask;
+  word_t data;
+  word_t pc;
+  VlUnpacked<word_t, 32> regs;
+}memwrite_info;
+
+
 uint64_t npc_uptime;
 
 
@@ -55,6 +68,8 @@ uint64_t get_rtc_time(){
 }
 
 
+
+
 extern "C" int pmem_read(int raddr){
 
 #ifdef CONFIG_HAS_TIMER
@@ -69,22 +84,19 @@ extern "C" int pmem_read(int raddr){
   
   if(raddr < CONFIG_MBASE || raddr > CONFIG_MBASE + CONFIG_MSIZE)
     return 0;
+  
+#ifdef CONFIG_MTRACE
+  static word_t addr_last  = 0;
+  if(addr_last != raddr){
+    printf("--------MTRACE---------\n");
+    print_memread(raddr, 4);
+    addr_last = raddr;
+  }
+#endif 
+  
   word_t data = host_read(guest_to_host(raddr), 4);
-  //printf("read 4 bytes at 0x%x, data = 0x%x\n", raddr, data);
   return data;
 }
-void print_memwrite(paddr_t addr, int len, word_t data);
-
-typedef  struct{
-  paddr_t addr;
-  char wmask;
-  word_t data;
-  word_t pc;
-  VlUnpacked<word_t, 32> regs;
-}memwrite_info;
-
-
-
 
 
 
@@ -103,6 +115,11 @@ bool regs_equ(const VlUnpacked<word_t,32>&reg1, const VlUnpacked<word_t,32>&reg2
 extern "C" void pmem_write(int waddr, int wdata, char wmask){
   static memwrite_info mwinfo;   //防止多次输出
   
+  if(waddr < CONFIG_MBASE){
+    printf(L_RED "WARNING: %s waddr = 0x%x < CONFIG_MBASE" COLOR_NONE "\n", __func__, waddr);
+    return;
+  }
+
   if(mwinfo.pc != PC || mwinfo.addr != waddr
       || mwinfo.wmask != wmask || mwinfo.data != wdata 
       || (!regs_equ(REGS,mwinfo.regs))){
@@ -126,23 +143,13 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask){
       #ifdef CONFIG_MTRACE
       printf("--------MTRACE---------\n");
       printf("wmask = 0x%x\n", wmask);
-      print_memwrite(waddr, wmask == 0x01 ? 1 : wmask == 0x03 ? 2 : wmask ==0x0f ? 4 : 0, wdata);
+      print_memwrite_wmask(waddr, wdata, wmask);
       #endif
 
-      switch (wmask)
-      {
-        case 0x01: host_write(guest_to_host(waddr), 1, wdata); 
-                   // printf("write 1 byte at 0x%x, data = 0x%x\n", waddr, wdata);
-                   break; 
-        case 0x03: host_write(guest_to_host(waddr), 2, wdata);
-                   // printf("write 2 bytes at 0x%x, data = 0x%x\n", waddr, wdata);
-                    break;
-        case 0x0f: host_write(guest_to_host(waddr), 4, wdata);
-                   // printf("write 4 bytes at 0x%x, data = 0x%x\n", waddr, wdata);
-                    break;
-      default:
-        printf( L_RED " Can only write for 1/2/4 btyes ()." COLOR_NONE "\n");
-        break;
+      for(int i = 0; i < 4; i++){
+        if(wmask & (1 << i)){
+          host_write(guest_to_host(waddr + i), 1, (wdata >> (i * 8)) & 0xff);
+        }
       }
 end_pmem_write:
       mwinfo.pc = PC;

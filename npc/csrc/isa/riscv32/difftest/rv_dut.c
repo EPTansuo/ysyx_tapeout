@@ -30,6 +30,7 @@ static bool first = true;
 
 extern const char *regs[];
 
+
 // 为了匹配，所以让ref_r使用cpu_state_buf推迟了一个周期
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   int i =0;
@@ -37,7 +38,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   if(!first){
     
     //if(ref_r->pc != npc_cpu.pc){
-    for(i = 0; i < 16; i++){
+    for(i = 0; i <  MUXDEF(CONFIG_RVE,16,32); i++){
       if(cpu_state_buf.gpr[i] != npc_cpu.gpr[i]){
         succ = false;
         break;
@@ -64,20 +65,20 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
         succ = false;
         printf(L_RED "npc: pc = 0x" FMT_WORD_HEX_WIDTH "\tnemu: pc = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.pc,cpu_state_buf.pc);
       }
-    if(cpu_state_buf.csr.mepc != npc_cpu.csr.mepc){
-      printf(L_RED "npc: mepc   = 0x" FMT_WORD_HEX_WIDTH "\tnemu: mepc   = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.csr.mepc,cpu_state_buf.csr.mepc);
+    if(ref_r->csr.mepc != npc_cpu.csr.mepc){
+      printf(L_RED "npc: mepc   = 0x" FMT_WORD_HEX_WIDTH "\tnemu: mepc   = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.csr.mepc,ref_r->csr.mepc);
       succ = false;
     }
-    if(cpu_state_buf.csr.mcause != npc_cpu.csr.mcause){
-      printf(L_RED "npc: mcause = 0x" FMT_WORD_HEX_WIDTH "\tnemu: mcause = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.csr.mcause,cpu_state_buf.csr.mcause);
+    if(ref_r->csr.mcause != npc_cpu.csr.mcause){
+      printf(L_RED "npc: mcause = 0x" FMT_WORD_HEX_WIDTH "\tnemu: mcause = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.csr.mcause,ref_r->csr.mcause);
       succ = false;
     }
-    if(cpu_state_buf.csr.mstatus != npc_cpu.csr.mstatus){
-      printf(L_RED "npc: mstatus= 0x" FMT_WORD_HEX_WIDTH "\tnemu: mstatus= 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.csr.mstatus,cpu_state_buf.csr.mstatus);
+    if(ref_r->csr.mstatus != npc_cpu.csr.mstatus){
+      printf(L_RED "npc: mstatus= 0x" FMT_WORD_HEX_WIDTH "\tnemu: mstatus= 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.csr.mstatus,ref_r->csr.mstatus);
       succ = false;
     }
-    if(cpu_state_buf.csr.mtvec != npc_cpu.csr.mtvec){
-      printf(L_RED "npc: mtvec  = 0x" FMT_WORD_HEX_WIDTH "\tnemu: mtvec  = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.csr.mtvec,cpu_state_buf.csr.mtvec);
+    if(ref_r->csr.mtvec != npc_cpu.csr.mtvec){
+      printf(L_RED "npc: mtvec  = 0x" FMT_WORD_HEX_WIDTH "\tnemu: mtvec  = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.csr.mtvec,ref_r->csr.mtvec);
       succ = false;
     }
 
@@ -85,13 +86,14 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   }
   if(!succ){
       printf("\e[1;31m Difftest ERROR!\e[0m\n ");
-      printf("DO NOT SEE CURRENT INSTRATION, SEE PREVIOUS ONE!\n");
+      printf("IF GPR DIFF TEST ERROR: DO NOT SEE CURRENT INSTRATION, SEE PREVIOUS ONE!\n");
   }
   first = false;
   memcpy(&cpu_state_buf, ref_r, DIFFTEST_REG_SIZE);
  // printf("npc:nemu:ref_r->pc==0x%x\n",ref_r->pc);
   return succ;
 }
+
 
 void isa_difftest_attach() {
 }

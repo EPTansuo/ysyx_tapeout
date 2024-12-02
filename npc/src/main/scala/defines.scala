@@ -5,6 +5,8 @@ import chisel3._
 object defines {
   val XLEN = 32
   val PC_INIT = "h80000000".U(XLEN.W)
+  val MSTATUS_INIT = 0x1800
+  val MTVEC_INIT = 0x100
 }
 
 
@@ -36,27 +38,30 @@ object imm_sel {
 
 // wb from alu, mem, pc or xx
 object wb_sel {
-  val WB_ALU = 0.U(3.W)
-  val WB_MEM = 1.U(3.W)
-  val WB_PC4  = 2.U(3.W)
-  val WB_CSR = 3.U(3.W)
-  val WB_XX  = 4.U(3.W)
+  val WB_XX  = 0.U(3.W)
+  val WB_ALU = 1.U(3.W)
+  val WB_MEM = 2.U(3.W)
+  val WB_PC4  = 3.U(3.W)
+  val WB_CSR = 4.U(3.W)
+  
 }
 
 object st_sel {
-  val ST_SW  = 0.U(2.W)
-  val ST_SH  = 1.U(2.W)
-  val ST_SB  = 2.U(2.W)
-  val ST_XX  = 3.U(2.W)
+  val ST_XX  = 0.U(2.W)
+  val ST_SW  = 1.U(2.W)
+  val ST_SH  = 2.U(2.W)
+  val ST_SB  = 3.U(2.W)
+  
 }
 
 object ld_sel {
-  val LD_LW  = 0.U(3.W)
-  val LD_LH  = 1.U(3.W)
-  val LD_LB  = 2.U(3.W)
-  val LD_LBU = 3.U(3.W)
-  val LD_LHU = 4.U(3.W)
-  val LD_XX  = 5.U(3.W)
+  val LD_XX  = 0.U(3.W)
+  val LD_LW  = 1.U(3.W)
+  val LD_LH  = 2.U(3.W)
+  val LD_LB  = 3.U(3.W)
+  val LD_LBU = 4.U(3.W)
+  val LD_LHU = 5.U(3.W)
+  
 }
 
 

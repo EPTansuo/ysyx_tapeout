@@ -31,7 +31,7 @@ paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 
 //打印内存写入信息，内存读取信息的打印没有单独设置为函数
 void print_memwrite(paddr_t addr, int len, word_t data);
-
+void print_memwrite_wmask(paddr_t addr, word_t data, char wmask);
 
 
 
@@ -79,6 +79,26 @@ void print_memwrite(paddr_t addr, int len, word_t data){
   }
 }
 
+#ifdef CONFIG_MTRACE 
+void print_memwrite_wmask(paddr_t addr, word_t data, char wmask){
+#ifdef CONFIG_MTRACE_RANGE_COND
+  if (addr < CONFIG_MTRACE_RANGE_MIN || addr > CONFIG_MTRACE_RANGE_MAX) return;
+#endif
+  word_t origin_mem = 0;
+  for(int i = 0; i < 4; i++){
+      if(wmask & (1 << i)){
+        //host_write(guest_to_host(waddr + i), 1, (wdata >> (i * 8)) & 0xff);
+        origin_mem = pmem_read(addr + i, 1);
+        printf("0x%08x:    ", addr + i);
+        printf("0x%02x  =>  ", (unsigned int)origin_mem);
+        printf("0x%02x\n", (unsigned int)(data >> (i * 8) & 0xff));
+    }
+  }
+}
+#endif // DEBUG
+
+
+
 void print_memread(paddr_t addr,int len){
 #ifdef CONFIG_MTRACE
    word_t mem_read = pmem_read(addr, len);
@@ -96,7 +116,7 @@ void print_memread(paddr_t addr,int len){
 #else 
 void print_memwrite(paddr_t addr, int len, word_t data){};
 void print_memread(paddr_t addr, int len, word_t data){};
-
+void print_memwrite_wmask(paddr_t addr, word_t data, char wmask){};
 #endif
 
 void init_mem() {
