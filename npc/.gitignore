@@ -25,3 +25,6 @@ test_run_dir/
 !Kconfig
 !*.py
 !*.vlt
+!tools/disasm/
+tools/disasm/disasm
+
