@@ -77,7 +77,7 @@ $(BIN): $(CSRCS) verilog
 SCALA_TIME = $(shell find $(SCALA_DIR) -type f -exec stat --format '%Y' {} \; | sort -n | tail -n 1)
 $(shell mkdir -p $(BUILD_DIR)/verilog)
 VERILOG_TIME = $(shell find $(VERILOG_DIR) -type f -exec stat --format '%Y' {} \; | sort -n | tail -n 1)
-VERILOG_TIME := 0
+VERILOG_TIME := $(if $(VERILOG_TIME),$(VERILOG_TIME),0)
 
 verilog: $(SCALA_FILE) sigmap
 
