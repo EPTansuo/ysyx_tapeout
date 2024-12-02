@@ -5,7 +5,7 @@ module UART(
     input [7:0]data
 );
 
-import "DPI-C" function void pmem_write(input int waddr, input int wdata, input byte wmask);
+//import "DPI-C" function void pmem_write(input int waddr, input int wdata, input byte wmask);
 
 always@(posedge clock) begin
     if(en) begin
