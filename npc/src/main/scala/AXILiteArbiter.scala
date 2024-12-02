@@ -41,7 +41,7 @@ val readArbitrationFinalIdx = RegInit(0.U)
 val readArbitrationStarted = RegInit(false.B) 
 
 // 写操作的状态可以更新
-when (io.slave.r.ready) {
+when (io.slave.r.ready && io.slave.r.valid) {
   readArbitrationStarted := false.B
   readArbitrationFinalIdx := Mux(readArbitrationValid, readArbitrationIdx, 0.U) 
 } .elsewhen (!readArbitrationStarted && readArbitrationValid) {
