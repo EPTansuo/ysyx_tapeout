@@ -116,7 +116,7 @@ void print_memread(paddr_t addr,int len){
 #else 
 void print_memwrite(paddr_t addr, int len, word_t data){};
 void print_memread(paddr_t addr, int len, word_t data){};
-void print_memwrite_wmask(paddr_t addr, word_t data, char wmask)();
+void print_memwrite_wmask(paddr_t addr, word_t data, char wmask){};
 #endif
 
 void init_mem() {
