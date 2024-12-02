@@ -15,6 +15,19 @@ extern unsigned char isa_logo[];
 uint8_t* guest_to_host(paddr_t paddr);
 paddr_t host_to_guest(uint8_t *haddr);
 
+void print_memread(paddr_t addr,int len);
+void print_memwrite(paddr_t addr, int len, word_t data);
+
+
+typedef  struct{
+  paddr_t addr;
+  char wmask;
+  word_t data;
+  word_t pc;
+  VlUnpacked<word_t, 32> regs;
+}memwrite_info;
+
+
 uint64_t npc_uptime;
 
 
@@ -55,6 +68,8 @@ uint64_t get_rtc_time(){
 }
 
 
+
+
 extern "C" int pmem_read(int raddr){
 
 #ifdef CONFIG_HAS_TIMER
@@ -70,21 +85,9 @@ extern "C" int pmem_read(int raddr){
   if(raddr < CONFIG_MBASE || raddr > CONFIG_MBASE + CONFIG_MSIZE)
     return 0;
   word_t data = host_read(guest_to_host(raddr), 4);
-  //printf("read 4 bytes at 0x%x, data = 0x%x\n", raddr, data);
+  print_memread(raddr, 4);
   return data;
 }
-void print_memwrite(paddr_t addr, int len, word_t data);
-
-typedef  struct{
-  paddr_t addr;
-  char wmask;
-  word_t data;
-  word_t pc;
-  VlUnpacked<word_t, 32> regs;
-}memwrite_info;
-
-
-
 
 
 
