@@ -32,7 +32,7 @@ class LSU(xlen: Int) extends Module {
     val store_en = ctrlsig.st_sel =/= ST_XX
     val load_en = ctrlsig.ld_sel =/= LD_XX
 
-    val s_idle :: s_read :: s_exe :: s_wait_read :: s_write :: s_wait_write :: s_wait_ready :: Nil = Enum(7)
+    val s_idle :: s_exe :: s_read  :: s_wait_read :: s_write :: s_wait_write :: s_wait_ready :: Nil = Enum(7)
 
     val state = RegInit(s_idle)         
     state := MuxLookup(state, s_idle, Seq(
