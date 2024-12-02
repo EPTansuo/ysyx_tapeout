@@ -86,13 +86,12 @@ extern "C" int pmem_read(int raddr){
     return 0;
   
 #ifdef CONFIG_MTRACE
-  word_t addr_last  = 0;
+  static word_t addr_last  = 0;
   if(addr_last != raddr){
     printf("--------MTRACE---------\n");
     print_memread(raddr, 4);
     addr_last = raddr;
   }
-#endif // DEBUG
   
   word_t data = host_read(guest_to_host(raddr), 4);
   return data;
