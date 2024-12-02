@@ -1,8 +1,8 @@
+package AXI4
+
 //https://github.com/maltanar/axi-in-chisel
 
 
-package AXI4
-{
 
 import chisel3._
 import chisel3.util._
@@ -72,4 +72,4 @@ class AXILiteMasterIF(addrWidthBits: Int, dataWidthBits: Int) extends Bundle {
   override def clone = { new AXILiteMasterIF(addrWidthBits, dataWidthBits).asInstanceOf[this.type] }
 }
 
-}
+

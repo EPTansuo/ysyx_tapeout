@@ -48,35 +48,77 @@ class LFSR4 extends Module {
 
 class SRAM extends Module {
   val io = IO(new Bundle {
-    val axi = AXILiteSlaveIF(addrWidthBits = 32, dataWidthBits = 32)
+    val axi = new AXILiteSlaveIF(addrWidthBits = 32, dataWidthBits = 32)
   })
 
   val axi    = io.axi
   val mem    = Module(new Mem)
-  val lfsr_r  = Module(new LFSR4)
-  val random_r = lfsr_r.io.out
-  val lfsr_w = Module(new LFSR4)
-  val random_w = lfsr_w.io.out
+  //val lfsr_r  = Module(new LFSR4)
+  //val random_r = lfsr_r.io.out
+  val random_r = 10.U
+  //val lfsr_w = Module(new LFSR4)
+  //val random_w = lfsr_w.io.out
+  val random_w = 10.U
 
-  val s_read_idle :: s_read :: s_read_delay :: s_wait_ready :: Nil = Enum(4)
-
+  // 读状态机
+  val s_read_idle :: s_read :: s_read_delay :: s_wait_read_ready :: Nil = Enum(4)
   val state_r = RegInit(s_read_idle)
   state_r := MuxLookup(state_r, s_read_idle, Seq(
     s_read_idle -> Mux(axi.ar.valid, s_read, s_read_idle),
     s_read -> s_read_delay,
-    s_read_delay -> Mux(random_r >= 8.U , s_wait_ready, s_read_delay),
-    s_wait_ready -> Mux(axi.r.ready, s_read_idle, s_wait_ready)
+    s_read_delay -> Mux(random_r >= 10.U , s_wait_read_ready, s_read_delay),
+    s_wait_read_ready -> Mux(axi.r.ready, s_read_idle, s_wait_read_ready)
   ))
 
   axi.ar.ready := state_r === s_read_idle
   val rdata = RegInit(0.U(32.W))
-  when(state_r == s_read === 0.U){
+  when(state_r === s_read){
     rdata := mem.io.rdata
   }
-  axi.r.valid := state_r === s_wait_ready
+  axi.r.valid := state_r === s_wait_read_ready
   axi.r.bits.data := rdata 
   axi.r.bits.resp := 0.U
 
 
+
+  // 写状态机
+  val s_write_idle :: s_wait_data :: s_wait_addr :: s_write :: s_write_delay :: s_wait_write_ready :: Nil = Enum(6)
+  val state_w = RegInit(s_write_idle)
+  state_w := MuxLookup(state_w, s_write_idle, Seq(
+    s_write_idle -> Mux(axi.aw.valid && axi.w.valid, s_write, 
+                        Mux(axi.aw.valid, s_wait_data, 
+                            Mux(axi.w.valid, s_wait_addr, s_write_idle))),
+    s_wait_data -> Mux(axi.w.valid, s_write, s_wait_data),
+    s_wait_addr -> Mux(axi.aw.valid, s_write, s_wait_addr),
+    s_write -> s_write_delay,
+    s_write_delay -> Mux(random_w >= 10.U, s_wait_write_ready, s_write_delay),
+    s_wait_write_ready -> Mux(axi.b.ready, s_write_idle, s_wait_write_ready)
+  ))
+
+
+  val wdata = RegInit(0.U(32.W))
+  val waddr = RegInit(0.U(32.W))
+  val wstrb = RegInit(0.U(4.W))
+  when(axi.aw.valid){
+    waddr := axi.aw.bits.addr
+  }
+  when(axi.w.valid){
+    wdata := axi.w.bits.data
+    wstrb := axi.w.bits.strb
+  }
   
+  axi.aw.ready := state_w === s_write_idle || state_w === s_wait_addr
+  axi.w.ready := state_w === s_write_idle || state_w === s_wait_data
+  axi.b.valid := state_w === s_wait_write_ready
+  axi.b.bits := 0.U
+
+
+  mem.io.clock := clock
+  mem.io.reset := reset
+  mem.io.raddr := axi.ar.bits.addr
+  mem.io.we := state_w === s_write
+  mem.io.waddr := waddr
+  mem.io.wdata := wdata
+  mem.io.wmask := wstrb
+
 }

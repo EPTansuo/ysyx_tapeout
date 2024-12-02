@@ -3,9 +3,8 @@ package cpu
 import chisel3._
 import chisel3.util._
 
-import  defines._
-
-import AXILiteDefs._ 
+import defines._
+import AXI4._
 
 /* 
 module IMem(
@@ -33,16 +32,16 @@ class IMem_AIXLite(xlen: Int) extends Module{
 
   val mem = Module(new IMem(xlen))
 
-  mem.io.pc := io.writeAddr.bits.addr
-  io.readData.bits.data := mem.io.data
+  mem.io.pc := io.aw.bits.addr
+  io.r.bits.data := mem.io.data
 
-  io.readAddr.ready := true.B
-  io.readData.valid := io.readAddr.valid  //用的DPI-C，是可以立刻有效的
-  io.readData.bits.resp := 0.U
+  io.ar.ready := true.B
+  io.r.valid := io.ar.valid  //用的DPI-C，是可以立刻有效的
+  io.r.bits.resp := 0.U
 
-  io.writeAddr.ready := false.B
-  io.writeData.ready := false.B
-  io.writeResp.valid := false.B
+  io.aw.ready := false.B
+  io.w.ready := false.B
+  io.b.valid := false.B
   //Imem不需要写数据，所以不用继续操作了
 
 }

@@ -13,7 +13,7 @@ class IFU(xlen:Int) extends Module {
     val out = (Decoupled(new SigIO_IFU_IDU(xlen)))
     // val mem_pc = Output(UInt(xlen.W))
     // val mem_inst = Input(UInt(32.W))
-    val imem = AXILiteMasterIF(addrWidthBits = 32, dataWidthBits = xlen)
+    val imem = new AXILiteMasterIF(addrWidthBits = 32, dataWidthBits = xlen)
   })
 
   val isFirst = RegInit(true.B)
@@ -24,7 +24,7 @@ class IFU(xlen:Int) extends Module {
   val in_ready = io.in.ready
 
 
-  val s_idle :: s_read ::s_wait_read :: s_wait_ready :: Nil = Enum(2)
+  val s_idle :: s_read ::s_wait_read :: s_wait_ready :: Nil = Enum(4)
 
   val state = RegInit(s_idle)         
   state := MuxLookup(state, s_idle, Seq(
@@ -59,11 +59,14 @@ class IFU(xlen:Int) extends Module {
   io.out.bits.pc := pc
 
 
-  // 不需要读
+  // 不需要写
   io.imem.w.valid := false.B
   io.imem.aw.valid := false.B
   io.imem.aw.bits.addr := 0.U
   io.imem.aw.bits.prot := 0.U
   io.imem.w.bits.data := 0.U
+  io.imem.w.bits.strb := 0.U
+  io.imem.b.ready := false.B
+
 
 }

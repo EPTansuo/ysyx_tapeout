@@ -15,7 +15,7 @@ class LSU(xlen: Int) extends Module {
         val in = Flipped(Decoupled(new SigIO_EXU_LSU(xlen)))
         val out = (Decoupled(new SigIO_LSU_WBU(xlen)))
         //val dmem = Flipped(new DMemIO())
-        val dmem = AXILiteMasterIF(addrWidthBits = 32, dataWidthBits = xlen)
+        val dmem = new AXILiteMasterIF(addrWidthBits = 32, dataWidthBits = xlen)
     })
 
 
@@ -32,13 +32,14 @@ class LSU(xlen: Int) extends Module {
     val store_en = ctrlsig.st_sel =/= ST_XX
     val load_en = ctrlsig.ld_sel =/= LD_XX
 
-    val s_idle :: s_read :: s_wait_read :: s_write :: s_wait_write :: s_wait_ready :: Nil = Enum(6)
+    val s_idle :: s_exe :: s_read  :: s_wait_read :: s_write :: s_wait_write :: s_wait_ready :: Nil = Enum(7)
 
     val state = RegInit(s_idle)         
     state := MuxLookup(state, s_idle, Seq(
-        s_idle -> Mux(load_en, s_read, Mux(store_en, s_write, s_wait_ready)),
-        s_read -> Mux(io.dmem.ar.ready, s_wait_ready, s_read),
-        s_write -> Mux(io.dmem.aw.ready && io.dmem.ar.ready, s_wait_write, s_write),
+        s_idle -> Mux(io.in.valid, s_exe, s_idle),//Mux(load_en, s_read, Mux(store_en, s_write, Mux(io.in.valid, s_exe, s_idle))),
+        s_exe -> Mux(load_en, s_read, Mux(store_en, s_write, s_wait_ready)),  //需要等待信号生成完毕，来判断是否需要读写数据
+        s_read -> Mux(io.dmem.ar.ready, s_wait_read, s_read),
+        s_write -> Mux(io.dmem.aw.ready && io.dmem.w.ready, s_wait_write, s_write),
         s_wait_read  -> Mux(io.dmem.r.valid,s_wait_ready, s_wait_read),
         s_wait_write -> Mux(io.dmem.b.valid, s_wait_ready, s_wait_write),
         s_wait_ready -> Mux(io.out.ready, s_idle, s_wait_ready)
@@ -54,8 +55,13 @@ class LSU(xlen: Int) extends Module {
 
      
 
-    val dmem_rdata = io.dmem.r.bits.data
-    
+    val dmem_rdata_tmp = io.dmem.r.bits.data
+    val dmem_rdata = RegInit(0.U(xlen.W))
+    val roffset = alu_out(1, 0) << 3.U //四字节对齐
+    when(io.dmem.r.valid){
+        dmem_rdata := dmem_rdata_tmp >> roffset //四字节对齐
+    }
+
     val ld_data = MuxLookup(ctrlsig.ld_sel, default = 0.U(xlen.W), Array(
         LD_XX -> 0.U(xlen.W),
         LD_LB -> Cat(Fill(xlen-8, dmem_rdata(7)), dmem_rdata(7, 0)),
@@ -73,13 +79,16 @@ class LSU(xlen: Int) extends Module {
     
 
 
-    val st_data = MuxLookup(ctrlsig.st_sel, default = 0.U(xlen.W), Array(
+    val st_data_tmp = MuxLookup(ctrlsig.st_sel, default = 0.U(xlen.W), Array(
         ST_XX -> 0.U(xlen.W),
         ST_SB -> src2(7, 0),
         ST_SH -> src2(15, 0),
         ST_SW -> src2
         )
     )
+
+    val woffset = alu_out(1, 0) << 3.U
+    val st_data = st_data_tmp << woffset
 
     io.dmem.aw.valid := state === s_write
     io.dmem.w.valid := state === s_write
@@ -88,12 +97,12 @@ class LSU(xlen: Int) extends Module {
     io.dmem.w.bits.data := st_data
     io.dmem.w.bits.strb := MuxLookup(ctrlsig.st_sel, default = 0.U(4.W), Array(
         ST_XX -> 0.U(4.W),
-        ST_SB -> "b0001".U,
-        ST_SH -> "b0011".U,
+        ST_SB -> ("b0001".U << alu_out(1, 0)),
+        ST_SH -> ("b0011".U << alu_out(1, 0)),
         ST_SW -> "b1111".U
         )
     )
-    io.dmem.b.ready := state === s_wait_write
+    io.dmem.b.ready := state === s_wait_write && io.dmem.b.valid
 
     io.out.bits.inst := inst
     io.out.bits.pc := pc

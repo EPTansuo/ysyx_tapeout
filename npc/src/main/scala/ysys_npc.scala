@@ -18,7 +18,7 @@ class ysyx_npc(xlen:Int) extends Module {
     val io = IO(new Bundle {
         // val imem = Flipped(new IMemIO(xlen))
         // val dmem = Flipped(new DMemIO())
-        val AXILite = AXILiteMasterIF(addrWidthBits = 32, dataWidthBits = 32)
+        val axi = new AXILiteMasterIF(addrWidthBits = 32, dataWidthBits = 32)
     })
 
     val ifu = Module(new IFU(xlen))
@@ -40,9 +40,13 @@ class ysyx_npc(xlen:Int) extends Module {
     wbu.io.reg_write <> regfile.io.write
 
 
-    val axi4lite_arbiter = Module(new AXI4LiteArbiter(2, 32, 32))
+   val axi4lite_arbiter = Module(new AXI4LiteArbiter(2, 32, 32))
 
-    axi4lite_arbiter.io.masters(0) <> ifu.io.imem
-    axi4lite_arbiter.io.masters(1) <> lsu.io.dmem
+   axi4lite_arbiter.io.masters(0) <> ifu.io.imem
+   axi4lite_arbiter.io.masters(1) <> lsu.io.dmem
+   axi4lite_arbiter.io.slave <> io.axi
+   dontTouch(axi4lite_arbiter.io)
+//     lsu.io.dmem := DontCare
+//    io.axi <> ifu.io.imem
 
 }
