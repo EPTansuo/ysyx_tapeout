@@ -94,7 +94,7 @@ class LSU(xlen: Int) extends Module {
         ST_SW -> "b1111".U
         )
     )
-    io.dmem.b.ready := state === s_wait_write
+    io.dmem.b.ready := state === s_wait_write && io.dmem.b.valid
 
     io.out.bits.inst := inst
     io.out.bits.pc := pc
