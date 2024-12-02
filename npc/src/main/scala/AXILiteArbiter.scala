@@ -44,12 +44,18 @@ class AXI4LiteArbiter(nMasters: Int, addrWidthBits: Int, dataWidthBits: Int) ext
   io.masters(readArbitrationFinalIdx).r.valid := io.slave.r.valid
   io.masters(readArbitrationFinalIdx).r.bits := io.slave.r.bits
 
-  // 写操作仲裁
-  // 使用 Mux 来处理所有请求都无效的情况，默认返回第一个主设备
-  val writeArbitrationValid = io.masters.map(_.aw.valid).reduce(_ || _) // 如果任意一个主设备有效，则为 true
-  val writeArbitrationIdx = PriorityEncoder(io.masters.map(_.aw.valid)) // 使用 PriorityEncoder 选择请求最高优先级的主设备
-  val writeArbitrationFinalIdx = Mux(writeArbitrationValid, writeArbitrationIdx, 0.U)  // 如果没有有效请求，则选择索引 0
+// 写操作仲裁
+// 使用 Mux 来处理所有请求都无效的情况，默认返回第一个主设备
+val writeArbitrationValid = io.masters.map(_.aw.valid).reduce(_ || _) // 如果任意一个主设备有效，则为 true
+val writeArbitrationIdx = PriorityEncoder(io.masters.map(_.aw.valid)) // 使用 PriorityEncoder 选择请求最高优先级的主设备
 
+// 使用寄存器来保持最终的仲裁索引，只有在 b.ready 为 true 时才更新
+val writeArbitrationFinalIdx = RegInit(0.U) // 初始化为 0（可以是其他默认值）
+
+// 只有在 b.ready 为 true 时才允许更新仲裁的索引
+when(io.slave.b.ready) {
+  writeArbitrationFinalIdx := Mux(writeArbitrationValid, writeArbitrationIdx, 0.U)
+}
   // 写操作传输
   io.slave.aw.valid := io.masters(writeArbitrationFinalIdx).aw.valid
   io.slave.aw.bits := io.masters(writeArbitrationFinalIdx).aw.bits
