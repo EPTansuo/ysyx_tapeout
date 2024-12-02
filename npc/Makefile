@@ -76,7 +76,7 @@ verilog: $(SCALA_FILE) sigmap
 	./mill -i $(TOPNAME).runMain $(MAIN) -td $(BUILD_DIR)/verilog --emit-modules verilog
 
 sigmap: $(NPC_HOME)/tools/control_gen/control_table.xlsx
-	#cd $(NPC_HOME)/tools/control_gen/ && python control_gen.py > $(NPC_HOME)/src/main/scala/sigmap.scala
+	cd $(NPC_HOME)/tools/control_gen/ && python control_gen.py > $(NPC_HOME)/src/main/scala/sigmap.scala
 
 
 sim: run
