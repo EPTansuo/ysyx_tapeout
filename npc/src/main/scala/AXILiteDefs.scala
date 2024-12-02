@@ -1,8 +1,8 @@
+package AXI4
+
 //https://github.com/maltanar/axi-in-chisel
 
 
-package AXILiteDefs
-{
 
 import chisel3._
 import chisel3.util._
@@ -38,16 +38,16 @@ class AXILiteReadData(dataWidthBits: Int) extends Bundle {
 
 class AXILiteSlaveIF(addrWidthBits: Int, dataWidthBits: Int) extends Bundle {
   // write address channel
-  val writeAddr   = Flipped(Decoupled(new AXILiteAddress(addrWidthBits)))
+  val aw   = Flipped(Decoupled(new AXILiteAddress(addrWidthBits)))
   // write data channel
-  val writeData   = Flipped(Decoupled(new AXILiteWriteData(dataWidthBits)))
+  val w   = Flipped(Decoupled(new AXILiteWriteData(dataWidthBits)))
   // write response channel (for memory consistency)
-  val writeResp   = Decoupled(UInt(2.W))
+  val b   = Decoupled(UInt(2.W))
   
   // read address channel
-  val readAddr    = Flipped(Decoupled(new AXILiteAddress(addrWidthBits)))
+  val ar    = Flipped(Decoupled(new AXILiteAddress(addrWidthBits)))
   // read data channel
-  val readData    = Decoupled(new AXILiteReadData(dataWidthBits))
+  val r    = Decoupled(new AXILiteReadData(dataWidthBits))
   
   
   override def clone = { new AXILiteSlaveIF(addrWidthBits, dataWidthBits).asInstanceOf[this.type] }
@@ -57,19 +57,19 @@ class AXILiteSlaveIF(addrWidthBits: Int, dataWidthBits: Int) extends Bundle {
 
 class AXILiteMasterIF(addrWidthBits: Int, dataWidthBits: Int) extends Bundle {  
   // write address channel
-  val writeAddr   = Decoupled(new AXILiteAddress(addrWidthBits))
+  val aw   = Decoupled(new AXILiteAddress(addrWidthBits))
   // write data channel
-  val writeData   = Decoupled(new AXILiteWriteData(dataWidthBits))
+  val w   = Decoupled(new AXILiteWriteData(dataWidthBits))
   // write response channel (for memory consistency)
-  val writeResp   = Flipped(Decoupled(UInt(2.W)))
+  val b   = Flipped(Decoupled(UInt(2.W)))
   
   // read address channel
-  val readAddr    = Decoupled(new AXILiteAddress(addrWidthBits))
+  val ar    = Decoupled(new AXILiteAddress(addrWidthBits))
   // read data channel
-  val readData    = Flipped(Decoupled(new AXILiteReadData(dataWidthBits)))
+  val r    = Flipped(Decoupled(new AXILiteReadData(dataWidthBits)))
   
   
   override def clone = { new AXILiteMasterIF(addrWidthBits, dataWidthBits).asInstanceOf[this.type] }
 }
 
-}
+

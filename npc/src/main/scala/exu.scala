@@ -86,7 +86,7 @@ class EXU(xlen: Int) extends Module{
     csr.io.cmd := sig_csr_cmd
     csr.io.in := src1  //目前还未用到立即数  WARNING
     csr.io.update_enable := RegNext(io.out.valid)
-
+    dontTouch(csr.io)  //任何时候都不优化
 
     val branch = Module(new Branch(xlen))
     branch.io.br_sel := ctrlsig.br_sel
