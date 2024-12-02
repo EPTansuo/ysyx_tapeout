@@ -57,8 +57,9 @@ class LSU(xlen: Int) extends Module {
 
     val dmem_rdata_tmp = io.dmem.r.bits.data
     val dmem_rdata = RegInit(0.U(xlen.W))
+    val roffset = alu_out(1, 0) << 3.U //四字节对齐
     when(io.dmem.r.valid){
-        dmem_rdata := dmem_rdata_tmp
+        dmem_rdata := dmem_rdata_tmp >> roffset //四字节对齐
     }
 
     val ld_data = MuxLookup(ctrlsig.ld_sel, default = 0.U(xlen.W), Array(
@@ -78,13 +79,16 @@ class LSU(xlen: Int) extends Module {
     
 
 
-    val st_data = MuxLookup(ctrlsig.st_sel, default = 0.U(xlen.W), Array(
+    val st_data_tmp = MuxLookup(ctrlsig.st_sel, default = 0.U(xlen.W), Array(
         ST_XX -> 0.U(xlen.W),
         ST_SB -> src2(7, 0),
         ST_SH -> src2(15, 0),
         ST_SW -> src2
         )
     )
+
+    val woffset = alu_out(1, 0) << 3.U
+    val st_data = st_data_tmp << woffset
 
     io.dmem.aw.valid := state === s_write
     io.dmem.w.valid := state === s_write
@@ -93,8 +97,8 @@ class LSU(xlen: Int) extends Module {
     io.dmem.w.bits.data := st_data
     io.dmem.w.bits.strb := MuxLookup(ctrlsig.st_sel, default = 0.U(4.W), Array(
         ST_XX -> 0.U(4.W),
-        ST_SB -> "b0001".U,
-        ST_SH -> "b0011".U,
+        ST_SB -> ("b0001".U << woffset),
+        ST_SH -> ("b0011".U << woffset),
         ST_SW -> "b1111".U
         )
     )
