@@ -107,8 +107,8 @@ class SRAM extends Module {
     wstrb := axi.w.bits.strb
   }
   
-  axi.aw.ready := state_w === s_wait_data || state_w === s_wait_addr
-  axi.w.ready := state_w === s_write
+  axi.aw.ready := state_w === s_write_idle || state_w === s_wait_addr
+  axi.w.ready := state_w === s_write_idle || state_w === s_wait_data
   axi.b.valid := state_w === s_wait_write_ready
   axi.b.bits := 0.U
 
