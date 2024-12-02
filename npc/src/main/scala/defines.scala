@@ -55,12 +55,13 @@ object st_sel {
 }
 
 object ld_sel {
-  val LD_LW  = 0.U(3.W)
-  val LD_LH  = 1.U(3.W)
-  val LD_LB  = 2.U(3.W)
-  val LD_LBU = 3.U(3.W)
-  val LD_LHU = 4.U(3.W)
-  val LD_XX  = 5.U(3.W)
+  val LD_XX  = 0.U(3.W)
+  val LD_LW  = 1.U(3.W)
+  val LD_LH  = 2.U(3.W)
+  val LD_LB  = 3.U(3.W)
+  val LD_LBU = 4.U(3.W)
+  val LD_LHU = 5.U(3.W)
+  
 }
 
 
