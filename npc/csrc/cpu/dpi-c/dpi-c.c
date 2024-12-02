@@ -89,7 +89,7 @@ extern "C" int pmem_read(int raddr){
   word_t addr_last  = 0;
   if(addr_last != raddr){
     printf("--------MTRACE---------\n");
-    print_memread(addr_last, 4);
+    print_memread(raddr, 4);
     addr_last = raddr;
   }
 #endif // DEBUG
