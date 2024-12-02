@@ -55,8 +55,12 @@ class LSU(xlen: Int) extends Module {
 
      
 
-    val dmem_rdata = io.dmem.r.bits.data
-    
+    val dmem_rdata_tmp = io.dmem.r.bits.data
+    val dmem_rdata = RegInit(0.U(xlen.W))
+    when(io.dmem.r.valid){
+        dmem_rdata := dmem_rdata_tmp
+    }
+
     val ld_data = MuxLookup(ctrlsig.ld_sel, default = 0.U(xlen.W), Array(
         LD_XX -> 0.U(xlen.W),
         LD_LB -> Cat(Fill(xlen-8, dmem_rdata(7)), dmem_rdata(7, 0)),
