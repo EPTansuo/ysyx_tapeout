@@ -53,11 +53,12 @@ class SRAM extends Module {
 
   val axi    = io.axi
   val mem    = Module(new Mem)
-  val lfsr_r  = Module(new LFSR4)
-  val random_r = lfsr_r.io.out
-  val lfsr_w = Module(new LFSR4)
-  val random_w = lfsr_w.io.out
-
+  //val lfsr_r  = Module(new LFSR4)
+  //val random_r = lfsr_r.io.out
+  val random_r = 10.U
+  //val lfsr_w = Module(new LFSR4)
+  //val random_w = lfsr_w.io.out
+  val random_w = 10.U
 
   // 读状态机
   val s_read_idle :: s_read :: s_read_delay :: s_wait_read_ready :: Nil = Enum(4)
