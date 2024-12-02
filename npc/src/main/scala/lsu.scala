@@ -32,11 +32,12 @@ class LSU(xlen: Int) extends Module {
     val store_en = ctrlsig.st_sel =/= ST_XX
     val load_en = ctrlsig.ld_sel =/= LD_XX
 
-    val s_idle :: s_read :: s_wait_read :: s_write :: s_wait_write :: s_wait_ready :: Nil = Enum(6)
+    val s_idle :: s_read :: s_exe :: s_wait_read :: s_write :: s_wait_write :: s_wait_ready :: Nil = Enum(7)
 
     val state = RegInit(s_idle)         
     state := MuxLookup(state, s_idle, Seq(
-        s_idle -> Mux(load_en, s_read, Mux(store_en, s_write, Mux(io.in.valid, s_wait_ready, s_idle))),
+        s_idle -> Mux(load_en, s_read, Mux(store_en, s_write, Mux(io.in.valid, s_exe, s_idle))),
+        s_exe -> s_wait_ready,  //需要等待信号生成完毕，来判断是否需要读写数据
         s_read -> Mux(io.dmem.ar.ready, s_wait_ready, s_read),
         s_write -> Mux(io.dmem.aw.ready && io.dmem.w.ready, s_wait_write, s_write),
         s_wait_read  -> Mux(io.dmem.r.valid,s_wait_ready, s_wait_read),
