@@ -7,7 +7,7 @@ module UART(
 
 always@(posedge clock) begin
     if(en) begin
-        $display("%c",data);
+        $write("%c",data);
     end
 end
 
