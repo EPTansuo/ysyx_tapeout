@@ -15,6 +15,21 @@ class AXI4LiteArbiter(nMasters: Int, addrWidthBits: Int, dataWidthBits: Int) ext
     val slave = new AXILiteMasterIF(addrWidthBits, dataWidthBits)
   })
 
+    // 确保信号的初始化，防止未初始化信号的问题
+  io.masters.foreach { master =>
+    // 读操作相关信号初始化
+    master.ar.ready := false.B
+    master.r.valid := false.B
+    master.r.bits.data := 0.U
+    master.r.bits.resp := 0.U
+
+    // 写操作相关信号初始化
+    master.aw.ready := false.B
+    master.w.ready := false.B
+    master.b.valid := false.B
+    master.b.bits := 0.U
+  }
+
   // 读操作仲裁
   // 使用 Mux 来处理所有请求都无效的情况，默认返回第一个主设备
   val readArbitrationValid = io.masters.map(_.ar.valid).reduce(_ || _) // 如果任意一个主设备有效，则为 true
@@ -46,18 +61,5 @@ class AXI4LiteArbiter(nMasters: Int, addrWidthBits: Int, dataWidthBits: Int) ext
   io.masters(writeArbitrationFinalIdx).b.valid := io.slave.b.valid
   io.masters(writeArbitrationFinalIdx).b.bits := io.slave.b.bits
 
-  // 确保信号的初始化，防止未初始化信号的问题
-  io.masters.foreach { master =>
-    // 读操作相关信号初始化
-    master.ar.ready := false.B
-    master.r.valid := false.B
-    master.r.bits.data := 0.U
-    master.r.bits.resp := 0.U
 
-    // 写操作相关信号初始化
-    master.aw.ready := false.B
-    master.w.ready := false.B
-    master.b.valid := false.B
-    master.b.bits := 0.U
-  }
 }
