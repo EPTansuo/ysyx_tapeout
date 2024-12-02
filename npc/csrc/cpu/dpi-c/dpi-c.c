@@ -92,6 +92,7 @@ extern "C" int pmem_read(int raddr){
     print_memread(raddr, 4);
     addr_last = raddr;
   }
+#endif 
   
   word_t data = host_read(guest_to_host(raddr), 4);
   return data;
