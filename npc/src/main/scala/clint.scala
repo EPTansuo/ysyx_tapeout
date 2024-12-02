@@ -1,0 +1,35 @@
+package npc 
+
+import chisel3._
+import chisel3.util._
+
+import AXI4._
+
+class CLINT extends Module {
+    val io = IO(new Bundle {
+        val axi = new AXILiteSlaveIF(32,32)
+    })
+
+    val mtime = RegInit(0.U(64.W))
+    mtime := mtime + 1.U
+
+    val s_idle :: s_wait_ready :: Nil = Enum(2)
+    val state = RegInit(s_idle)
+    state := MuxLookup(state, s_idle, Seq(
+        s_idle -> Mux(io.axi.ar.valid, s_wait_ready, s_idle),
+        s_wait_ready -> Mux(io.axi.r.ready, s_idle, s_wait_ready)
+    ))
+
+    io.axi.ar.ready := state === s_idle
+    io.axi.r.valid := state === s_wait_ready
+
+    val rdata = Mux(io.axi.ar.bits.addr === 0xa0000048L.U, mtime(31,0), mtime(63,32))
+    io.axi.r.bits.data := rdata 
+    io.axi.r.bits.resp := 0.U
+
+    // 不支持写
+    io.axi.aw.ready := false.B
+    io.axi.w.ready := false.B
+    io.axi.b.valid := false.B
+    io.axi.b.bits := 0.U
+}
