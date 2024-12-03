@@ -42,7 +42,7 @@ SECTIONS {
   _stack_pointer = .;        /* 堆栈指针的地址 */
 
   /* 设置堆区的起始地址，堆区位于栈下方 */
-  . = _stack_pointer - 0x1000; /* 堆占用 4KB */
+  . = _stack_pointer - 0x2000; /* 堆占用 4KB */
   _heap_start = .;
 
   end = .;
