@@ -1,15 +1,24 @@
 ENTRY(_start)
-PHDRS { text PT_LOAD; data PT_LOAD; }
+PHDRS {
+  text PT_LOAD FLAGS(RX);
+  data PT_LOAD FLAGS(RW);
+  bss PT_LOAD FLAGS(RW);
+}
+
+MEMORY {
+  mrom : ORIGIN = 0x20000000, LENGTH = 4K
+  sram : ORIGIN = 0x0f000000, LENGTH = 8K
+}
 
 SECTIONS {
 
-  . = _mrom_start;  /* 程序加载地址 */
+  . = ORIGIN(mrom);
 
   /* 代码段，放置在 MROM 中 */
   .text : {
     *(entry)
     *(.text*)   /* 所有代码段 */
-  } : text
+  } > mrom AT> mrom : text
 
   etext = .;
   _etext = .;
@@ -17,12 +26,12 @@ SECTIONS {
   /* 常量数据段，放置在 MROM 中 */
   .rodata : {
     *(.rodata*)
-  }
+  } > mrom AT> mrom : text
 
   /* 数据段，放置在 MROM 中 */
   .data : {
     *(.data*)
-  } : data
+  } > mrom AT> mrom : data
 
   edata = .;
   _data = .;
@@ -33,12 +42,12 @@ SECTIONS {
     *(.bss*)
     *(.sbss*)
     *(.scommon)
-  }
+  } > sram AT> sram : bss
 
   _stack_top = ALIGN(0x1000);  /* 栈区的起始位置，4KB对齐 */
 
   /* 栈空间分配在 SRAM 中，起始地址为 0x0f000000 */
-  . = _sram_start + 0x2000;  /* 分配8KB的空间，栈从这个地址开始 */
+  . = ORIGIN(sram) + 0x2000;  /* 分配8KB的空间，栈从这个地址开始 */
   _stack_pointer = .;        /* 堆栈指针的地址 */
 
   /* 设置堆区的起始地址，堆区位于栈下方 */
