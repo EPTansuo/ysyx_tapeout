@@ -21,7 +21,7 @@ V_INCPATH+=$(shell find $(YSYX_HOME)/ysyxSoC/perip -type f -name '*defines*.v' -
 V_INCFLAGS=$(addprefix -I, $(V_INCPATH))
 VERILATOR_FLAGS += -MMD --build -cc --public --trace\
 				--x-assign fast --x-initial fast --noassert \
-				$(V_INCFLAGS) --threads 1
+				$(V_INCFLAGS) --threads 1 --autoflush
 
 # timescale set
 VERILATOR_FLAGS += --timescale 1us/1us --no-timing
