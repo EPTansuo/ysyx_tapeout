@@ -31,9 +31,9 @@ typedef  struct{
 uint64_t npc_uptime;
 
 
-extern "C" int get_inst(int pc){
-  return pmem_read(pc);
-}
+// extern "C" int get_inst(int pc){
+//   return pmem_read(pc);
+// }
 
 
 extern "C" void npc_ebreak(){
@@ -163,3 +163,8 @@ end_pmem_write:
 }
 
 
+
+extern "C" void flash_read(int32_t addr, int32_t *data) { assert(0); }
+extern "C" void mrom_read(int32_t addr, int32_t *data) { 
+  *data =0x100073; // ebreak
+}

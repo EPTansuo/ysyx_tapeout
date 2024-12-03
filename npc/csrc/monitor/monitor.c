@@ -102,7 +102,7 @@ void init_monitor(int argc, char** argv){
   init_sim();
   init_mem();
   IFDEF(CONFIG_DEVICE, init_device());
-  cpu_reset(3);
+  cpu_reset(13);
   long img_size = load_img();
   init_difftest(diff_so_file, img_size, 0);  //Do not need to use the  third parameter
   init_sdb();

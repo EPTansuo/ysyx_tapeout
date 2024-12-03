@@ -1,12 +1,13 @@
 #include <sim.h>
+#include <verilator.h>
 #include <common.h>
 
 VerilatedVcdC *tfp = NULL;
 VerilatedContext *contextp = NULL;
-Vnpc* top = NULL;
+VysyxSoCFull* top = NULL;
 
 void init_sim(){
-	top = new Vnpc;
+	top = new VysyxSoCFull;
 	top->clock = 0;
 #ifdef CONFIG_WAVE_DUMP
     Verilated::traceEverOn(true);

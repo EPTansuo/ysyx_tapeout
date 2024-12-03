@@ -38,7 +38,8 @@ class IFU(xlen:Int) extends Module {
   io.out.valid := state === s_wait_ready
   io.in.ready := state === s_idle
 
-  val pc = RegInit(PC_INIT)
+  //val pc = RegInit(PC_INIT)
+  val pc = RegInit(0x20000000L.U)
   when( io.in.valid && io.in.ready){
       pc := io.in.bits.npc
   }
