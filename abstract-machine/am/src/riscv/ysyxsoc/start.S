@@ -4,5 +4,5 @@
 
 _start:
   mv s0, zero
-  la sp, 0x0f001fff
+  la sp, _stack_pointer
   jal _trm_init
