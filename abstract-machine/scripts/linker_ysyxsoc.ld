@@ -29,12 +29,15 @@ SECTIONS {
   } > mrom AT> mrom : text
 
   /* 数据段，放置在 MROM 中 */
-  .data : {
-    *(.data*)
-  } > mrom AT> mrom : data
 
-  edata = .;
-  _data = .;
+  .data : {
+    _data = .;
+    *(.data*)
+    edata = .;
+  } > sram AT> sram : data
+
+
+
 
   /* BSS 段，放置未初始化的全局变量 */
   .bss : {
@@ -42,7 +45,10 @@ SECTIONS {
     *(.bss*)
     *(.sbss*)
     *(.scommon)
+    _bss_end = .;
   } > sram AT> sram : bss
+
+
 
   _stack_top = ALIGN(0x1000);  /* 栈区的起始位置，4KB对齐 */
 
