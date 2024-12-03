@@ -31,7 +31,7 @@ SECTIONS {
   /* 数据段，放置在 MROM 中 */
   .data : {
     *(.data*)
-  } > mrom AT> sram : data
+  } > sram AT> sram : data
 
   edata = .;
   _data = .;
