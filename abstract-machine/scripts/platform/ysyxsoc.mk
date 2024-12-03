@@ -29,7 +29,7 @@ endif
 image: $(IMAGE).elf
 	@$(OBJDUMP) -d $(IMAGE).elf > $(IMAGE).txt
 	@echo + OBJCOPY "->" $(IMAGE_REL).bin
-	@$(OBJCOPY) --only-section=.text --only-section=.rodata --only-section=.data -O binary $(IMAGE).elf $(IMAGE).bin
+	@$(OBJCOPY) --only-section=.text --only-section=.rodata -O binary $(IMAGE).elf $(IMAGE).bin
 
 run:  image
 	$(MAKE) -C $(NPC_HOME) run  ARGS="$(NPCFLAGS)" IMG=$(IMAGE).bin
