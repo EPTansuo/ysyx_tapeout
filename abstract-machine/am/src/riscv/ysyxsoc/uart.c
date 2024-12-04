@@ -69,10 +69,10 @@ void __am_uart_rx(AM_UART_RX_T *rx) {
         rx->data = 0xff;
     }
 }
-
+/*
 void UART_init(){
     __am_uart_init();
-}
+}*/
 
 
 void UART_send(uint8_t c) {
