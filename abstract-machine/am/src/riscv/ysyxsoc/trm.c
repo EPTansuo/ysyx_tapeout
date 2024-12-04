@@ -20,12 +20,12 @@ void putch(char ch) {
   outb(0x10000000, ch);
 }
 
-extern char _etext, _data, _edata, _bss_start, _bss_end, _stack_top;
+extern char _ram_data_start, _data_start, _data_end, _bss_start, _bss_end;
 
 void copy_data() {
-  char *src = &_etext;
-  char *dst = &_data;
-  while(dst < & _edata) {
+  char *src = &_ram_data_start;
+  char *dst = &_data_start;
+  while(dst < & _data_end) {
     *dst++ = *src++;
   }
 }

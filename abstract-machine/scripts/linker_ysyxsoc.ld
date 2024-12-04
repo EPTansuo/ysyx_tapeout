@@ -29,15 +29,18 @@ SECTIONS {
   } > mrom AT> mrom : text
 
   /* 数据段，放置在 MROM 中 */
-  .data : {
-   _data = .;
-    *(.data*)
 
+  _ram_data_start = .;
+
+  .data : {
+   _data_start = .;
+    *(.data*)
+   _data_end = .;
   } > sram AT> mrom : data
 
   edata = .;
-  _edata = .;
-  /* _data = .; */
+
+   _data = .;
 
   /* BSS 段，放置未初始化的全局变量 */
   .bss : {
@@ -48,14 +51,13 @@ SECTIONS {
     _bss_end = .;
   } > sram AT> sram :bss
 
-  _stack_top = ALIGN(0x1000);  /* 栈区的起始位置，4KB对齐 */
+  _stack_top = ALIGN(0x10);
 
   /* 栈空间分配在 SRAM 中，起始地址为 0x0f000000 */
   . = ORIGIN(sram) + 0x2000;  /* 分配8KB的空间，栈从这个地址开始 */
   _stack_pointer = .;        /* 堆栈指针的地址 */
 
   /* 设置堆区的起始地址，堆区位于栈下方 */
-  . = _stack_pointer - 0x1000; /* 堆占用 4KB */
   _heap_start = .;
 
   end = .;
