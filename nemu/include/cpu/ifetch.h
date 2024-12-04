@@ -26,6 +26,7 @@ static inline uint32_t inst_fetch(vaddr_t *pc, int len) {
   uint32_t inst = *guest_to_host_mrom(*pc);
 #else // !CONFIG_TARGET_SHARE
   uint32_t inst = vaddr_ifetch(*pc, len);
+  printf("inst_fetch: pc = 0x%lx, inst = 0x%x\n", *pc, inst);
 #endif 
   (*pc) += len;
   return inst;
