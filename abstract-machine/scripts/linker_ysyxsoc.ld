@@ -45,13 +45,15 @@ SECTIONS {
   } > sram AT> mrom
 
   _heap_start = ALIGN(0x10);
-  /*. =  _heap_start + 0x500;*/
+
   . = ORIGIN(sram) + 0x1000;
   _heap_end = .;
   _stack_end = .;
-  /*_stack_top = 0x0f001200;*/
+
+
   . = ORIGIN(sram) + 0x2000;
   _stack_pointer = .;
+
   end = .;
   _end = .;
 }
