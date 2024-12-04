@@ -21,20 +21,62 @@
 
 
 
-// void UART_init(){
-//     outb(UART_BASE + UART_LC, 0x80); // Set Divisor Lath regs to 0
-//     outb(UART_BASE + UART_DL2, 0x0);
-//     outb(UART_BASE + UART_DL1, 0x0);
-//     outb(UART_BASE + UART_LC, 0x03); // 8-bit, no parity, 1 stop bit
-//     outb(UART_BASE + UART_FC, 0xc7); // Clear all FIFOs
-//     outb(UART_BASE + UART_IE, 0x0);  // Disable all Interrupts
-// }
+
+
+//#define UART_BASE 0x10000000
+#define UART_LCR (*(volatile uint8_t *)(UART_BASE + 3))
+#define UART_THR (*(volatile uint8_t *)(UART_BASE + 0))
+#define UART_RBR (*(volatile uint8_t *)(UART_BASE + 0))
+#define UART_FCR (*(volatile uint8_t *)(UART_BASE + 2))
+#define UART_LSR (*(volatile uint8_t *)(UART_BASE + 5))
+
+#define UART_LSB (*(volatile uint8_t *)(UART_BASE + 0))
+#define UART_MSB (*(volatile uint8_t *)(UART_BASE + 1))
+
+// #define DIVISOR (uint16_t)(12000000 / (16 * 9600))
+#define DIVISOR 1
+
+void __am_uart_init() {
+    UART_LCR |= 0x80;
+    UART_LSB = DIVISOR & 0xff;
+    UART_MSB = (DIVISOR >> 8) & 0xff;
+    UART_LCR &= ~0x80;
+    UART_LCR |= 0x3;
+    UART_FCR = 0x7;
+}
+
+void __am_uart_config(AM_INPUT_CONFIG_T *cfg) {
+    cfg->present = true;
+}
+
+inline int __uart_tx_ready() {
+    return UART_LSR & (1 << 5);
+}
+
+void __am_uart_tx(AM_UART_TX_T *tx) {
+    while (!__uart_tx_ready());
+    UART_THR = tx->data;
+}
+
+inline int __uart_rx_ready() {
+    return UART_LSR & (1 << 0);
+}
+
+void __am_uart_rx(AM_UART_RX_T *rx) {
+    if (__uart_rx_ready()) {
+        rx->data = UART_RBR;
+    } else {
+        rx->data = 0xff;
+    }
+}
+/*
+void UART_init(){
+    __am_uart_init();
+}*/
+
 
 void UART_send(uint8_t c) {
 
-    outb(UART_BASE + UART_FC, 0xc6); // Clear all FIFOs
-
-    // 将字符发送到 Transmitter FIFO
-    outb(UART_BASE + UART_TX, c);
+   io_write(AM_UART_TX, c);
 
 }

@@ -7,6 +7,7 @@
 #include <reg.h>
 #include <verilator.h>
 #include <memory/paddr.h>
+#include <nvboard.h>
 
 #define MAX_INST_TO_PRINT 10001
 bool first = true;
@@ -50,12 +51,14 @@ void cpu_single_inst(){
   do{
     cpu_single_cycle();
   }while(!WBU_VALID);
+  nvboard_update();
 }
 
 void cpu_reset(int n){
 	top->reset = RESET_ENABLE;
 	while(n--)cpu_single_cycle();	
 	top->reset = RESET_DISABLE;
+  nvboard_update();
 }
 
 

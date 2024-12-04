@@ -16,9 +16,8 @@ Area heap = RANGE(&_heap_start, PMEM_END);
 #endif
 static const char mainargs[] = MAINARGS;
 
-void UART_send(uint8_t c);
 void putch(char ch) {
-  UART_send(ch);
+  io_write(AM_UART_TX, ch);
 }
 
 extern char _ram_data_start, _data_start, _data_end, _bss_start, _bss_end;
@@ -42,8 +41,10 @@ void halt(int code) {
   while (1);
 }
 
+void UART_init();
 void _trm_init() {
   bootloader();
+  ioe_init();
   int ret = main(mainargs);
   halt(ret);
 }
