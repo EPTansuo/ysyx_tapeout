@@ -172,3 +172,8 @@ extern "C" void mrom_read(int32_t addr, int32_t *data) {
  // *data = 0x00e78023;
 
 }
+
+extern "C" void axi_error(char errno, char isRead) {
+  printf(L_RED "AXI ERROR: errno = %x, isRead = %d" COLOR_NONE "\n", errno, isRead);
+  set_npc_state(NPC_ABORT, PC, -1);
+}

@@ -30,6 +30,15 @@ class ysyx_23060246 extends Module {
   axilite_axi.io.axi <> io.master
 
  io.slave <> DontCare 
+
+
+ val axierror = Module(new AXIError)
+
+ axierror.io.bresp := io.master.bresp
+ axierror.io.rresp := io.master.rresp
+ axierror.io.wen := io.master.bvalid 
+ axierror.io.ren := io.master.arvalid
+
 }
 
 object npcMain extends App {
