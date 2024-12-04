@@ -22,15 +22,13 @@ void putch(char ch) {
 
 extern char _ram_data_start, _data_start, _data_end, _bss_start, _bss_end;
 
-void copy_data() {
+void bootloader(){
   char *src = &_ram_data_start;
   char *dst = &_data_start;
   while(dst < & _data_end) {
     *dst++ = *src++;
   }
-}
 
-void clear_bss() {
   char *p = &_bss_start;
   while(p < &_bss_end) {
     *p++ = 0;
@@ -44,8 +42,7 @@ void halt(int code) {
 }
 
 void _trm_init() {
-  copy_data();
-  clear_bss();
+  bootloader();
   int ret = main(mainargs);
   halt(ret);
 }
