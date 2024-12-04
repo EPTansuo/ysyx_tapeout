@@ -24,7 +24,7 @@ uint8_t *guest_to_host_mrom(paddr_t paddr);
 static inline uint32_t inst_fetch(vaddr_t *pc, int len) {
 #ifdef CONFIG_TARGET_SHARE
   uint32_t inst = *guest_to_host_mrom(*pc);
-  printf("inst_fetch: pc = 0x%lx, inst = 0x%x\n", *pc, inst);
+  printf("inst_fetch: pc = 0x%x, inst = 0x%x\n", *pc, inst);
 #else // !CONFIG_TARGET_SHARE
   uint32_t inst = vaddr_ifetch(*pc, len);
 #endif 
