@@ -31,21 +31,16 @@
 // }
 
 void UART_send(uint8_t c) {
-    //UART_init();
-    uint8_t line_status = inb(UART_BASE + UART_LS);
-    outb(UART_BASE + UART_FC,0xc0);    // send
-    outb(UART_BASE + UART_FC,0xc0);    // send
-    outb(UART_BASE + UART_FC,0xc0);    // send
-    outb(UART_BASE + UART_FC,0xc0);    // send
-    outb(UART_BASE + UART_FC,0xc0);    // send
-    outb(UART_BASE + UART_FC,0xc0);    // send
-    outb(UART_BASE + UART_FC,0xc0);    // send
+    uint8_t line_status;
+    while (1) {
+        line_status = inb(UART_BASE + UART_LS); // 读取 Line Status 寄存器
 
-    outb(UART_BASE + UART_FC,0xc0);    // send
-    outb(UART_BASE + UART_FC,0xc0);    // send
-    if(line_status & 0x02) {
-
-        outb(UART_BASE + UART_FC, 0x06); // Clear all FIFOs
+        // 检查是否发送 FIFO 空 (bit 5 为 1 表示 FIFO 空)
+        if (line_status & 0x20) {
+            break; // 发送 FIFO 空，跳出循环
+        }
     }
-    outb(UART_BASE + UART_TX, c);    // send
+
+    // 将字符发送到 Transmitter FIFO
+    outb(UART_BASE + UART_TX, c);
 }
