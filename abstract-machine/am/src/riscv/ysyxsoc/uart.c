@@ -31,7 +31,7 @@ void UART_init(){
 }
 
 void UART_send(uint8_t c) {
-
+UART_init();
     outb(UART_BASE + UART_FC, 0xc6); // Clear all FIFOs
 
     // 将字符发送到 Transmitter FIFO
