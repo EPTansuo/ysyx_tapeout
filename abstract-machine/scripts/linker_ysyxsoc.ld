@@ -54,12 +54,12 @@ SECTIONS {
   } > sram AT> sram /* :bss*/
 
   _heap_start = ALIGN(0x10);
-  . =  _heap_start + 0x1000;
+  . =  _heap_start;
   _heap_end = .;
   _stack_end = .;
   . = _stack_end + 0x1000;
   _stack_pointer = .;
-
+  . = ORIGIN(sram) + 0x2000;
   end = .;
   _end = .;
 }
