@@ -31,6 +31,9 @@ void UART_init(){
 }*/
 
 void UART_send(uint8_t c) {
-    //outb(UART_BASE + UART_FC, 0x06); // Clear all FIFOs
+    uint8_t line_status = inb(UART_BASE + UART_LS);
+    if(line_status & 0x02) {
+        outb(UART_BASE + UART_FC, 0x06); // Clear all FIFOs
+    }
     outb(UART_BASE + UART_TX, c);    // send
 }
