@@ -164,7 +164,11 @@ end_pmem_write:
 
 
 
-extern "C" void flash_read(int32_t addr, int32_t *data) { assert(0); }
+extern "C" void flash_read(int32_t addr, int32_t *data) { 
+  
+
+
+}
 extern "C" void mrom_read(int32_t addr, int32_t *data) { 
   //*data =0x100073; // ebreak
 
