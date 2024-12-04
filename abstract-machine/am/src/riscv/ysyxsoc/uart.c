@@ -31,6 +31,10 @@
 // }
 
 void UART_send(uint8_t c) {
+    // 先清空 FIFO
+    outb(UART_BASE + UART_FC, 0x06); // 清空接收和发送 FIFO
+
+    // 检查 Transmitter Holding Register 是否空
     uint8_t line_status;
     while (1) {
         line_status = inb(UART_BASE + UART_LS); // 读取 Line Status 寄存器
