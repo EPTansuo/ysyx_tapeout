@@ -22,12 +22,12 @@
 
 
 void UART_init(){
-    outb(UART_BASE + UART_LC, 0x80); // Set Divisor Lath regs
-    outb(UART_BASE + UART_DL2, 0x0);
-    outb(UART_BASE + UART_DL1, 0x1);
-    outb(UART_BASE + UART_LC, 0x03); // 8-bit, no parity, 1 stop bit
-    outb(UART_BASE + UART_FC, 0xc7); // Clear all FIFOs
-    outb(UART_BASE + UART_IE, 0x0);  // Disable all Interrupts
+    // outb(UART_BASE + UART_LC, 0x80); // Set Divisor Lath regs
+    // outb(UART_BASE + UART_DL2, 0x0);
+    // outb(UART_BASE + UART_DL1, 0x1);
+    // outb(UART_BASE + UART_LC, 0x03); // 8-bit, no parity, 1 stop bit
+    // outb(UART_BASE + UART_FC, 0xc7); // Clear all FIFOs
+    // outb(UART_BASE + UART_IE, 0x0);  // Disable all Interrupts
 }
 
 void UART_send(uint8_t c) {
