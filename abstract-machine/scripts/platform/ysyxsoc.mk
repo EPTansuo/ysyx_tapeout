@@ -11,7 +11,8 @@ AM_SRCS := riscv/ysyxsoc/start.S \
 # gpu.c 是自己加的
 
 CFLAGS    += -fdata-sections -ffunction-sections
-LDFLAGS   += -T $(AM_HOME)/scripts/linker_ysyxsoc.ld
+LDFLAGS   += -T $(AM_HOME)/scripts/linker_ysyxsoc.ld  \
+						 --defsym=_pmem_start=0x20000000 --defsym=_entry_offset=0x0
 
 LDFLAGS   += --gc-sections -e _start --print-map
 CFLAGS += -DMAINARGS=\"$(mainargs)\"
@@ -29,7 +30,7 @@ endif
 image: $(IMAGE).elf
 	@$(OBJDUMP) -d $(IMAGE).elf > $(IMAGE).txt
 	@echo + OBJCOPY "->" $(IMAGE_REL).bin
-	@$(OBJCOPY) -S --strip-debug --set-section-flags .bss=alloc,contents -O binary $(IMAGE).elf $(IMAGE).bin
+	@$(OBJCOPY) -S --set-section-flags .bss=alloc,contents -O binary $(IMAGE).elf $(IMAGE).bin
 
 run:  image
 	$(MAKE) -C $(NPC_HOME) run  ARGS="$(NPCFLAGS)" IMG=$(IMAGE).bin
