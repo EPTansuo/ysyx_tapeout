@@ -20,6 +20,7 @@ SECTIONS {
   .text : {
     *(entry)
     *(.text*)   /* 所有代码段 */
+    _text_end = .;
   } > mrom AT> mrom : text
 
   etext = .;
@@ -28,6 +29,7 @@ SECTIONS {
   /* 常量数据段，放置在 MROM 中 */
   .rodata : {
     *(.rodata*)
+    _rodata_end = .;
   } > mrom AT> mrom : text
 
   /* 数据段，放置在 MROM 中 */
@@ -37,6 +39,7 @@ SECTIONS {
   .data : {
    _data_start = .;
     *(.data*)
+    *(.sdata*)
    _data_end = .;
   } > sram AT> mrom : data
 
