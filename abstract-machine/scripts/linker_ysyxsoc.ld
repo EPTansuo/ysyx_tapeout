@@ -1,61 +1,40 @@
 ENTRY(_start)
-
 PHDRS { text PT_LOAD; data PT_LOAD; }
-/*PHDRS {
-  text PT_LOAD FLAGS(RX);
-  data PT_LOAD FLAGS(RW);
-  bss PT_LOAD FLAGS(RW);
-}*/
-
 MEMORY {
   mrom : ORIGIN = 0x20000000, LENGTH = 4K
   sram : ORIGIN = 0x0f000000, LENGTH = 8K
 }
-
 SECTIONS {
-
+  /* _pmem_start and _entry_offset are defined in LDFLAGS */
+  /*. = _pmem_start + _entry_offset;*/
   . = ORIGIN(mrom);
-
-  /* 代码段，放置在 MROM 中 */
   .text : {
     *(entry)
-    *(.text*)   /* 所有代码段 */
+    *(.text*)
     _text_end = .;
   } > mrom AT> mrom : text
-
   etext = .;
   _etext = .;
-
-  /* 常量数据段，放置在 MROM 中 */
   .rodata : {
     *(.rodata*)
-    _rodata_end = .;
-  } > mrom AT> mrom : text
-
-  /* 数据段，放置在 MROM 中 */
-
-  _ram_data_start = .;
-
+    *(.srodata*)
+  } > mrom AT>mrom
+  _m_data_start = .;
   .data : {
-   _data_start = .;
+    _data_start = .;
     *(.data*)
     *(.sdata*)
-   _data_end = .;
-  } > sram AT> mrom : data
-
+    _data_end = .;
+  } > sram AT>mrom : data
   edata = .;
-
-   _data = .;
-
-  /* BSS 段，放置未初始化的全局变量 */
+  _data = .;
   .bss : {
     _bss_start = .;
     *(.bss*)
     *(.sbss*)
     *(.scommon)
     _bss_end = .;
-  } > sram AT> sram /* :bss*/
-
+  } > sram AT> mrom
   _heap_start = ALIGN(0x10);
   . =  _heap_start + 0x500;
   _heap_end = .;
