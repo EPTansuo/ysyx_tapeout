@@ -32,11 +32,7 @@
 
 void UART_send(uint8_t c) {
 
-
-
-        // 检查是否发送 FIFO 空 (bit 5 为 1 表示 FIFO 空)
-
-        outb(UART_BASE + UART_FC, 0xc7); // Clear all FIFOs
+    outb(UART_BASE + UART_FC, 0xc6); // Clear all FIFOs
 
     // 将字符发送到 Transmitter FIFO
     outb(UART_BASE + UART_TX, c);
