@@ -16,13 +16,21 @@
 #include <isa.h>
 #include <memory/paddr.h>
 
-word_t vaddr_ifetch(vaddr_t addr, int len) {
-  return paddr_read(addr, len);
-}
-
 #ifdef CONFIG_TARGET_SHARE
 uint8_t *guest_to_host_mrom(paddr_t paddr);
 #endif // !CONFIG_TARGET_SHARE
+
+word_t vaddr_ifetch(vaddr_t addr, int len) {
+#ifndef CONFIG_TARGET_SHARE 
+  return paddr_read(addr, len);
+#else
+  if(addr < 0x20000000)
+    return paddr_read(addr, len);
+  else
+    return *(word_t *)guest_to_host_mrom(addr);
+#endif 
+}
+
 
 word_t vaddr_read(vaddr_t addr, int len) {
 #ifndef CONFIG_TARGET_SHARE 
