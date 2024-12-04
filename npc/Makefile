@@ -3,6 +3,7 @@ NPC_TOPNAME = ysyx_23060246
 MAIN = $(NPC_TOPNAME).npcMain
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/OBJ_DIR
+NXDC_FILES = constr/soc.nxdc
 IMG = "$(YSYX_HOME)/am-kernels/tests/cpu-tests/build/add-riscv32e-npc.bin"
 ARGS = -v --diff="$(NEMU_HOME)/build/riscv32-nemu-interpreter-so"
 
@@ -60,6 +61,14 @@ SCALA_FILE = $(shell find ./src/main -name '*.scala')
 
 CSRCS = $(shell find $(abspath ./csrc) \( -path $(abspath ./csrc/device) -prune \) -o \( -name "*.c" -or -name "*.cc" -or -name "*.cpp" \) -print)
 
+
+# constraint file
+SRC_AUTO_BIND = $(abspath $(BUILD_DIR)/auto_bind.cpp)
+$(SRC_AUTO_BIND): $(NXDC_FILES)
+	python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
+
+CSRCS += $(SRC_AUTO_BIND)
+
 include $(NPC_HOME)/csrc/device/filelist.mk
 
 
@@ -69,8 +78,8 @@ NPC_EXEC := $(BIN)
 
 default: $(BIN)
 
-$(BIN): $(CSRCS) verilog
-	$(VERILATOR) $(VERILATOR_CONFIG) $(VERILATOR_FLAGS) -top $(TOPNAME) $(CSRCS) $(VSRCS) \
+$(BIN): $(CSRCS) verilog $(NVBOARD_ARCHIVE)
+	$(VERILATOR) $(VERILATOR_CONFIG) $(VERILATOR_FLAGS) -top $(TOPNAME) $(CSRCS) $(VSRCS) $(NVBOARD_ARCHIVE)\
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) --top-module $(TOPNAME)
 
