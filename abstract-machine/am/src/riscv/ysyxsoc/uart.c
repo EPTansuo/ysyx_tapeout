@@ -54,7 +54,7 @@ inline int __uart_tx_ready() {
 }
 
 void __am_uart_tx(AM_UART_TX_T *tx) {
-    while (!__uart_tx_ready());
+    //while (!__uart_tx_ready());
     UART_THR = tx->data;
 }
 
