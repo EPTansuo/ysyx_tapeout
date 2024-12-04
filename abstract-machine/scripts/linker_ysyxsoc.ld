@@ -53,14 +53,12 @@ SECTIONS {
     _bss_end = .;
   } > sram AT> sram /* :bss*/
 
-  _stack_top = ALIGN(0x10);
-
-  /* 栈空间分配在 SRAM 中，起始地址为 0x0f000000 */
-  . = ORIGIN(sram) + 0x2000;  /* 分配8KB的空间，栈从这个地址开始 */
-  _stack_pointer = .;        /* 堆栈指针的地址 */
-
-  /* 设置堆区的起始地址，堆区位于栈下方 */
-  _heap_start = .;
+  _heap_start = ALIGN(0x10);
+  . =  _heap_start + 0x500;
+  _heap_end = .;
+  _stack_top = 0x0f001200;
+  . = _stack_top + 0x800;
+  _stack_pointer = .;
 
   end = .;
   _end = .;
