@@ -20,7 +20,7 @@
 #define UART_DL2  1   // RW  Divisor Latch 2(MSB)
 
 
-/*
+
 void UART_init(){
     outb(UART_BASE + UART_LC, 0xf0); // Set Divisor Lath regs to 0
     outb(UART_BASE + UART_DL2, 0x0);
@@ -28,11 +28,12 @@ void UART_init(){
     outb(UART_BASE + UART_LC, 0x03); // 8-bit, no parity, 1 stop bit
     outb(UART_BASE + UART_FC, 0xc0); // Clear all FIFOs
     outb(UART_BASE + UART_IE, 0x0);  // Disable all Interrupts
-}*/
+}
 
 void UART_send(uint8_t c) {
+    UART_init();
     uint8_t line_status = inb(UART_BASE + UART_LS);
-    outb(UART_BASE + UART_FC,0xc0);    // send
+    //outb(UART_BASE + UART_FC,0xc0);    // send
     if(line_status & 0x02) {
 
         outb(UART_BASE + UART_FC, 0x06); // Clear all FIFOs
