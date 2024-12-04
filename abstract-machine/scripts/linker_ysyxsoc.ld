@@ -1,9 +1,11 @@
 ENTRY(_start)
-PHDRS {
+
+PHDRS { text PT_LOAD; data PT_LOAD; }
+/*PHDRS {
   text PT_LOAD FLAGS(RX);
   data PT_LOAD FLAGS(RW);
   bss PT_LOAD FLAGS(RW);
-}
+}*/
 
 MEMORY {
   mrom : ORIGIN = 0x20000000, LENGTH = 4K
@@ -49,7 +51,7 @@ SECTIONS {
     *(.sbss*)
     *(.scommon)
     _bss_end = .;
-  } > sram AT> sram :bss
+  } > sram AT> sram /* :bss*/
 
   _stack_top = ALIGN(0x10);
 
