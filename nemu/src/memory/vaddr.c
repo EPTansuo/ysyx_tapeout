@@ -36,10 +36,20 @@ word_t vaddr_read(vaddr_t addr, int len) {
 #ifndef CONFIG_TARGET_SHARE 
   return paddr_read(addr, len);
 #else
+  word_t result = 0;
   if(addr < 0x20000000)
     return paddr_read(addr, len);
-  else
-    return *(word_t *)guest_to_host_mrom(addr);
+  else{
+    if(len == 1)
+      result = *(uint8_t *)guest_to_host_mrom(addr);
+    else if(len == 2)
+      result = *(uint16_t *)guest_to_host_mrom(addr);
+    else if(len == 4)
+      result = *(uint32_t *)guest_to_host_mrom(addr);
+    else
+      assert(0);
+  }
+  return result;
 #endif 
 }
 
