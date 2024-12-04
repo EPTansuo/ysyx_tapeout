@@ -77,9 +77,6 @@ void UART_init(){
 
 void UART_send(uint8_t c) {
 
-    outb(UART_BASE + UART_FC, 0xc6); // Clear all FIFOs
-
-    // 将字符发送到 Transmitter FIFO
-    outb(UART_BASE + UART_TX, c);
+   io_write(AM_UART_TX, c);
 
 }
