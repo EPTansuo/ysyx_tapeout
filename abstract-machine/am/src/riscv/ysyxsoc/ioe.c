@@ -73,7 +73,6 @@ static void *lut[128] = {
  // [AM_DISK_STATUS ] = __am_disk_status,
  // [AM_DISK_BLKIO  ] = __am_disk_blkio,
   [AM_NET_CONFIG  ] = __am_net_config,
-  [AM_UART_CONFIG ] = __am_uart_config,
 };
 
 static void fail(void *buf) { panic("access nonexist register"); }

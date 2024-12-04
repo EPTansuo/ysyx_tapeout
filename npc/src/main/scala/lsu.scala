@@ -92,16 +92,13 @@ class LSU(xlen: Int) extends Module {
 
     io.dmem.aw.valid := state === s_write
     io.dmem.w.valid := state === s_write
-    //io.dmem.aw.bits.addr := alu_out >> 2.U << 2.U
-    io.dmem.aw.bits.addr := alu_out
+    io.dmem.aw.bits.addr := alu_out >> 2.U << 2.U
     io.dmem.aw.bits.prot := 0.U
     io.dmem.w.bits.data := st_data
     io.dmem.w.bits.strb := MuxLookup(ctrlsig.st_sel, default = 0.U(4.W), Array(
         ST_XX -> 0.U(4.W),
-        //ST_SB -> ("b0001".U << alu_out(1, 0)),
-        ST_SB -> "b0001".U,
-        //ST_SH -> ("b0011".U << alu_out(1, 0)),
-        ST_SH -> "b0011".U,
+        ST_SB -> ("b0001".U << alu_out(1, 0)),
+        ST_SH -> ("b0011".U << alu_out(1, 0)),
         ST_SW -> "b1111".U
         )
     )
