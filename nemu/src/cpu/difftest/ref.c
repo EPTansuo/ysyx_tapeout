@@ -19,10 +19,18 @@
 #include <memory/paddr.h>
 #include <stdlib.h>
 
+static uint8_t mrom[2*1024];
+
+uint8_t *guest_to_host_mrom(paddr_t paddr) {
+  return mrom + paddr - 0x20000000;
+}
+
+
 __EXPORT void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction) {
   //assert(0);
   if(direction == DIFFTEST_TO_REF) {
-    memcpy(guest_to_host(addr), buf, n);
+    //memcpy(guest_to_host(addr), buf, n);
+    memcpy(guest_to_host_mrom(addr), buf, n);
   } else {
     memcpy(buf, guest_to_host(addr), n);
   }

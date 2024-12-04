@@ -17,10 +17,18 @@
 
 #include <memory/vaddr.h>
 
+#ifdef CONFIG_TARGET_SHARE
+uint8_t *guest_to_host_mrom(paddr_t paddr);
+#endif // !CONFIG_TARGET_SHARE
+
 static inline uint32_t inst_fetch(vaddr_t *pc, int len) {
+#ifdef CONFIG_TARGET_SHARE
+  uint32_t inst = *guest_to_host_mrom(*pc);
+#else // !CONFIG_TARGET_SHARE
   uint32_t inst = vaddr_ifetch(*pc, len);
+#endif 
   (*pc) += len;
   return inst;
 }
 
-#endif
+#endif 
