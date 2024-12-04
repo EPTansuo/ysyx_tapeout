@@ -6,6 +6,7 @@ extern char _heap_start;
 int main(const char *args);
 
 extern char _pmem_start;
+
 #define PMEM_SIZE (8 * 1024 * 1024)
 #define PMEM_END  ((uintptr_t)&_pmem_start + PMEM_SIZE)
 
@@ -19,12 +20,32 @@ void putch(char ch) {
   outb(0x10000000, ch);
 }
 
+extern char _etext, _data, _edata, _bss_start, _bss_end, _stack_top;
+
+void copy_data() {
+  char *src = &_etext;
+  char *dst = &_data;
+  while(dst < & _edata) {
+    *dst++ = *src++;
+  }
+}
+
+void clear_bss() {
+  char *p = &_bss_start;
+  while(p < &_bss_end) {
+    *p++ = 0;
+  }
+}
+
+
 void halt(int code) {
   asm volatile("ebreak");
   while (1);
 }
 
 void _trm_init() {
+  copy_data();
+  clear_bss();
   int ret = main(mainargs);
   halt(ret);
 }
