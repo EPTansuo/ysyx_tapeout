@@ -42,8 +42,10 @@ void halt(int code) {
   while (1);
 }
 
+void UART_init();
 void _trm_init() {
   bootloader();
+  UART_init();
   int ret = main(mainargs);
   halt(ret);
 }
