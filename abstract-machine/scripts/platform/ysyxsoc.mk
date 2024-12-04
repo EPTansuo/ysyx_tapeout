@@ -6,6 +6,7 @@ AM_SRCS := riscv/ysyxsoc/start.S \
            riscv/ysyxsoc/cte.c \
            riscv/ysyxsoc/trap.S \
            riscv/ysyxsoc/gpu.c \
+           riscv/ysyxsoc/uart.c \
            platform/dummy/vme.c \
            platform/dummy/mpe.c
 # gpu.c 是自己加的

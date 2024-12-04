@@ -16,8 +16,9 @@ Area heap = RANGE(&_heap_start, PMEM_END);
 #endif
 static const char mainargs[] = MAINARGS;
 
+void UART_send(uint8_t c);
 void putch(char ch) {
-  outb(0x10000000, ch);
+  UART_send(ch);
 }
 
 extern char _ram_data_start, _data_start, _data_end, _bss_start, _bss_end;
