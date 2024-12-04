@@ -88,17 +88,24 @@ class LSU(xlen: Int) extends Module {
     )
 
     val woffset = alu_out(1, 0) << 3.U
-    val st_data = st_data_tmp << woffset
+    //val st_data = st_data_tmp << woffset
+    val st_data = MuxLookup(ctrlsig.st_sel, default = 0.U(xlen.W), Array(
+        ST_XX -> 0.U(xlen.W),
+        ST_SB -> Fill(4, st_data_tmp(7,0)),
+        ST_SH -> Fill(2, st_data_tmp(15,0)),
+        ST_SW -> st_data_tmp
+        )
+    )
 
     io.dmem.aw.valid := state === s_write
     io.dmem.w.valid := state === s_write
-    io.dmem.aw.bits.addr := alu_out >> 2.U << 2.U
+    io.dmem.aw.bits.addr := alu_out
     io.dmem.aw.bits.prot := 0.U
     io.dmem.w.bits.data := st_data
     io.dmem.w.bits.strb := MuxLookup(ctrlsig.st_sel, default = 0.U(4.W), Array(
         ST_XX -> 0.U(4.W),
-        ST_SB -> ("b0001".U << alu_out(1, 0)),
-        ST_SH -> ("b0011".U << alu_out(1, 0)),
+        ST_SB -> ("b0001".U << alu_out(1,0)),
+        ST_SH -> (Mux(alu_out(1), "b1100".U, "b0011".U)),
         ST_SW -> "b1111".U
         )
     )
