@@ -16,9 +16,13 @@ Area heap = RANGE(&_heap_start, PMEM_END);
 #endif
 static const char mainargs[] = MAINARGS;
 
+#define UART_BASE 0x10000000L
+#define UART_TX   0
+
 void putch(char ch) {
-  io_write(AM_UART_TX, ch);
+  *(volatile char *)(UART_BASE + UART_TX) = ch;
 }
+
 
 extern char _ram_data_start, _data_start, _data_end, _bss_start, _bss_end;
 
