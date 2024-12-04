@@ -13,7 +13,7 @@ AM_SRCS := riscv/ysyxsoc/start.S \
 CFLAGS    += -fdata-sections -ffunction-sections
 LDFLAGS   += -T $(AM_HOME)/scripts/linker_ysyxsoc.ld
 
-LDFLAGS   += --gc-sections -e _start
+LDFLAGS   += --gc-sections -e _start --print-map
 CFLAGS += -DMAINARGS=\"$(mainargs)\"
 
 NPCFLAGS =--diff=$(NEMU_HOME)/build/riscv32-nemu-interpreter-so 
