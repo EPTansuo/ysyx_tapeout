@@ -218,6 +218,28 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
     
     val wmask = Mux(state === s_write || state === s_wait_write, wmask_1, wmask_2)
 
+    val wsize_1 = Mux(w_twice, 
+                    Mux(w_twice_sh, 0.U(2.W),  // 1 byte 
+                    MuxLookup(alu_out(1, 0), w_size_normal)(Seq(
+                        0.U -> w_size_normal,
+                        1.U -> 2.U(2.W),   // 4 bytes (actually write 3 bytes)
+                        2.U -> 1.U(2.W),   // 2 bytes 
+                        3.U -> 0.U(2.W)    // 1 byte
+                    ))),
+                w_size_normal
+    )
+
+    val wsize_2 = Mux(w_twice_sh, 0.U(2.W),  // 1 byte
+                    MuxLookup(alu_out(1, 0), w_size_normal)(Seq(
+                        0.U -> w_size_normal,
+                        1.U -> 0.U(2.W),   // 1 byte
+                        2.U -> 1.U(2.W),   // 2 bytes 
+                        3.U -> 2.U(2.W)    // 4 bytes (actually write 3 bytes)
+                    ))
+    )
+
+    val w_size = Mux(state === s_write || state === s_wait_write, wsize_1, wsize_2)
+
     io.dmem.aw.bits.id := 0.U
     io.dmem.aw.bits.len := 0.U
     io.dmem.aw.bits.burst := 0.U
@@ -226,7 +248,7 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
     io.dmem.aw.bits.qos := 0.U
 
 
-    io.dmem.aw.bits.size := 2.U//w_size_normal  // WARNING:  w_size_normal is used for both aligned and unaligned write
+    io.dmem.aw.bits.size := w_size
     io.dmem.w.bits.last := true.B
     io.dmem.aw.valid := state === s_write || state === s_write_2
     io.dmem.w.valid := state === s_write || state === s_write_2
