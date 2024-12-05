@@ -27,3 +27,4 @@
 !*.py
 !.gitmodules
 !*.cc
+!/npc/rocket-chip
