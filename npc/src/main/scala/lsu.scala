@@ -34,17 +34,24 @@ class LSU(xlen: Int) extends Module {
     val store_en = ctrlsig.st_sel =/= ST_XX
     val load_en = ctrlsig.ld_sel =/= LD_XX
 
-    val s_idle :: s_exe :: s_read  :: s_wait_read :: s_write :: s_wait_write :: s_wait_ready :: Nil = Enum(7)
+val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_write :: s_wait_write :: s_write_2 :: s_wait_write_2 :: s_wait_ready :: Nil = Enum(11)
+
+    val r_twice = Wire(Bool());    // Must Read/Write twice because of unaligned access
+    val w_twice = Wire(Bool());
 
     val state = RegInit(s_idle)         
     state := MuxLookup(state, s_idle)(Seq(
-        s_idle -> Mux(io.in.valid, s_exe, s_idle),//Mux(load_en, s_read, Mux(store_en, s_write, Mux(io.in.valid, s_exe, s_idle))),
-        s_exe -> Mux(load_en, s_read, Mux(store_en, s_write, s_wait_ready)),  //需要等待信号生成完毕，来判断是否需要读写数据
-        s_read -> Mux(io.dmem.ar.ready, s_wait_read, s_read),
-        s_write -> Mux(io.dmem.aw.ready && io.dmem.w.ready, s_wait_write, s_write),
-        s_wait_read  -> Mux(io.dmem.r.valid,s_wait_ready, s_wait_read),
-        s_wait_write -> Mux(io.dmem.b.valid, s_wait_ready, s_wait_write),
-        s_wait_ready -> Mux(io.out.ready, s_idle, s_wait_ready)
+        s_idle -> Mux(io.in.valid, s_exe, s_idle),
+        s_exe  -> Mux(load_en, s_read, Mux(store_en, s_write, s_wait_ready)),  //需要等待信号生成完毕，来判断是否需要读写数据
+        s_read         -> Mux(io.dmem.ar.ready, s_wait_read, s_read),
+        s_read_2       -> Mux(io.dmem.ar.ready, s_wait_read_2, s_read_2),
+        s_wait_read    -> Mux(io.dmem.r.valid, Mux(r_twice, s_read_2, s_wait_ready), s_wait_read),
+        s_wait_read_2  -> Mux(io.dmem.r.valid, s_wait_ready, s_wait_read_2),
+        s_write        -> Mux(io.dmem.aw.ready && io.dmem.w.ready, s_wait_write, s_write),
+        s_write_2      -> Mux(io.dmem.aw.ready && io.dmem.w.ready, s_wait_write_2, s_write_2),
+        s_wait_write_2 -> Mux(io.dmem.b.valid, s_wait_ready, s_wait_write_2),
+        s_wait_write   -> Mux(io.dmem.b.valid, Mux(w_twice, s_write_2,s_wait_ready), s_wait_write),
+        s_wait_ready   -> Mux(io.out.ready, s_idle, s_wait_ready)
     ))
 
 
@@ -55,7 +62,7 @@ class LSU(xlen: Int) extends Module {
         in_reg := io.in
     }
 
-     
+
 
     val dmem_rdata_tmp = io.dmem.r.bits.data
     val dmem_rdata = RegInit(0.U(xlen.W))
@@ -85,7 +92,13 @@ class LSU(xlen: Int) extends Module {
         )
     )
 
-    io.dmem.ar.valid := state === s_read
+    r_twice := ((ctrlsig.ld_sel === LD_LH || ctrlsig.ld_sel === LD_LHU)
+                 && (alu_out(0) === 1.U) &&  (alu_out(1,0) === "b11".U)) || 
+                (ctrlsig.ld_sel === LD_LW && alu_out(1, 0) =/= 0.U)
+
+
+
+    io.dmem.ar.valid := state === s_read || state === s_read_2
     io.dmem.ar.bits.addr := alu_out
     io.dmem.ar.bits.prot := 0.U
     io.dmem.r.ready := true.B
@@ -127,6 +140,10 @@ class LSU(xlen: Int) extends Module {
         )
     )
 
+    w_twice := ((ctrlsig.st_sel === ST_SH) && alu_out(0) && (alu_out(1,0) === "b11".U)) ||
+               ( ctrlsig.st_sel === ST_SW && alu_out(1, 0) =/= 0.U)
+ 
+
     io.dmem.aw.bits.id := 0.U
     io.dmem.aw.bits.len := 0.U
     io.dmem.aw.bits.burst := 0.U
@@ -149,7 +166,7 @@ class LSU(xlen: Int) extends Module {
         ST_SW -> "b1111".U
         )
     )
-    io.dmem.b.ready := state === s_wait_write && io.dmem.b.valid
+    io.dmem.b.ready := (state === s_wait_write || state === s_wait_write_2) && io.dmem.b.valid
 
     io.out.bits.inst := inst
     io.out.bits.pc := pc
