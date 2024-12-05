@@ -147,7 +147,7 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
     //val st_data = st_data_tmp << woffset
     val st_data_normal = MuxLookup(ctrlsig.st_sel, 0.U(xlen.W))(Seq(
         ST_XX -> 0.U(xlen.W),
-        ST_SB -> Fill(3, st_data_tmp(7,0)),
+        ST_SB -> Fill(4, st_data_tmp(7,0)),
         ST_SH -> Fill(2, st_data_tmp(15,0)),
         ST_SW -> st_data_tmp
         )
