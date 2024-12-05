@@ -7,7 +7,8 @@ import st_sel._
 import ld_sel._
 
 import AXI4._ 
-
+import defines._
+import freechips.rocketchip.amba.axi4._
 
 
 class LSU(xlen: Int) extends Module {
@@ -15,7 +16,8 @@ class LSU(xlen: Int) extends Module {
         val in = Flipped(Decoupled(new SigIO_EXU_LSU(xlen)))
         val out = (Decoupled(new SigIO_LSU_WBU(xlen)))
         //val dmem = Flipped(new DMemIO())
-        val dmem = new AXILiteMasterIF(addrWidthBits = 32, dataWidthBits = xlen)
+        //val dmem = new AXILiteMasterIF(addrWidthBits = 32, dataWidthBits = xlen)
+        val dmem = new AXI4Bundle(AXI4BundleParameters(xlen, 32, AXI_IDBITS))
     })
 
 
@@ -78,6 +80,15 @@ class LSU(xlen: Int) extends Module {
     io.dmem.r.ready := true.B
     
 
+  io.dmem.ar.bits.id := 0.U
+  io.dmem.ar.bits.len := 0.U
+  io.dmem.ar.bits.size := 2.U
+  io.dmem.ar.bits.burst := 0.U
+  io.dmem.ar.bits.lock := 0.U
+  io.dmem.ar.bits.cache := 0.U
+  io.dmem.ar.bits.qos := 0.U
+
+
 
     val st_data_tmp = MuxLookup(ctrlsig.st_sel, 0.U(xlen.W))(Seq(
         ST_XX -> 0.U(xlen.W),
@@ -96,6 +107,16 @@ class LSU(xlen: Int) extends Module {
         ST_SW -> st_data_tmp
         )
     )
+
+    io.dmem.aw.bits.id := 0.U
+    io.dmem.aw.bits.len := 0.U
+    io.dmem.aw.bits.size := 2.U
+    io.dmem.aw.bits.burst := 0.U
+    io.dmem.aw.bits.lock := 0.U
+    io.dmem.aw.bits.cache := 0.U
+    io.dmem.aw.bits.qos := 0.U
+    io.dmem.w.bits.last := true.B
+
 
     io.dmem.aw.valid := state === s_write
     io.dmem.w.valid := state === s_write

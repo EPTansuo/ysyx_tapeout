@@ -5,6 +5,7 @@ import chisel3.util._
 import defines._ 
 
 import AXI4._ 
+import freechips.rocketchip.amba.axi4._
 
 
 class IFU(xlen:Int) extends Module {
@@ -13,7 +14,8 @@ class IFU(xlen:Int) extends Module {
     val out = (Decoupled(new SigIO_IFU_IDU(xlen)))
     // val mem_pc = Output(UInt(xlen.W))
     // val mem_inst = Input(UInt(32.W))
-    val imem = new AXILiteMasterIF(addrWidthBits = 32, dataWidthBits = xlen)
+    //val imem = new AXILiteMasterIF(addrWidthBits = 32, dataWidthBits = xlen)
+    val imem = new AXI4Bundle(AXI4BundleParameters(xlen, 32, AXI_IDBITS))
   })
 
   val isFirst = RegInit(true.B)
@@ -48,6 +50,13 @@ class IFU(xlen:Int) extends Module {
   io.imem.ar.bits.addr := pc
   io.imem.ar.bits.prot := 0.U
   io.imem.r.ready := true.B
+  io.imem.ar.bits.id := 0.U
+  io.imem.ar.bits.len := 0.U
+  io.imem.ar.bits.size := 2.U
+  io.imem.ar.bits.burst := 0.U
+  io.imem.ar.bits.lock := 0.U
+  io.imem.ar.bits.cache := 0.U
+  io.imem.ar.bits.qos := 0.U
 
 
   val inst = RegInit(0.U(32.W))
@@ -67,6 +76,13 @@ class IFU(xlen:Int) extends Module {
   io.imem.w.bits.data := 0.U
   io.imem.w.bits.strb := 0.U
   io.imem.b.ready := false.B
-
+  io.imem.aw.bits.id := 0.U
+  io.imem.aw.bits.len := 0.U
+  io.imem.aw.bits.size := 2.U
+  io.imem.aw.bits.burst := 0.U
+  io.imem.aw.bits.lock := 0.U
+  io.imem.aw.bits.cache := 0.U
+  io.imem.aw.bits.qos := 0.U
+  io.imem.w.bits.last := true.B
 
 }

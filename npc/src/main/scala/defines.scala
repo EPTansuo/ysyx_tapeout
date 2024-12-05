@@ -7,6 +7,7 @@ object defines {
   val PC_INIT = "h20000000".U(XLEN.W)
   val MSTATUS_INIT = 0x1800
   val MTVEC_INIT = 0x100
+  val AXI_IDBITS = 4
 }
 
 
