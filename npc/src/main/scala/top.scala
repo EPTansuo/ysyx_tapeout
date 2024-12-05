@@ -11,12 +11,6 @@ object CPUAXI4BundleParameters {
   def apply() = AXI4BundleParameters(addrBits = 32, dataBits = 32, idBits = AXI_IDBITS)
 }
 
-class npcIO_2 extends Bundle {
-  val interrupt = Input(Bool())
-  val master = AXI4Bundle(CPUAXI4BundleParameters())
-  val slave = Flipped(AXI4Bundle(CPUAXI4BundleParameters()))
-}
-
 class npcIO extends Bundle {
   val interrupt = Input(Bool())
   val master = new AXI4BundleIO(32,32)
@@ -24,28 +18,33 @@ class npcIO extends Bundle {
 }
 
 
-class ysyx_23060246 extends Module {
+class ysyx_23060246(params: AXI4BundleParameters) extends Module {
   val io = IO(new npcIO)
   val cpu_npc = Module(new ysyx_npc(32))
-  // val clint = Module(new CLINT)
+  val clint = Module(new CLINT(params))
 
 
-
-
- io.slave <> DontCare 
-
-
+  val xbar = Module(new AXIXbar(2, 
+                        Array((0L,0xFFFFFFFFL),(0xa0000048L,0xa0000056L)),
+                        CPUAXI4BundleParameters()))
   val axi4_conv = Module(new AXI4BundleIFConv(32,32))
-  axi4_conv.io.in <> cpu_npc.io.axi
+
+
+  xbar.io.in <> cpu_npc.io.axi
+  xbar.io.out(0) <> axi4_conv.io.in
+  xbar.io.out(1) <> clint.io.axi 
+
   axi4_conv.io.out <> io.master
 
 
- val axierror = Module(new AXIError)
+  val axierror = Module(new AXIError)
+  axierror.io.bresp := io.master.bresp
+  axierror.io.rresp := io.master.rresp
+  axierror.io.wen := io.master.bvalid 
+  axierror.io.ren := io.master.arvalid
 
- axierror.io.bresp := io.master.bresp
- axierror.io.rresp := io.master.rresp
- axierror.io.wen := io.master.bvalid 
- axierror.io.ren := io.master.arvalid
+
+  io.slave <> DontCare 
 
 }
 
@@ -59,5 +58,5 @@ object npcMain extends App {
         "locationInfoStyle=wrapInAtSquareBracket"
     ).reduce(_ + "," + _),
     "--disable-annotation-unknown")
-  ChiselStage.emitSystemVerilogFile(new ysyx_23060246, args, firtoolOptions)
+  ChiselStage.emitSystemVerilogFile(new ysyx_23060246(CPUAXI4BundleParameters()), args, firtoolOptions)
 }
