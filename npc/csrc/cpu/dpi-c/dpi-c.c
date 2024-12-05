@@ -173,7 +173,7 @@ extern "C" void flash_read(int32_t addr, int32_t *data) {
 extern "C" void mrom_read(int32_t addr, int32_t *data) { 
   //*data =0x100073; // ebreak
 
-  *data = pmem_read(addr);
+  *data = pmem_read(addr/4*4);
  // *data = 0x00e78023;
 
 }

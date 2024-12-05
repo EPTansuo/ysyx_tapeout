@@ -22,7 +22,7 @@ V_INCPATH+=$(shell find $(YSYX_HOME)/ysyxSoC/perip -type f -name '*defines*.v' -
 V_INCFLAGS=$(addprefix -I, $(V_INCPATH))
 VERILATOR_FLAGS += -MMD --build -cc --public --trace\
 				--x-assign fast --x-initial fast --noassert \
-				$(V_INCFLAGS) --threads 1 --autoflush
+				$(V_INCFLAGS) --threads 1 --autoflush #--trace-max-array 2048
 
 # timescale set
 VERILATOR_FLAGS += --timescale 1us/1us --no-timing
@@ -45,7 +45,6 @@ INC_PATH +=$(abspath csrc/isa/$(CONFIG_ISA)/local-include)
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS)
 CXXFLAGS += $(CFLAGS)
-CXXFLAGS += -Wno-macro-redefined
 CXXFLAGS += -Wall $(INCFLAGS) -g -DTOP_NAME="\"V$(TOPNAME)\"" -fpermissive
 CXXFLAGS += $(shell llvm-config --cxxflags)
 LDFLAGS += $(shell  llvm-config --ldflags --libs --system-libs) -fPIE
