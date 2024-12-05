@@ -9,7 +9,7 @@ import os.Path
 //   }
 
 object ysyx_23060246 extends ScalaModule {
-  def scalaVersion = "2.12.10"
+  def scalaVersion = "2.13.10"
   override def millSourcePath = os.pwd
   def scalaOptions = Seq(
     "-language:reflectiveCalls",
@@ -21,14 +21,15 @@ object ysyx_23060246 extends ScalaModule {
   )
 
   override def ivyDeps = Agg(
-    ivy"edu.berkeley.cs::chisel3:3.5.0",
+    //ivy"edu.berkeley.cs::chisel3:3.5.0",
     //ivy"edu.berkeley.cs::rocketchip:1.2.6",
-    //ivy"org.chipsalliance::chisel:6.3.0",
+    ivy"org.chipsalliance::chisel:6.3.0",
+    ivy"edu.berkeley.cs::chiseltest:6.0.0"
   )
   
   override def scalacPluginIvyDeps = Agg(
-    ivy"edu.berkeley.cs:::chisel3-plugin:3.5.0",
-    //ivy"org.chipsalliance:::chisel-plugin:6.3.0"
+    //ivy"edu.berkeley.cs:::chisel3-plugin:3.5.0",
+    ivy"org.chipsalliance:::chisel-plugin:6.3.0"
   )
    //override def moduleDeps = super.moduleDeps ++ Seq(cde)
 } 

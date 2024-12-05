@@ -35,7 +35,7 @@ class LSU(xlen: Int) extends Module {
     val s_idle :: s_exe :: s_read  :: s_wait_read :: s_write :: s_wait_write :: s_wait_ready :: Nil = Enum(7)
 
     val state = RegInit(s_idle)         
-    state := MuxLookup(state, s_idle, Seq(
+    state := MuxLookup(state, s_idle)(Seq(
         s_idle -> Mux(io.in.valid, s_exe, s_idle),//Mux(load_en, s_read, Mux(store_en, s_write, Mux(io.in.valid, s_exe, s_idle))),
         s_exe -> Mux(load_en, s_read, Mux(store_en, s_write, s_wait_ready)),  //需要等待信号生成完毕，来判断是否需要读写数据
         s_read -> Mux(io.dmem.ar.ready, s_wait_read, s_read),
@@ -62,7 +62,7 @@ class LSU(xlen: Int) extends Module {
         dmem_rdata := dmem_rdata_tmp >> roffset //四字节对齐
     }
 
-    val ld_data = MuxLookup(ctrlsig.ld_sel, default = 0.U(xlen.W), Array(
+    val ld_data = MuxLookup(ctrlsig.ld_sel, 0.U(xlen.W))(Seq(
         LD_XX -> 0.U(xlen.W),
         LD_LB -> Cat(Fill(xlen-8, dmem_rdata(7)), dmem_rdata(7, 0)),
         LD_LH -> Cat(Fill(xlen-16, dmem_rdata(15)), dmem_rdata(15, 0)),
@@ -79,7 +79,7 @@ class LSU(xlen: Int) extends Module {
     
 
 
-    val st_data_tmp = MuxLookup(ctrlsig.st_sel, default = 0.U(xlen.W), Array(
+    val st_data_tmp = MuxLookup(ctrlsig.st_sel, 0.U(xlen.W))(Seq(
         ST_XX -> 0.U(xlen.W),
         ST_SB -> src2(7, 0),
         ST_SH -> src2(15, 0),
@@ -89,7 +89,7 @@ class LSU(xlen: Int) extends Module {
 
     val woffset = alu_out(1, 0) << 3.U
     //val st_data = st_data_tmp << woffset
-    val st_data = MuxLookup(ctrlsig.st_sel, default = 0.U(xlen.W), Array(
+    val st_data = MuxLookup(ctrlsig.st_sel, 0.U(xlen.W))(Seq(
         ST_XX -> 0.U(xlen.W),
         ST_SB -> Fill(4, st_data_tmp(7,0)),
         ST_SH -> Fill(2, st_data_tmp(15,0)),
@@ -102,7 +102,7 @@ class LSU(xlen: Int) extends Module {
     io.dmem.aw.bits.addr := alu_out
     io.dmem.aw.bits.prot := 0.U
     io.dmem.w.bits.data := st_data
-    io.dmem.w.bits.strb := MuxLookup(ctrlsig.st_sel, default = 0.U(4.W), Array(
+    io.dmem.w.bits.strb := MuxLookup(ctrlsig.st_sel, 0.U(4.W))(Seq(
         ST_XX -> 0.U(4.W),
         ST_SB -> ("b0001".U << alu_out(1,0)),
         ST_SH -> (Mux(alu_out(1), "b1100".U, "b0011".U)),
