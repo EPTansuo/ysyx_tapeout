@@ -65,7 +65,7 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
 
 
     val dmem_rdata_tmp = io.dmem.r.bits.data
-    val dmem_rdata = RegInit(0.U(xlen.W))
+    val dmem_rdata = Wire(UInt(xlen.W))//RegInit(0.U(xlen.W))
     val roffset = alu_out(1, 0) << 3.U 
 
     val dmem_rdata_reg = RegInit(VecInit(Seq(0.U(32.W), 0.U(32.W))))
