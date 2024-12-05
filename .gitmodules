@@ -10,3 +10,6 @@
 [submodule "am-kernels"]
 	path = am-kernels
 	url = https://github.com/EPTansuo/am-kernels
+[submodule "nvboard"]
+	path = nvboard
+	url = git@github.com:NJU-ProjectN/nvboard.git
