@@ -72,8 +72,9 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
 
     val r_twice_lh = ((ctrlsig.ld_sel === LD_LH || ctrlsig.ld_sel === LD_LHU)
                  && (alu_out(0) === 1.U) &&  (alu_out(1,0) === "b11".U))
-    val r_twice_lw = (ctrlsig.ld_sel === LD_LW && alu_out(1, 0) =/= 0.U)
+    val r_twice_lw = ((ctrlsig.ld_sel === LD_LW) && (alu_out(1, 0) =/= 0.U))
     r_twice :=  r_twice_lh || r_twice_lw
+    dontTouch(r_twice_lw)
 
     when(io.dmem.r.valid){
         when(state === s_wait_read){    
@@ -86,7 +87,7 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
     dmem_rdata := Mux(r_twice,                   // t_twice = 1 && t_twice_lh = 1
                     Mux(r_twice_lh, Cat(dmem_rdata_reg(1)(23,0), dmem_rdata_reg(0)(31,24)), 
                     
-                    MuxLookup(roffset, dmem_rdata_reg(0))(Seq(
+                    MuxLookup(alu_out(1, 0), dmem_rdata_reg(0))(Seq(
                         0.U -> dmem_rdata_reg(0),
                         1.U -> Cat(dmem_rdata_reg(1)(7,  0), dmem_rdata_reg(0)(31, 8)),
                         2.U -> Cat(dmem_rdata_reg(1)(15, 0), dmem_rdata_reg(0)(31, 16)),
