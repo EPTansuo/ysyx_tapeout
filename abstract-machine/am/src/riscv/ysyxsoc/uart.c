@@ -27,8 +27,8 @@
 
 void __am_uart_init() {
     UART_LC |= 0x80;
-    UART_DVLSB = DIVISOR;
     UART_DVMSB = (DIVISOR >> 8);
+    UART_DVLSB = DIVISOR;
     UART_LC &= ~0x80;
     UART_LC |= 0x3;
     UART_FC = 0x7;
