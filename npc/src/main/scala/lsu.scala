@@ -75,11 +75,10 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
     val r_twice_lw = (ctrlsig.ld_sel === LD_LW && alu_out(1, 0) =/= 0.U)
     r_twice :=  r_twice_lh || r_twice_lw
 
-    when(io.dmem.r.valid && state === s_wait_read){
-        // >> roffset
-        when(state === s_wait_read){
+    when(io.dmem.r.valid){
+        when(state === s_wait_read){    
             dmem_rdata_reg(0) := dmem_rdata_tmp   // first read   addr = alu_out
-        }.otherwise{
+        }.elsewhen(state === s_wait_read_2){
             dmem_rdata_reg(1) := dmem_rdata_tmp   // second read  addr = alu_out + 4
         }
     }
