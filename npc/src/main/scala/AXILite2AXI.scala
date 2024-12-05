@@ -3,48 +3,64 @@ package AXI4
 
 import chisel3._
 import chisel3.util._
+import freechips.rocketchip.amba.axi4._
 
 class AXILite2AXI(addrWidthBits: Int, dataWidthBits: Int) extends Module{
     val io = IO(new Bundle{
         val axilite = new AXILiteSlaveIF(addrWidthBits,dataWidthBits)
-        val axi = new AXI4BundleIO(addrWidthBits,dataWidthBits)
+        //val axi = new AXI4BundleIO(addrWidthBits,dataWidthBits)
+        val axi = new AXI4Bundle( AXI4BundleParameters(
+                                  addrBits = addrWidthBits, 
+                                  dataBits = dataWidthBits, 
+                                  idBits = 4))
     })
 
     val axi = io.axi
     val axilite = io.axilite
 
-  axi.awaddr := axilite.aw.bits.addr
-  axi.awvalid := axilite.aw.valid
-  axilite.aw.ready := axi.awready
+  axi.aw.bits.addr := axilite.aw.bits.addr
+  axi.aw.valid := axilite.aw.valid
+  axilite.aw.ready := axi.aw.ready
 
-  axi.wdata := axilite.w.bits.data
-  axi.wstrb := axilite.w.bits.strb
-  axi.wvalid := axilite.w.valid
-  axilite.w.ready := axi.wready
+  axi.w.bits.data := axilite.w.bits.data
+  axi.w.bits.strb := axilite.w.bits.strb
+  axi.w.valid := axilite.w.valid
+  axilite.w.ready := axi.w.ready
 
-  axi.bready := axilite.b.ready
-  axilite.b.bits := axi.bresp
-  axilite.b.valid := axi.bvalid
+  axi.b.ready := axilite.b.ready
+  axilite.b.bits := axi.b.bits.resp
+  axilite.b.valid := axi.b.valid
 
-  axi.araddr := axilite.ar.bits.addr
-  axi.arvalid := axilite.ar.valid
-  axilite.ar.ready := axi.arready
+  axi.ar.bits.addr := axilite.ar.bits.addr
+  axi.ar.valid := axilite.ar.valid
+  axilite.ar.ready := axi.ar.ready
 
-  axi.rready := axilite.r.ready
-  axilite.r.valid := axi.rvalid
-  axilite.r.bits.data := axi.rdata
-  axilite.r.bits.resp := axi.rresp
+  axi.r.ready := axilite.r.ready
+  axilite.r.valid := axi.r.valid
+  axilite.r.bits.data := axi.r.bits.data
+  axilite.r.bits.resp := axi.r.bits.resp
 
-  axi.awlen := 0.U
-  axi.awsize := 2.U
-  axi.awburst := 0.U
-  axi.wlast := true.B
-  axi.awid := 0.U
-  axi.arburst := 0.U
-  axi.arlen := 0.U
-  axi.arsize := 2.U
-  axi.arburst := 0.U
+  axi.aw.bits.len := 0.U
+  axi.aw.bits.size := 2.U
+  axi.aw.bits.burst := 0.U
+  axi.w.bits.last := true.B
+  axi.aw.bits.id := 0.U
+  axi.ar.bits.burst := 0.U
+  axi.ar.bits.len := 0.U
+  axi.ar.bits.size := 2.U
+  axi.ar.bits.burst := 0.U
  // axi.rlast := true.B
-  axi.arid := 0.U
+  axi.ar.bits.id := 0.U
+  
+  
+  axi.aw.bits.lock := 0.U
+  axi.aw.bits.cache := 0.U
+  axi.aw.bits.prot := 0.U
+  axi.aw.bits.qos := 0.U
+  axi.ar.bits.lock := 0.U
+  axi.ar.bits.cache := 0.U
+  axi.ar.bits.prot := 0.U
+  axi.ar.bits.qos := 0.U
+  
 
 }
