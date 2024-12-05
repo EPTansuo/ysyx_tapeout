@@ -27,7 +27,7 @@ class IFU(xlen:Int) extends Module {
   val s_idle :: s_read ::s_wait_read :: s_wait_ready :: Nil = Enum(4)
 
   val state = RegInit(s_idle)         
-  state := MuxLookup(state, s_idle, Seq(
+  state := MuxLookup(state, s_idle)(Seq(
     s_idle -> Mux(in_valid, s_read, s_idle),
     s_read -> Mux(io.imem.ar.ready, s_wait_read, s_read),
     s_wait_read -> Mux(io.imem.r.valid, s_wait_ready, s_wait_read),

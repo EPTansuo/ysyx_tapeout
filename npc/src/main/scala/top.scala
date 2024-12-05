@@ -1,8 +1,8 @@
 package ysyx_23060246
 
 import chisel3._
-import chisel3.util._
-import chisel3.stage._
+import circt.stage.ChiselStage
+
 import cpu._
 
 import AXI4._
@@ -42,5 +42,14 @@ class ysyx_23060246 extends Module {
 }
 
 object npcMain extends App {
-  (new ChiselStage).emitVerilog(new ysyx_23060246, args)
+  // val firtoolOptions = Array("--disable-annotation-unknown")
+  val firtoolOptions = Array("--lowering-options=" + List(
+        // make yosys happy
+        // see https://github.com/llvm/circt/blob/main/docs/VerilogGeneration.md
+        "disallowLocalVariables",
+        "disallowPackedArrays",
+        "locationInfoStyle=wrapInAtSquareBracket"
+    ).reduce(_ + "," + _),
+    "--disable-annotation-unknown")
+  ChiselStage.emitSystemVerilogFile(new ysyx_23060246, args, firtoolOptions)
 }

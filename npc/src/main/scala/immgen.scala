@@ -24,7 +24,7 @@ class ImmGen(xlen: Int) extends Module{
     val immJ = Cat(io.inst(31), io.inst(19, 12), io.inst(20), io.inst(30, 25), io.inst(24, 21), 0.U(1.W)).asSInt
     val immB = Cat(io.inst(31), io.inst(7), io.inst(30, 25), io.inst(11, 8), 0.U(1.W)).asSInt
     import imm_sel._
-    io.out := MuxLookup(io.sel, 0.S, Seq(
+    io.out := MuxLookup(io.sel, 0.S)(Seq(
             IMM_I -> immI,
             IMM_U -> immU,
             IMM_S -> immS,

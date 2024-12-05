@@ -63,7 +63,7 @@ class SRAM extends Module {
   // 读状态机
   val s_read_idle :: s_read :: s_read_delay :: s_wait_read_ready :: Nil = Enum(4)
   val state_r = RegInit(s_read_idle)
-  state_r := MuxLookup(state_r, s_read_idle, Seq(
+  state_r := MuxLookup(state_r, s_read_idle)(Seq(
     s_read_idle -> Mux(axi.ar.valid, s_read, s_read_idle),
     s_read -> s_read_delay,
     s_read_delay -> Mux(random_r >= 10.U , s_wait_read_ready, s_read_delay),
@@ -84,7 +84,7 @@ class SRAM extends Module {
   // 写状态机
   val s_write_idle :: s_wait_data :: s_wait_addr :: s_write :: s_write_delay :: s_wait_write_ready :: Nil = Enum(6)
   val state_w = RegInit(s_write_idle)
-  state_w := MuxLookup(state_w, s_write_idle, Seq(
+  state_w := MuxLookup(state_w, s_write_idle)( Seq(
     s_write_idle -> Mux(axi.aw.valid && axi.w.valid, s_write, 
                         Mux(axi.aw.valid, s_wait_data, 
                             Mux(axi.w.valid, s_wait_addr, s_write_idle))),

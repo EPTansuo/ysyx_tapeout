@@ -20,7 +20,7 @@ class  Branch(xlen:Int) extends Module{
   val ge = !lt
   val ltu = io.src1 < io.src2
   val geu = !ltu
-  io.taken := MuxLookup(io.br_sel, false.B, Array(
+  io.taken := MuxLookup(io.br_sel, false.B)(Seq(
     BR_EQ -> eq,
     BR_NE -> neq,
     BR_LT -> lt,

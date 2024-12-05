@@ -55,7 +55,7 @@ LDFLAGS += -lreadline
 VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
 VSRCS += $(shell find $(YSYX_HOME)/ysyxSoC/perip -name "*.v")
 VSRCS += $(shell find $(YSYX_HOME)/ysyxSoC/build -name "*.v")
-VSRCS += $(shell find $(abspath ./build/verilog) -name "*.v")
+VSRCS += $(shell find $(abspath $(VERILOG_DIR)) -name "*.v" -or -name "*.sv")
 
 SCALA_FILE = $(shell find ./src/main -name '*.scala')
 
@@ -93,7 +93,7 @@ verilog: $(SCALA_FILE) sigmap
 
 	@if [ "$(SCALA_TIME)" -gt "$(VERILOG_TIME)" ]; then \
 		echo "Scala directory changed or Verilog directory missing, generating Verilog..."; \
-		./mill -i $(NPC_TOPNAME).runMain $(MAIN) -td $(VERILOG_DIR) --emit-modules verilog; \
+		./mill -i $(NPC_TOPNAME).runMain $(MAIN) -td $(VERILOG_DIR) ; \
 	else \
 		echo "No changes detected in Scala directory, skipping Verilog generation."; \
 	fi
