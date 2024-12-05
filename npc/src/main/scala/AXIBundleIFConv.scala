@@ -4,14 +4,14 @@ package AXI4
 import chisel3._
 import freechips.rocketchip.amba.axi4._
 
-// RocketChip  AXI4Bundle to AXI4BundleIO (My AXI4Bundle)
+// RocketChip  AXI4Bundle to AXIBundle (My AXI4Bundle)
 class AXI4BundleIFConv(addrWidthBits:Int, dataWidthBits:Int) extends Module{
     val io = IO( new Bundle{
             val in =  Flipped(new AXI4Bundle( AXI4BundleParameters(
                                   addrBits = addrWidthBits, 
                                   dataBits = dataWidthBits, 
                                   idBits = 4)))
-            val out = new AXI4BundleIO(addrWidthBits, dataWidthBits)
+            val out = new AXIBundle(addrWidthBits, dataWidthBits)
     })
 
   io.out.awaddr := io.in.aw.bits.addr
@@ -59,7 +59,7 @@ class AXI4BundleIFConv(addrWidthBits:Int, dataWidthBits:Int) extends Module{
 
 class AXI4BundleIFConvRev(addrWidthBits:Int, dataWidthBits:Int) extends Module{
     val io = IO( new Bundle{
-            val in = Flipped(new AXI4BundleIO(addrWidthBits, dataWidthBits))
+            val in = Flipped(new AXIBundle(addrWidthBits, dataWidthBits))
             val out =  new AXI4Bundle( AXI4BundleParameters(
                                   addrBits = addrWidthBits, 
                                   dataBits = dataWidthBits, 

@@ -8,7 +8,7 @@ import freechips.rocketchip.amba.axi4._
 class AXILite2AXI(addrWidthBits: Int, dataWidthBits: Int) extends Module{
     val io = IO(new Bundle{
         val axilite = new AXILiteSlaveIF(addrWidthBits,dataWidthBits)
-        //val axi = new AXI4BundleIO(addrWidthBits,dataWidthBits)
+        //val axi = new AXIBundle(addrWidthBits,dataWidthBits)
         val axi = new AXI4Bundle( AXI4BundleParameters(
                                   addrBits = addrWidthBits, 
                                   dataBits = dataWidthBits, 
@@ -61,6 +61,6 @@ class AXILite2AXI(addrWidthBits: Int, dataWidthBits: Int) extends Module{
   axi.ar.bits.cache := 0.U
   axi.ar.bits.prot := 0.U
   axi.ar.bits.qos := 0.U
-  
+
 
 }

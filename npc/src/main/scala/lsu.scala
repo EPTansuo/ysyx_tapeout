@@ -59,9 +59,9 @@ class LSU(xlen: Int) extends Module {
 
     val dmem_rdata_tmp = io.dmem.r.bits.data
     val dmem_rdata = RegInit(0.U(xlen.W))
-    val roffset = alu_out(1, 0) << 3.U //四字节对齐
+    val roffset = alu_out(1, 0) << 3.U 
     when(io.dmem.r.valid){
-        dmem_rdata := dmem_rdata_tmp >> roffset //四字节对齐
+        dmem_rdata := dmem_rdata_tmp << roffset
     }
 
     val ld_data = MuxLookup(ctrlsig.ld_sel, 0.U(xlen.W))(Seq(
@@ -73,20 +73,29 @@ class LSU(xlen: Int) extends Module {
         LD_LHU -> dmem_rdata(15, 0).asUInt
         )
     )
+    val r_size = MuxLookup(ctrlsig.ld_sel, 0.U(2.W))(Seq(
+        LD_XX -> 0.U(2.W),
+        LD_LB -> 0.U(2.W),  // 1 byte
+        LD_LH -> 1.U(2.W),  // 2 bytes 
+        LD_LW -> 2.U(2.W),  // 4 bytes
+        LD_LBU -> 0.U(2.W),
+        LD_LHU -> 1.U(2.W)
+        )
+    )
 
     io.dmem.ar.valid := state === s_read
-    io.dmem.ar.bits.addr := alu_out >> 2.U << 2.U
+    io.dmem.ar.bits.addr := alu_out
     io.dmem.ar.bits.prot := 0.U
     io.dmem.r.ready := true.B
     
 
-  io.dmem.ar.bits.id := 0.U
-  io.dmem.ar.bits.len := 0.U
-  io.dmem.ar.bits.size := 2.U
-  io.dmem.ar.bits.burst := 0.U
-  io.dmem.ar.bits.lock := 0.U
-  io.dmem.ar.bits.cache := 0.U
-  io.dmem.ar.bits.qos := 0.U
+    io.dmem.ar.bits.id := 0.U
+    io.dmem.ar.bits.len := 0.U
+    io.dmem.ar.bits.size := r_size
+    io.dmem.ar.bits.burst := 0.U
+    io.dmem.ar.bits.lock := 0.U
+    io.dmem.ar.bits.cache := 0.U
+    io.dmem.ar.bits.qos := 0.U
 
 
 
@@ -108,16 +117,24 @@ class LSU(xlen: Int) extends Module {
         )
     )
 
+    val w_size = MuxLookup(ctrlsig.st_sel, 0.U(2.W))(Seq(
+        ST_XX -> 0.U(2.W),
+        ST_SB -> 0.U(2.W),  // 1 byte
+        ST_SH -> 1.U(2.W),  // 2 bytes 
+        ST_SW -> 2.U(2.W)   // 4 bytes
+        )
+    )
+
     io.dmem.aw.bits.id := 0.U
     io.dmem.aw.bits.len := 0.U
-    io.dmem.aw.bits.size := 2.U
     io.dmem.aw.bits.burst := 0.U
     io.dmem.aw.bits.lock := 0.U
     io.dmem.aw.bits.cache := 0.U
     io.dmem.aw.bits.qos := 0.U
+
+
+    io.dmem.aw.bits.size := w_size
     io.dmem.w.bits.last := true.B
-
-
     io.dmem.aw.valid := state === s_write
     io.dmem.w.valid := state === s_write
     io.dmem.aw.bits.addr := alu_out
