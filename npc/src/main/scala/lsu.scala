@@ -68,10 +68,34 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
     val dmem_rdata = RegInit(0.U(xlen.W))
     val roffset = alu_out(1, 0) << 3.U 
 
+    val dmem_rdata_reg = RegInit(VecInit(Seq(0.U(32.W), 0.U(32.W))))
 
-    when(io.dmem.r.valid){
-        dmem_rdata := dmem_rdata_tmp >> roffset
+    val r_twice_lh = ((ctrlsig.ld_sel === LD_LH || ctrlsig.ld_sel === LD_LHU)
+                 && (alu_out(0) === 1.U) &&  (alu_out(1,0) === "b11".U))
+    val r_twice_lw = (ctrlsig.ld_sel === LD_LW && alu_out(1, 0) =/= 0.U)
+    r_twice :=  r_twice_lh || r_twice_lw
+
+    when(io.dmem.r.valid && state === s_wait_read){
+        // >> roffset
+        when(state === s_wait_read){
+            dmem_rdata_reg(0) := dmem_rdata_tmp   // first read   addr = alu_out
+        }.otherwise{
+            dmem_rdata_reg(1) := dmem_rdata_tmp   // second read  addr = alu_out + 4
+        }
     }
+    
+    dmem_rdata := Mux(r_twice,                   // t_twice = 1 && t_twice_lh = 1
+                    Mux(r_twice_lh, Cat(dmem_rdata_reg(1)(23,0), dmem_rdata_reg(0)(31,24)), 
+                    
+                    MuxLookup(roffset, dmem_rdata_reg(0))(Seq(
+                        0.U -> dmem_rdata_reg(0),
+                        1.U -> Cat(dmem_rdata_reg(1)(7,  0), dmem_rdata_reg(0)(31, 8)),
+                        2.U -> Cat(dmem_rdata_reg(1)(15, 0), dmem_rdata_reg(0)(31, 16)),
+                        3.U -> Cat(dmem_rdata_reg(1)(23, 0), dmem_rdata_reg(0)(31, 24))
+                    ))),   // t_twice = 1 && t_twice_lh = 0 
+
+               (dmem_rdata_reg(0) >> roffset))   // t_twice = 0
+    
 
     val ld_data = MuxLookup(ctrlsig.ld_sel, 0.U(xlen.W))(Seq(
         LD_XX -> 0.U(xlen.W),
@@ -92,14 +116,12 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
         )
     )
 
-    r_twice := ((ctrlsig.ld_sel === LD_LH || ctrlsig.ld_sel === LD_LHU)
-                 && (alu_out(0) === 1.U) &&  (alu_out(1,0) === "b11".U)) || 
-                (ctrlsig.ld_sel === LD_LW && alu_out(1, 0) =/= 0.U)
+            
 
 
 
     io.dmem.ar.valid := state === s_read || state === s_read_2
-    io.dmem.ar.bits.addr := alu_out
+    io.dmem.ar.bits.addr := Mux(state === s_read_2 || state === s_wait_read_2, alu_out + 4.U, alu_out);
     io.dmem.ar.bits.prot := 0.U
     io.dmem.r.ready := true.B
     
@@ -156,7 +178,7 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
     io.dmem.w.bits.last := true.B
     io.dmem.aw.valid := state === s_write
     io.dmem.w.valid := state === s_write
-    io.dmem.aw.bits.addr := alu_out
+    io.dmem.aw.bits.addr := alu_out // Mux(state === s_write_2 || state === s_wait_write_2, alu_out + 4, alu_out);
     io.dmem.aw.bits.prot := 0.U
     io.dmem.w.bits.data := st_data
     io.dmem.w.bits.strb := MuxLookup(ctrlsig.st_sel, 0.U(4.W))(Seq(
