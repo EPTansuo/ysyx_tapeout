@@ -21,8 +21,8 @@
 
  // NVBoard中，Update一次(半个clk)，divisor_cnt就减1，传输一个比特, (divisor_cnt+1默认等于16)
  // 也就是波特率为 clk_freq * 2 / (8 * (divisor_cnt+1))  ---> 1-bit 4*(divisor_cnt+1) cycles
- // 该串口的波特率为： clk_freq / (16 * divisor)  ---> 1-bit 16 cycles
-#define DIVISOR 1
+ // 该串口 ---> 1-bit (32*DIVISOR) cycles
+#define DIVISOR 2
 
 void __am_uart_init() {
     UART_LC |= 0x80;
