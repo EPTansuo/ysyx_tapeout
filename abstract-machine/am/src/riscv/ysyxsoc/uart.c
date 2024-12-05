@@ -24,8 +24,8 @@
 
 void __am_uart_init() {
     UART_LC |= 0x80;
-    UART_DVLSB = DIVISOR & 0xff;
-    UART_DVMSB = (DIVISOR >> 8) & 0xff;
+    UART_DVLSB = DIVISOR;
+    UART_DVMSB = (DIVISOR >> 8);
     UART_LC &= ~0x80;
     UART_LC |= 0x3;
     UART_FC = 0x7;
@@ -35,20 +35,22 @@ void __am_uart_config(AM_INPUT_CONFIG_T *cfg) {
     cfg->present = true;
 }
 
-inline int __uart_tx_ready() {
+inline bool __uart_tx_ready() {
     return UART_LS & (1 << 5);
 }
 
-void __am_uart_tx(AM_UART_TX_T *tx) {
+// Can not be inline, we need its symbol 
+void __am_uart_tx(AM_UART_TX_T *tx) {    
     while (!__uart_tx_ready());
     UART_TX = tx->data;
 }
 
-inline int __uart_rx_ready() {
+inline bool __uart_rx_ready() {
     return UART_LS & (1 << 0);
 }
 
-void __am_uart_rx(AM_UART_RX_T *rx) {
+// Can not be inline, we need its symbol 
+void __am_uart_rx(AM_UART_RX_T *rx) {    
     if (__uart_rx_ready()) {
         rx->data = UART_RX;
     } else {
