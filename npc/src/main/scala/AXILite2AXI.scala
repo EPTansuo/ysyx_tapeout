@@ -7,7 +7,7 @@ import chisel3.util._
 class AXILite2AXI(addrWidthBits: Int, dataWidthBits: Int) extends Module{
     val io = IO(new Bundle{
         val axilite = new AXILiteSlaveIF(addrWidthBits,dataWidthBits)
-        val axi = new AXI4Bundle(addrWidthBits,dataWidthBits)
+        val axi = new AXI4BundleIO(addrWidthBits,dataWidthBits)
     })
 
     val axi = io.axi

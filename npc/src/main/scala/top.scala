@@ -2,15 +2,15 @@ package ysyx_23060246
 
 import chisel3._
 import circt.stage.ChiselStage
-
+import freechips.rocketchip.amba.axi4._
 import cpu._
 
 import AXI4._
 
 class npcIO extends Bundle {
   val interrupt = Input(Bool())
-  val master = new AXI4Bundle(32,32)
-  val slave = Flipped(new AXI4Bundle(32,32))
+  val master = new AXI4BundleIO(32,32)
+  val slave = Flipped(new AXI4BundleIO(32,32))
 }
 
 

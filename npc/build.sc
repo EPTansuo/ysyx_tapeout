@@ -22,7 +22,7 @@ object ysyx_23060246 extends ScalaModule {
 
   override def ivyDeps = Agg(
     //ivy"edu.berkeley.cs::chisel3:3.5.0",
-    //ivy"edu.berkeley.cs::rocketchip:1.2.6",
+    //ivy"edu.berkeley.cs:rocketchip_2.12:1.2.6",
     ivy"org.chipsalliance::chisel:6.3.0",
     ivy"edu.berkeley.cs::chiseltest:6.0.0"
   )
