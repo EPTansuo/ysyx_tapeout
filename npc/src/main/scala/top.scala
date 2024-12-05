@@ -13,8 +13,8 @@ object CPUAXI4BundleParameters {
 
 class npcIO extends Bundle {
   val interrupt = Input(Bool())
-  val master = new AXI4BundleIO(32,32)
-  val slave = Flipped(new AXI4BundleIO(32,32))
+  val master = new AXIBundle(32,32)
+  val slave = Flipped(new AXIBundle(32,32))
 }
 
 

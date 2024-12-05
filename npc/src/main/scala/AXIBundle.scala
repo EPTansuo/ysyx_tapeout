@@ -2,7 +2,7 @@ package AXI4
 import chisel3._
 import chisel3.util._
 
-class AXI4BundleIO(addrWidthBits: Int, dataWidthBits: Int) extends Bundle{
+class AXIBundle(addrWidthBits: Int, dataWidthBits: Int) extends Bundle{
   val awaddr = Output(UInt(addrWidthBits.W))
   val awvalid = Output(Bool())
   val awready = Input(Bool())
