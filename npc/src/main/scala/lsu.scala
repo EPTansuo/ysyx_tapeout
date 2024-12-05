@@ -73,7 +73,7 @@ class LSU(xlen: Int) extends Module {
     )
 
     io.dmem.ar.valid := state === s_read
-    io.dmem.ar.bits.addr := alu_out //>> 2.U << 2.U
+    io.dmem.ar.bits.addr := alu_out >> 2.U << 2.U
     io.dmem.ar.bits.prot := 0.U
     io.dmem.r.ready := true.B
     
