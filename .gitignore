@@ -14,7 +14,7 @@
 /npc/obj_dir/
 /npc/build/
 /fceux-am
-/am-kernels
+am-kernels
 .vscode/
 .virtual_documents/
 .ipynb_checkpoints/
@@ -27,3 +27,4 @@
 !*.py
 !.gitmodules
 !*.cc
+!/npc/rocket-chip
