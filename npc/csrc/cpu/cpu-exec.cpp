@@ -44,8 +44,8 @@ void cpu_single_cycle(){
 	{
 		top->clock = !top->clock;
 		cpu_eval_dump();
-    nvboard_update();
 	}
+  nvboard_update();
 }
 
 void cpu_single_inst(){
