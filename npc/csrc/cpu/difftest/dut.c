@@ -89,7 +89,7 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
 
   ref_difftest_init(port);
   ref_difftest_memcpy(RESET_VECTOR, guest_to_host(RESET_VECTOR), img_size, DIFFTEST_TO_REF);
-  npc_cpu.pc = 0x80000000;
+  npc_cpu.pc = 0x20000000;
   npc_cpu.csr.mstatus = MUXDEF(CONFIG_RV64, 0xa00001800, 0x1800);
   npc_cpu.csr.mtvec = MUXDEF(CONFIG_RV64, 0x80000000, 0x100);
   npc_cpu.csr.mepc = 0;
