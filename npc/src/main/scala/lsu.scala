@@ -64,6 +64,7 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
 
 
 
+    // READ 
     val dmem_rdata_tmp = io.dmem.r.bits.data
     val dmem_rdata = Wire(UInt(xlen.W))//RegInit(0.U(xlen.W))
     val roffset = alu_out(1, 0) << 3.U 
@@ -116,10 +117,7 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
         )
     )
 
-            
-
-
-
+        
     io.dmem.ar.valid := state === s_read || state === s_read_2
     io.dmem.ar.bits.addr := Mux(state === s_read_2 || state === s_wait_read_2, alu_out + 4.U, alu_out);
     io.dmem.ar.bits.prot := 0.U
@@ -136,6 +134,7 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
 
 
 
+    // WRITE 
     val st_data_tmp = MuxLookup(ctrlsig.st_sel, 0.U(xlen.W))(Seq(
         ST_XX -> 0.U(xlen.W),
         ST_SB -> src2(7, 0),
@@ -146,25 +145,78 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
 
     val woffset = alu_out(1, 0) << 3.U
     //val st_data = st_data_tmp << woffset
-    val st_data = MuxLookup(ctrlsig.st_sel, 0.U(xlen.W))(Seq(
+    val st_data_normal = MuxLookup(ctrlsig.st_sel, 0.U(xlen.W))(Seq(
         ST_XX -> 0.U(xlen.W),
-        ST_SB -> Fill(4, st_data_tmp(7,0)),
+        ST_SB -> Fill(3, st_data_tmp(7,0)),
         ST_SH -> Fill(2, st_data_tmp(15,0)),
         ST_SW -> st_data_tmp
         )
     )
 
-    val w_size = MuxLookup(ctrlsig.st_sel, 0.U(2.W))(Seq(
+    val w_size_normal = MuxLookup(ctrlsig.st_sel, 0.U(2.W))(Seq(
         ST_XX -> 0.U(2.W),
         ST_SB -> 0.U(2.W),  // 1 byte
         ST_SH -> 1.U(2.W),  // 2 bytes 
         ST_SW -> 2.U(2.W)   // 4 bytes
         )
     )
+    val w_twice_sh = ((ctrlsig.st_sel === ST_SH) && alu_out(0) && (alu_out(1,0) === "b11".U)) 
+    val w_twice_sw = ( ctrlsig.st_sel === ST_SW && alu_out(1, 0) =/= 0.U)
+    w_twice := w_twice_sh || w_twice_sw
 
-    w_twice := ((ctrlsig.st_sel === ST_SH) && alu_out(0) && (alu_out(1,0) === "b11".U)) ||
-               ( ctrlsig.st_sel === ST_SW && alu_out(1, 0) =/= 0.U)
- 
+    // the First write
+    val st_data_1 = Wire(UInt(xlen.W))
+    val st_data_2 = Wire(UInt(xlen.W))
+
+    st_data_1 := Mux(w_twice, 
+                    Mux(w_twice_sh, Fill(3, st_data_normal(15, 8)), 
+                    MuxLookup(alu_out(1, 0), st_data_normal)(Seq(
+                        0.U -> st_data_normal,
+                        1.U -> Cat(st_data_normal(23,0), Fill(8,"b0".U)),
+                        2.U -> Cat(st_data_normal(15,0), Fill(16,"b0".U)),
+                        3.U -> Cat(st_data_normal(7,0), Fill(24,"b0".U))
+                    ))),
+                st_data_normal
+    )
+    // the Second write
+    st_data_2 := Mux(w_twice_sh, st_data_normal, // wmask should be 0b1000
+                    MuxLookup(alu_out(1, 0), st_data_normal)(Seq(
+                        0.U -> st_data_normal,
+                        1.U -> Cat(Fill(24,"b0".U), st_data_normal(31, 24)),
+                        2.U -> Cat(Fill(16,"b0".U), st_data_normal(31, 18)),
+                        3.U -> Cat(Fill(8 ,"b0".U), st_data_normal(31, 8 ))
+                    )))
+
+    val st_data = Mux(state === s_write || state === s_wait_write, st_data_1, st_data_2)
+
+    val wmask_normal = MuxLookup(ctrlsig.st_sel, 0.U(4.W))(Seq(
+        ST_XX -> 0.U(4.W),
+        ST_SB -> ("b0001".U << alu_out(1,0)),
+        ST_SH -> (Mux(alu_out(1), "b1100".U, "b0011".U)),
+        ST_SW -> "b1111".U
+        )
+    )
+
+    val wmask_1 = Mux(w_twice,
+                    Mux(w_twice_sh, "b0001".U,  // unaligned write "sh" 
+                    MuxLookup(alu_out(1, 0), wmask_normal)(Seq( // unaligned write "sw"
+                        0.U -> wmask_normal, 
+                        1.U -> "b1110".U,
+                        2.U -> "b1100".U,
+                        3.U -> "b1000".U
+                    ))),
+                wmask_normal    // aligned write 
+    )
+
+    val wmask_2 = Mux(w_twice_sh, "b1000".U,  // unaligned write "sh"
+                    MuxLookup(alu_out(1, 0), wmask_normal)(Seq( // unaligned write "sw"
+                        0.U -> wmask_normal, 
+                        1.U -> "b0001".U,
+                        2.U -> "b0011".U,
+                        3.U -> "b0111".U
+                    )))
+    
+    val wmask = Mux(state === s_write || state === s_wait_write, wmask_1, wmask_2)
 
     io.dmem.aw.bits.id := 0.U
     io.dmem.aw.bits.len := 0.U
@@ -174,20 +226,14 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
     io.dmem.aw.bits.qos := 0.U
 
 
-    io.dmem.aw.bits.size := w_size
+    io.dmem.aw.bits.size := 2.U//w_size_normal  // WARNING:  w_size_normal is used for both aligned and unaligned write
     io.dmem.w.bits.last := true.B
     io.dmem.aw.valid := state === s_write
     io.dmem.w.valid := state === s_write
-    io.dmem.aw.bits.addr := alu_out // Mux(state === s_write_2 || state === s_wait_write_2, alu_out + 4, alu_out);
+    io.dmem.aw.bits.addr := Mux(state === s_write_2 || state === s_wait_write_2, alu_out + 4.U, alu_out);
     io.dmem.aw.bits.prot := 0.U
     io.dmem.w.bits.data := st_data
-    io.dmem.w.bits.strb := MuxLookup(ctrlsig.st_sel, 0.U(4.W))(Seq(
-        ST_XX -> 0.U(4.W),
-        ST_SB -> ("b0001".U << alu_out(1,0)),
-        ST_SH -> (Mux(alu_out(1), "b1100".U, "b0011".U)),
-        ST_SW -> "b1111".U
-        )
-    )
+    io.dmem.w.bits.strb := wmask
     io.dmem.b.ready := (state === s_wait_write || state === s_wait_write_2) && io.dmem.b.valid
 
     io.out.bits.inst := inst
