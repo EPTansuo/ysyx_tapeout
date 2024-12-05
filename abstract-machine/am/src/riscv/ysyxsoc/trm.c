@@ -20,7 +20,7 @@ static const char mainargs[] = MAINARGS;
 #define UART_TX   0
 
 void putch(char ch) {
-  *(volatile char *)(UART_BASE + UART_TX) = ch;
+  io_write(AM_UART_TX, ch);
 }
 
 
@@ -48,7 +48,7 @@ void halt(int code) {
 void UART_init();
 void _trm_init() {
   bootloader();
-  //ioe_init();
+  ioe_init();
   int ret = main(mainargs);
   halt(ret);
 }
