@@ -19,11 +19,10 @@
 #define UART_DVLSB (*(volatile uint8_t *)(UART_BASE + 0)) // RW  Divisor Latch 1(LSB)
 #define UART_DVMSB (*(volatile uint8_t *)(UART_BASE + 1)) // RW  Divisor Latch 2(MSB)
 
- // NVBoard中，Update一次(半个clk)，divisor_cnt（默认为15)就减1，传输一个比特, 
- // 也就是波特率为 clk_freq*2 / (8 * （divisor_cnt+1）)
- // 该串口的波特率为： clk_freq / (16 * divisor) 
- // 故此处divisor应该为 16
-#define DIVISOR 16
+ // NVBoard中，Update一次(半个clk)，divisor_cnt就减1，传输一个比特, (divisor_cnt+1默认等于16)
+ // 也就是波特率为 clk_freq * 2 / (8 * (divisor_cnt+1))  ---> 1-bit 4*(divisor_cnt+1) cycles
+ // 该串口的波特率为： clk_freq / (16 * divisor)  ---> 1-bit 16 cycles
+#define DIVISOR 2
 
 void __am_uart_init() {
     UART_LC |= 0x80;
