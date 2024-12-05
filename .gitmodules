@@ -7,3 +7,6 @@
 [submodule "npc/rocket-chip"]
 	path = npc/rocket-chip
 	url = git@github.com:chipsalliance/rocket-chip.git
+[submodule "am-kernels"]
+	path = am-kernels
+	url = https://github.com/EPTansuo/am-kernels
