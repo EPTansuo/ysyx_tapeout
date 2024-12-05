@@ -44,6 +44,7 @@ void cpu_single_cycle(){
 	{
 		top->clock = !top->clock;
 		cpu_eval_dump();
+    nvboard_update();
 	}
 }
 
@@ -51,14 +52,12 @@ void cpu_single_inst(){
   do{
     cpu_single_cycle();
   }while(!WBU_VALID);
-  nvboard_update();
 }
 
 void cpu_reset(int n){
 	top->reset = RESET_ENABLE;
-	while(n--)cpu_single_cycle();	
+	while(n--){cpu_single_cycle();}
 	top->reset = RESET_DISABLE;
-  nvboard_update();
 }
 
 
