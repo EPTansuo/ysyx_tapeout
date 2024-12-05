@@ -63,7 +63,7 @@ class LSU(xlen: Int) extends Module {
 
 
     when(io.dmem.r.valid){
-        dmem_rdata := dmem_rdata_tmp // >> roffset
+        dmem_rdata := dmem_rdata_tmp >> roffset
     }
 
     val ld_data = MuxLookup(ctrlsig.ld_sel, 0.U(xlen.W))(Seq(
