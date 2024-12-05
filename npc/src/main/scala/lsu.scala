@@ -228,8 +228,8 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
 
     io.dmem.aw.bits.size := 2.U//w_size_normal  // WARNING:  w_size_normal is used for both aligned and unaligned write
     io.dmem.w.bits.last := true.B
-    io.dmem.aw.valid := state === s_write
-    io.dmem.w.valid := state === s_write
+    io.dmem.aw.valid := state === s_write || state === s_write_2
+    io.dmem.w.valid := state === s_write || state === s_write_2
     io.dmem.aw.bits.addr := Mux(state === s_write_2 || state === s_wait_write_2, alu_out + 4.U, alu_out);
     io.dmem.aw.bits.prot := 0.U
     io.dmem.w.bits.data := st_data
