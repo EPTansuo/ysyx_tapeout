@@ -20,6 +20,10 @@ class AXI4BundleIFConv(addrWidthBits:Int, dataWidthBits:Int) extends Module{
   io.out.awlen := io.in.aw.bits.len
   io.out.awsize := io.in.aw.bits.size
   io.out.awburst := io.in.aw.bits.burst
+  io.out.awlock := io.in.aw.bits.lock
+  io.out.awcache := io.in.aw.bits.cache
+  io.out.awprot := io.in.aw.bits.prot
+  io.out.awqos := io.in.aw.bits.qos
 
   io.out.wvalid := io.in.w.valid
   io.out.wdata  := io.in.w.bits.data
@@ -34,6 +38,10 @@ class AXI4BundleIFConv(addrWidthBits:Int, dataWidthBits:Int) extends Module{
   io.out.arlen   := io.in.ar.bits.len
   io.out.arsize  := io.in.ar.bits.size
   io.out.arburst := io.in.ar.bits.burst
+  io.out.arlock  := io.in.ar.bits.lock
+  io.out.arcache := io.in.ar.bits.cache
+  io.out.arprot  := io.in.ar.bits.prot
+  io.out.arqos   := io.in.ar.bits.qos
 
   io.out.rready  := io.in.r.ready  
   //----
@@ -56,53 +64,54 @@ class AXI4BundleIFConv(addrWidthBits:Int, dataWidthBits:Int) extends Module{
 }
 
 
+// Haven't successfully implemented the reverse conversion
+// class AXI4BundleIFConvRev(addrWidthBits:Int, dataWidthBits:Int) extends Module{
+//     val io = IO( new Bundle{
+//             val in = Flipped(new AXIBundle(addrWidthBits, dataWidthBits))
+//             val out =  new AXI4Bundle( AXI4BundleParameters(
+//                                   addrBits = addrWidthBits, 
+//                                   dataBits = dataWidthBits, 
+//                                   idBits = 4))
+//     })
 
-class AXI4BundleIFConvRev(addrWidthBits:Int, dataWidthBits:Int) extends Module{
-    val io = IO( new Bundle{
-            val in = Flipped(new AXIBundle(addrWidthBits, dataWidthBits))
-            val out =  new AXI4Bundle( AXI4BundleParameters(
-                                  addrBits = addrWidthBits, 
-                                  dataBits = dataWidthBits, 
-                                  idBits = 4))
-    })
+//   io.in.awaddr := io.out.aw.bits.addr
+//   io.in.awvalid := io.out.aw.valid
+//   io.in.awid := io.out.aw.bits.id
+//   io.in.awlen := io.out.aw.bits.len
+//   io.in.awsize := io.out.aw.bits.size
+//   io.in.awburst := io.out.aw.bits.burst
 
-  io.in.awaddr := io.out.aw.bits.addr
-  io.in.awvalid := io.out.aw.valid
-  io.in.awid := io.out.aw.bits.id
-  io.in.awlen := io.out.aw.bits.len
-  io.in.awsize := io.out.aw.bits.size
-  io.in.awburst := io.out.aw.bits.burst
 
-  io.in.wvalid := io.out.w.valid
-  io.in.wdata := io.out.w.bits.data
-  io.in.wstrb := io.out.w.bits.strb
-  io.in.wlast := io.out.w.bits.last
+//   io.in.wvalid := io.out.w.valid
+//   io.in.wdata := io.out.w.bits.data
+//   io.in.wstrb := io.out.w.bits.strb
+//   io.in.wlast := io.out.w.bits.last
 
-  io.in.bready := io.out.b.ready
+//   io.in.bready := io.out.b.ready
 
-  io.in.arvalid := io.out.ar.valid
-  io.in.araddr := io.out.ar.bits.addr
-  io.in.arid := io.out.ar.bits.id
-  io.in.arlen := io.out.ar.bits.len
-  io.in.arsize := io.out.ar.bits.size
-  io.in.arburst := io.out.ar.bits.burst
+//   io.in.arvalid := io.out.ar.valid
+//   io.in.araddr := io.out.ar.bits.addr
+//   io.in.arid := io.out.ar.bits.id
+//   io.in.arlen := io.out.ar.bits.len
+//   io.in.arsize := io.out.ar.bits.size
+//   io.in.arburst := io.out.ar.bits.burst
 
-  io.in.rready := io.out.r.ready
+//   io.in.rready := io.out.r.ready
 
-  io.out.aw.ready := io.in.awready
+//   io.out.aw.ready := io.in.awready
 
-  io.out.w.ready := io.in.wready
+//   io.out.w.ready := io.in.wready
 
-  io.out.b.valid := io.in.bvalid
-  io.out.b.bits.resp := io.in.bresp
-  io.out.b.bits.id := io.in.bid
+//   io.out.b.valid := io.in.bvalid
+//   io.out.b.bits.resp := io.in.bresp
+//   io.out.b.bits.id := io.in.bid
 
-  io.out.ar.ready := io.in.arready
+//   io.out.ar.ready := io.in.arready
 
-  io.out.r.valid := io.in.rvalid
-  io.out.r.bits.resp := io.in.rresp
-  io.out.r.bits.data := io.in.rdata
-  io.out.r.bits.last := io.in.rlast
-  io.out.r.bits.id := io.in.rid
+//   io.out.r.valid := io.in.rvalid
+//   io.out.r.bits.resp := io.in.rresp
+//   io.out.r.bits.data := io.in.rdata
+//   io.out.r.bits.last := io.in.rlast
+//   io.out.r.bits.id := io.in.rid
 
-}
+// }

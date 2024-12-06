@@ -45,6 +45,9 @@ class ysyx_23060246(params: AXI4BundleParameters) extends Module {
 
 
   io.slave <> DontCare 
+  dontTouch(io.slave)
+  dontTouch(io.interrupt)
+  dontTouch(io.master)
 
 }
 
