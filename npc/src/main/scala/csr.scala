@@ -36,7 +36,9 @@ class CSR(xlen:Int) extends Module{
     BitPat(CSR_MEPC) -> mepc,
     BitPat(CSR_MCAUSE) -> mcause,
     BitPat(CSR_MTVEC) -> mtvec,
-    BitPat(CSR_MSTATUS) -> mstatus
+    BitPat(CSR_MSTATUS) -> mstatus,
+    BitPat(CSR_VENDORID) -> 0x79737978.U,
+    BitPat(CSR_MARCHID) -> 23060246.U
   )
   
   val addr = io.inst(31, 20)
