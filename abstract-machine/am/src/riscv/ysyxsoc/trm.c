@@ -51,8 +51,8 @@ void print_stuID(){
         "csrr %0, 0xF12\n"
         : "=r" (marchid)
     );
-  char line1[] = {"mvendorid: 0x"};
-  char line2[] = {"marchid: "};
+  // char line1[] = {"mvendorid: 0x"};
+  // char line2[] = {"marchid: "};
    printf("mvendorid: 0x%x\n", mvendorid);
    printf("marchid: %d\n", marchid);
   // putstr(line1);
