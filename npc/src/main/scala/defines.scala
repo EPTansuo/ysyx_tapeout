@@ -96,6 +96,8 @@ object csr_addr {
   val CSR_MTVEC   = 0x305.U(12.W)
   val CSR_MEPC    = 0x341.U(12.W)
   val CSR_MCAUSE  = 0x342.U(12.W)
+  val CSR_VENDORID= 0xF11.U(12.W)
+  val CSR_MARCHID = 0xF12.U(12.W)
 }
 
 object valid {
