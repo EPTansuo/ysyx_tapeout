@@ -1,6 +1,8 @@
 #include <am.h>
 #include <klib-macros.h>
 #include <riscv/riscv.h>
+#include <stdio.h>
+
 
 extern char _heap_start;
 int main(const char *args);
@@ -39,6 +41,21 @@ void bootloader(){
   }
 }
 
+void print_stuID(){
+  uint32_t mvendorid, marchid;
+  asm volatile (
+        "csrr %0, 0xF11\n"
+        : "=r" (mvendorid)
+    );
+  asm volatile (
+        "csrr %0, 0xF12\n"
+        : "=r" (marchid)
+    );
+  printf("mvendorid: 0x%x\n", mvendorid);
+  printf("marchid: %d\n", marchid);
+}
+
+
 
 void halt(int code) {
   asm volatile("ebreak");
@@ -48,6 +65,7 @@ void halt(int code) {
 void UART_init();
 void _trm_init() {
   bootloader();
+  print_stuID();
   ioe_init();
   int ret = main(mainargs);
   halt(ret);
