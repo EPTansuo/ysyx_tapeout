@@ -1,8 +1,6 @@
 #include <am.h>
 #include <klib-macros.h>
 #include <riscv/riscv.h>
-#include <stdio.h>
-
 
 extern char _heap_start;
 int main(const char *args);
@@ -20,6 +18,7 @@ static const char mainargs[] = MAINARGS;
 
 #define UART_BASE 0x10000000L
 #define UART_TX   0
+
 
 void putch(char ch) {
   io_write(AM_UART_TX, ch);
@@ -51,8 +50,12 @@ void print_stuID(){
         "csrr %0, 0xF12\n"
         : "=r" (marchid)
     );
-  printf("mvendorid: 0x%x\n", mvendorid);
-  printf("marchid: %d\n", marchid);
+  char line1[] = {"mvendorid: 0x"};
+  char line2[] = {"marchid: "};
+  // printf("mvendorid: 0x%x\n", mvendorid);
+  // printf("marchid: %d\n", marchid);
+  putstr(line1);
+  putstr(line2);
 }
 
 
