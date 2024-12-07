@@ -189,7 +189,7 @@ uint8_t psram[0x1000000];
 extern "C" void psram_write(int addr, int data, char wmask) { 
   for(int i = 0; i < 4; i++){
     if(wmask & (1 << i)){
-      *(psram + addr) = (data >> (i * 8)) & 0xff;
+      *(psram + addr + i) = (data >> (i * 8)) & 0xff;
     }
   }
   printf("write psram addr = %x, data = %x, wmask = %0x\n", addr, data, wmask);
