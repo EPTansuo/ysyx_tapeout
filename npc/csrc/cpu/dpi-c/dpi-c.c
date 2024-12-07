@@ -166,14 +166,15 @@ end_pmem_write:
 
 extern "C" void flash_read(int32_t addr, int32_t *data) { 
 
- *data = addr ;
- printf("read flash addr = %x\n", addr);
+ //*data = addr ;
+ *data = pmem_read(addr/4*4 );
+ printf("read flash addr = %x, data = %x\n", addr);
 
 }
 extern "C" void mrom_read(int32_t addr, int32_t *data) { 
   //*data =0x100073; // ebreak
 
-  *data = pmem_read(addr/4*4);
+  *data = pmem_read(addr/4*4 + 0x20000000);
  // *data = 0x00e78023;
 
 }
