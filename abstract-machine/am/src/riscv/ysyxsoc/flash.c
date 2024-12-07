@@ -20,4 +20,3 @@
 #define FLASH_SS   (*(volatile uint8_t *)(FLASH_BASE + 0x18)) // RW  Slave Select reg
 
 
-
