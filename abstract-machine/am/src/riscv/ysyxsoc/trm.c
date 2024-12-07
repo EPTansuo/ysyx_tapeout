@@ -1,6 +1,7 @@
 #include <am.h>
 #include <klib-macros.h>
 #include <riscv/riscv.h>
+#include <stdio.h>
 
 extern char _heap_start;
 int main(const char *args);
@@ -52,10 +53,10 @@ void print_stuID(){
     );
   char line1[] = {"mvendorid: 0x"};
   char line2[] = {"marchid: "};
-  // printf("mvendorid: 0x%x\n", mvendorid);
-  // printf("marchid: %d\n", marchid);
-  putstr(line1);
-  putstr(line2);
+   printf("mvendorid: 0x%x\n", mvendorid);
+   printf("marchid: %d\n", marchid);
+  // putstr(line1);
+  // putstr(line2);
 }
 
 
