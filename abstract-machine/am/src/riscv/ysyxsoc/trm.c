@@ -68,7 +68,7 @@ void halt(int code) {
 void UART_init();
 void _trm_init() {
   bootloader();
-  print_stuID();
+  //print_stuID();
   ioe_init();
   int ret = main(mainargs);
   halt(ret);
