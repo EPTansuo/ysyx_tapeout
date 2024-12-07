@@ -10,4 +10,4 @@ public -module "WBU" -var "wbu_valid"
 public -module "WBU" -var "*pc"
 public -module "IFU" -var "*pc"
 public -module "EXU" -var "npc"
-public -module "psramChisel" -var "dout"
+
