@@ -25,7 +25,7 @@ always @(*) begin
         end
         else begin
             if(!write) begin
-                rdata = psram_read(addr);
+                rdata = psram_read({8'b0,addr});
             end
             else begin
                 rdata = 0;
@@ -37,7 +37,7 @@ end
 always @(posedge clock) begin
     if(!(reset == 1'b1 || (!sel))) begin
             if(write) begin
-                pmem_write(addr, wdata, wmask);
+                psram_write({8'b0,addr}, wdata, {4'b0,wmask});
             end
     end
 end
