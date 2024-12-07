@@ -48,12 +48,12 @@ SECTIONS {
 
   _heap_start = ALIGN(0x10);
 
-  . = ORIGIN(psram) + 0x1000;
+  . = ORIGIN(psram) + LENGTH(psram)/2;
   _heap_end = .;
   _stack_end = .;
 
 
-  . = ORIGIN(psram) + 0x2000;
+  . = ORIGIN(psram) + LENGTH(psram)/2;
   _stack_pointer = .;
 
   end = .;

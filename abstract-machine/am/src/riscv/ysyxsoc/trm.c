@@ -70,7 +70,7 @@ void UART_init();
 void _trm_init() {
   bootloader();
   ioe_init();
-  //print_stuID();
+  print_stuID();
   int ret = main(mainargs);
   halt(ret);
 }
