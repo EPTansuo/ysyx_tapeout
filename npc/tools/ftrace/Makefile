@@ -1,6 +1,6 @@
 BIN=ftrace
 
-CFLAGS = -Wall -O1
+CFLAGS = -Wall -O0 -g 
 CSRCS = ftrace.c main.c elfread.c
 
 

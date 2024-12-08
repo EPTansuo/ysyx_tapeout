@@ -16,20 +16,10 @@ typedef struct {
         word_t size;
 } Func_List;
 
-typedef struct Func_Call{
-        word_t addr1; //源地址
-        word_t addr2; //跳转的地址
-        uint32_t func_index; //function name在函数列表中。
-        uint8_t type;    //call or ret
-        uint32_t depth;
-        struct Func_Call* prev;
-        struct Func_Call* next;
-} Func_Call;
 
 void ftrace_phase_elf(const char* _elf_file);
 void ftrace_print_func_list();
 void ftrace_init(const char* _img_file);
-void ftrace_func_call_list_append(const Func_Call* f);
 
 bool ftrace_enabled = false;
 char* elf_file = NULL;
@@ -40,30 +30,46 @@ ElfN_Shdr *symtab_hdr = NULL;
 ElfN_Shdr *strtab_hdr = NULL;
 ElfN_Sym *symtab = NULL;
 Func_List *func_list = NULL;
-Func_Call *func_call_list = NULL;
+
 
 int func_num = 0;
-int stack_depth = 0;
 
+
+void ftrace_reset()
+{
+        if(elf_file != NULL)
+                free(elf_file);
+        if(elf_header != NULL)
+                free(elf_header);
+        if(section_headers != NULL)
+                free(section_headers);
+        if(symtab_hdr != NULL)
+                free(symtab_hdr);
+        if(strtab_hdr != NULL)
+                free(strtab_hdr);
+        if(symtab != NULL)
+                free(symtab);
+        if(func_list != NULL){
+                for (int i = 0; i < func_num; i++){
+                        free(func_list[i].name);
+                }
+                free(func_list);
+        }
+        func_num = 0;
+}
 
 
 void ftrace_init(const char* _img_file)
 {
-        //printf("%s: %d\n",__func__,ftrace_enabled);
+        //printf("%s",_img_file);
         if(_img_file == NULL)
                 return;
-
-        //xxxx.bin --> xxxx.elf
         if(elf_file != NULL)
                 free(elf_file);
         size_t len =  strlen(_img_file);
         elf_file = (char*)malloc(len+1);
         strncpy(elf_file,_img_file, len-3);
         strcpy(elf_file + len -3 , "elf");
-        
-        //printf("%s: %s\n",__func__,elf_file);
-        ftrace_enabled = true;
-        //printf("%s: %d\n",__func__,ftrace_enabled);
         ftrace_phase_elf(elf_file);
 }
 
@@ -72,6 +78,7 @@ void ftrace_phase_elf(const char* _elf_file)
         FILE* fp = fopen(_elf_file, "r");
 
 	if (fp == NULL) {
+        perror("parse_elf error");
 		printf("Can not open file! \n");
                 return;
 	}
@@ -82,7 +89,7 @@ void ftrace_phase_elf(const char* _elf_file)
 	elf_header = (ElfN_Ehdr *)malloc(sizeof(ElfN_Ehdr));
 	read_elf_header(fp, elf_header);
 	//print_elf_header(*elf_header);
-
+        
 	//读取Section Header Table
 	fseek(fp, elf_header->e_shoff, SEEK_SET);
         if(section_headers != NULL)
@@ -141,18 +148,42 @@ void ftrace_phase_elf(const char* _elf_file)
                 }		
 	}       
 
-        ftrace_print_func_list();
+        //ftrace_print_func_list();
 }
 
 void ftrace_print_func_list()
 {
         if(func_list != NULL){
                 for(int i = 0; i < func_num; i++){
-                        printf("%s: 0x" FMT_WORD_HEX_WIDTH "\n", func_list[i].name, func_list[i].value);
-
+                        printf("%-21s: 0x" FMT_WORD_HEX_WIDTH " - 0x" FMT_WORD_HEX "\n", func_list[i].name, func_list[i].value,
+                                 func_list[i].value + (func_list[i].size > 0 ? func_list[i].size - 4 : 0));
+                                        // _start 函数没有大小，要特殊对待
                 }
         }
 }
+
+
+void ftrace_get_func_name(char* buf, word_t pc)
+{
+        for(int i=0; i<func_num; i++)
+        {
+                
+                if(pc >= func_list[i].value && pc < func_list[i].value + func_list[i].size)
+                {
+                        strcpy(buf, func_list[i].name);
+                        return;
+                }
+                else if(!strcmp(func_list[i].name,"_start")){  // _start读出的没有大小，要特殊对待
+                        if(pc >= func_list[i].value && pc < func_list[i].value + 16)
+                        {
+                                strcpy(buf, func_list[i].name);
+                                return;
+                        }
+                }
+        }
+        buf[0] = '\0';
+}
+
 
 void _get_func_name(word_t addr, char** name, uint32_t* index){
         for(int i=0; i<func_num; i++)
@@ -166,95 +197,6 @@ void _get_func_name(word_t addr, char** name, uint32_t* index){
         }
         *name = NULL;
         *index = -1;
-}
-
-void ftrace_func_call(word_t pc, word_t dnpc,  uint32_t inst){
-        if(!ftrace_enabled)
-                return;
-        static int32_t pre_func_index = -1;
-        Func_Call f;
-        f.type = FUNC_CALL;
-        for(int i = 0; i < func_num; i++){
-                if(dnpc == func_list[i].value){
-                        if((inst & 0x7f) == 0x6f){ //jal指令
-
-                        }
-                        else if((inst & 0x7f) == 0x67) //jalr指令
-                        {
-                                uint32_t rd = (inst >> 7) & 0x1f;
-                                //uint32_t rs1 = (inst >> 15) & 0x1f;
-                              
-                                if(rd ==0)
-                                        f.type = FUNC_RET; // 标记为返回
-                                
-                        }
-
-                        if(pre_func_index == i){
-                                f.type = FUNC_RET;
-                        }
-                        printf("Call function: %s: " FMT_WORD_HEX " -> " FMT_WORD_HEX "\n", func_list[i].name, pc , dnpc);
-
-                        
-                        f.addr1 = pc;
-                        f.addr2 = dnpc;
-                        f.func_index = i;
-                        f.depth = stack_depth;
-                        ftrace_func_call_list_append(&f);
-
-                        if( f.type == FUNC_CALL) stack_depth++; else stack_depth--;
-
-                        pre_func_index = i;
-                        return;
-                }
-        }
-}
-
-void ftrace_func_call_list_print()
-{
-        Func_Call* p = func_call_list;
-        int depth;
-        Func_Call* p_next = NULL;
-        while(p != NULL){
-                
-                p_next = p;
-                p = p->prev;
-        }
-        p = p_next;
-        while(p != NULL){
-                depth = p->depth;
-
-                printf("0x" FMT_WORD_HEX ":  ", p->addr1);   
-
-                while(depth-- > 0) printf("  ");
-                if(p->type == FUNC_CALL){
-                        printf("call ");
-                } 
-                else if( p-> type == FUNC_RET){
-                        printf("ret  ");
-                }
-
-                printf("[%s@0x" FMT_WORD_HEX "]\n", func_list[p->func_index].name, p->addr2);
-
-                p = p->next;
-        }
-}
-
-void ftrace_func_call_list_append(const Func_Call* f)
-{
-        if(!ftrace_enabled)
-                return;
-        //printf("Push: %s: 0x" FMT_WORD_HEX_WIDTH "\n", func_list[func_index].name, pc);
-        Func_Call *item = (Func_Call*)malloc(sizeof(Func_Call));
-        item->addr1 = f->addr1;
-        item->addr2 = f->addr2;
-        item->func_index = f->func_index;
-        item->type = f->type;
-        item->depth = f->depth;
-        if(func_call_list != NULL)
-                func_call_list->next = item;
-        item->prev = func_call_list;
-        func_call_list = item;
-        ftrace_func_call_list_print();
 }
 
 
