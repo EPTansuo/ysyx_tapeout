@@ -38,7 +38,7 @@ SECTIONS {
     *(.data*)
     *(.sdata*)
     _data_end = .;
-  } > psram AT>mrom : data
+  } > sram AT>mrom : data
 
   edata = .;
   _data = .;
@@ -49,16 +49,16 @@ SECTIONS {
     *(.sbss*)
     *(.scommon)
     _bss_end = .;
-  } > psram AT> mrom
+  } > sram AT> mrom
 
   _heap_start = ALIGN(0x10);
 
-  . = ORIGIN(psram) + LENGTH(psram)/2;
+  . = ORIGIN(sram) + LENGTH(sram)/2;
   _heap_end = .;
   _stack_end = .;
 
 
-  . = ORIGIN(psram) + LENGTH(psram);
+  . = ORIGIN(sram) + LENGTH(sram);
   _stack_pointer = .;
 
   end = .;
