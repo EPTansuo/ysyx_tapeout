@@ -3,7 +3,7 @@
 
 
 int main(){
-    char filename[] = {"./demo.elf"};
+    char filename[] = {"/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/kernels/psram-test/build/psram-test-riscv32e-ysyxsoc.elf"};
 
     ftrace_init(filename);
     //ftrace_print_func_list();
