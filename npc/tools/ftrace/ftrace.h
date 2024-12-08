@@ -9,8 +9,9 @@ typedef uint32_t word_t;
 
 
 void ftrace_init(const char* _img_file);
-void ftrace_func_call(word_t pc, word_t dnpc, uint32_t inst);
-void ftrace_func_ret(word_t pc, uint32_t inst);
-void ftrace_func_call_list_print();
+void ftrace_reset();
+void ftrace_print_func_list();
+void ftrace_get_func_name(char* buf, word_t pc);
+
 
 #endif

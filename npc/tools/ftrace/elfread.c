@@ -63,7 +63,7 @@ inline const char* get_elf_machine(ElfN_Half e_machine){
 
 }
 
-void print_elf_header(Elf64_Ehdr elf_header) {
+void print_elf_header(ElfN_Ehdr elf_header) {
 	printf("ELF Header:\n");
 	printf("  Magic:   ");
 	for (int i = 0; i < EI_NIDENT; i++) {
@@ -80,10 +80,15 @@ void print_elf_header(Elf64_Ehdr elf_header) {
 	printf("  %-34s %s\n", "Type:", get_elf_type(elf_header.e_type));
 	printf("  %-34s %s\n", "Machine", get_elf_machine(elf_header.e_machine));
 	printf("  %-34s 0x%x\n", "Version:",elf_header.e_version);
-
+#if(NBIT == 64)
 	printf("  %-34s 0x%lx\n", "Entry Point Address", elf_header.e_entry);
 	printf("  %-34s %ld (bytes into file)\n", "Start of program headers:", elf_header.e_phoff);
 	printf("  %-34s %ld (bytes into file)\n", "Start of section headers:", elf_header.e_shoff);
+#else
+	printf("  %-34s 0x%x\n", "Entry Point Address", elf_header.e_entry);
+	printf("  %-34s %d (bytes into file)\n", "Start of program headers:", elf_header.e_phoff);
+	printf("  %-34s %d (bytes into file)\n", "Start of section headers:", elf_header.e_shoff);
+#endif 
 	printf("  %-34s 0x%x\n", "Flags:", elf_header.e_flags);
 	printf("  %-34s %d\n","Size of this header:", elf_header.e_ehsize);
 	printf("  %-34s %d\n","Size of program headers:", elf_header.e_phentsize);
@@ -124,19 +129,64 @@ inline const char* get_section_type_name(ElfN_Word sh_type) {
 }
 
 
-char* get_section_header_name(FILE *fp, char *dest, const ElfN_Ehdr* elf_header, const ElfN_Shdr *section_headers, int index){
-	int idx = 0;
-	char ch;
-	const ElfN_Shdr *strtab_hdr = &section_headers[elf_header->e_shstrndx];
-	fseek(fp, strtab_hdr->sh_offset + section_headers[index].sh_name, SEEK_SET);
-	do
-	{
-		fread(&ch, sizeof(char), 1, fp);
-		dest[idx++] = ch;
-	} while (ch);
-	dest[idx] = '\0';
-	return dest;
+// char* get_section_header_name(FILE *fp, char *dest, const ElfN_Ehdr* elf_header, const ElfN_Shdr *section_headers, int index){
+// 	int idx = 0;
+// 	char ch;
+// 	const ElfN_Shdr *strtab_hdr = &section_headers[elf_header->e_shstrndx];
+// 	fseek(fp, strtab_hdr->sh_offset + section_headers[index].sh_name, SEEK_SET);
+// 	do
+// 	{
+// 		fread(&ch, sizeof(char), 1, fp);
+// 		dest[idx++] = ch;
+// 	} while (ch);
+// 	dest[idx] = '\0';
+// 	return dest;
+// }
+
+
+// char* get_section_header_name(FILE* fp, char* dest, const ElfN_Ehdr* elf_header, const ElfN_Shdr* section_headers, int index) {
+//     if (index < 0 || index >= elf_header->e_shnum) {
+//         return NULL; 
+//     }
+// 	int idx = 0;
+// 	char ch;
+// 	int i =0; 
+// 	do
+// 	{	
+// 		fread(&ch, sizeof(char), 1, fp);
+// 		if(i++ >= section_headers[index].sh_name)
+// 			dest[idx++] = ch;
+// 	} while(ch);
+// 	dest[idx] = '\0';
+//     return dest;
+// }
+
+char* get_section_header_name(FILE* fp, char* dest, const ElfN_Ehdr* elf_header, const ElfN_Shdr* section_headers, int index) {
+
+    if (index < 0 || index >= elf_header->e_shnum) {
+        return NULL; 
+    }
+
+    const ElfN_Shdr *strtab_hdr = &section_headers[elf_header->e_shstrndx];
+    long name_offset = strtab_hdr->sh_offset + section_headers[index].sh_name;
+    
+    if (fseek(fp, name_offset, SEEK_SET) != 0) {
+        perror("fseek");
+        return NULL;
+    }
+    int idx = 0;
+    char ch;
+    while (fread(&ch, sizeof(char), 1, fp) == 1 && ch != '\0') {
+        dest[idx++] = ch;
+        if (idx >= 255) { 
+            break;
+        }
+    }
+    dest[idx] = '\0'; 
+    
+    return dest;
 }
+
 
 char* get_section_flag_name(char *dest, uintN_t sh_flags) {
 	int index = 0;
@@ -152,33 +202,32 @@ void print_section_headers(FILE* fp, const ElfN_Ehdr* elf_header, const ElfN_Shd
 	char buf[100];
 	printf("Section Headers:\n");
 
+// #if(NBIT == 32)
+// #error "32位的还未实现好, 和gcc的readelf还有不同"
+// #endif
 #if(NBIT == 32)
-#error "32位的还未实现好, 和gcc的readelf还有不同"
-#endif
-	if(NBIT == 32){
 		printf("  [Nr]  Name              Type                Addr   Off    Size   ES Flg Lk Inf Al\n");
 		for (int i = 0; i < sh_num; i++) {
-			get_section_header_name(fp, buf, elf_header, &section_headers[i], i);
+			get_section_header_name(fp, buf, elf_header, section_headers, i);
 			printf("  [%2d] ", i);
 			printf("%-18s ", buf);
 			printf("%-17s ", get_section_type_name(section_headers[i].sh_type));
-			printf("%08lx ", section_headers[i].sh_addr);
-			printf("%06lx ", section_headers[i].sh_offset);
-			printf("%06lx ", section_headers[i].sh_size);
-			printf("%02lx ", section_headers[i].sh_entsize);
-			printf("%03lx ", section_headers[i].sh_flags);
+			printf("%08x ", section_headers[i].sh_addr);
+			printf("%06x ", section_headers[i].sh_offset);
+			printf("%06x ", section_headers[i].sh_size);
+			printf("%02x ", section_headers[i].sh_entsize);
+			printf("%03x ", section_headers[i].sh_flags);
 			printf("%02x ", section_headers[i].sh_link);
 			printf("%02x ", section_headers[i].sh_info);
-			printf("%02lx\n", section_headers[i].sh_addralign);
+			printf("%02x\n", section_headers[i].sh_addralign);
 		}
-	}
-	else{
+#else
 		printf("  [Nr]  Name             Type               Address         Offset\n"
 		       "        Size             EntSize            Flags Link  Info  Align \n");
 		for (int i = 0; i < sh_num; i++) {
 
 			printf("  [%2d] ", i);
-			printf("%-17s ", get_section_header_name(fp, buf, elf_header, &section_headers[i], i));
+			printf("%-17s ", get_section_header_name(fp, buf, elf_header, section_headers, i));
 			printf("%-17s ", get_section_type_name(section_headers[i].sh_type));
 			printf("%016lx ", section_headers[i].sh_addr);
 			printf("%08lx\n ", section_headers[i].sh_offset);
@@ -189,7 +238,7 @@ void print_section_headers(FILE* fp, const ElfN_Ehdr* elf_header, const ElfN_Shd
 			printf("%5d", section_headers[i].sh_info);
 			printf("%5ld\n", section_headers[i].sh_addralign);
 		}
-	}
+#endif
 
 }
 
@@ -263,9 +312,13 @@ void print_symtab(FILE* fp, const ElfN_Sym* symtab, const ElfN_Shdr* strtab_hdr,
 	printf("  Num:    Value          Size Type    Bind   Vis       Ndx    Name\n");
 	for(int i = 0; i < symtab_size; i++){
 		printf("%5d: ", i);  //num
+#if(NBIT == 64)
 		printf("%016lx ", symtab[i].st_value); //value
-
 		printf("%5ld ", symtab[i].st_size);//size
+#else
+		printf("      %08x ", symtab[i].st_value); //value
+		printf("%5d ", symtab[i].st_size);//size
+#endif
 		printf("%-7s ", get_symtab_entry_type_name(symtab[i].st_info));//type
 		printf("%-6s ", get_symtab_entry_bind_name(symtab[i].st_info));
 		printf("%-9s ", get_symtab_entry_vis_name(symtab[i].st_other));
