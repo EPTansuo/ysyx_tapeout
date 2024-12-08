@@ -183,3 +183,19 @@ extern "C" void axi_error(char errno, char isRead) {
   printf(L_RED "AXI ERROR: errno = %x, isRead = %d" COLOR_NONE "\n", errno, isRead);
   set_npc_state(NPC_ABORT, PC, -1);
 }
+
+uint8_t psram[0x1000000];
+
+extern "C" void psram_write(int addr, int data, char wmask) { 
+  for(int i = 0; i < 4; i++){
+    if(wmask & (1 << i)){
+      *(psram + addr + i) = (data >> (i * 8)) & 0xff;
+    }
+  }
+  printf("write psram addr = %x, data = %x, wmask = %0x\n", addr, data, wmask);
+}
+
+extern "C" int psram_read(int addr) { 
+  printf("read psram addr = %x, data = %x\n", addr, *((uint32_t*)(psram + addr)));
+  return *((uint32_t*)(psram + addr));
+}
