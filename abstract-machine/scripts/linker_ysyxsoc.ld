@@ -53,7 +53,7 @@ SECTIONS {
   _stack_end = .;
 
 
-  . = ORIGIN(psram) + LENGTH(psram)/2;
+  . = ORIGIN(psram) + LENGTH(psram);
   _stack_pointer = .;
 
   end = .;
