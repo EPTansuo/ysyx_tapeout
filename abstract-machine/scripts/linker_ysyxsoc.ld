@@ -26,6 +26,11 @@ SECTIONS {
     *(.srodata*)
   } > mrom AT>mrom
 
+
+/*  .fsdl : {
+    *(.fsbl*)
+  } > mrom*/
+
   _ram_data_start = .;
 
   .data : {

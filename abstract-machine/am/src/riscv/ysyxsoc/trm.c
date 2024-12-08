@@ -41,6 +41,11 @@ void bootloader(){
   }
 }
 
+// void __attribute__((section(".fsbl"))) _fsbl_init(){
+
+// }
+
+
 void print_stuID(){
   uint32_t mvendorid, marchid;
   asm volatile (
