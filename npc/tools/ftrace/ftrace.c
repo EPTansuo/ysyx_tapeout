@@ -61,6 +61,7 @@ void ftrace_reset()
 
 void ftrace_init(const char* _img_file)
 {
+        //printf("%s",_img_file);
         if(_img_file == NULL)
                 return;
         if(elf_file != NULL)
@@ -77,6 +78,7 @@ void ftrace_phase_elf(const char* _elf_file)
         FILE* fp = fopen(_elf_file, "r");
 
 	if (fp == NULL) {
+        perror("parse_elf error");
 		printf("Can not open file! \n");
                 return;
 	}
