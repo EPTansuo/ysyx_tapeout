@@ -30,11 +30,11 @@ void putch(char ch) {
 }
 
 
-extern char _ram_data_start, _data_start, _data_end, _bss_start, _bss_end;
+extern char _text_start, _data_start, _data_end, _text_src, _bss_start, _bss_end;
 
 void __attribute__((section(".bootloader"))) bootloader(){
-  char *src = &_ram_data_start;
-  char *dst = &_data_start;
+  char *src = &_text_src;
+  char *dst = &_text_start;
   while(dst < & _data_end) {
     *dst++ = *src++;
   }
@@ -46,11 +46,11 @@ void __attribute__((section(".bootloader"))) bootloader(){
   _trm_init();
 }
 
-extern char _siflash_ssbl, _eiflash_ssbl;
+extern char _bootloader_src, _siflash_ssbl, _eiflash_ssbl;
 void __attribute__((section(".fsbl"))) _fsbl_init(){
-  char *src = &_siflash_ssbl;
-  char *dst = &_eiflash_ssbl;
-  while(dst > & _siflash_ssbl) {
+  char *src = &_bootloader_src;
+  char *dst = &_siflash_ssbl;
+  while(dst > & _eiflash_ssbl) {
     *dst++ = *src++;
   }
   bootloader();

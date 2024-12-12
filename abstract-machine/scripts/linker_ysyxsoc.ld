@@ -14,7 +14,21 @@ SECTIONS {
 
   . = ORIGIN(flash);
 
+  .fsbl :{
+    *(.fsbl*)
+  } > flash
+
+  _bootloader_src = LOADADDR(.bootloader);
+  .bootloader :{
+    _siflash_ssbl = .;
+    *(.bootloader*)
+    _eiflash_ssbl = .;
+  } > psram AT > flash
+
+  _text_src = LOADADDR(.text);
+
     .text : {
+    _text_start = .;
     *(entry)
     *(.text*)
     _text_end = .;
@@ -23,29 +37,12 @@ SECTIONS {
   etext = .;
   _etext = .;
 
-  .fsbl :{
-    *(.fsbl*)
-  } > flash
-
-  .bootloader :{
-    _siflash_ssbl = .;
-    *(.bootloader*)
-    _eiflash_ssbl = .;
-  } > psram AT > flash
-
-
   .rodata : {
     *(.rodata*)
     *(.srodata*)
-  } > flash AT>flash
+  } > psram AT>flash
 
-
-/*  .fsdl : {
-    *(.fsbl*)
-  } > flash*/
-
-
-  _ram_data_start = .;
+  _data_src = LOADADDR(.data);
 
   .data : {
     _data_start = .;
@@ -65,17 +62,17 @@ SECTIONS {
     _bss_end = .;
   } > psram AT> flash
 
-  _heap_start = ALIGN(0x10);
+  _stack_top = ORIGIN(sram);
 
-  . = ORIGIN(psram) + LENGTH(psram)/2;
+  _stack_pointer = ORIGIN(sram) + LENGTH(sram);
+
+
+
+  . = ORIGIN(psram);
+  _heap_start = . ;
+  . = ORIGIN(psram) + LENGTH(psram);
   _heap_end = .;
 
-  _stack_end = .;
-
-
-  . = ORIGIN(psram) + LENGTH(psram);
-  _stack_pointer = .;
-
-  end = .;
-  _end = .;
+/*   end = .; */
+/*   _end = .; */
 }
