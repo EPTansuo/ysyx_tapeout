@@ -201,3 +201,10 @@ extern "C" int psram_read(int addr) {
   //printf("read psram addr = %x, data = %x\n", addr, *((uint32_t*)(psram + addr)));
   return *((uint32_t*)(psram + addr));
 }
+
+
+uint16_t sdram [4][8192][512];
+extern "C" sdram_read(int addr, int *data) {
+  *data = sdram[addr/8192/512][addr/512%8192][addr%512];
+  //printf("read sdram addr = %x, data = %x\n", addr, *data);
+} 
