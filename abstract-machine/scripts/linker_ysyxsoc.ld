@@ -28,6 +28,14 @@ SECTIONS {
     _text_end = .;
   } > flash AT> flash : text
 
+  _bootloader_src = LOADADDR(.bootloader);
+  .bootloader :{
+    _siflash_ssbl = .;
+    *(.bootloader*)
+    _eiflash_ssbl = .;
+  } > psram AT > flash : bootloader
+
+
   etext = .;
   _etext = .;
 
@@ -36,12 +44,6 @@ SECTIONS {
     *(.srodata*)
   } > psram AT>flash
 
-    _bootloader_src = LOADADDR(.bootloader);
-  .bootloader :{
-    _siflash_ssbl = .;
-    *(.bootloader*)
-    _eiflash_ssbl = .;
-  } > psram AT > flash : bootloader
 
 
   _data_src = LOADADDR(.data);
