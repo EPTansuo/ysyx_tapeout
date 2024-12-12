@@ -31,9 +31,7 @@ SECTIONS {
     _siflash_ssbl = .;
     *(.bootloader*)
     _eiflash_ssbl = .;
-  } > psram AT > flash : text
-
-
+  } > psram AT > flash
 
 
   .rodata : {
@@ -45,9 +43,6 @@ SECTIONS {
 /*  .fsdl : {
     *(.fsbl*)
   } > flash*/
-
-
-
 
 
   _ram_data_start = .;
