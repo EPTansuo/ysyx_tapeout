@@ -14,20 +14,9 @@ SECTIONS {
 
   . = ORIGIN(flash);
 
-
-  _text_src = LOADADDR(.text);
-
-    .text : {
-    _text_start = .;
-    *(entry)
-    *(.text*)
-    _text_end = .;
-  } > flash AT> flash : text
-
     .fsbl :{
     *(.fsbl*)
   } > flash :fsbl
-
 
   _bootloader_src = LOADADDR(.bootloader);
   .bootloader :{
@@ -35,6 +24,18 @@ SECTIONS {
     *(.bootloader*)
     _eiflash_ssbl = .;
   } > psram AT > flash : bootloader
+
+
+  _text_src = LOADADDR(.text);
+
+  .text : {
+    _text_start = .;
+    *(entry)
+    *(.text*)
+    _text_end = .;
+  } > flash AT> flash : text
+
+
 
 
   etext = .;
