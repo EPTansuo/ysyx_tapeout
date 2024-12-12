@@ -55,6 +55,7 @@ SECTIONS {
 
   . = ORIGIN(psram) + LENGTH(psram)/2;
   _heap_end = .;
+
   _stack_end = .;
 
 
