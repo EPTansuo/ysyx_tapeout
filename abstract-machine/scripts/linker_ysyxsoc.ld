@@ -23,7 +23,7 @@ SECTIONS {
     _siflash_ssbl = .;
     *(.bootloader*)
     _eiflash_ssbl = .;
-  } > sram AT > flash
+  } > psram AT > flash
 
   _text_src = LOADADDR(.text);
 
