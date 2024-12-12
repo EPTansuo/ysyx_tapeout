@@ -32,6 +32,19 @@ SECTIONS {
     *(.fsbl*)
   } > flash*/
 
+
+
+  .fsbl :{
+    *(.fsbl*)
+  } > flash
+
+  .bootloader :{
+    _siflash_ssbl = .;
+    *(.bootloader*)
+    _eiflash_ssbl = .;
+  } > psram AT > flash
+
+
   _ram_data_start = .;
 
   .data : {
@@ -52,22 +65,16 @@ SECTIONS {
     _bss_end = .;
   } > psram AT> flash
 
-    .heap :
-  ALIGN(0x1000)
-  {
-    _heap_start = .;
-    _heap_end = ORIGIN(psram) + LENGTH(psram) / 2;
-    . = _heap_end;
-  } > psram
+  _heap_start = ALIGN(0x10);
 
-  .stack :
-  ALIGN(0x8)
-  {
-    _stack_top = .;
-    _stack_pointer = ORIGIN(psram) + LENGTH(psram);
-    . = _stack_pointer;
-  } > psram
+  . = ORIGIN(psram) + LENGTH(psram)/2;
+  _heap_end = .;
 
+  _stack_end = .;
+
+
+  . = ORIGIN(psram) + LENGTH(psram);
+  _stack_pointer = .;
 
   end = .;
   _end = .;

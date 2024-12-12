@@ -4,7 +4,10 @@
 #include <stdio.h>
 
 extern char _heap_start;
+
 int main(const char *args);
+void _trm_init();
+
 
 extern char _pmem_start;
 
@@ -21,6 +24,7 @@ static const char mainargs[] = MAINARGS;
 #define UART_TX   0
 
 
+
 void putch(char ch) {
   io_write(AM_UART_TX, ch);
 }
@@ -28,7 +32,7 @@ void putch(char ch) {
 
 extern char _ram_data_start, _data_start, _data_end, _bss_start, _bss_end;
 
-void bootloader(){
+void __attribute__((section(".bootloader"))) bootloader(){
   char *src = &_ram_data_start;
   char *dst = &_data_start;
   while(dst < & _data_end) {
@@ -39,11 +43,18 @@ void bootloader(){
   while(p < &_bss_end) {
     *p++ = 0;
   }
+  _trm_init();
 }
 
-// void __attribute__((section(".fsbl"))) _fsbl_init(){
-
-// }
+extern char _siflash_ssbl, _eiflash_ssbl;
+void __attribute__((section(".fsbl"))) _fsbl_init(){
+  char *src = &_siflash_ssbl;
+  char *dst = &_eiflash_ssbl;
+  while(dst > & _siflash_ssbl) {
+    *dst++ = *src++;
+  }
+  bootloader();
+}
 
 
 void print_stuID(){
@@ -73,7 +84,7 @@ void halt(int code) {
 
 void UART_init();
 void _trm_init() {
-  bootloader();
+  //bootloader();
   ioe_init();
   //print_stuID();
   int ret = main(mainargs);
