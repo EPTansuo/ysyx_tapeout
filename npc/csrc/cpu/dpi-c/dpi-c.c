@@ -184,7 +184,7 @@ extern "C" void axi_error(char errno, char isRead) {
   set_npc_state(NPC_ABORT, PC, -1);
 }
 
-uint8_t psram[0x1000000];
+uint8_t psram[1024*1024*4]; // 4MB PSRAM
 
 extern "C" void psram_write(int addr, int data, char wmask) { 
   //addr = addr / 4 * 4;
