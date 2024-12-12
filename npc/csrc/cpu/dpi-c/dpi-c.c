@@ -184,7 +184,7 @@ extern "C" void axi_error(char errno, char isRead) {
   set_npc_state(NPC_ABORT, PC, -1);
 }
 
-uint8_t psram[0x1000000];
+uint8_t psram[1024*1024*4]; // 4MB PSRAM
 
 extern "C" void psram_write(int addr, int data, char wmask) { 
   //addr = addr / 4 * 4;
@@ -193,11 +193,46 @@ extern "C" void psram_write(int addr, int data, char wmask) {
       *(psram + addr + i) = (data >> (i * 8)) & 0xff;
     }
   }
-  printf("write psram addr = %x, data = %x, wmask = %0x\n", addr, data, wmask);
+  //printf("write psram addr = %x, data = %x, wmask = %0x\n", addr, data, wmask);
 }
 
 extern "C" int psram_read(int addr) { 
   //addr = addr / 4 * 4;
-  printf("read psram addr = %x, data = %x\n", addr, *((uint32_t*)(psram + addr)));
+  //printf("read psram addr = %x, data = %x\n", addr, *((uint32_t*)(psram + addr)));
   return *((uint32_t*)(psram + addr));
 }
+
+
+// block_num: bank: row: col
+uint16_t sdram [4][4][8192][512];
+
+/*
+int sdram_read(input byte bank, input int row, input int col, 
+               input byte block_num);
+void sdram_write(input byte bank, input int row, input int col, 
+                 input int wdata, input byte wmask, input byte block_num);
+*/
+
+extern "C" int sdram_read(char bank, int row, int col, char block_num) { 
+//  printf("sdram_read bank = %d, row = %d, col = %d, block_num = %d, data = %x\n", bank, row, col, 
+//                block_num, sdram[block_num][bank][row][col]);
+  return sdram[block_num][bank][row][col];
+}
+
+extern "C" void sdram_write(char bank, int row, int col , int wdata, char wmask, char block_num) { 
+
+  if(wmask > 3){
+    printf("ERROR, Can only write 1/2 bytes at once wmask = %d\n", wmask);
+  }
+
+  for(int i = 0; i < 2; i++){
+    if(wmask & (1 << i)){
+      sdram[block_num][bank][row][col] &= ~(0xff << (i * 8));
+      sdram[block_num][bank][row][col] |= ((wdata >> (i * 8)) & 0xff) << (i * 8);
+    }
+  }
+
+//  printf("sdram_write bank = %d, row = %d, col = %d, block_num = %d, wdata = %x, wmask = %x\n", bank, row, col,
+//                 block_num, wdata, wmask);
+}
+
