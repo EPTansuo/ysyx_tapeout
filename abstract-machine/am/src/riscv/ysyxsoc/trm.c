@@ -47,15 +47,18 @@ void __attribute__((section(".bootloader"))) bootloader(){
 }
 
 extern char _bootloader_src, _siflash_ssbl, _eiflash_ssbl;
+
 void __attribute__((section(".fsbl"))) _fsbl_init(){
-  char *src = &_bootloader_src;
-  char *dst = &_siflash_ssbl;
-  while(dst > (&_eiflash_ssbl)) {
+  putch('a');
+  char *src = &_bootloader_src;   // LMA, flash
+  char *dst = &_siflash_ssbl;    // VMA, psram
+  while(dst < (&_eiflash_ssbl)) { 
+    putch('c');
     *dst++ = *src++;
   }
+  putch('b');
   bootloader();
 }
-
 
 void print_stuID(){
   uint32_t mvendorid, marchid;
