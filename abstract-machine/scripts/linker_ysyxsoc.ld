@@ -13,6 +13,18 @@ MEMORY {
 SECTIONS {
 
   . = ORIGIN(flash);
+
+  .fsbl :{
+    *(.fsbl*)
+  } > flash
+
+  .bootloader :{
+    _siflash_ssbl = .;
+    *(.bootloader*)
+    _eiflash_ssbl = .;
+  } > psram AT > flash
+
+
   .text : {
     *(entry)
     *(.text*)
@@ -34,15 +46,6 @@ SECTIONS {
 
 
 
-  .fsbl :{
-    *(.fsbl*)
-  } > flash
-
-  .bootloader :{
-    _siflash_ssbl = .;
-    *(.bootloader*)
-    _eiflash_ssbl = .;
-  } > psram AT > flash
 
 
   _ram_data_start = .;
