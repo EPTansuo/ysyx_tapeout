@@ -1,6 +1,6 @@
 ENTRY(_start)
 
-PHDRS { text PT_LOAD; data PT_LOAD; }
+PHDRS { text PT_LOAD; data PT_LOAD; fsbl PT_LOAD; bootloader PT_LOAD; }
 
 MEMORY {
   mrom(rx)   : ORIGIN = 0x20000000, LENGTH = 4K
@@ -16,14 +16,14 @@ SECTIONS {
 
   .fsbl :{
     *(.fsbl*)
-  } > flash
+  } > flash :fsbl
 
   _bootloader_src = LOADADDR(.bootloader);
   .bootloader :{
     _siflash_ssbl = .;
     *(.bootloader*)
     _eiflash_ssbl = .;
-  } > psram AT > flash
+  } > psram AT > flash : bootloader
 
   _text_src = LOADADDR(.text);
 
