@@ -29,7 +29,6 @@ SECTIONS {
   } > flash :fsbl
 
 
-
   _bootloader_src = LOADADDR(.bootloader);
   .bootloader :{
     _siflash_ssbl = .;
