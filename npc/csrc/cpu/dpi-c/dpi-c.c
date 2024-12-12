@@ -214,8 +214,8 @@ void sdram_write(input byte bank, input int row, input int col,
 */
 
 extern "C" int sdram_read(char bank, int row, int col, char block_num) { 
-  printf("sdram_read bank = %d, row = %d, col = %d, block_num = %d, data = %x\n", bank, row, col, 
-                block_num, sdram[block_num][bank][row][col]);
+//  printf("sdram_read bank = %d, row = %d, col = %d, block_num = %d, data = %x\n", bank, row, col, 
+//                block_num, sdram[block_num][bank][row][col]);
   return sdram[block_num][bank][row][col];
 }
 
@@ -232,7 +232,7 @@ extern "C" void sdram_write(char bank, int row, int col , int wdata, char wmask,
     }
   }
 
-  printf("sdram_write bank = %d, row = %d, col = %d, block_num = %d, wdata = %x, wmask = %x\n", bank, row, col,
-                 block_num, wdata, wmask);
+//  printf("sdram_write bank = %d, row = %d, col = %d, block_num = %d, wdata = %x, wmask = %x\n", bank, row, col,
+//                 block_num, wdata, wmask);
 }
 
