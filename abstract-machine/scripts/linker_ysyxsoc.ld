@@ -14,6 +14,15 @@ SECTIONS {
 
   . = ORIGIN(flash);
 
+    .text : {
+    *(entry)
+    *(.text*)
+    _text_end = .;
+  } > flash AT> flash : text
+
+  etext = .;
+  _etext = .;
+
   .fsbl :{
     *(.fsbl*)
   } > flash
@@ -25,14 +34,7 @@ SECTIONS {
   } > psram AT > flash
 
 
-  .text : {
-    *(entry)
-    *(.text*)
-    _text_end = .;
-  } > flash AT> flash : text
 
-  etext = .;
-  _etext = .;
 
   .rodata : {
     *(.rodata*)
