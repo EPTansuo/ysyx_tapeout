@@ -18,12 +18,6 @@ SECTIONS {
     *(.fsbl*)
   } > flash :fsbl
 
-  _bootloader_src = LOADADDR(.bootloader);
-  .bootloader :{
-    _siflash_ssbl = .;
-    *(.bootloader*)
-    _eiflash_ssbl = .;
-  } > psram AT > flash : bootloader
 
   _text_src = LOADADDR(.text);
 
@@ -53,6 +47,14 @@ SECTIONS {
 
   edata = .;
   _data = .;
+
+  _bootloader_src = LOADADDR(.bootloader);
+  .bootloader :{
+    _siflash_ssbl = .;
+    *(.bootloader*)
+    _eiflash_ssbl = .;
+  } > psram AT > flash : bootloader
+
 
   .bss : {
     _bss_start = .;
