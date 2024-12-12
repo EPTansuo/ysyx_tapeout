@@ -14,10 +14,6 @@ SECTIONS {
 
   . = ORIGIN(flash);
 
-  .fsbl :{
-    *(.fsbl*)
-  } > flash :fsbl
-
 
   _text_src = LOADADDR(.text);
 
@@ -27,6 +23,12 @@ SECTIONS {
     *(.text*)
     _text_end = .;
   } > flash AT> flash : text
+
+    .fsbl :{
+    *(.fsbl*)
+  } > flash :fsbl
+
+
 
   _bootloader_src = LOADADDR(.bootloader);
   .bootloader :{
