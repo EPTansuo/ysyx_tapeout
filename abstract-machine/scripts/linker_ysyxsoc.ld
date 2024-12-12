@@ -7,6 +7,7 @@ MEMORY {
   sram(rwx)  : ORIGIN = 0x0f000000, LENGTH = 8K
   flash(rx)  : ORIGIN = 0x30000000, LENGTH = 16M
   psram(rwx) : ORIGIN = 0x80000000, LENGTH = 4M
+  sdram(rwx) : ORIGIN = 0xa0000000, LENGTH = 32M
 }
 
 SECTIONS {
@@ -38,7 +39,7 @@ SECTIONS {
     *(.data*)
     *(.sdata*)
     _data_end = .;
-  } > psram AT>mrom : data
+  } > sdram AT>mrom : data
 
   edata = .;
   _data = .;
@@ -49,17 +50,17 @@ SECTIONS {
     *(.sbss*)
     *(.scommon)
     _bss_end = .;
-  } > psram AT> mrom
+  } > sdram AT> mrom
 
   _heap_start = ALIGN(0x10);
 
-  . = ORIGIN(psram) + LENGTH(psram)/2;
+  . = ORIGIN(sdram) + LENGTH(sdram)/2;
   _heap_end = .;
 
   _stack_end = .;
 
 
-  . = ORIGIN(psram) + LENGTH(psram);
+  . = ORIGIN(sdram) + LENGTH(sdram);
   _stack_pointer = .;
 
   end = .;
