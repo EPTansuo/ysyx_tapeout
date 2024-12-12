@@ -50,7 +50,7 @@ extern char _bootloader_src, _siflash_ssbl, _eiflash_ssbl;
 void __attribute__((section(".fsbl"))) _fsbl_init(){
   char *src = &_bootloader_src;
   char *dst = &_siflash_ssbl;
-  while(dst > & _eiflash_ssbl) {
+  while(dst > (&_eiflash_ssbl)) {
     *dst++ = *src++;
   }
   bootloader();
