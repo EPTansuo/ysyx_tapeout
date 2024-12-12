@@ -31,7 +31,7 @@ SECTIONS {
     _siflash_ssbl = .;
     *(.bootloader*)
     _eiflash_ssbl = .;
-  } > psram AT > flash
+  } > psram AT > flash : text
 
 
 
