@@ -18,6 +18,7 @@ SECTIONS {
   . = ALIGN(8);
    *(entry)
     *(.fsbl*)
+    . = ALIGN(8);
   } > flash :fsbl
   /*. = ALIGN(8);*/
   _bootloader_src = LOADADDR(.bootloader);
@@ -68,7 +69,7 @@ SECTIONS {
   edata = .;
   _data = .;
 
-. = ALIGN(8);
+/*. = ALIGN(8);*/
 
   .bss : {
     _bss_start = .;
