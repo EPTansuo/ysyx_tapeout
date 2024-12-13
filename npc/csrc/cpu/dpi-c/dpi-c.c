@@ -54,10 +54,10 @@ extern "C" void inst_invalid(){
   
   
   for(int j = 3; j >= 0; j--){
-    printf("%02x ", ((uint8_t*)INST)[j]);
+    printf("%02x ", ((uint8_t*)(&INST))[j]);
   }
   fflush(stdout);
-  disassemble(logbuf, 64, PC , INST, 4);
+  disassemble(logbuf, 64, PC , (uint8_t*)(&INST), 4);
   printf("%s\n", logbuf);
 	set_npc_state(NPC_ABORT, PC, -1);
 }
