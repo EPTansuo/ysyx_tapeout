@@ -232,7 +232,7 @@ extern "C" void sdram_write(char bank, int row, int col , int wdata, char wmask,
     }
   }
 
-//  printf("sdram_write bank = %d, row = %d, col = %d, block_num = %d, wdata = %x, wmask = %x\n", bank, row, col,
-//                 block_num, wdata, wmask);
+  printf("sdram_write bank = %d, row = %d, col = %d, block_num = %d, wdata = %x, wmask = %x\n", bank, row, col,
+                 block_num, wdata, wmask);
 }
 
