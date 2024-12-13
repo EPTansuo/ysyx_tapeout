@@ -37,7 +37,7 @@ SECTIONS {
     *(.text*)
     _text_end = .;
     . = ALIGN(8);
-  } > flash AT> flash : text
+  } > psram AT> flash : text
 
 
 
