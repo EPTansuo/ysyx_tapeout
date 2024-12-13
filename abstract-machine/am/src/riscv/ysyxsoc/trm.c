@@ -30,12 +30,12 @@ void putch(char ch) {
 }
 
 
-extern char _text_start, _data_start, _data_end, _text_src, _bss_start, _bss_end;
+extern char _text_start, _data_start, edata, _text_src, _bss_start, _bss_end;
 
 void __attribute__((section(".bootloader"))) bootloader(){
   char *src = &_text_src;
   char *dst = &_text_start;
-  while(dst < & _data_end) {
+  while(dst < & edata) {
     *dst++ = *src++;
   }
 
