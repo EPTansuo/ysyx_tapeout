@@ -15,6 +15,7 @@ SECTIONS {
   . = ORIGIN(flash);
 
   .fsbl :{
+  . = ALIGN(8);
    *(entry)
     *(.fsbl*)
   } > flash :fsbl
