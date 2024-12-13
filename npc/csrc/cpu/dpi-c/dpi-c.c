@@ -52,10 +52,13 @@ extern "C" void inst_invalid(){
   fflush(stdout);
   
   
-  
-  for(int j = 3; j >= 0; j--){
+  if(pc >= 0x80000000){
+    for(int j = 3; j >= 0; j--){
     printf("%02x ", ((uint8_t*)guest_to_host(PC))[j]);
   }
+  }
+  
+  
   fflush(stdout);
   disassemble(logbuf, 64, PC , guest_to_host(PC), 4);
   printf("%s\n", logbuf);
