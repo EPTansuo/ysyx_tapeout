@@ -88,7 +88,7 @@ void halt(int code) {
 void UART_init();
 void _trm_init() {
   ioe_init();
-  print_stuID();
+  // print_stuID();
   int ret = main(mainargs);
   halt(ret);
 }
