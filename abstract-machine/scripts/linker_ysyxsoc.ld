@@ -19,7 +19,7 @@ SECTIONS {
    *(entry)
     *(.fsbl*)
   } > flash :fsbl
-  . = ALIGN(8);
+  /*. = ALIGN(8);*/
   _bootloader_src = LOADADDR(.bootloader);
   .bootloader :{
   . = ALIGN(8);
@@ -28,7 +28,7 @@ SECTIONS {
     _eiflash_ssbl = .;
   } > psram AT> flash : bootloader
 
-. = ALIGN(8);
+/*. = ALIGN(8);*/
   _text_src = LOADADDR(.text);
 
   .text : {
@@ -41,7 +41,7 @@ SECTIONS {
 
 
 
-. = ALIGN(8);
+/*. = ALIGN(8);*/
   etext = .;
   _etext = .;
 
@@ -53,7 +53,7 @@ SECTIONS {
   } > psram AT> flash : rodata
 
 
-. = ALIGN(8);
+/*. = ALIGN(8);*/
   _data_src = LOADADDR(.data);
 
   .data : {
