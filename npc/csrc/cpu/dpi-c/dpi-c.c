@@ -193,12 +193,12 @@ extern "C" void psram_write(int addr, int data, char wmask) {
       *(psram + addr + i) = (data >> (i * 8)) & 0xff;
     }
   }
-  //printf("write psram addr = %x, data = %x, wmask = %0x\n", addr, data, wmask);
+  printf("write psram addr = %x, data = %x, wmask = %0x\n", addr, data, wmask);
 }
 
 extern "C" int psram_read(int addr) { 
   //addr = addr / 4 * 4;
-  //printf("read psram addr = %x, data = %x\n", addr, *((uint32_t*)(psram + addr)));
+  printf("read psram addr = %x, data = %x\n", addr, *((uint32_t*)(psram + addr)));
   return *((uint32_t*)(psram + addr));
 }
 
