@@ -19,49 +19,56 @@ SECTIONS {
    *(entry)
     *(.fsbl*)
   } > flash :fsbl
-
+  . = ALIGN(8);
   _bootloader_src = LOADADDR(.bootloader);
   .bootloader :{
+  . = ALIGN(8);
     _siflash_ssbl = .;
     *(.bootloader*)
     _eiflash_ssbl = .;
   } > psram AT> flash : bootloader
 
-
+. = ALIGN(8);
   _text_src = LOADADDR(.text);
 
   .text : {
+  . = ALIGN(8);
     _text_start = .;
     *(.text*)
     _text_end = .;
+    . = ALIGN(8);
   } > flash AT> flash : text
 
 
 
-
+. = ALIGN(8);
   etext = .;
   _etext = .;
 
   .rodata : {
+  . = ALIGN(8);
     *(.rodata*)
     *(.srodata*)
+    . = ALIGN(8);
   } > psram AT> flash : rodata
 
 
-
+. = ALIGN(8);
   _data_src = LOADADDR(.data);
 
   .data : {
+  . = ALIGN(8);
     _data_start = .;
     *(.data*)
     *(.sdata*)
     _data_end = .;
+    . = ALIGN(8);
   } > psram AT>flash : data
 
   edata = .;
   _data = .;
 
-
+. = ALIGN(8);
 
   .bss : {
     _bss_start = .;
