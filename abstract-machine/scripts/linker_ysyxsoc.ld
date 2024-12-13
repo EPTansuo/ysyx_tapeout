@@ -1,75 +1,48 @@
 ENTRY(_start)
 
-PHDRS { text PT_LOAD; data PT_LOAD; fsbl PT_LOAD; bootloader PT_LOAD; rodata PT_LOAD; }
+PHDRS { text PT_LOAD; data PT_LOAD; }
 
 MEMORY {
   mrom(rx)   : ORIGIN = 0x20000000, LENGTH = 4K
   sram(rwx)  : ORIGIN = 0x0f000000, LENGTH = 8K
   flash(rx)  : ORIGIN = 0x30000000, LENGTH = 16M
   psram(rwx) : ORIGIN = 0x80000000, LENGTH = 4M
-  sdram(rwx) : ORIGIN = 0xa0000000, LENGTH = 64M
+  sdram(rwx) : ORIGIN = 0xa0000000, LENGTH = 32M
 }
 
 SECTIONS {
 
-  . = ORIGIN(flash);
-
-  .fsbl :{
-  /*. = ALIGN(8);*/
-   *(entry)
-    *(.fsbl*)
-/*    . = ALIGN(8);*/
-  } > flash :fsbl
-  /*. = ALIGN(8);*/
-  _bootloader_src = LOADADDR(.bootloader);
-  .bootloader :{
-  /*. = ALIGN(8);*/
-    _siflash_ssbl = .;
-    *(.bootloader*)
-    _eiflash_ssbl = .;
-  } > psram AT> flash : bootloader
-
-/*. = ALIGN(8);*/
-  _text_src = LOADADDR(.text);
-
+  . = ORIGIN(mrom);
   .text : {
-  /*. = ALIGN(8);*/
-    _text_start = .;
+    *(entry)
     *(.text*)
     _text_end = .;
-    /*. = ALIGN(8);*/
-  } > psram AT> flash : text
+  } > mrom AT> mrom : text
 
-
-
-/*. = ALIGN(8);*/
   etext = .;
   _etext = .;
 
   .rodata : {
-  /*. = ALIGN(8);*/
     *(.rodata*)
     *(.srodata*)
-    /*. = ALIGN(8);*/
-  } > psram AT> flash : rodata
+  } > mrom AT>mrom
 
 
-/*. = ALIGN(8);*/
-  _data_src = LOADADDR(.data);
+/*  .fsdl : {
+    *(.fsbl*)
+  } > mrom*/
+
+  _ram_data_start = .;
 
   .data : {
-  /*. = ALIGN(8);*/
     _data_start = .;
     *(.data*)
     *(.sdata*)
     _data_end = .;
-    /*. = ALIGN(8);*/
-  } > psram AT>flash : data
+  } > psram AT>mrom : data
 
   edata = .;
   _data = .;
-
-/*. = ALIGN(8);*/
 
   .bss : {
     _bss_start = .;
@@ -77,19 +50,19 @@ SECTIONS {
     *(.sbss*)
     *(.scommon)
     _bss_end = .;
-  } > psram AT> flash
+  } > psram AT> mrom
 
-  _stack_top = ORIGIN(sram);
+  _heap_start = ALIGN(0x10);
 
-  _stack_pointer = ORIGIN(sram) + LENGTH(sram);
-
-
-
-  . = ORIGIN(psram);
-  _heap_start = .;
-  . = ORIGIN(psram) + LENGTH(psram);
+  . = ORIGIN(psram) + LENGTH(psram)/2;
   _heap_end = .;
 
-/*   end = .; */
-/*   _end = .; */
+  _stack_end = .;
+
+
+  . = ORIGIN(psram) + LENGTH(psram);
+  _stack_pointer = .;
+
+  end = .;
+  _end = .;
 }

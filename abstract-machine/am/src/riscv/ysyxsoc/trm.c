@@ -29,7 +29,7 @@ void putch(char ch) {
   io_write(AM_UART_TX, ch);
 }
 
-
+/*
 extern char _text_start, _data_start, _data_end, _text_src, _bss_start, _bss_end;
 
 void __attribute__((section(".bootloader"))) bootloader(){
@@ -57,6 +57,30 @@ void __attribute__((section(".fsbl"))) _fsbl_init(){
   while(dst < (&_eiflash_ssbl)) { 
     *dst++ = *src++;
   }
+  bootloader();
+}
+*/
+
+
+
+extern char _ram_data_start, _data_start, _data_end, _bss_start, _bss_end;
+
+void bootloader(){
+  char *src = &_ram_data_start;
+  char *dst = &_data_start;
+  while(dst < & _data_end) {
+    *dst++ = *src++;
+  }
+
+  char *p = &_bss_start;
+  while(p < &_bss_end) {
+    *p++ = 0;
+  }
+  _trm_init();
+}
+
+void __attribute__((section(".fsbl"))) _fsbl_init(){
+
   bootloader();
 }
 
