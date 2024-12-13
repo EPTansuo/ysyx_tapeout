@@ -15,6 +15,7 @@ def waveRead():
     name = ""
     while True:
         line = sys.stdin.readline()
+        sys.stderr.write(line)
         if(line.startswith("#")):
             times.append(line[1:-1])
         elif(line.startswith("b")):
@@ -31,7 +32,7 @@ def waveRead():
 
     # times列表长度会比vals列表大一
     if(len(times) != len(vars_) + 1):
-        sys.stderr.write("Error: len(times) != len(vars)+1")
+        sys.stderr.write("Error: len(times) != len(vars)+1\n")
     return times,vars_,args,name
 
 def get_out(args,vals_):
