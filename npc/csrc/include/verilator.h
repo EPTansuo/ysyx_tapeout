@@ -1,9 +1,11 @@
 #ifndef _VERILATOR_H_
 #define _VERILATOR_H_
 
+#ifdef CONFIG_WAVE_DUMP
 #include <verilated_vcd_c.h>
-#include <verilated.h>
+#endif 
 
+#include <verilated.h>
 
 #include "VysyxSoCFull.h"
 #include "VysyxSoCFull__Dpi.h"
