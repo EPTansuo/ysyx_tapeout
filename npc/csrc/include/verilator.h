@@ -1,10 +1,7 @@
 #ifndef _VERILATOR_H_
 #define _VERILATOR_H_
 
-#ifdef CONFIG_WAVE_DUMP
-#include <verilated_vcd_c.h>
-#endif 
-
+#include <autoconf.h>
 #include <verilated.h>
 
 #include "VysyxSoCFull.h"
@@ -21,6 +18,9 @@
 #include "VysyxSoCFull_IFU.h"
 #include "VysyxSoCFull_CPU.h"
 
+#ifdef CONFIG_WAVE_DUMP
+#include <verilated_vcd_c.h>
+#endif 
 
 extern VysyxSoCFull* top ;
 
