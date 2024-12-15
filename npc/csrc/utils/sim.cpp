@@ -4,7 +4,10 @@
 #include <nvboard.h>
 
 void nvboard_bind_all_pins(VysyxSoCFull* top);
+#ifdef CONFIG_WAVE_DUMP
 VerilatedVcdC *tfp = NULL;
+#endif // DEBUG
+
 VerilatedContext *contextp = NULL;
 VysyxSoCFull* top = NULL;
 

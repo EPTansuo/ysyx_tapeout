@@ -14,7 +14,9 @@ def waveRead():
     args = []
     name = ""
     while True:
+        sys.stderr.write("Waiting for read...\n")
         line = sys.stdin.readline()
+        sys.stderr.write(line)
         if(line.startswith("#")):
             times.append(line[1:-1])
         elif(line.startswith("b")):
@@ -31,7 +33,7 @@ def waveRead():
 
     # times列表长度会比vals列表大一
     if(len(times) != len(vars_) + 1):
-        sys.stderr.write("Error: len(times) != len(vars)+1")
+        sys.stderr.write("Error: len(times) != len(vars)+1\n")
     return times,vars_,args,name
 
 def get_out(args,vals_):
@@ -59,7 +61,7 @@ def waveParse(times, vals_, args):
     times_out = []
     vals_out = []
     lastVal_out = ""
-
+    sys.stderr.write("start Parsing....\n")
     vals_out_tmp = get_out(args,vals_)
     for time,var_out_tmp in zip(times[0:len(times)-1], vals_out_tmp):
 
@@ -71,6 +73,7 @@ def waveParse(times, vals_, args):
     return times_out, vals_out
 
 def waveOut(times, vals_, name):
+    sys.stderr.write("start output...\n");
     sys.stdout.write(f"$name {name}\n")
     sys.stdout.flush()
     for time,var in zip(times[0:len(times)-1], vals_):
@@ -82,7 +85,9 @@ def waveOut(times, vals_, name):
     sys.stdout.flush()
     sys.stdout.write("$finish\n")
     sys.stdout.flush()
+    sys.stderr.write("end output\n")
 def main():
+    sys.stderr.write("starting program...\n")
     times, vars_, args, name = waveRead()
     times_out, vars_out = waveParse(times, vars_, args)
     waveOut(times_out, vars_out, name)

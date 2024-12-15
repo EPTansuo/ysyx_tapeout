@@ -54,10 +54,10 @@ extern "C" void inst_invalid(){
   
   
   for(int j = 3; j >= 0; j--){
-    printf("%02x ", ((uint8_t*)guest_to_host(PC))[j]);
+    printf("%02x ", ((uint8_t*)(&INST))[j]);
   }
   fflush(stdout);
-  disassemble(logbuf, 64, PC , guest_to_host(PC), 4);
+  disassemble(logbuf, 64, PC , (uint8_t*)(&INST), 4);
   printf("%s\n", logbuf);
 	set_npc_state(NPC_ABORT, PC, -1);
 }
@@ -168,7 +168,7 @@ extern "C" void flash_read(int32_t addr, int32_t *data) {
 
  //*data = addr ;
  *data = pmem_read(addr/4*4 );
- //printf("read flash addr = %x, data = %x\n", addr);
+ printf("read flash addr = %x, data = %08x\n", addr, *data);
 
 }
 extern "C" void mrom_read(int32_t addr, int32_t *data) { 
@@ -193,12 +193,12 @@ extern "C" void psram_write(int addr, int data, char wmask) {
       *(psram + addr + i) = (data >> (i * 8)) & 0xff;
     }
   }
-  //printf("write psram addr = %x, data = %x, wmask = %0x\n", addr, data, wmask);
+  printf("write psram addr = %x, data = %x, wmask = %0x\n", addr, data, wmask);
 }
 
 extern "C" int psram_read(int addr) { 
   //addr = addr / 4 * 4;
-  //printf("read psram addr = %x, data = %x\n", addr, *((uint32_t*)(psram + addr)));
+  printf("read psram addr = %x, data = %x\n", addr, *((uint32_t*)(psram + addr)));
   return *((uint32_t*)(psram + addr));
 }
 
@@ -232,7 +232,7 @@ extern "C" void sdram_write(char bank, int row, int col , int wdata, char wmask,
     }
   }
 
-//  printf("sdram_write bank = %d, row = %d, col = %d, block_num = %d, wdata = %x, wmask = %x\n", bank, row, col,
-//                 block_num, wdata, wmask);
+  printf("sdram_write bank = %d, row = %d, col = %d, block_num = %d, wdata = %x, wmask = %x\n", bank, row, col,
+                 block_num, wdata, wmask);
 }
 

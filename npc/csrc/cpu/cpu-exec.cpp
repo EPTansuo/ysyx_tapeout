@@ -31,11 +31,13 @@ static void trace_and_difftest(){
 
 void cpu_eval_dump(){
   top->eval();
+#ifdef CONFIG_WAVE_DUMP
   if (tfp != NULL)
   {
     tfp->dump(contextp->time());
     contextp->timeInc(1);
   }
+#endif
 }
 
 void cpu_single_cycle(){
@@ -61,12 +63,6 @@ void cpu_reset(int n){
 }
 
 
-// void init_cpu_exec(Vcpu* _top, VerilatedVcdC* _tfp, VerilatedContext* _contextp){
-//         top = _top;
-//         tfp = _tfp;
-//         contextp = _contextp;
-//         cpu_reset(3);
-// }
 
 
 void assert_fail_msg() {
