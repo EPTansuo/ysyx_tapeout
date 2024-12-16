@@ -62,9 +62,6 @@ void __attribute__((section(".bootloader"))) bootloader(){
 extern char _bootloader_src, _siflash_ssbl, _eiflash_ssbl;
 
 void __attribute__((section(".fsbl"))) _fsbl_init(){
-  // ioe_init();
-  // printf("_text_start:%x\n", &_text_start);
-  // printf("_data_end:%x\n", &_data_end);
   char *src = &_bootloader_src;   // LMA, flash
   char *dst = &_siflash_ssbl;     // VMA, psram
 
@@ -89,6 +86,8 @@ void __attribute__((section(".fsbl"))) _fsbl_init(){
     src += 4;
   }
 #endif
+
+
   bootloader();
 }
 
