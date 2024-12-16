@@ -43,12 +43,12 @@ void __attribute__((section(".bootloader"))) bootloader(){
     *dst++ = *src++; 
   }
   while (dst + 4 <= &_data_end) {
-    *((int *)dst) = *((int *)src);  // 4字节对齐的复制
+    *((uintptr_t *)dst) = *((uintptr_t *)src);  
     dst += 4;
     src += 4;
   }
   while (dst + 4 <= &_data_end) {
-    *((int *)dst) = *((int *)src);  // 处理最后的不对齐
+    *((uintptr_t *)dst) = *((uintptr_t *)src);  // 处理最后的不对齐
     dst += 4;
     src += 4;
   }
@@ -58,11 +58,11 @@ void __attribute__((section(".bootloader"))) bootloader(){
     *p++ = 0;  
   }
   while (p + 4 <= &_bss_end) {
-    *((int *)p) = 0; 
+    *((uintptr_t *)p) = 0; 
     p += 4;
   }
   while (p + 4 <= &_bss_end) {
-    *((int *)p) = 0; 
+    *((uintptr_t *)p) = 0; 
     p += 4;
   }
 
@@ -76,10 +76,26 @@ void __attribute__((section(".fsbl"))) _fsbl_init(){
   // printf("_text_start:%x\n", &_text_start);
   // printf("_data_end:%x\n", &_data_end);
   char *src = &_bootloader_src;   // LMA, flash
-  char *dst = &_siflash_ssbl;    // VMA, psram
-  while(dst < (&_eiflash_ssbl)) { 
-    *dst++ = *src++;
+  char *dst = &_siflash_ssbl;     // VMA, psram
+
+  // while(dst < (&_eiflash_ssbl)) { 
+  //   *dst++ = *src++;
+  // }
+
+  while ((uintptr_t)dst % 4 != 0 && dst < &_eiflash_ssbl) {
+    *dst++ = *src++; 
   }
+  while (dst + 4 <= &_eiflash_ssbl) {
+    *((uintptr_t *)dst) = *((uintptr_t *)src);  
+    dst += 4;
+    src += 4;
+  }
+  while (dst + 4 <= &_eiflash_ssbl) {
+    *((uintptr_t *)dst) = *((uintptr_t *)src);  // 处理最后的不对齐
+    dst += 4;
+    src += 4;
+  }
+
   bootloader();
 }
 
