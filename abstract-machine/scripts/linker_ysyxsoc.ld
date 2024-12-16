@@ -39,7 +39,7 @@ SECTIONS {
     *(.data*)
     *(.sdata*)
     _data_end = .;
-  } > pram AT>flash : data
+  } > sram AT>flash : data
 
   edata = .;
   _data = .;
@@ -50,17 +50,17 @@ SECTIONS {
     *(.sbss*)
     *(.scommon)
     _bss_end = .;
-  } > pram AT> flash
+  } > sram AT> flash
 
   _heap_start = ALIGN(0x10);
 
-  . = ORIGIN(pram) + LENGTH(pram)/2;
+  . = ORIGIN(sram) + LENGTH(sram)/2;
   _heap_end = .;
 
   _stack_end = .;
 
 
-  . = ORIGIN(pram) + LENGTH(pram);
+  . = ORIGIN(sram) + LENGTH(sram);
   _stack_pointer = .;
 
   end = .;
