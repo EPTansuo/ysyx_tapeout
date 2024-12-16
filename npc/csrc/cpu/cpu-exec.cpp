@@ -124,6 +124,8 @@ static void execute(uint64_t n) {
 
 
 void cpu_exec(uint64_t n) {
+
+
   g_print_step = (n < MAX_INST_TO_PRINT);
   switch (npc_state.state) {
     case NPC_END: case NPC_ABORT:
@@ -131,10 +133,12 @@ void cpu_exec(uint64_t n) {
       return;
     default: npc_state.state = NPC_RUNNING;
   }
-
+  uint64_t timer_start = get_time();
 
   execute(n);
 
+  uint64_t timer_end = get_time();
+  g_timer += timer_end - timer_start; 
 
   switch (npc_state.state) {
     case NPC_RUNNING: npc_state.state = NPC_STOP; break;
