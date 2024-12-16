@@ -76,6 +76,7 @@ void __attribute__((section(".bootloader"))) bootloader(){
     p += 4;
   }
 #endif
+  putstr("boot finish\n");
   _trm_init();
 }
 
