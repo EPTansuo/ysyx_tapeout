@@ -50,7 +50,7 @@ SECTIONS {
     *(.sbss*)
     *(.scommon)
     _bss_end = .;
-  } > psram AT> flash
+  } > psram AT> flash : data
 
   _heap_start = ALIGN(0x10);
 
