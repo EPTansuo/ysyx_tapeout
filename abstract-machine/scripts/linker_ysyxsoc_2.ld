@@ -27,7 +27,7 @@ SECTIONS {
     _siflash_ssbl = .;
     *(.bootloader*)
     _eiflash_ssbl = .;
-  } > psram AT> flash : bootloader
+  } > sdram AT> flash : bootloader
 
 /*. = ALIGN(8);*/
   _text_src = LOADADDR(.text);
@@ -38,7 +38,7 @@ SECTIONS {
     *(.text*)
     _text_end = .;
     /*. = ALIGN(8);*/
-  } > psram AT> flash : text
+  } > sdram AT> flash : text
 
 
 
@@ -51,7 +51,7 @@ SECTIONS {
     *(.rodata*)
     *(.srodata*)
     /*. = ALIGN(8);*/
-  } > psram AT> flash : rodata
+  } > sdram AT> flash : rodata
 
 
 /*. = ALIGN(8);*/
@@ -64,7 +64,7 @@ SECTIONS {
     *(.sdata*)
     _data_end = .;
     /*. = ALIGN(8);*/
-  } > psram AT>flash : data
+  } > sdram AT>flash : data
 
   edata = .;
   _data = .;
@@ -77,12 +77,11 @@ SECTIONS {
     *(.sbss*)
     *(.scommon)
     _bss_end = .;
-  } > psram AT> flash
+  } > sdram AT> flash
 
   _stack_top = ORIGIN(sram);
 
   _stack_pointer = ORIGIN(sram) + LENGTH(sram);
-
 
 
   . = ORIGIN(psram);

@@ -7,12 +7,13 @@ AM_SRCS := riscv/ysyxsoc/start.S \
            riscv/ysyxsoc/trap.S \
            riscv/ysyxsoc/gpu.c \
            riscv/ysyxsoc/uart.c \
+           riscv/ysyxsoc/bl.c \
            platform/dummy/vme.c \
-           platform/dummy/mpe.c
-# gpu.c 是自己加的
+           platform/dummy/mpe.c 
+
 
 CFLAGS    += -fdata-sections -ffunction-sections
-LDFLAGS   += -T $(AM_HOME)/scripts/linker_ysyxsoc.ld  \
+LDFLAGS   += -T $(AM_HOME)/scripts/linker_ysyxsoc_2.ld  \
 						 --defsym=_pmem_start=0x30000000 --defsym=_entry_offset=0x0
 
 LDFLAGS   += --gc-sections -e _start 	--print-map
