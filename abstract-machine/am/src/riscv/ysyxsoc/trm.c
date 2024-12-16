@@ -37,14 +37,35 @@ extern char _text_start, _data_start, _data_end, _text_src, _bss_start, _bss_end
 void __attribute__((section(".bootloader"))) bootloader(){
   char *src = &_text_src;
   char *dst = &_text_start;
-  while(dst < & _data_end) {
-    *dst++ = *src++;
+
+  // 处理开头的不对齐
+  while ((uintptr_t)dst % 4 != 0 && dst < &_data_end) {
+    *dst++ = *src++; 
+  }
+  while (dst + 4 <= &_data_end) {
+    *((int *)dst) = *((int *)src);  // 4字节对齐的复制
+    dst += 4;
+    src += 4;
+  }
+  while (dst + 4 <= &_data_end) {
+    *((int *)dst) = *((int *)src);  // 处理最后的不对齐
+    dst += 4;
+    src += 4;
   }
 
   char *p = &_bss_start;
-  while(p < &_bss_end) {
-    *p++ = 0;
+  while ((uintptr_t)p % 4 != 0 && p < &_bss_end) {
+    *p++ = 0;  
   }
+  while (p + 4 <= &_bss_end) {
+    *((int *)p) = 0; 
+    p += 4;
+  }
+  while (p + 4 <= &_bss_end) {
+    *((int *)p) = 0; 
+    p += 4;
+  }
+
   _trm_init();
 }
 
