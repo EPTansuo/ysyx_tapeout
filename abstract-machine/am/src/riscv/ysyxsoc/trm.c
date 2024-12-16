@@ -29,15 +29,32 @@ void putch(char ch) {
   io_write(AM_UART_TX, ch);
 }
 
-#ifndef ONE_STAGE_BL
+#define ALIGNED   // 段对齐
+#undef ONE_STAGE_BL
 
+
+#ifndef ONE_STAGE_BL
 
 extern char _text_start, _data_start, _data_end, _text_src, _bss_start, _bss_end;
 
 void __attribute__((section(".bootloader"))) bootloader(){
   char *src = &_text_src;
   char *dst = &_text_start;
+    
+  char *p = &_bss_start;
 
+
+#ifdef ALIGNED
+  while (dst <= &_data_end) {
+    *((uintptr_t *)dst) = *((uintptr_t *)src);  
+    dst += 4;
+    src += 4;
+  }
+  while (p <= &_bss_end) {
+    *((uintptr_t *)p) = 0; 
+    p += 4;
+  }
+#else
   // 处理开头的不对齐
   while ((uintptr_t)dst % 4 != 0 && dst < &_data_end) {
     *dst++ = *src++; 
@@ -52,8 +69,6 @@ void __attribute__((section(".bootloader"))) bootloader(){
     dst += 4;
     src += 4;
   }
-
-  char *p = &_bss_start;
   while ((uintptr_t)p % 4 != 0 && p < &_bss_end) {
     *p++ = 0;  
   }
@@ -65,7 +80,7 @@ void __attribute__((section(".bootloader"))) bootloader(){
     *((uintptr_t *)p) = 0; 
     p += 4;
   }
-
+#endif
   _trm_init();
 }
 
@@ -78,10 +93,13 @@ void __attribute__((section(".fsbl"))) _fsbl_init(){
   char *src = &_bootloader_src;   // LMA, flash
   char *dst = &_siflash_ssbl;     // VMA, psram
 
-  // while(dst < (&_eiflash_ssbl)) { 
-  //   *dst++ = *src++;
-  // }
-
+#ifdef ALIGNED
+  while (dst <= &_eiflash_ssbl) {
+    *((uintptr_t *)dst) = *((uintptr_t *)src);  
+    dst += 4;
+    src += 4;
+  }
+#else
   while ((uintptr_t)dst % 4 != 0 && dst < &_eiflash_ssbl) {
     *dst++ = *src++; 
   }
@@ -95,7 +113,7 @@ void __attribute__((section(".fsbl"))) _fsbl_init(){
     dst += 4;
     src += 4;
   }
-
+#endif
   bootloader();
 }
 
