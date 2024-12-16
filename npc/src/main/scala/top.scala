@@ -25,7 +25,7 @@ class ysyx_23060246(params: AXI4BundleParameters) extends Module {
 
 
   val xbar = Module(new AXIXbar(2, 
-                        Array((0L,0xFFFFFFFFL),(0xa0000048L,0xa0000056L)),
+                        Array((0L,0xFFFFFFFFL),(0x02000000L,0x0200ffffL)),
                         CPUAXI4BundleParameters()))
   val axi4_conv = Module(new AXI4BundleIFConv(32,32))
 
