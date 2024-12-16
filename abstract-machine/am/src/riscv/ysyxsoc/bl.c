@@ -100,19 +100,41 @@ extern char _ram_data_start, _data_start, _data_end, _bss_start, _bss_end;
 void bootloader(){
   char *src = &_ram_data_start;
   char *dst = &_data_start;
-  while(dst < & _data_end) {
-    *dst++ = *src++;
-  }
-
   char *p = &_bss_start;
-  while(p < &_bss_end) {
-    *p++ = 0;
+//   while(dst < & _data_end) {
+//     *dst++ = *src++;
+//   }
+//   while(p < &_bss_end) {
+//     *p++ = 0;
+//   }
+   while ((uintptr_t)dst % 4 != 0 && dst < &_data_end) {
+    *dst++ = *src++; 
+  }
+  while (dst + 4 <= &_data_end) {
+    *((uintptr_t *)dst) = *((uintptr_t *)src);  
+    dst += 4;
+    src += 4;
+  }
+  while (dst + 4 <= &_data_end) {
+    *((uintptr_t *)dst) = *((uintptr_t *)src);  // 处理最后的不对齐
+    dst += 4;
+    src += 4;
+  }
+  while ((uintptr_t)p % 4 != 0 && p < &_bss_end) {
+    *p++ = 0;  
+  }
+  while (p + 4 <= &_bss_end) {
+    *((uintptr_t *)p) = 0; 
+    p += 4;
+  }
+  while (p + 4 <= &_bss_end) {
+    *((uintptr_t *)p) = 0; 
+    p += 4;
   }
   _trm_init();
 }
 
 void __attribute__((section(".fsbl"))) _fsbl_init(){
-
   bootloader();
 }
 #endif 
