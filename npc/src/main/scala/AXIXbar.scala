@@ -14,16 +14,16 @@ class AXIXbar(val OutNum: Int, val AddressMap: Array[(Long, Long)], param : AXI4
   })
 
   
-  val state_r = RegInit(0.U(log2Ceil(OutNum).W)) 
-  val state_w = RegInit(0.U(log2Ceil(OutNum).W)) 
+  val state_r = RegInit(OutNum.U(log2Ceil(OutNum+1).W)) 
+  val state_w = RegInit(OutNum.U(log2Ceil(OutNum+1).W)) 
 
-  val state_r_idle = 0.U
-  val state_w_idle = 0.U
+  val state_r_idle = OutNum.U
+  val state_w_idle = OutNum.U
 
   // read state 
-  state_r := MuxLookup(state_r, 0.U)(
+  state_r := MuxLookup(state_r, OutNum.U)(
     (0 until OutNum).map(i => {
-      i.U(log2Ceil(OutNum).W) -> Mux(io.in.r.ready && io.out(i).r.valid, state_r_idle, i.U(log2Ceil(OutNum).W))
+      i.U(log2Ceil(OutNum+1).W) -> Mux(io.in.r.ready && io.out(i).r.valid, state_r_idle, i.U(log2Ceil(OutNum+1).W))
     }) :+ (state_r_idle -> Mux(io.in.ar.valid, RangeLookup(io.in.ar.bits.addr, state_r_idle,
       AddressMap.map { case (start, end) =>
         (start.U(param.addrBits.W), end.U(param.addrBits.W), AddressMap.indexOf((start, end)).U)
@@ -31,9 +31,9 @@ class AXIXbar(val OutNum: Int, val AddressMap: Array[(Long, Long)], param : AXI4
     ), state_r_idle)))
 
   // write state 
-  state_w := MuxLookup(state_w, 0.U)(
+  state_w := MuxLookup(state_w, OutNum.U)(
     (0 until OutNum).map(i => {
-      i.U(log2Ceil(OutNum).W) -> Mux(io.in.b.ready && io.out(i).b.valid, state_w_idle, i.U(log2Ceil(OutNum).W))
+      i.U(log2Ceil(OutNum+1).W) -> Mux(io.in.b.ready && io.out(i).b.valid, state_w_idle, i.U(log2Ceil(OutNum+1).W))
     }) :+ (state_w_idle -> Mux(io.in.aw.valid, RangeLookup(io.in.aw.bits.addr, state_w_idle,
       AddressMap.map { case (start, end) =>
         (start.U(param.addrBits.W), end.U(param.addrBits.W), AddressMap.indexOf((start, end)).U)
@@ -42,18 +42,18 @@ class AXIXbar(val OutNum: Int, val AddressMap: Array[(Long, Long)], param : AXI4
 
 
   for (i <- 0 until OutNum) {
-    io.out(i).ar.valid := state_r === i.U(log2Ceil(OutNum).W) && io.in.ar.valid
+    io.out(i).ar.valid := state_r === i.U(log2Ceil(OutNum+1).W) && io.in.ar.valid
     io.out(i).ar.bits := io.in.ar.bits
     
     
-    io.out(i).aw.valid := state_w === i.U(log2Ceil(OutNum).W) && io.in.aw.valid
+    io.out(i).aw.valid := state_w === i.U(log2Ceil(OutNum+1).W) && io.in.aw.valid
     io.out(i).aw.bits := io.in.aw.bits
 
-    io.out(i).w.valid := state_w === i.U(log2Ceil(OutNum).W) && io.in.w.valid
+    io.out(i).w.valid := state_w === i.U(log2Ceil(OutNum+1).W) && io.in.w.valid
     io.out(i).w.bits := io.in.w.bits
 
-    io.out(i).r.ready := state_r === i.U(log2Ceil(OutNum).W) && io.in.r.ready
-    io.out(i).b.ready := state_w === i.U(log2Ceil(OutNum).W) && io.in.b.ready
+    io.out(i).r.ready := state_r === i.U(log2Ceil(OutNum+1).W) && io.in.r.ready
+    io.out(i).b.ready := state_w === i.U(log2Ceil(OutNum+1).W) && io.in.b.ready
   }
 
   // slave to master
