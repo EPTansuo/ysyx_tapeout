@@ -29,7 +29,9 @@ void putch(char ch) {
   io_write(AM_UART_TX, ch);
 }
 
-/*
+#ifndef ONE_STAGE_BL
+
+
 extern char _text_start, _data_start, _data_end, _text_src, _bss_start, _bss_end;
 
 void __attribute__((section(".bootloader"))) bootloader(){
@@ -59,10 +61,11 @@ void __attribute__((section(".fsbl"))) _fsbl_init(){
   }
   bootloader();
 }
-*/
+
+#endif // !ONE_STAGE_BL
 
 
-
+#ifdef ONE_STAGE_BL
 extern char _ram_data_start, _data_start, _data_end, _bss_start, _bss_end;
 
 void bootloader(){
@@ -83,6 +86,7 @@ void __attribute__((section(".fsbl"))) _fsbl_init(){
 
   bootloader();
 }
+#endif 
 
 void print_stuID(){
   uint32_t mvendorid, marchid;
