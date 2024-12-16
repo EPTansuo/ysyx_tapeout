@@ -4,8 +4,9 @@
 void __am_timer_init() {
 }
 
+// 系数10是为了和真实的时间对应起来
 void __am_timer_uptime(AM_TIMER_UPTIME_T *uptime) {
-  uptime->us = (((uint64_t)inl(0x02000048+4)<<32) + inl(0x02000048));
+  uptime->us = 10 * (((uint64_t)inl(0x02000048+4)<<32) + inl(0x02000048)); 
 }
 
 void __am_timer_rtc(AM_TIMER_RTC_T *rtc) {

@@ -11,7 +11,7 @@ void _trm_init();
 
 extern char _pmem_start;
 
-#define PMEM_SIZE (8 * 1024 * 1024)
+#define PMEM_SIZE (4 * 1024 * 1024)
 #define PMEM_END  ((uintptr_t)&_pmem_start + PMEM_SIZE)
 
 Area heap = RANGE(&_heap_start, PMEM_END);
@@ -28,8 +28,8 @@ void putch(char ch) {
 
 #define ALIGNED   // 段对齐
 //#define ONE_STAGE_BL 
-
-
+#define UART_BASE 0x10000000L
+#define UART_TX   (*(volatile uint8_t *)(UART_BASE + 0))
 #ifndef ONE_STAGE_BL
 extern char _text_start, _data_start, _data_end, _text_src, _bss_start, _bss_end;
 
@@ -44,7 +44,11 @@ void __attribute__((section(".bootloader"))) bootloader(){
     *((uintptr_t *)dst) = *((uintptr_t *)src);  
     dst += 4;
     src += 4;
+    // if( ((int)(&_data_end) - (int)dst)%0x4000==0){
+    //   UART_TX='c';
+    // }
   }
+  //UART_TX='d';
   while (p <= &_bss_end) {
     *((uintptr_t *)p) = 0; 
     p += 4;
@@ -76,6 +80,7 @@ void __attribute__((section(".bootloader"))) bootloader(){
     p += 4;
   }
 #endif
+ // UART_TX='e';
   _trm_init();
 }
 
