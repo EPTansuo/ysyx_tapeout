@@ -168,7 +168,7 @@ extern "C" void flash_read(int32_t addr, int32_t *data) {
 
  //*data = addr ;
  *data = pmem_read(addr/4*4 );
- printf("read flash addr = %x, data = %08x\n", addr, *data);
+// printf("read flash addr = %x, data = %08x\n", addr, *data);
 
 }
 extern "C" void mrom_read(int32_t addr, int32_t *data) { 

@@ -45,7 +45,7 @@
 #define KEYCODE_GRAVE 0x0E
 #define KEYCODE_MINUS 0x4E
 #define KEYCODE_EQUALS 0x55
-#define KEYCODE_BACKSLASH 0x66
+#define KEYCODE_BACKSLASH 0x5D
 #define KEYCODE_BACKSPACE 0x66
 #define KEYCODE_SPACE 0x29
 #define KEYCODE_TAB 0x0D
@@ -116,8 +116,8 @@
 #define KEYCODE_PAUSE     // 0xEl 0x14 0x77 0xE1 0xF0 0x14 0xF0 0x77
 
 
-static uint32_t keymap_normal[256] = {};
-static uint32_t keymap_extend[256] = {};
+static uint8_t keymap_normal[256] = {};
+static uint8_t keymap_extend[256] = {};
 
 #define KEYCODE_NORMAL(_) \
 _(A, 0x1C) _(B, 0x32) _(C, 0x21) _(D, 0x23) _(E, 0x24) _(F, 0x2B) _(G, 0x34) _(H, 0x33)     \
@@ -125,7 +125,7 @@ _(I, 0x43) _(J, 0x3B) _(K, 0x42) _(L, 0x4B) _(M, 0x3A) _(N, 0x31) _(O, 0x44) _(P
 _(Q, 0x15) _(R, 0x2D) _(S, 0x1B) _(T, 0x2C) _(U, 0x3C) _(V, 0x2A) _(W, 0x1D) _(X, 0x22)     \
 _(Y, 0x35) _(Z, 0x1A) _(0, 0x45) _(1, 0x16) _(2, 0x1E) _(3, 0x26) _(4, 0x25) _(5, 0x2E)     \
 _(6, 0x36) _(7, 0x3D) _(8, 0x3E) _(9, 0x46) _(GRAVE, 0x0E) _(MINUS, 0x4E) _(EQUALS, 0x55)    \
-_(BACKSLASH, 0x66) _(BACKSPACE, 0x66) _(SPACE, 0x29) _(TAB, 0x0D) _(CAPS, 0x58) _(LSHIFT, 0x12)  \
+_(BACKSLASH, 0x5D) _(BACKSPACE, 0x66) _(SPACE, 0x29) _(TAB, 0x0D) _(CAPS, 0x58) _(LSHIFT, 0x12)  \
 _(LCTRL, 0x14) _(LALT, 0x11) _(RSHIFT, 0x59) _(ENTER, 0x5A) _(ESC, 0x76) _(F1, 0x05)        \
 _(F2, 0x06) _(F3, 0x04) _(F4, 0x0C) _(F5, 0x03) _(F6, 0x0B) _(F7, 0x83) _(F8, 0x0A)         \
 _(F9, 0x01) _(F10, 0x09) _(F11, 0x78) _(F12, 0x07) _(SCROLL, 0x7E) _(LEFTBRACKET, 0x54)        \
@@ -147,7 +147,7 @@ _(LEFT, 0x6B) _(DOWN, 0x72) _(RIGHT, 0x74) _(KPSLASH, 0x4A) _(KPENTER, 0x5A)
 // code_recursion: bit 0-7: key code; 
 // bit 15: key status;       1: key up;        0: key down
 // bit 14-13: key type; 00: normal key; extend key: 01;  special key: {10:PRINTSCRN, 11:PAUSE}
-// 先不考虑PRINTSCRN和PAUSE
+// ***** WARNING: 还不支持PRINTSCRN和PAUSE *****
 // 首次传入的code_recursion应该是0
 uint16_t keyScan(uint16_t code_recursion) {
   uint8_t code = PS2_KEY;
@@ -168,6 +168,10 @@ uint16_t keyScan(uint16_t code_recursion) {
   }
 }
 
+void __am_input_init() {
+  KEYCODE_NORMAL(KEYMAP_NORMAL)
+  KEYCODE_EXTEND(KEYMAP_EXTEND)
+}
 
 void __am_input_keybrd(AM_INPUT_KEYBRD_T *kbd) {
   uint16_t code_recursion = 0;
@@ -178,9 +182,9 @@ void __am_input_keybrd(AM_INPUT_KEYBRD_T *kbd) {
     return;
   }
   if(code & (0x01 << 15))
-    kbd->keydown = 1;
-  else 
     kbd->keydown = 0;
+  else 
+    kbd->keydown = 1;
 
   uint8_t key_type = (code >> 13) & 0x11;
   if(key_type == 0x00) {
