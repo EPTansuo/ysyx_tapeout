@@ -12,12 +12,12 @@ MEMORY {
 
 SECTIONS {
 
-  . = ORIGIN(flash);
+  . = ORIGIN(mrom);
   .text : {
     *(entry)
     *(.text*)
     _text_end = .;
-  } > flash AT> flash : text
+  } > mrom AT> mrom : text
 
   etext = .;
   _etext = .;
@@ -25,12 +25,12 @@ SECTIONS {
   .rodata : {
     *(.rodata*)
     *(.srodata*)
-  } > flash AT>flash
+  } > mrom AT>mrom
 
 
 /*  .fsdl : {
     *(.fsbl*)
-  } > flash*/
+  } > mrom*/
 
   _ram_data_start = .;
 
@@ -39,7 +39,7 @@ SECTIONS {
     *(.data*)
     *(.sdata*)
     _data_end = .;
-  } > psram AT>flash : data
+  } > psram AT>mrom : data
 
   edata = .;
   _data = .;
@@ -50,7 +50,7 @@ SECTIONS {
     *(.sbss*)
     *(.scommon)
     _bss_end = .;
-  } > psram AT> flash
+  } > psram AT> mrom
 
   _heap_start = ALIGN(0x10);
 
