@@ -36,7 +36,6 @@ extern char _text_start, _data_start, _data_end, _text_src, _bss_start, _bss_end
 void __attribute__((section(".bootloader"))) bootloader(){
   char *src = &_text_src;
   char *dst = &_text_start;
-    
   char *p = &_bss_start;
 
 
@@ -122,12 +121,7 @@ void bootloader(){
   char *src = &_ram_data_start;
   char *dst = &_data_start;
   char *p = &_bss_start;
-//   while(dst < & _data_end) {
-//     *dst++ = *src++;
-//   }
-//   while(p < &_bss_end) {
-//     *p++ = 0;
-//   }
+
    while ((uintptr_t)dst % 4 != 0 && dst < &_data_end) {
     *dst++ = *src++; 
   }
