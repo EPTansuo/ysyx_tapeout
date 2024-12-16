@@ -82,7 +82,7 @@ static void exec_once(){
   
   //cpu_single_cycle();
   cpu_single_inst();
-
+  
   for(int i=0; i<MUXDEF(CONFIG_RVE,16,32); i++){
     npc_cpu.gpr[i] = gpr(i);
   }
@@ -112,7 +112,7 @@ static void exec_once(){
 static void execute(uint64_t n) {
   for (;n > 0; n --) {
     exec_once();
-
+    g_nr_guest_inst ++;
     trace_and_difftest();
 
 
