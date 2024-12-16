@@ -150,7 +150,7 @@ void cpu_exec(uint64_t n) {
 #endif // CONFIG_ITRACE
     
       // fall through
-    case NPC_QUIT: ;
+    case NPC_QUIT: statistic() ;
   }
 }
 
