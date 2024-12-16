@@ -116,8 +116,8 @@
 #define KEYCODE_PAUSE     // 0xEl 0x14 0x77 0xE1 0xF0 0x14 0xF0 0x77
 
 
-static uint32_t keymap_normal[256] = {};
-static uint32_t keymap_extend[256] = {};
+static uint8_t keymap_normal[256] = {};
+static uint8_t keymap_extend[256] = {};
 
 #define KEYCODE_NORMAL(_) \
 _(A, 0x1C) _(B, 0x32) _(C, 0x21) _(D, 0x23) _(E, 0x24) _(F, 0x2B) _(G, 0x34) _(H, 0x33)     \
@@ -168,12 +168,14 @@ uint16_t keyScan(uint16_t code_recursion) {
   }
 }
 
+void __am_input_init() {
+  KEYCODE_NORMAL(KEYMAP_NORMAL)
+  KEYCODE_EXTEND(KEYMAP_EXTEND)
+}
 
 void __am_input_keybrd(AM_INPUT_KEYBRD_T *kbd) {
   uint16_t code_recursion = 0;
   uint16_t code = keyScan(code_recursion);
-  KEYCODE_NORMAL(KEYMAP_NORMAL)
-  KEYCODE_EXTEND(KEYMAP_EXTEND)
   if(code == 0) {
     kbd->keydown = 0;
     kbd->keycode = AM_KEY_NONE;

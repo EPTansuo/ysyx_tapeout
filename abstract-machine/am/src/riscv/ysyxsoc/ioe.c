@@ -54,6 +54,8 @@ void __am_uart_config(AM_INPUT_CONFIG_T *cfg);
 void __am_uart_tx(AM_UART_TX_T *);
 void __am_uart_rx(AM_UART_RX_T *);
 
+void __am_input_init();
+
 static void __am_timer_config(AM_TIMER_CONFIG_T *cfg) { cfg->present = true; cfg->has_rtc = true; }
 static void __am_input_config(AM_INPUT_CONFIG_T *cfg) { cfg->present = true;  }
 // static void __am_net_config (AM_NET_CONFIG_T *cfg)    { cfg->present = false; }
@@ -90,6 +92,7 @@ bool ioe_init() {
   //__am_gpu_init();
   __am_uart_init();
   __am_timer_init();
+  __am_input_init();
 //  __am_audio_init();
   return true;
 }
