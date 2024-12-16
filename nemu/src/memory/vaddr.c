@@ -16,7 +16,7 @@
 #include <isa.h>
 #include <memory/paddr.h>
 
-#ifdef CONFIG_TARGET_SHARE
+#ifdef CONFIG_TARGET_SHAREt
 uint8_t *guest_to_host_mrom(paddr_t paddr);
 #endif // !CONFIG_TARGET_SHARE
 
