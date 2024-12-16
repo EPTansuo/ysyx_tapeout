@@ -28,8 +28,8 @@ void putch(char ch) {
 
 #define ALIGNED   // 段对齐
 //#define ONE_STAGE_BL 
-
-
+#define UART_BASE 0x10000000L
+#define UART_TX   (*(volatile uint8_t *)(UART_BASE + 0))
 #ifndef ONE_STAGE_BL
 extern char _text_start, _data_start, _data_end, _text_src, _bss_start, _bss_end;
 
@@ -44,6 +44,9 @@ void __attribute__((section(".bootloader"))) bootloader(){
     *((uintptr_t *)dst) = *((uintptr_t *)src);  
     dst += 4;
     src += 4;
+    if( ((int)(&_data_end) - (int)dst)%0x1000==0){
+      UART_TX='c';
+    }
   }
   while (p <= &_bss_end) {
     *((uintptr_t *)p) = 0; 
@@ -76,7 +79,7 @@ void __attribute__((section(".bootloader"))) bootloader(){
     p += 4;
   }
 #endif
-  putstr("boot finish\n");
+  UART_TX='e';
   _trm_init();
 }
 
