@@ -11,7 +11,7 @@ void _trm_init();
 
 extern char _pmem_start;
 
-#define PMEM_SIZE (8 * 1024 * 1024)
+#define PMEM_SIZE (4 * 1024 * 1024)
 #define PMEM_END  ((uintptr_t)&_pmem_start + PMEM_SIZE)
 
 Area heap = RANGE(&_heap_start, PMEM_END);
