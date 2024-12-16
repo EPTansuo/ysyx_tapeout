@@ -9,8 +9,6 @@ void _trm_init();
 #undef ONE_STAGE_BL
 
 
-
-
 #ifndef ONE_STAGE_BL
 extern char _text_start, _data_start, _data_end, _text_src, _bss_start, _bss_end;
 
@@ -86,7 +84,7 @@ void __attribute__((section(".fsbl"))) _fsbl_init(){
     src += 4;
   }
   while (dst + 4 <= &_eiflash_ssbl) {
-    *((uintptr_t *)dst) = *((uintptr_t *)src);  // 处理最后的不对齐
+    *((uintptr_t *)dst) = *((uintptr_t *)src); 
     dst += 4;
     src += 4;
   }

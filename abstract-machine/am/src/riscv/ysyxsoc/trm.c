@@ -20,10 +20,6 @@ Area heap = RANGE(&_heap_start, PMEM_END);
 #endif
 static const char mainargs[] = MAINARGS;
 
-#define UART_BASE 0x10000000L
-#define UART_TX   0
-
-
 
 void putch(char ch) {
   io_write(AM_UART_TX, ch);
@@ -40,12 +36,8 @@ void print_stuID(){
         "csrr %0, 0xF12\n"
         : "=r" (marchid)
     );
-  // char line1[] = {"mvendorid: 0x"};
-  // char line2[] = {"marchid: "};
    printf("mvendorid: 0x%x\n", mvendorid);
    printf("marchid: %d\n", marchid);
-  // putstr(line1);
-  // putstr(line2);
 }
 
 
@@ -55,7 +47,6 @@ void halt(int code) {
   while (1);
 }
 
-void UART_init();
 void _trm_init() {
   ioe_init();
   // print_stuID();
