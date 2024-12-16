@@ -44,10 +44,11 @@ void __attribute__((section(".bootloader"))) bootloader(){
     *((uintptr_t *)dst) = *((uintptr_t *)src);  
     dst += 4;
     src += 4;
-    if( ((int)(&_data_end) - (int)dst)%0x1000==0){
+    if( ((int)(&_data_end) - (int)dst)%0x4000==0){
       UART_TX='c';
     }
   }
+  UART_TX='d';
   while (p <= &_bss_end) {
     *((uintptr_t *)p) = 0; 
     p += 4;
