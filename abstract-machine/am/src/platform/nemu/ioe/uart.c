@@ -10,5 +10,5 @@ void __am_uart_tx(AM_UART_TX_T *tx) {
 
 void __am_uart_rx(AM_UART_RX_T *rx) {
 
-    rx->data = 'a';
+    rx->data = inb(SERIAL_PORT);;
 }
