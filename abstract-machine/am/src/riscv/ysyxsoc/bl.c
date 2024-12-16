@@ -6,7 +6,7 @@ void _trm_init();
 
 
 #define ALIGNED   // 段对齐
-#define ONE_STAGE_BL
+ #define ONE_STAGE_BL 
 
 
 #ifndef ONE_STAGE_BL
