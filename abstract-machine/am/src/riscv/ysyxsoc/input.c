@@ -147,7 +147,7 @@ _(LEFT, 0x6B) _(DOWN, 0x72) _(RIGHT, 0x74) _(KPSLASH, 0x4A) _(KPENTER, 0x5A)
 // code_recursion: bit 0-7: key code; 
 // bit 15: key status;       1: key up;        0: key down
 // bit 14-13: key type; 00: normal key; extend key: 01;  special key: {10:PRINTSCRN, 11:PAUSE}
-// ***** 先不考虑PRINTSCRN和PAUSE *****
+// ***** WARNING: 还不支持PRINTSCRN和PAUSE *****
 // 首次传入的code_recursion应该是0
 uint16_t keyScan(uint16_t code_recursion) {
   uint8_t code = PS2_KEY;
