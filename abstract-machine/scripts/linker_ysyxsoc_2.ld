@@ -84,7 +84,6 @@ SECTIONS {
   _stack_pointer = ORIGIN(sram) + LENGTH(sram);
 
 
-
   . = ORIGIN(psram);
   _heap_start = .;
   . = ORIGIN(psram) + LENGTH(psram);
