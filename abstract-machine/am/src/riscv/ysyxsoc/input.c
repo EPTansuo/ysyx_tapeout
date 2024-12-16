@@ -172,6 +172,8 @@ uint16_t keyScan(uint16_t code_recursion) {
 void __am_input_keybrd(AM_INPUT_KEYBRD_T *kbd) {
   uint16_t code_recursion = 0;
   uint16_t code = keyScan(code_recursion);
+  KEYCODE_NORMAL(KEYMAP_NORMAL)
+  KEYCODE_EXTEND(KEYMAP_EXTEND)
   if(code == 0) {
     kbd->keydown = 0;
     kbd->keycode = AM_KEY_NONE;
