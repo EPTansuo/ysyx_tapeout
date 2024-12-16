@@ -20,7 +20,7 @@ VERILATOR_COVERAGE = verilator_coverage
 V_INCPATH+=$(abspath $(YSYX_HOME)/npc/vsrc)
 V_INCPATH+=$(shell find $(YSYX_HOME)/ysyxSoC/perip -type f -name '*defines*.v' -exec dirname {} \;)
 V_INCFLAGS=$(addprefix -I, $(V_INCPATH))
-VERILATOR_FLAGS += -MMD --build -cc --public --trace\
+VERILATOR_FLAGS += -MMD --build -O2 -cc --public --trace\
 				--x-assign fast --x-initial fast --noassert \
 				$(V_INCFLAGS) --threads 2 --autoflush #--trace-max-array 2048
 
