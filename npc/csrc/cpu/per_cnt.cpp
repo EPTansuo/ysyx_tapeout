@@ -76,7 +76,7 @@ FILE *fp;
 #define PRINT_PERF(name, cnt, process_cnt, unit) \
     printf("%24s: %'14lu         # %10.4lf %s\n", \
            name, (uint64_t)cnt, process_cnt, unit);\
-    fprintf(stderr, "%24s: %'14lu         # %10.4lf %s\n", \
+    fprintf(fp, "%24s: %'14lu         # %10.4lf %s\n", \
            name, (uint64_t)cnt, process_cnt, unit);
 
 void perf_statistic(){
@@ -84,8 +84,8 @@ void perf_statistic(){
     char buf[100];
     sprintf(buf, "%s/build/perf_statistic.txt", getenv("NPC_HOME"));
     fp = fopen(buf,"w");
-    printf("\n================================= PERF STATISTIC =================================\n");
     fprintf(fp, "\n================================= PERF STATISTIC ================================= ");
+    printf("\n================================= PERF STATISTIC =================================\n");
     setlocale(LC_NUMERIC, "en_US.UTF-8");
     
     PRINT_PERF("Total Cycles", cycle_cnt, 0.0, "");
