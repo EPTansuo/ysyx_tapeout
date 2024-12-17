@@ -1,5 +1,6 @@
 #include "verilator.h"
 #include <locale.h>
+#include <color.h>
 
 #define IFU (NPC_CPU->ifu)
 #define IDU (NPC_CPU->idu)
@@ -57,11 +58,11 @@ void perf_get_data(){
 
 void perf_statistic(){
     perf_get_data();
-    printf("================================= PERF STATISTIC =================================\n");
+    printf("\n================================= PERF STATISTIC =================================\n");
     setlocale(LC_NUMERIC, "en_US.UTF-8");
     
     PRINT_PERF("Total Cycles", cycle_cnt, 0.0, "");
-    PRINT_PERF("Totcal Insts", inst_cnt, (double)inst_cnt/cycle_cnt, "insn per cycle");
+    PRINT_PERF(L_BLUE "Totcal Insts", inst_cnt, (double)inst_cnt/cycle_cnt, "insn per cycle" COLOR_NONE);
     printf("\n---------------------------------- Inst Withdraw ---------------------------------\n");
     PRINT_PERF("Inst Withdraw CNT", ifu_cnt, (double)ifu_cnt/inst_cnt, "ins_withdraw per inst");
     printf("\n----------------------------------- Inst Type ------------------------------------\n");
