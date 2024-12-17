@@ -62,6 +62,11 @@ class IDU(xlen: Int) extends Module {
         val inst_ldst_cnt = RegInit(0.U(32.W))
         val inst_csr_cnt = RegInit(0.U(32.W))
         val inst_jump_cnt = RegInit(0.U(32.W))
+        val cycle_compute_cnt = RegInit(0.U(64.W))
+        val cycle_branch_cnt = RegInit(0.U(64.W))
+        val cycle_ldst_cnt = RegInit(0.U(64.W))
+        val cycle_csr_cnt = RegInit(0.U(64.W))
+        val cycle_jump_cnt = RegInit(0.U(64.W))
         val sig = control.io.out
         import pc_sel._
         import br_sel._
@@ -82,11 +87,27 @@ class IDU(xlen: Int) extends Module {
                 inst_compute_cnt := inst_compute_cnt + 1.U
             }
         }
+        when(sig.csr_cmd =/= CSR_XX){
+            cycle_csr_cnt := cycle_csr_cnt + 1.U
+        }.elsewhen(sig.br_sel =/= BR_XX){
+            cycle_branch_cnt := cycle_branch_cnt + 1.U
+        }.elsewhen(sig.ld_sel =/= LD_XX || sig.st_sel =/= ST_XX){
+            cycle_ldst_cnt := cycle_ldst_cnt + 1.U
+        }.elsewhen(sig.pc_sel === PC_ALU){
+            cycle_jump_cnt := cycle_jump_cnt + 1.U
+        }.otherwise{
+            cycle_compute_cnt := cycle_compute_cnt + 1.U
+        }
         dontTouch(inst_compute_cnt)
         dontTouch(inst_branch_cnt)
         dontTouch(inst_ldst_cnt)
         dontTouch(inst_csr_cnt)
         dontTouch(inst_jump_cnt)
+        dontTouch(cycle_compute_cnt)
+        dontTouch(cycle_branch_cnt)
+        dontTouch(cycle_ldst_cnt)
+        dontTouch(cycle_csr_cnt)
+        dontTouch(cycle_jump_cnt)
     }
 
 }
