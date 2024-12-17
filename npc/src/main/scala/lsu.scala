@@ -272,14 +272,23 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
     if(defines.PERF_CNT){
         val load_cnt = RegInit(0.U(32.W))
         val store_cnt = RegInit(0.U(32.W))
-        dontTouch(load_cnt)
-        dontTouch(store_cnt)
+        val cycle_load_cnt = RegInit(0.U(64.W))
+        val cycle_store_cnt = RegInit(0.U(64.W))
         when(state === s_wait_read && io.dmem.r.valid && io.dmem.r.ready){
             load_cnt := load_cnt + 1.U
         }
         when(state === s_wait_write && io.dmem.b.valid && io.dmem.b.ready){
             store_cnt := store_cnt + 1.U
         }
+        
+        when(ctrlsig.st_sel =/= ST_XX){
+            cycle_store_cnt := cycle_store_cnt + 1.U
+        }
+        when(ctrlsig.ld_sel =/= LD_XX){
+            cycle_load_cnt := cycle_load_cnt + 1.U
+        }
+        dontTouch(cycle_load_cnt)
+        dontTouch(cycle_store_cnt)
         dontTouch(load_cnt)
         dontTouch(store_cnt)
     }
