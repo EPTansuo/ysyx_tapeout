@@ -8,7 +8,9 @@ SDC_FILE = $(NPC_HOME)/scripts/top.sdc
 IMG = "$(YSYX_HOME)/am-kernels/tests/cpu-tests/build/add-riscv32e-npc.bin"
 ARGS = -v --diff="$(NEMU_HOME)/build/riscv32-nemu-interpreter-so"
 
-SCALA_DIR := ./src/main/scala
+CLK_FREQ_MHZ?=530
+
+SCALA_DIR := $(NPC_HOME)/src/main/scala
 VERILOG_DIR := $(BUILD_DIR)/verilog
 
 VERILATOR = verilator
@@ -125,8 +127,9 @@ run: $(BIN)
 
 syn: verilog $(SYN_ADDITION_FILES)
 	make -C $(YOSYSSTA_PATH) sta DESIGN=$(NPC_TOPNAME) SDC_FILE=$(SDC_FILE) \
-	RTL_FILES="$(BUILD_DIR)/verilog/$(NPC_TOPNAME).sv $(SYN_ADDITION_FILES)" CLK_FREQ_MHZ=100
-
+	RTL_FILES="$(BUILD_DIR)/verilog/$(NPC_TOPNAME).sv $(SYN_ADDITION_FILES)" CLK_FREQ_MHZ=$(CLK_FREQ_MHZ)
+syn_clean:
+	make -C $(YOSYSSTA_PATH) clean
 
 
 # menuconfig and autoconf.h
