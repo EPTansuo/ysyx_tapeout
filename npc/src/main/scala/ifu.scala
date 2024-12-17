@@ -85,4 +85,15 @@ class IFU(xlen:Int) extends Module {
   io.imem.aw.bits.qos := 0.U
   io.imem.w.bits.last := true.B
 
+
+  if(defines.PERF_CNT){
+    val cycle_cnt = RegInit(0.U(10.W))
+    when(io.in.valid){
+      cycle_cnt := 0.U;
+    }.elsewhen(!io.out.valid){
+      cycle_cnt := cycle_cnt + 1.U
+    }
+    
+  }
+
 }
