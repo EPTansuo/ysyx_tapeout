@@ -65,8 +65,8 @@ void perf_statistic(){
     printf(L_BLUE);
     PRINT_PERF("Totcal Insts", inst_cnt, (double)inst_cnt/cycle_cnt, "IPC");
     printf(COLOR_NONE);
-    printf("\n---------------------------------- Inst Withdraw ---------------------------------\n");
-    PRINT_PERF("Inst Withdraw CNT", ifu_cnt, (double)ifu_cnt/inst_cnt*100, "% per inst");
+    printf("\n----------------------------------- Inst Fetch -----------------------------------\n");
+    PRINT_PERF("Inst Fetch CNT", ifu_cnt, (double)ifu_cnt/inst_cnt*100, "% per inst");
     printf("\n----------------------------------- Inst Type ------------------------------------\n");
     PRINT_PERF("Inst Compute  CNT", inst_compute_cnt, (double)inst_compute_cnt/inst_cnt*100, "% per inst");
     PRINT_PERF("Inst Branch   CNT", inst_branch_cnt, (double)inst_branch_cnt/inst_cnt*100, "% per inst");
