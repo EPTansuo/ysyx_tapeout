@@ -42,6 +42,8 @@ AM_DEVREG(24, NET_RX,       WR, Area buf);
   _(LCTRL) _(APPLICATION) _(LALT) _(SPACE) _(RALT) _(RCTRL) \
   _(UP) _(DOWN) _(LEFT) _(RIGHT) _(INSERT) _(DELETE) _(HOME) _(END) _(PAGEUP) _(PAGEDOWN)
 
+
+// 原本的AM_KEYS缺少一些键位，这里补充
 #define AM_KEYS_EXT(_) \
   _(CAPS) _(ESC) _(SCROLL) _(NUM) _(KPSTAR) _(KPMINUS) _(KPPLUS) _(KP) _(KP0) _(KP1) _(KP2) _(KP3) \
   _(KP4) _(KP5) _(KP6) _(KP7) _(KP8) _(KP9) _(KPENTER) _(KPSLASH) _(PRINTSCRN) _(PAUSE) _(LGUI) _(RGUI) \
