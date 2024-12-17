@@ -16,7 +16,7 @@ char* img_file  = NULL;
 
 
 bool verbose = false;
-void init_sim();
+void init_sim(int argc, char** argv);
 void init_sdb();
 void cpu_reset(int n);
 void init_difftest(char *ref_so_file, long img_size, int port);
@@ -99,9 +99,9 @@ static int parse_args(int argc, char *argv[]) {
 
 
 void init_monitor(int argc, char** argv){
-  Verilated::commandArgs(argc, argv);
+
   parse_args(argc, argv);
-  init_sim();
+  init_sim(argc, argv);
   init_mem();
   init_sig();
   IFDEF(CONFIG_DEVICE, init_device());

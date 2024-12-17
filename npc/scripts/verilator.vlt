@@ -11,4 +11,4 @@ public -module "WBU" -var "*pc"
 public -module "IFU" -var "*pc"
 public -module "IFU" -var "io_out_bits_inst"
 public -module "EXU" -var "npc"
-
+lint_off -rule SYMRSVDWORD

@@ -14,15 +14,16 @@ VerilatedFstC *tfp = NULL;
 VerilatedContext *contextp = NULL;
 VysyxSoCFull* top = NULL;
 
-void init_sim(){
+void init_sim(int argc, char** argv){
+	//Verilated::commandArgs(argc, argv);
 	top = new VysyxSoCFull;
 	nvboard_bind_all_pins(top);
 	nvboard_init();
 	top->clock = 0;
 #ifdef CONFIG_WAVE_DUMP
-    Verilated::traceEverOn(true);
-	tfp = MUXDEF(CONFIG_WAVE_VCD, new VerilatedVcdC, new VerilatedFstC);
+	Verilated::traceEverOn(true);
 	contextp = new VerilatedContext;
+	tfp = MUXDEF(CONFIG_WAVE_VCD, new VerilatedVcdC, new VerilatedFstC);
     top->trace(tfp, 0);
 	char buf[300];
 	sprintf(buf, "%s/%s", getenv("NPC_HOME"), MUXDEF(CONFIG_WAVE_VCD,"wave.vcd","wave.fst"));
