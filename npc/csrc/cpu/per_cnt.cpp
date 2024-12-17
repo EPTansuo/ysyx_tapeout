@@ -107,7 +107,7 @@ void perf_statistic(){
     printf("\n---------------------------------- Load / Store -----------------------------------\n");
     PRINT_PERF("Load CNT", load_cnt, (double)load_cnt/inst_ldst_cnt*100, "% of ld/st inst");
     PRINT_PERF("Store CNT", store_cnt, (double)store_cnt/inst_ldst_cnt*100, "% of ld/st inst");
-    PRINT_PERF("Load Cycles CNT", cycle_load_cnt, (double)cycle_load_cnt/inst_ldst_cnt, "% cycle per load");
-    PRINT_PERF("Store Cycles CNT", cycle_store_cnt, (double)cycle_store_cnt/inst_ldst_cnt, "% cycle per store");
+    PRINT_PERF("Load Cycles CNT", cycle_load_cnt, (double)cycle_load_cnt/load_cnt, "% cycle per load");
+    PRINT_PERF("Store Cycles CNT", cycle_store_cnt, (double)cycle_store_cnt/store_cnt, "% cycle per store");
 
 }
