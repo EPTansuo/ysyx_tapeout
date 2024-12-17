@@ -4,9 +4,12 @@
 #include <nvboard.h>
 
 void nvboard_bind_all_pins(VysyxSoCFull* top);
-#ifdef CONFIG_WAVE_DUMP
+#ifdef CONFIG_WAVE_VCD
 VerilatedVcdC *tfp = NULL;
-#endif // DEBUG
+#endif
+#ifdef CONFIG_WAVE_FST
+VerilatedFstC *ftp = NULL;
+#endif
 
 VerilatedContext *contextp = NULL;
 VysyxSoCFull* top = NULL;
@@ -18,17 +21,17 @@ void init_sim(){
 	top->clock = 0;
 #ifdef CONFIG_WAVE_DUMP
     Verilated::traceEverOn(true);
-	tfp = new VerilatedVcdC;
+	tfp = MUXDEF(CONFIG_WAVE_VCD, new VerilatedVcdC, new VerilatedFstC);
 	contextp = new VerilatedContext;
     top->trace(tfp, 0);
-	tfp->open("wave.vcd");
+	tfp->open(MUXDEF(CONFIG_WAVE_VCD,"wave.vcd","wave.fst"));
 #endif 
 	
 	
 }
 
 void stop_sim(){
-        top->final();
+    top->final();
 #ifdef CONFIG_WAVE_DUMP
 	tfp->close();
 #endif 

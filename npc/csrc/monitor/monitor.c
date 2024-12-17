@@ -67,7 +67,7 @@ const char *get_img_file(){
 
 static int parse_args(int argc, char *argv[]) {
   for(int i=0; i<argc; i++){
-      Log("argv[%d]: %s", i, argv[i]);
+      printf("argv[%d]: %s\n", i, argv[i]);
   }
   
   const struct option table[] = {

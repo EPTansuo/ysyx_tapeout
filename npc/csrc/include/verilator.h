@@ -18,8 +18,11 @@
 #include "VysyxSoCFull_IFU.h"
 #include "VysyxSoCFull_CPU.h"
 
-#ifdef CONFIG_WAVE_DUMP
+#ifdef CONFIG_WAVE_VCD
 #include <verilated_vcd_c.h>
+#endif 
+#ifdef CONFIG_WAVE_FST 
+#include <verilated_fst_c.h>
 #endif 
 
 extern VysyxSoCFull* top ;
