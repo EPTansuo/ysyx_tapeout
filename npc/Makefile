@@ -134,7 +134,7 @@ syn_clean:
 perf:syn
 	make -C /home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests \
 		 ARCH=riscv32e-ysyxsoc run BATCH=1 ALL=sum
-	@cat $(NPC_HOME)/build/build/perf_statistic.txt
+	@cat $(NPC_HOME)/build/perf_statistic.txt
 	@echo 
 	@echo "Area:"
 	@cat $(YOSYSSTA_PATH)/result/$(NPC_TOPNAME)-$(CLK_FREQ_MHZ)MHz/yosys.log | grep "Chip area for top module"
