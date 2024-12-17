@@ -1,6 +1,7 @@
 #include "verilator.h"
 #include <locale.h>
 #include <color.h>
+#include <debug.h>
 
 #define IFU (NPC_CPU->ifu)
 #define IDU (NPC_CPU->idu)
@@ -70,12 +71,20 @@ void perf_get_data(){
     cycle_cnt = WBU->cycle_cnt;
 }
 
+FILE *fp;
+
 #define PRINT_PERF(name, cnt, process_cnt, unit) \
     printf("%24s: %'14lu         # %10.4lf %s\n", \
+           name, (uint64_t)cnt, process_cnt, unit);\
+    fprintf(fp, "%24s: %'14lu         # %10.4lf %s\n", \
            name, (uint64_t)cnt, process_cnt, unit);
 
 void perf_statistic(){
     perf_get_data();
+    char buf[100];
+    sprintf(buf, "%s/build/perf_statistic.txt", getenv("NPC_HOME"));
+    fp = fopen(buf,"w");
+    fprintf(fp, "\n================================= PERF STATISTIC =================================\n");
     printf("\n================================= PERF STATISTIC =================================\n");
     setlocale(LC_NUMERIC, "en_US.UTF-8");
     
@@ -84,7 +93,7 @@ void perf_statistic(){
     PRINT_PERF("Total Insts", inst_cnt, (double)inst_cnt/cycle_cnt, "IPC");
     printf(COLOR_NONE);
     printf("\n----------------------------------- Inst Fetch -----------------------------------\n");
-    PRINT_PERF("Inst Fetch CNT", ifu_cnt, (double)ifu_cnt/inst_cnt*100, "% per inst");
+    PRINT_PERF("Inst Fetch CNT", ifu_cnt, (double)ifu_cnt/inst_cnt*100, "% of inst");
     printf("\n----------------------------------- Inst Type ------------------------------------\n");
     PRINT_PERF("Compute Insts CNT", inst_compute_cnt, (double)inst_compute_cnt/inst_cnt*100, "% of inst");
     PRINT_PERF("Branch  Insts CNT", inst_branch_cnt, (double)inst_branch_cnt/inst_cnt*100, "% of inst");
@@ -109,5 +118,6 @@ void perf_statistic(){
     PRINT_PERF("Store CNT", store_cnt, (double)store_cnt/inst_ldst_cnt*100, "% of ld/st inst");
     PRINT_PERF("Load Cycles CNT", cycle_load_cnt, (double)cycle_load_cnt/load_cnt, "cycle per load");
     PRINT_PERF("Store Cycles CNT", cycle_store_cnt, (double)cycle_store_cnt/store_cnt, "cycle per store");
-
+    
+    fclose(fp);
 }
