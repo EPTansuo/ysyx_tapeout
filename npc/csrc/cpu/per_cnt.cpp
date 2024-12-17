@@ -53,7 +53,7 @@ void perf_get_data(){
 
 #define PRINT_PERF(name, cnt, process_cnt, unit) \
 printf("%28s: %14'lud         # %6.3lf %s\n",\
-name, (uint64_t)cnt, process_cnt, unit); \
+name, (uint64_t)cnt, process_cnt, unit);
 
 void perf_statistic(){
     perf_get_data();
