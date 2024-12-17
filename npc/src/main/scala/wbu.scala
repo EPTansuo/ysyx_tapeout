@@ -64,4 +64,16 @@ class WBU(xlen: Int) extends Module {
 
     io.out.bits.npc := npc
 
+
+    if(defines.PERF_CNT){
+        val inst_cnt = RegInit(0.U(64.W))
+        val cycle_cnt = RegInit(0.U(64.W))
+        when(wbu_valid){
+            inst_cnt := inst_cnt + 1.U
+        }
+        cycle_cnt := cycle_cnt + 1.U
+        dontTouch(inst_cnt)
+        dontTouch(cycle_cnt)
+    }
+
 }

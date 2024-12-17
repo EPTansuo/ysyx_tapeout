@@ -268,4 +268,19 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
     io.out.bits.npc := npc 
     io.out.bits.csr_out := io.in.bits.csr_out
 
+
+    if(defines.PERF_CNT){
+        val load_cnt = RegInit(0.U(32.W))
+        val store_cnt = RegInit(0.U(32.W))
+        dontTouch(load_cnt)
+        dontTouch(store_cnt)
+        when(state === s_wait_read && io.dmem.r.valid && io.dmem.r.ready){
+            load_cnt := load_cnt + 1.U
+        }
+        when(state === s_wait_write && io.dmem.b.valid && io.dmem.b.ready){
+            store_cnt := store_cnt + 1.U
+        }
+        dontTouch(load_cnt)
+        dontTouch(store_cnt)
+    }
 }

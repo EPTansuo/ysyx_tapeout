@@ -12,3 +12,9 @@ public -module "IFU" -var "*pc"
 public -module "IFU" -var "io_out_bits_inst"
 public -module "EXU" -var "npc"
 lint_off -rule SYMRSVDWORD
+
+public -module "IFU" -var "*_cnt"
+public -module "IDU" -var "*_cnt"
+public -module "EXU" -var "*_cnt"
+public -module "LSU" -var "*_cnt"
+public -module "WBU" -var "*_cnt"

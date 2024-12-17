@@ -87,13 +87,10 @@ class IFU(xlen:Int) extends Module {
 
 
   if(defines.PERF_CNT){
-    val cycle_cnt = RegInit(0.U(10.W))
-    when(io.in.valid){
-      cycle_cnt := 0.U;
-    }.elsewhen(!io.out.valid){
-      cycle_cnt := cycle_cnt + 1.U
+    val ifu_cnt = RegInit(0.U(32.W))
+    when(io.in.valid && io.in.ready){
+      ifu_cnt := ifu_cnt + 1.U
     }
-    
+    dontTouch(ifu_cnt)
   }
-
 }

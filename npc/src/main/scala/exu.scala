@@ -113,5 +113,26 @@ class EXU(xlen: Int) extends Module{
     io.out.bits.wbu <> in_reg.bits.wbu
     io.out.bits.lsu <> in_reg.bits.lsu
 
-
+    if(defines.PERF_CNT){
+        val alu_arith_cnt = RegInit(0.U(32.W))
+        val alu_logic_cnt = RegInit(0.U(32.W))
+        val alu_shift_cnt = RegInit(0.U(32.W))
+        val alu_cmp_cnt = RegInit(0.U(32.W))
+        val alu_copy_cnt = RegInit(0.U(32.W))
+        val aluop = alu.io.aluop 
+        when(io.out.valid && io.out.ready){
+            alu_arith_cnt := alu_arith_cnt + (aluop === ALU_ADD || aluop === ALU_SUB)
+            alu_logic_cnt := alu_logic_cnt + (aluop === ALU_AND || aluop === ALU_OR ||
+                                            aluop === ALU_XOR)
+            alu_shift_cnt := alu_shift_cnt + (aluop === ALU_SLL || aluop === ALU_SRL ||
+                                            aluop === ALU_SRA)
+            alu_cmp_cnt := alu_cmp_cnt + (aluop === ALU_SLT || aluop === ALU_SLTU)
+            alu_copy_cnt := alu_copy_cnt + (aluop === ALU_COPY_A || aluop === ALU_COPY_B)
+        }
+        dontTouch(alu_arith_cnt)
+        dontTouch(alu_logic_cnt)
+        dontTouch(alu_shift_cnt)
+        dontTouch(alu_cmp_cnt)
+        dontTouch(alu_copy_cnt)
+    }
 }
