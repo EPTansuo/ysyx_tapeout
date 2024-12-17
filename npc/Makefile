@@ -134,12 +134,13 @@ syn_clean:
 perf:syn
 	make -C /home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests \
 		 ARCH=riscv32e-ysyxsoc run BATCH=1 ALL=sum
+	@echo -e "\e[1;34m Performance Counter:\n \e[0m"
 	@cat $(NPC_HOME)/build/perf_statistic.txt
 	@echo 
-	@echo "Area:"
+	@echo -e "\e[1;34m Area Report:\n \e[0m"
 	@cat $(YOSYSSTA_PATH)/result/$(NPC_TOPNAME)-$(CLK_FREQ_MHZ)MHz/yosys.log | grep "Chip area for top module"
 	@echo
-	@echo "Max Freq:"
+	@echo -e "\e[1;34m Timing Report(Max Freq):\n \e[0m "
 	@cat $(YOSYSSTA_PATH)/result/$(NPC_TOPNAME)-$(CLK_FREQ_MHZ)MHz/$(NPC_TOPNAME).rpt | grep "Freq(MHz)" -A2
 
 # menuconfig and autoconf.h
