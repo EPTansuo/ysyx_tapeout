@@ -51,13 +51,10 @@ static void trace_and_difftest(){
 
 void cpu_eval_dump(){
   top->eval();
-#ifdef CONFIG_WAVE_DUMP
-  if (tfp != NULL)
-  {
-    tfp->dump(contextp->time());
-    contextp->timeInc(1);
-  }
+#ifdef CONFIG_WAVE_VCD
+  tfp->dump(contextp->time());
 #endif
+  contextp->timeInc(1);
 }
 
 void cpu_single_cycle(){

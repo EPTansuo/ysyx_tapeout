@@ -8,7 +8,7 @@ void nvboard_bind_all_pins(VysyxSoCFull* top);
 VerilatedVcdC *tfp = NULL;
 #endif
 #ifdef CONFIG_WAVE_FST
-VerilatedFstC *ftp = NULL;
+VerilatedFstC *tfp = NULL;
 #endif
 
 VerilatedContext *contextp = NULL;
