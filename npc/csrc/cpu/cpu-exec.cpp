@@ -16,6 +16,7 @@ bool first = true;
 CPU_state npc_cpu = {};
 static uint64_t g_timer = 0; // unit: us
 uint64_t g_nr_guest_inst = 0;
+uint64_t g_nr_guest_cycle = 0;
 static bool g_print_step = false;
 volatile sig_atomic_t stop_signal = 0;
 
@@ -66,6 +67,7 @@ void cpu_single_cycle(){
 		top->clock = !top->clock;
 		cpu_eval_dump();
 	}
+  g_nr_guest_cycle++;
   nvboard_update();
 }
 
@@ -88,6 +90,7 @@ static void statistic() {
   Log("total guest instructions = " NUMBERIC_FMT, g_nr_guest_inst);
   if (g_timer > 0) Log("simulation frequency = " NUMBERIC_FMT " inst/s", g_nr_guest_inst * 1000000 / g_timer);
   else Log("Finish running in less than 1 us and can not calculate the simulation frequency");
+  Log("IPC: " NUMBERIC_FMT , g_nr_guest_inst/g_nr_guest_cycle);
 }
 
 
