@@ -52,12 +52,12 @@ void perf_get_data(){
 }
 
 #define PRINT_PERF(name, cnt, process_cnt, unit) \
-    printf("%28s: %'14lu         # %10.4lf %s\n", \
+    printf("%24s: %'14lu         # %10.4lf %s\n", \
            name, (uint64_t)cnt, process_cnt, unit);
 
 void perf_statistic(){
     perf_get_data();
-    printf("------------------------ PERF STATISTIC ------------------------\n");
+    printf("--------------------------------- PERF STATISTIC ---------------------------------\n");
     setlocale(LC_NUMERIC, "en_US.UTF-8");
     PRINT_PERF("Total Cycles", cycle_cnt, 0.0, "");
     PRINT_PERF("Totcal Insts", inst_cnt, (double)inst_cnt/cycle_cnt, "insn per cycle");
