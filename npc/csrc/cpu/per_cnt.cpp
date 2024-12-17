@@ -62,7 +62,9 @@ void perf_statistic(){
     setlocale(LC_NUMERIC, "en_US.UTF-8");
     
     PRINT_PERF("Total Cycles", cycle_cnt, 0.0, "");
-    PRINT_PERF(L_BLUE "Totcal Insts", inst_cnt, (double)inst_cnt/cycle_cnt, "insn per cycle" COLOR_NONE);
+    printf(L_BLUE);
+    PRINT_PERF("Totcal Insts", inst_cnt, (double)inst_cnt/cycle_cnt, "insn per cycle");
+    printf(COLOR_NONE);
     printf("\n---------------------------------- Inst Withdraw ---------------------------------\n");
     PRINT_PERF("Inst Withdraw CNT", ifu_cnt, (double)ifu_cnt/inst_cnt*100, "% per inst");
     printf("\n----------------------------------- Inst Type ------------------------------------\n");
