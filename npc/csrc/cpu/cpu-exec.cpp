@@ -8,6 +8,7 @@
 #include <verilator.h>
 #include <memory/paddr.h>
 #include <nvboard.h>
+#include <signal.h>
 
 #define MAX_INST_TO_PRINT 10001
 bool first = true;
@@ -16,12 +17,29 @@ CPU_state npc_cpu = {};
 static uint64_t g_timer = 0; // unit: us
 uint64_t g_nr_guest_inst = 0;
 static bool g_print_step = false;
+volatile sig_atomic_t stop_signal = 0;
 
 extern VerilatedVcdC * tfp;
 extern VerilatedContext* contextp;
 
 void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
 void device_update();
+
+
+void handle_sigint(int sig) {
+  stop_signal = 1;
+}
+
+void init_sig(){
+  struct sigaction sa;
+  memset(&sa, 0, sizeof(sa));
+  sa.sa_handler = handle_sigint;
+  sigemptyset(&sa.sa_mask);
+  if(sigaction(SIGINT, &sa, NULL) == -1){
+    perror("sigaction");
+    //exit(1);
+  }
+}
 
 static void trace_and_difftest(){
   //printf("pc=0x%x, dnpc=0x%x\n",PC, PC + (top->cpu->pc1->pc_offset_en?top->cpu->pc1->pc_offset:0));
@@ -115,6 +133,10 @@ static void execute(uint64_t n) {
     g_nr_guest_inst ++;
     trace_and_difftest();
 
+    if (stop_signal){
+      npc_state.state = NPC_QUIT;
+      break;
+    }
 
     if (npc_state.state != NPC_RUNNING) break;
     IFDEF(CONFIG_DEVICE, device_update());
