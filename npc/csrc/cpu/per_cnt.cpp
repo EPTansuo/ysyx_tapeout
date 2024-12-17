@@ -17,11 +17,11 @@ static uint32_t inst_branch_cnt = 0;
 static uint32_t inst_jump_cnt = 0;
 static uint32_t inst_ldst_cnt = 0;
 static uint32_t inst_csr_cnt = 0;
-static uint32_t cycle_compute_cnt = 0;
-static uint32_t cycle_branch_cnt = 0;
-static uint32_t cycle_jump_cnt = 0;
-static uint32_t cycle_ldst_cnt = 0;
-static uint32_t cycle_csr_cnt = 0;
+static uint64_t cycle_compute_cnt = 0;
+static uint64_t cycle_branch_cnt = 0;
+static uint64_t cycle_jump_cnt = 0;
+static uint64_t cycle_ldst_cnt = 0;
+static uint64_t cycle_csr_cnt = 0;
 
 /************** EXU ***********/
 static uint32_t alu_arith_cnt = 0;
@@ -43,12 +43,13 @@ static uint64_t cycle_cnt = 0;
 
 void perf_get_data(){
     ifu_cnt = IFU->ifu_cnt;
+
     inst_compute_cnt = IDU->inst_compute_cnt;
-    
     inst_branch_cnt = IDU->inst_branch_cnt;
     inst_jump_cnt = IDU->inst_jump_cnt;
     inst_ldst_cnt = IDU->inst_ldst_cnt;
     inst_csr_cnt = IDU->inst_csr_cnt;
+    cycle_compute_cnt = IDU->cycle_compute_cnt;
     cycle_branch_cnt = IDU->cycle_branch_cnt;
     cycle_jump_cnt = IDU->cycle_jump_cnt;
     cycle_ldst_cnt = IDU->cycle_ldst_cnt;

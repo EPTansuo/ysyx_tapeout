@@ -65,8 +65,8 @@ class IDU(xlen: Int) extends Module {
         val cycle_compute_cnt = RegInit(0.U(64.W))
         val cycle_branch_cnt = RegInit(0.U(64.W))
         val cycle_ldst_cnt = RegInit(0.U(64.W))
-        val cycle_csr_cnt = RegInit(0.U(32.W))
-        val cycle_jump_cnt = RegInit(0.U(32.W))
+        val cycle_csr_cnt = RegInit(0.U(64.W))
+        val cycle_jump_cnt = RegInit(0.U(64.W))
         val sig = control.io.out
         import pc_sel._
         import br_sel._
