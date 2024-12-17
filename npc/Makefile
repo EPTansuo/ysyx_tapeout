@@ -1,7 +1,7 @@
 TOPNAME = ysyxSoCFull
 NPC_TOPNAME = ysyx_23060246
 MAIN = $(NPC_TOPNAME).npcMain
-BUILD_DIR = ./build
+BUILD_DIR = $(NPC_HOME)/build
 OBJ_DIR = $(BUILD_DIR)/OBJ_DIR
 NXDC_FILES = $(NPC_HOME)/constr/soc.nxdc
 SDC_FILE = $(NPC_HOME)/scripts/top.sdc
@@ -65,8 +65,7 @@ SCALA_FILE = $(shell find ./src/main -name '*.scala')
 
 CSRCS = $(shell find $(abspath ./csrc) \( -path $(abspath ./csrc/device) -prune \) -o \( -name "*.c" -or -name "*.cc" -or -name "*.cpp" \) -print)
 
-SYN_FILES = $(BUILD_DIR)/verilog/$(NPC_TOPNAME).v
-SYN_FILES += $(NPC_HOME)/vsrc/debug.v
+SYN_ADDITION_FILES = $(NPC_HOME)/vsrc/debug.v
 
 
 # constraint file
@@ -124,9 +123,9 @@ run: $(BIN)
 	$^ $(ARGS) $(IMG)
 
 
-syn: verilog $(SYN_FILES)
+syn: verilog $(SYN_ADDITION_FILES)
 	make -C $(YOSYSSTA_PATH) sta DESIGN=$(NPC_TOPNAME) SDC_FILE=$(SDC_FILE) \
-	RTL_FILES="$(SYN_FILES)" CLK_FREQ_MHZ=100
+	RTL_FILES="$(BUILD_DIR)/verilog/$(NPC_TOPNAME).sv $(SYN_ADDITION_FILES)" CLK_FREQ_MHZ=100
 
 
 
