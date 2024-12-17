@@ -62,21 +62,21 @@ void perf_statistic(){
     
     PRINT_PERF("Total Cycles", cycle_cnt, 0.0, "");
     PRINT_PERF("Totcal Insts", inst_cnt, (double)inst_cnt/cycle_cnt, "insn per cycle");
-    printf("---------------------------------- Inst Withdraw ---------------------------------\n");
+    printf("\n---------------------------------- Inst Withdraw ---------------------------------\n");
     PRINT_PERF("Inst Withdraw CNT", ifu_cnt, (double)ifu_cnt/inst_cnt, "ins_withdraw per inst");
-    printf("----------------------------------- Inst Type ------------------------------------\n");
+    printf("\n----------------------------------- Inst Type ------------------------------------\n");
     PRINT_PERF("Inst Compute  CNT", inst_compute_cnt, (double)inst_compute_cnt/inst_cnt, "ins_compute per inst");
     PRINT_PERF("Inst Branch   CNT", inst_branch_cnt, (double)inst_branch_cnt/inst_cnt, "ins_branch per inst");
     PRINT_PERF("Inst Jump     CNT", inst_jump_cnt, (double)inst_jump_cnt/inst_cnt, "ins_jump per inst");
     PRINT_PERF("Inst Ldst     CNT", inst_ldst_cnt, (double)inst_ldst_cnt/inst_cnt, "ins_ldst per inst");
     PRINT_PERF("Inst Csr      CNT", inst_csr_cnt, (double)inst_csr_cnt/inst_cnt, "ins_csr per inst");
-    printf("----------------------------------- ALUOP Type ------------------------------------\n");
+    printf("\n----------------------------------- ALUOP Type ------------------------------------\n");
     PRINT_PERF("Alu Arith CNT", alu_arith_cnt, (double)alu_arith_cnt/inst_cnt, "alu_arith per inst");
     PRINT_PERF("Alu Logic CNT", alu_logic_cnt, (double)alu_logic_cnt/inst_cnt, "alu_logic per inst");
     PRINT_PERF("Alu Shift CNT", alu_shift_cnt, (double)alu_shift_cnt/inst_cnt, "alu_shift per inst");
     PRINT_PERF("Alu Cmp   CNT", alu_cmp_cnt, (double)alu_cmp_cnt/inst_cnt, "alu_cmp per inst");
     PRINT_PERF("Alu Copy  CNT", alu_copy_cnt, (double)alu_copy_cnt/inst_cnt, "alu_copy per inst");
-    printf("---------------------------------- Load / Store -----------------------------------\n");
+    printf("\n---------------------------------- Load / Store -----------------------------------\n");
     PRINT_PERF("Load CNT", load_cnt, (double)load_cnt/inst_ldst_cnt, "load per ins_ldst");
     PRINT_PERF("Store CNT", store_cnt, (double)store_cnt/inst_ldst_cnt, "store per ins_ldst");
 }
