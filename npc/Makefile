@@ -131,6 +131,18 @@ syn: verilog $(SYN_ADDITION_FILES)
 syn_clean:
 	make -C $(YOSYSSTA_PATH) clean
 
+perf:syn
+	make -C /home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/benchmarks/microbench \
+		 ARCH=riscv32e-ysyxsoc run BATCH=1 mainargs="train"
+	@echo 
+	@echo -e "\e[1;34m Performance Counter: \e[0m"
+	@cat $(NPC_HOME)/build/perf_statistic.txt
+	@echo 
+	@echo -e "\e[1;34m Area Report: \e[0m"
+	@cat $(YOSYSSTA_PATH)/result/$(NPC_TOPNAME)-$(CLK_FREQ_MHZ)MHz/yosys.log | grep "Chip area for top module"
+	@echo
+	@echo -e "\e[1;34m Timing Report(Max Freq): \e[0m "
+	@cat $(YOSYSSTA_PATH)/result/$(NPC_TOPNAME)-$(CLK_FREQ_MHZ)MHz/$(NPC_TOPNAME).rpt | grep "Freq(MHz)" -A2 -B1
 
 # menuconfig and autoconf.h
 include $(NPC_HOME)/scripts/config.mk
