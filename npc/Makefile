@@ -133,7 +133,7 @@ syn_clean:
 
 perf:syn
 	make -C /home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/benchmarks/microbench \
-		 ARCH=riscv32e-ysyxsoc run BATCH=1 
+		 ARCH=riscv32e-ysyxsoc run BATCH=1 mainargs="test"
 	@echo 
 	@echo -e "\e[1;34m Performance Counter: \e[0m"
 	@cat $(NPC_HOME)/build/perf_statistic.txt
