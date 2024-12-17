@@ -21,8 +21,8 @@ void init_sim(int argc, char** argv){
 	nvboard_init();
 	top->clock = 0;
 #ifdef CONFIG_WAVE_DUMP
+	Verilated::traceEverOn(true);
 	contextp = new VerilatedContext;
-    Verilated::traceEverOn(true);
 	tfp = MUXDEF(CONFIG_WAVE_VCD, new VerilatedVcdC, new VerilatedFstC);
     top->trace(tfp, 0);
 	char buf[300];
