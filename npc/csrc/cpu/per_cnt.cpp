@@ -71,8 +71,8 @@ void perf_statistic(){
     PRINT_PERF("Inst Compute  CNT", inst_compute_cnt, (double)inst_compute_cnt/inst_cnt*100, "% per inst");
     PRINT_PERF("Inst Branch   CNT", inst_branch_cnt, (double)inst_branch_cnt/inst_cnt*100, "% per inst");
     PRINT_PERF("Inst Jump     CNT", inst_jump_cnt, (double)inst_jump_cnt/inst_cnt*100, "% per inst");
-    PRINT_PERF("Inst Ldst     CNT", inst_ldst_cnt, (double)inst_ldst_cnt/inst_cnt*100, "% per inst");
-    PRINT_PERF("Inst Csr      CNT", inst_csr_cnt, (double)inst_csr_cnt/inst_cnt*100, "% per inst");
+    PRINT_PERF("Inst ld/st    CNT", inst_ldst_cnt, (double)inst_ldst_cnt/inst_cnt*100, "% per inst");
+    PRINT_PERF("Inst CSR      CNT", inst_csr_cnt, (double)inst_csr_cnt/inst_cnt*100, "% per inst");
     printf("\n----------------------------------- ALUOP Type ------------------------------------\n");
     PRINT_PERF("Alu Arith CNT", alu_arith_cnt, (double)alu_arith_cnt/inst_cnt*100, "% per inst");
     PRINT_PERF("Alu Logic CNT", alu_logic_cnt, (double)alu_logic_cnt/inst_cnt*100, "% per inst");
