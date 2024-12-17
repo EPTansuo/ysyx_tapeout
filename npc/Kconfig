@@ -56,7 +56,7 @@ config WAVE_DUMP
 
 choice
 	prompt "Wave file type"
-	default WAVE_VCD
+	default WAVE_FST
 	depends on WAVE_DUMP
 config WAVE_VCD
 	bool "vcd"

@@ -20,7 +20,7 @@ uint64_t g_nr_guest_cycle = 0;
 static bool g_print_step = false;
 volatile sig_atomic_t stop_signal = 0;
 
-extern MUXDEF(CONFIG_WAVE_VCD, VerilatedVcdC,VerilatedFstC)* tfp;
+extern MUXDEF(CONFIG_WAVE_VCD, VerilatedVcdC, VerilatedFstC)* tfp;
 extern VerilatedContext* contextp;
 
 void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
@@ -53,8 +53,8 @@ void cpu_eval_dump(){
   top->eval();
 #ifdef CONFIG_WAVE_DUMP
   tfp->dump(contextp->time());
-#endif
   contextp->timeInc(1);
+#endif
 }
 
 void cpu_single_cycle(){

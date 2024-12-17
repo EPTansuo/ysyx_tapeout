@@ -24,7 +24,9 @@ void init_sim(){
 	tfp = MUXDEF(CONFIG_WAVE_VCD, new VerilatedVcdC, new VerilatedFstC);
 	contextp = new VerilatedContext;
     top->trace(tfp, 0);
-	tfp->open(MUXDEF(CONFIG_WAVE_VCD,"wave.vcd","wave.fst"));
+	char buf[300];
+	sprintf(buf, "%s/%s", getenv("NPC_HOME"), MUXDEF(CONFIG_WAVE_VCD,"wave.vcd","wave.fst"));
+	tfp->open(buf);
 #endif 
 	
 	

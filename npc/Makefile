@@ -79,7 +79,8 @@ include $(NPC_HOME)/csrc/device/filelist.mk
 BIN = $(BUILD_DIR)/$(TOPNAME)
 NPC_EXEC := $(BIN)
 
-default: $(BIN)
+default: all 
+all: $(BIN)
 
 $(BIN): $(CSRCS) verilog $(NVBOARD_ARCHIVE)
 	$(VERILATOR) $(VERILATOR_CONFIG) $(VERILATOR_FLAGS) -top $(TOPNAME) $(CSRCS) $(VSRCS) $(NVBOARD_ARCHIVE)\
