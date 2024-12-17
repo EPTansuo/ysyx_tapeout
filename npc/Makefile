@@ -132,8 +132,8 @@ syn_clean:
 	make -C $(YOSYSSTA_PATH) clean
 
 perf:syn
-	make -C /home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests \
-		 ARCH=riscv32e-ysyxsoc run BATCH=1 ALL=sum
+	make -C /home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/benchmarks/microbench \
+		 ARCH=riscv32e-ysyxsoc run BATCH=1 
 	@echo 
 	@echo -e "\e[1;34m Performance Counter: \e[0m"
 	@cat $(NPC_HOME)/build/perf_statistic.txt
