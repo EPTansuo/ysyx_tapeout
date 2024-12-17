@@ -134,6 +134,7 @@ syn_clean:
 perf:syn
 	make -C /home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests \
 		 ARCH=riscv32e-ysyxsoc run BATCH=1 ALL=sum
+	@echo 
 	@echo -e "\e[1;34m Performance Counter: \e[0m"
 	@cat $(NPC_HOME)/build/perf_statistic.txt
 	@echo 
