@@ -84,7 +84,7 @@ void perf_statistic(){
     char buf[100];
     sprintf(buf, "%s/build/perf_statistic.txt", getenv("NPC_HOME"));
     fp = fopen(buf,"w");
-    fprintf(fp, "\n================================= PERF STATISTIC ================================= ");
+    fprintf(fp, "\n================================= PERF STATISTIC =================================\n");
     printf("\n================================= PERF STATISTIC =================================\n");
     setlocale(LC_NUMERIC, "en_US.UTF-8");
     
