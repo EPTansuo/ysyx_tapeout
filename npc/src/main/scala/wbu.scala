@@ -29,7 +29,7 @@ class WBU(xlen: Int) extends Module {
     val s_idle :: s_wait_ready :: Nil = Enum(2)
 
     val state = RegInit(s_idle)         
-    state := MuxLookup(state, s_idle, Seq(
+    state := MuxLookup(state, s_idle)(Seq(
         s_idle -> Mux(io.in.valid, s_wait_ready, s_idle),
         s_wait_ready -> Mux(io.out.ready, s_idle, s_wait_ready)
     ))
@@ -52,7 +52,7 @@ class WBU(xlen: Int) extends Module {
     io.reg_write.addr := rd_addr
     io.reg_write.en := ctrlsig.wb_sel =/= WB_XX;
         
-    val wb_data = MuxLookup(ctrlsig.wb_sel, default = 0.U(xlen.W), Array(
+    val wb_data = MuxLookup(ctrlsig.wb_sel, 0.U(xlen.W))(Seq(
         WB_ALU -> alu_out,
         WB_MEM -> ld_data,
         WB_PC4  -> (pc + 4.U),

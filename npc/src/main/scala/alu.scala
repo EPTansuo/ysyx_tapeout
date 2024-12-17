@@ -32,7 +32,7 @@ class ALU(val width: Int) extends Module{
     // Support 32bit and 64bit
     val shamt = if(width == 32) io.B(4,0).asUInt else io.B(5,0).asUInt
 
-    io.out := MuxLookup(io.aluop, io.B,
+    io.out := MuxLookup(io.aluop, io.B)(
         Seq(
             aluop.ALU_ADD -> (io.A + io.B),
             aluop.ALU_SUB -> (io.A - io.B),

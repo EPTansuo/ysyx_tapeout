@@ -16,13 +16,14 @@ char* img_file  = NULL;
 
 
 bool verbose = false;
-void init_sim();
+void init_sim(int argc, char** argv);
 void init_sdb();
 void cpu_reset(int n);
 void init_difftest(char *ref_so_file, long img_size, int port);
 void init_mem();
 void init_device();
 void sdb_set_batch_mode();
+void init_sig();
 
 // uint64_t init_uptime(){
 //   static uint64_t init_time = 0;
@@ -47,6 +48,7 @@ static void welcome() {
         "to record the trace. This may lead to a large log file. "
         "If it is not necessary, you can disable it in menuconfig"));
   Log("Dump Wave: %s", MUXDEF(CONFIG_WAVE_DUMP, ANSI_FMT("ON", ANSI_FG_GREEN), ANSI_FMT("OFF", ANSI_FG_RED)));
+  MUXDEF(CONFIG_WAVE_DUMP, Log("Dump File Type: %s", MUXDEF(CONFIG_WAVE_VCD, "VCD", "FST")),);
   Log("Build time: %s, %s", __TIME__, __DATE__);
   printf("Welcome to %s-NPC!\n", ANSI_FG_YELLOW ANSI_BG_RED CONFIG_ISA COLOR_NONE);
   printf("For help, type \"help\"\n");
@@ -97,12 +99,13 @@ static int parse_args(int argc, char *argv[]) {
 
 
 void init_monitor(int argc, char** argv){
-  Verilated::commandArgs(argc, argv);
+
   parse_args(argc, argv);
-  init_sim();
+  init_sim(argc, argv);
   init_mem();
+  init_sig();
   IFDEF(CONFIG_DEVICE, init_device());
-  cpu_reset(3);
+  cpu_reset(13);
   long img_size = load_img();
   init_difftest(diff_so_file, img_size, 0);  //Do not need to use the  third parameter
   init_sdb();

@@ -1,25 +1,39 @@
 #ifndef _VERILATOR_H_
 #define _VERILATOR_H_
 
-#include <verilated_vcd_c.h>
+#include <autoconf.h>
 #include <verilated.h>
 
-#include "Vnpc.h"
-#include "Vnpc_npc.h"
-#include "Vnpc_ysyx_npc.h"
-#include "Vnpc__Dpi.h"
-#include "Vnpc_Regfile.h"
-#include "Vnpc_CSR.h"
-#include "Vnpc_WBU.h"
-#include "Vnpc_EXU.h"
-#include "Vnpc_IFU.h"
+#include "VysyxSoCFull.h"
+#include "VysyxSoCFull__Dpi.h"
+#include "VysyxSoCFull_CSR.h"
+#include "VysyxSoCFull_EXU.h"
+#include "VysyxSoCFull_Regfile.h"
+#include "VysyxSoCFull_regs_32x32.h"
+#include "VysyxSoCFull_ysyx_23060246.h"
+#include "VysyxSoCFull_ysyx_npc.h"
+#include "VysyxSoCFull_ysyxSoCFull.h"
+#include "VysyxSoCFull_ysyxSoCASIC.h"
+#include "VysyxSoCFull_WBU.h"
+#include "VysyxSoCFull_IFU.h"
+#include "VysyxSoCFull_CPU.h"
 
-extern Vnpc* top;
+#ifdef CONFIG_WAVE_VCD
+#include <verilated_vcd_c.h>
+#endif 
+#ifdef CONFIG_WAVE_FST 
+#include <verilated_fst_c.h>
+#endif 
 
-#define REGS (top->npc->cpu->regfile->regs)
-#define PC (top->npc->cpu->ifu->pc)
-#define CSR (top->npc->cpu->exu->csr)
-#define WBU_VALID (top->npc->cpu->wbu->wbu_valid)
+extern VysyxSoCFull* top ;
+
+#define NPC_CPU (top->ysyxSoCFull->asic->cpu->cpu->cpu_npc)
+
+#define REGS (NPC_CPU->regfile->regs_ext->Memory)
+#define PC (NPC_CPU->ifu->pc)
+#define CSR (NPC_CPU->exu->csr)
+#define WBU_VALID (NPC_CPU->wbu->wbu_valid)
+#define INST (NPC_CPU->ifu->io_out_bits_inst)
 
 #endif // !_VERILATOR_H_
 

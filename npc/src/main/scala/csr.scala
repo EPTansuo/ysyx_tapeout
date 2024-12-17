@@ -36,7 +36,9 @@ class CSR(xlen:Int) extends Module{
     BitPat(CSR_MEPC) -> mepc,
     BitPat(CSR_MCAUSE) -> mcause,
     BitPat(CSR_MTVEC) -> mtvec,
-    BitPat(CSR_MSTATUS) -> mstatus
+    BitPat(CSR_MSTATUS) -> mstatus,
+    BitPat(CSR_VENDORID) -> 0x79737978.U,
+    BitPat(CSR_MARCHID) -> 23060246.U
   )
   
   val addr = io.inst(31, 20)
@@ -58,7 +60,7 @@ class CSR(xlen:Int) extends Module{
   //shall not cause any of the side effects that might occur on a CSR read.
   val we = io.cmd === CSR_W || io.cmd === CSR_S || io.cmd === CSR_C && rs1_addr.orR 
 
-  val wdata = MuxLookup(io.cmd, 0.U, Seq(
+  val wdata = MuxLookup(io.cmd, 0.U)(Seq(
     CSR_W -> io.in,
     //CSR_C -> (io.in & ~Lookup(addr, 0.U, csr_regs)),
     CSR_C -> (io.in & ~io.out),

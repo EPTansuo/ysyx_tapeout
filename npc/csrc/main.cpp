@@ -30,6 +30,7 @@ void stop_sim();
 
 int main(int argc, char **argv)
 {
+	Verilated::commandArgs(argc, argv);
 	init_monitor(argc, argv);
 	engine_start();
 	stop_sim();

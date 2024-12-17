@@ -20,7 +20,7 @@ class AXILiteXbar(val OutNum: Int, val AddressMap: Array[(Long, Long)], addrWidt
   val state_w_idle = OutNum.U
 
   // 读取请求的状态转换
-  state_r := MuxLookup(state_r, OutNum.U,
+  state_r := MuxLookup(state_r, OutNum.U)(
     (0 until OutNum).map(i => {
       i.U(log2Ceil(OutNum+1).W) -> Mux(io.in.r.ready && io.out(i).r.valid, state_r_idle, i.U(log2Ceil(OutNum+1).W))
     }) :+ (state_r_idle -> Mux(io.in.ar.valid, RangeLookup(io.in.ar.bits.addr, state_r_idle,
@@ -30,7 +30,7 @@ class AXILiteXbar(val OutNum: Int, val AddressMap: Array[(Long, Long)], addrWidt
     ), state_r_idle)))
 
   // 写入请求的状态转换
-  state_w := MuxLookup(state_w, OutNum.U,
+  state_w := MuxLookup(state_w, OutNum.U)(
     (0 until OutNum).map(i => {
       i.U(log2Ceil(OutNum+1).W) -> Mux(io.in.b.ready && io.out(i).b.valid, state_w_idle, i.U(log2Ceil(OutNum+1).W))
     }) :+ (state_w_idle -> Mux(io.in.aw.valid, RangeLookup(io.in.aw.bits.addr, state_w_idle,

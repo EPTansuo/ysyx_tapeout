@@ -51,7 +51,24 @@ config CC_OPT
 menu "Verilator Simulation"
 config WAVE_DUMP
 	bool "Enable wave dump"
-	default y
+	default n
+
+
+choice
+	prompt "Wave file type"
+	default WAVE_FST
+	depends on WAVE_DUMP
+config WAVE_VCD
+	bool "vcd"
+config WAVE_FST
+	bool "fst"
+endchoice
+
+config WAVE_FILE_TYPE
+	string 
+	default "vcd" if WAVE_VCD
+	default "fst" if WAVE_FST
+	default "none"
 endmenu
 
 menu "Testing and Debugging"

@@ -202,7 +202,23 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
   while (*fmt) {
     if (*fmt == '%') {
       fmt++; // 跳过 '%'
-      if (*fmt == 'd') {
+
+      while(*fmt >= '0' && *fmt <= '9'){ //直接忽略类似于%02d中的02
+        fmt++;
+      }
+
+      if (*fmt == 'l'){
+        fmt++;
+        if(*fmt == 'd'){
+          int num = va_arg(ap, int);
+          int digits = _itoa(buf, num);
+          for (int i = 0; i < digits; i++) {
+            *out++ = buf[i];
+            len++;
+          }
+        }
+      }
+      else if (*fmt == 'd') {
         int num = va_arg(ap, int);
         int digits = _itoa(buf, num);
         for (int i = 0; i < digits; i++) {

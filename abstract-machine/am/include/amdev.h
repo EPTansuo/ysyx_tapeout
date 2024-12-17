@@ -33,7 +33,6 @@ AM_DEVREG(23, NET_TX,       WR, Area buf);
 AM_DEVREG(24, NET_RX,       WR, Area buf);
 
 // Input
-
 #define AM_KEYS(_) \
   _(ESCAPE) _(F1) _(F2) _(F3) _(F4) _(F5) _(F6) _(F7) _(F8) _(F9) _(F10) _(F11) _(F12) \
   _(GRAVE) _(1) _(2) _(3) _(4) _(5) _(6) _(7) _(8) _(9) _(0) _(MINUS) _(EQUALS) _(BACKSPACE) \
@@ -43,10 +42,22 @@ AM_DEVREG(24, NET_RX,       WR, Area buf);
   _(LCTRL) _(APPLICATION) _(LALT) _(SPACE) _(RALT) _(RCTRL) \
   _(UP) _(DOWN) _(LEFT) _(RIGHT) _(INSERT) _(DELETE) _(HOME) _(END) _(PAGEUP) _(PAGEDOWN)
 
+
+// 原本的AM_KEYS缺少一些键位，这里补充
+#define AM_KEYS_EXT(_) \
+  _(CAPS) _(ESC) _(SCROLL) _(NUM) _(KPSTAR) _(KPMINUS) _(KPPLUS) _(KP) _(KP0) _(KP1) _(KP2) _(KP3) \
+  _(KP4) _(KP5) _(KP6) _(KP7) _(KP8) _(KP9) _(KPENTER) _(KPSLASH) _(PRINTSCRN) _(PAUSE) _(LGUI) _(RGUI) \
+  _(ENTER) 
+ 
+
 #define AM_KEY_NAMES(key) AM_KEY_##key,
+#define AM_KEY_EXT_NAMES(key) AM_KEY_##key,
+
+
 enum {
   AM_KEY_NONE = 0,
   AM_KEYS(AM_KEY_NAMES)
+  AM_KEYS_EXT(AM_KEY_EXT_NAMES)
 };
 
 // GPU

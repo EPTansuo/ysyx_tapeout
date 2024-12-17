@@ -4,7 +4,8 @@ import AXI4._
 import chisel3._
 import chisel3.util._
 import defines._ 
-
+import freechips.rocketchip.amba.axi4._
+import org.chipsalliance.cde.config.Parameters
 // object ModuleConnect {
 //   def apply(left: Module, right: Module, isPipe: Boolean = false): Unit = {
 //     isPipe match {
@@ -18,7 +19,8 @@ class ysyx_npc(xlen:Int) extends Module {
     val io = IO(new Bundle {
         // val imem = Flipped(new IMemIO(xlen))
         // val dmem = Flipped(new DMemIO())
-        val axi = new AXILiteMasterIF(addrWidthBits = 32, dataWidthBits = 32)
+        //val axi = new AXILiteMasterIF(addrWidthBits = 32, dataWidthBits = 32)
+        val axi = new AXI4Bundle(AXI4BundleParameters(xlen, 32, AXI_IDBITS))
     })
 
     val ifu = Module(new IFU(xlen))
@@ -40,12 +42,19 @@ class ysyx_npc(xlen:Int) extends Module {
     wbu.io.reg_write <> regfile.io.write
 
 
-   val axi4lite_arbiter = Module(new AXI4LiteArbiter(2, 32, 32))
+    val axi_arbiter = Module( new AXIArbiter(2, new AXI4BundleParameters(xlen, 32, AXI_IDBITS)))
+    axi_arbiter.io.in(0) <> ifu.io.imem
+    axi_arbiter.io.in(1) <> lsu.io.dmem
+    axi_arbiter.io.out <> io.axi
 
+/*
+   val axi4lite_arbiter = Module(new AXI4LiteArbiter(2, 32, 32))
    axi4lite_arbiter.io.masters(0) <> ifu.io.imem
    axi4lite_arbiter.io.masters(1) <> lsu.io.dmem
    axi4lite_arbiter.io.slave <> io.axi
    dontTouch(axi4lite_arbiter.io)
+*/
+
 //     lsu.io.dmem := DontCare
 //    io.axi <> ifu.io.imem
 

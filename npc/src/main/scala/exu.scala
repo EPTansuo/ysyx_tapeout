@@ -34,7 +34,7 @@ class EXU(xlen: Int) extends Module{
     val s_idle :: s_wait_ready :: Nil = Enum(2)
 
     val state = RegInit(s_idle)         
-    state := MuxLookup(state, s_idle, Seq(
+    state := MuxLookup(state, s_idle)(Seq(
         s_idle -> Mux(io.in.valid, s_wait_ready, s_idle),
         s_wait_ready -> Mux(io.out.ready, s_idle, s_wait_ready)
     ))
@@ -63,13 +63,13 @@ class EXU(xlen: Int) extends Module{
     immGen.io.sel := ctrlsig.imm_sel
 
     
-    alu.io.A := MuxLookup(ctrlsig.A_sel, default = 0.U(xlen.W), Array(
+    alu.io.A := MuxLookup(ctrlsig.A_sel, 0.U(xlen.W))(Seq(
         A_RS1 -> src1,
         A_PC  -> pc
         )
     )
 
-    alu.io.B := MuxLookup(ctrlsig.B_sel, default = 0.U(xlen.W), Array(
+    alu.io.B := MuxLookup(ctrlsig.B_sel, 0.U(xlen.W))(Seq(
         B_RS2 -> src2,
         B_IMM -> immGen.io.out
         )

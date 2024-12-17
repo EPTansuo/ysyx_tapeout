@@ -1,7 +1,9 @@
-TOPNAME = npc
-MAIN = $(TOPNAME).npcMain
+TOPNAME = ysyxSoCFull
+NPC_TOPNAME = ysyx_23060246
+MAIN = $(NPC_TOPNAME).npcMain
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/OBJ_DIR
+NXDC_FILES = constr/soc.nxdc
 IMG = "$(YSYX_HOME)/am-kernels/tests/cpu-tests/build/add-riscv32e-npc.bin"
 ARGS = -v --diff="$(NEMU_HOME)/build/riscv32-nemu-interpreter-so"
 
@@ -18,22 +20,25 @@ VERILATOR_COVERAGE = verilator_coverage
 V_INCPATH+=$(abspath $(YSYX_HOME)/npc/vsrc)
 V_INCPATH+=$(shell find $(YSYX_HOME)/ysyxSoC/perip -type f -name '*defines*.v' -exec dirname {} \;)
 V_INCFLAGS=$(addprefix -I, $(V_INCPATH))
-VERILATOR_FLAGS += -MMD --build -cc --public --trace\
+VERILATOR_FLAGS += -MMD --build -cc --public \
 				--x-assign fast --x-initial fast --noassert \
-				$(V_INCFLAGS) --threads 1
+				$(V_INCFLAGS) --threads 2 --autoflush #--trace-max-array 2048
 
 # timescale set
-VERILATOR_FLAGS += --timescale 1us/1us
+VERILATOR_FLAGS += --timescale 1us/1us --no-timing
 VERILATOR_CONFIG = ./scripts/verilator.vlt
 
 
-vcd ?=
-ifeq ($(vcd), 1)
-	CXXFLAGS += -DVCD
-endif
-
-
 -include .config
+
+ifeq ($(CONFIG_WAVE_FST),y)
+	VERILATOR_FLAGS += --trace-fst
+endif
+ifeq ($(CONFIG_WAVE_VCD),y)
+	VERILATOR_FLAGS += --trace
+endif 
+
+
 
 # C flags
 INC_PATH +=$(abspath csrc/include)
@@ -43,7 +48,7 @@ INC_PATH +=$(abspath csrc/isa/$(CONFIG_ISA)/local-include)
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS)
 CXXFLAGS += $(CFLAGS)
-CXXFLAGS += -Wno-macro-redefined
+CXXFLAGS += -fmacro-prefix-map=$(NPC_HOME)=npc
 CXXFLAGS += -Wall $(INCFLAGS) -g -DTOP_NAME="\"V$(TOPNAME)\"" -fpermissive
 CXXFLAGS += $(shell llvm-config --cxxflags)
 LDFLAGS += $(shell  llvm-config --ldflags --libs --system-libs) -fPIE
@@ -51,13 +56,21 @@ LDFLAGS += -lreadline
 
 # source file
 VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
-#VSRCS += $(shell find $(YSYX_HOME)/ysyxSoC/perip -name "*.v")
-#VSRCS += $(shell find $(YSYX_HOME)/ysyxSoC/build -name "*.v")
-VSRCS += $(shell find $(abspath ./build/verilog) -name "*.v")
+VSRCS += $(shell find $(YSYX_HOME)/ysyxSoC/perip -name "*.v")
+VSRCS += $(shell find $(YSYX_HOME)/ysyxSoC/build -name "*.v")
+VSRCS += $(shell find $(abspath $(VERILOG_DIR)) -name "*.v" -or -name "*.sv")
 
 SCALA_FILE = $(shell find ./src/main -name '*.scala')
 
 CSRCS = $(shell find $(abspath ./csrc) \( -path $(abspath ./csrc/device) -prune \) -o \( -name "*.c" -or -name "*.cc" -or -name "*.cpp" \) -print)
+
+
+# constraint file
+SRC_AUTO_BIND = $(abspath $(BUILD_DIR)/auto_bind.cpp)
+$(SRC_AUTO_BIND): $(NXDC_FILES)
+	python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
+
+CSRCS += $(SRC_AUTO_BIND)
 
 include $(NPC_HOME)/csrc/device/filelist.mk
 
@@ -66,10 +79,11 @@ include $(NPC_HOME)/csrc/device/filelist.mk
 BIN = $(BUILD_DIR)/$(TOPNAME)
 NPC_EXEC := $(BIN)
 
-default: $(BIN)
+default: all 
+all: $(BIN)
 
-$(BIN): $(CSRCS) verilog
-	$(VERILATOR) $(VERILATOR_CONFIG) $(VERILATOR_FLAGS) -top $(TOPNAME) $(CSRCS) $(VSRCS) \
+$(BIN): $(CSRCS) verilog $(NVBOARD_ARCHIVE)
+	$(VERILATOR) $(VERILATOR_CONFIG) $(VERILATOR_FLAGS) -top $(TOPNAME) $(CSRCS) $(VSRCS) $(NVBOARD_ARCHIVE)\
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) --top-module $(TOPNAME)
 
@@ -83,7 +97,7 @@ verilog: $(SCALA_FILE) sigmap
 
 	@if [ "$(SCALA_TIME)" -gt "$(VERILOG_TIME)" ]; then \
 		echo "Scala directory changed or Verilog directory missing, generating Verilog..."; \
-		./mill -i $(TOPNAME).runMain $(MAIN) -td $(VERILOG_DIR) --emit-modules verilog; \
+		./mill -i $(NPC_TOPNAME).runMain $(MAIN) -td $(VERILOG_DIR) ; \
 	else \
 		echo "No changes detected in Scala directory, skipping Verilog generation."; \
 	fi
