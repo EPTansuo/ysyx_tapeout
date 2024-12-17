@@ -85,4 +85,12 @@ class IFU(xlen:Int) extends Module {
   io.imem.aw.bits.qos := 0.U
   io.imem.w.bits.last := true.B
 
+
+  if(defines.PERF_CNT){
+    val ifu_cnt = RegInit(0.U(32.W))
+    when(io.in.valid && io.in.ready){
+      ifu_cnt := ifu_cnt + 1.U
+    }
+    dontTouch(ifu_cnt)
+  }
 }

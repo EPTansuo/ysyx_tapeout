@@ -55,6 +55,38 @@ class IDU(xlen: Int) extends Module {
     io.out.bits.exu.br_sel := control.io.out.br_sel
     io.out.bits.exu.pc_sel := control.io.out.pc_sel
 
+    
+    if(defines.PERF_CNT){
+        val inst_compute_cnt = RegInit(0.U(32.W))
+        val inst_branch_cnt = RegInit(0.U(32.W))
+        val inst_ldst_cnt = RegInit(0.U(32.W))
+        val inst_csr_cnt = RegInit(0.U(32.W))
+        val inst_jump_cnt = RegInit(0.U(32.W))
+        val sig = control.io.out
+        import pc_sel._
+        import br_sel._
+        import ld_sel._
+        import st_sel._
+        import csr_cmd._
 
+        when(io.out.valid && io.out.ready){
+            when(sig.csr_cmd =/= CSR_XX){
+                inst_csr_cnt := inst_csr_cnt + 1.U
+            }.elsewhen(sig.br_sel =/= BR_XX){
+                inst_branch_cnt := inst_branch_cnt + 1.U
+            }.elsewhen(sig.ld_sel =/= LD_XX || sig.st_sel =/= ST_XX){
+                inst_ldst_cnt := inst_ldst_cnt + 1.U
+            }.elsewhen(sig.pc_sel === PC_ALU){
+                inst_jump_cnt := inst_jump_cnt + 1.U
+            }.otherwise{
+                inst_compute_cnt := inst_compute_cnt + 1.U
+            }
+        }
+        dontTouch(inst_compute_cnt)
+        dontTouch(inst_branch_cnt)
+        dontTouch(inst_ldst_cnt)
+        dontTouch(inst_csr_cnt)
+        dontTouch(inst_jump_cnt)
+    }
 
 }

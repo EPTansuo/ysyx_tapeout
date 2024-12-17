@@ -25,7 +25,7 @@ extern VerilatedContext* contextp;
 
 void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
 void device_update();
-
+void perf_statistic();
 
 void handle_sigint(int sig) {
   stop_signal = 1;
@@ -89,6 +89,7 @@ static void statistic() {
   if (g_timer > 0) Log("simulation frequency = " NUMBERIC_FMT " inst/s", g_nr_guest_inst * 1000000 / g_timer);
   else Log("Finish running in less than 1 us and can not calculate the simulation frequency");
   Log("IPC: %.4lf" , (double)g_nr_guest_inst/g_nr_guest_cycle);
+  perf_statistic();
 }
 
 

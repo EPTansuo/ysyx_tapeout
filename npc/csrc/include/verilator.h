@@ -15,6 +15,8 @@
 #include "VysyxSoCFull_ysyxSoCFull.h"
 #include "VysyxSoCFull_ysyxSoCASIC.h"
 #include "VysyxSoCFull_WBU.h"
+#include "VysyxSoCFull_LSU.h"
+#include "VysyxSoCFull_IDU.h"
 #include "VysyxSoCFull_IFU.h"
 #include "VysyxSoCFull_CPU.h"
 

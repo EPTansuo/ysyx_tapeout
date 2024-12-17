@@ -8,6 +8,7 @@ object defines {
   val MSTATUS_INIT = 0x1800
   val MTVEC_INIT = 0x100
   val AXI_IDBITS = 4
+  val PERF_CNT = true
 }
 
 
