@@ -16,6 +16,7 @@ VysyxSoCFull* top = NULL;
 
 void init_sim(int argc, char** argv){
 	Verilated::commandArgs(argc, argv);
+	printf("command arg\n");
 	top = new VysyxSoCFull;
 	nvboard_bind_all_pins(top);
 	nvboard_init();
