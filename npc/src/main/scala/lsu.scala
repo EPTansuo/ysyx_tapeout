@@ -281,11 +281,11 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
             store_cnt := store_cnt + 1.U
         }
         
-        when(ctrlsig.st_sel =/= ST_XX){
-            cycle_store_cnt := cycle_store_cnt + 1.U
-        }
-        when(ctrlsig.ld_sel =/= LD_XX){
+        when(state === s_read || state === s_wait_read || state === s_wait_read_2){
             cycle_load_cnt := cycle_load_cnt + 1.U
+        }
+        when(state === s_write || state === s_wait_write || state === s_wait_write_2){
+            cycle_store_cnt := cycle_store_cnt + 1.U
         }
         dontTouch(cycle_load_cnt)
         dontTouch(cycle_store_cnt)

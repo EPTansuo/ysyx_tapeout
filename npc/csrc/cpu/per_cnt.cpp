@@ -85,11 +85,11 @@ void perf_statistic(){
     printf("\n----------------------------------- Inst Fetch -----------------------------------\n");
     PRINT_PERF("Inst Fetch CNT", ifu_cnt, (double)ifu_cnt/inst_cnt*100, "% per inst");
     printf("\n----------------------------------- Inst Type ------------------------------------\n");
-    PRINT_PERF("Compute Insts CNT", inst_compute_cnt, (double)inst_compute_cnt/inst_cnt*100, "% per inst");
-    PRINT_PERF("Branch  Insts CNT", inst_branch_cnt, (double)inst_branch_cnt/inst_cnt*100, "% per inst");
-    PRINT_PERF("Jump    Insts CNT", inst_jump_cnt, (double)inst_jump_cnt/inst_cnt*100, "% per inst");
-    PRINT_PERF("ld/st   Insts CNT", inst_ldst_cnt, (double)inst_ldst_cnt/inst_cnt*100, "% per inst");
-    PRINT_PERF("CSR     Insts CNT", inst_csr_cnt, (double)inst_csr_cnt/inst_cnt*100, "% per inst");
+    PRINT_PERF("Compute Insts CNT", inst_compute_cnt, (double)inst_compute_cnt/inst_cnt*100, "% of inst");
+    PRINT_PERF("Branch  Insts CNT", inst_branch_cnt, (double)inst_branch_cnt/inst_cnt*100, "% of inst");
+    PRINT_PERF("Jump    Insts CNT", inst_jump_cnt, (double)inst_jump_cnt/inst_cnt*100, "% of inst");
+    PRINT_PERF("ld/st   Insts CNT", inst_ldst_cnt, (double)inst_ldst_cnt/inst_cnt*100, "% of inst");
+    PRINT_PERF("CSR     Insts CNT", inst_csr_cnt, (double)inst_csr_cnt/inst_cnt*100, "% of inst");
     PRINT_PERF("Compute Cyeles CNT", cycle_compute_cnt, (double)cycle_compute_cnt/inst_compute_cnt, "cycle per inst");
     PRINT_PERF("Branch  Cyeles CNT", cycle_branch_cnt, (double)cycle_branch_cnt/inst_branch_cnt, "cycle per inst");
     PRINT_PERF("Jump    Cyeles CNT", cycle_jump_cnt, (double)cycle_jump_cnt/inst_jump_cnt, "cycle per inst");
@@ -97,16 +97,16 @@ void perf_statistic(){
     PRINT_PERF("CSR     Cyeles CNT", cycle_csr_cnt, (double)cycle_csr_cnt/inst_csr_cnt, "cycle per inst");
 
     printf("\n----------------------------------- ALUOP Type ------------------------------------\n");
-    PRINT_PERF("Alu Arith CNT", alu_arith_cnt, (double)alu_arith_cnt/inst_cnt*100, "% per inst");
-    PRINT_PERF("Alu Logic CNT", alu_logic_cnt, (double)alu_logic_cnt/inst_cnt*100, "% per inst");
-    PRINT_PERF("Alu Shift CNT", alu_shift_cnt, (double)alu_shift_cnt/inst_cnt*100, "% per inst");
-    PRINT_PERF("Alu Cmp   CNT", alu_cmp_cnt, (double)alu_cmp_cnt/inst_cnt*100, "% per inst");
-    PRINT_PERF("Alu Copy  CNT", alu_copy_cnt, (double)alu_copy_cnt/inst_cnt*100, "% per inst");
+    PRINT_PERF("Alu Arith CNT", alu_arith_cnt, (double)alu_arith_cnt/inst_cnt*100, "% of inst");
+    PRINT_PERF("Alu Logic CNT", alu_logic_cnt, (double)alu_logic_cnt/inst_cnt*100, "% of inst");
+    PRINT_PERF("Alu Shift CNT", alu_shift_cnt, (double)alu_shift_cnt/inst_cnt*100, "% of inst");
+    PRINT_PERF("Alu Cmp   CNT", alu_cmp_cnt, (double)alu_cmp_cnt/inst_cnt*100, "% of inst");
+    PRINT_PERF("Alu Copy  CNT", alu_copy_cnt, (double)alu_copy_cnt/inst_cnt*100, "% of inst");
 
     printf("\n---------------------------------- Load / Store -----------------------------------\n");
-    PRINT_PERF("Load CNT", load_cnt, (double)load_cnt/inst_ldst_cnt*100, "% per ld/st inst");
-    PRINT_PERF("Store CNT", store_cnt, (double)store_cnt/inst_ldst_cnt*100, "% per ld/st inst");
-    PRINT_PERF("Load Cycles CNT", load_cnt, (double)cycle_load_cnt/inst_ldst_cnt, "% cycle per store");
-    PRINT_PERF("Store Cycles CNT", store_cnt, (double)cycle_store_cnt/inst_ldst_cnt, "% cycle per store");
+    PRINT_PERF("Load CNT", load_cnt, (double)load_cnt/inst_ldst_cnt*100, "% of ld/st inst");
+    PRINT_PERF("Store CNT", store_cnt, (double)store_cnt/inst_ldst_cnt*100, "% of ld/st inst");
+    PRINT_PERF("Load Cycles CNT", cycle_load_cnt, (double)cycle_load_cnt/inst_ldst_cnt, "% cycle per load");
+    PRINT_PERF("Store Cycles CNT", cycle_store_cnt, (double)cycle_store_cnt/inst_ldst_cnt, "% cycle per store");
 
 }
