@@ -23,6 +23,7 @@ void init_difftest(char *ref_so_file, long img_size, int port);
 void init_mem();
 void init_device();
 void sdb_set_batch_mode();
+void init_sig();
 
 // uint64_t init_uptime(){
 //   static uint64_t init_time = 0;
@@ -101,6 +102,7 @@ void init_monitor(int argc, char** argv){
   parse_args(argc, argv);
   init_sim();
   init_mem();
+  init_sig();
   IFDEF(CONFIG_DEVICE, init_device());
   cpu_reset(13);
   long img_size = load_img();

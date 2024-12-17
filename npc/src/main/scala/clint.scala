@@ -24,7 +24,7 @@ class CLINT(params: AXI4BundleParameters) extends Module {
     io.axi.ar.ready := state === s_idle
     io.axi.r.valid := state === s_wait_ready
 
-    val rdata = Mux(io.axi.ar.bits.addr(7,0) === 0x48L.U, mtime(31,0), mtime(63,32))
+    val rdata = Mux(io.axi.ar.bits.addr(3,0) === 0x8L.U, mtime(31,0), mtime(63,32))
     io.axi.r.bits.data := rdata 
     io.axi.r.bits.resp := 0.U
 
