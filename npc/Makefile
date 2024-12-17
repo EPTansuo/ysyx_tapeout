@@ -20,7 +20,7 @@ VERILATOR_COVERAGE = verilator_coverage
 V_INCPATH+=$(abspath $(YSYX_HOME)/npc/vsrc)
 V_INCPATH+=$(shell find $(YSYX_HOME)/ysyxSoC/perip -type f -name '*defines*.v' -exec dirname {} \;)
 V_INCFLAGS=$(addprefix -I, $(V_INCPATH))
-VERILATOR_FLAGS += -MMD --build -cc --public --trace\
+VERILATOR_FLAGS += -MMD --build -cc --public \
 				--x-assign fast --x-initial fast --noassert \
 				$(V_INCFLAGS) --threads 2 --autoflush #--trace-max-array 2048
 
@@ -29,13 +29,16 @@ VERILATOR_FLAGS += --timescale 1us/1us --no-timing
 VERILATOR_CONFIG = ./scripts/verilator.vlt
 
 
-vcd ?=
-ifeq ($(vcd), 1)
-	CXXFLAGS += -DVCD
-endif
-
-
 -include .config
+
+ifeq ($(CONFIG_WAVE_FST),y)
+	VERILATOR_FLAGS += --trace-fst
+endif
+ifeq ($(CONFIG_WAVE_VCD),y)
+	VERILATOR_FLAGS += --trace
+endif 
+
+
 
 # C flags
 INC_PATH +=$(abspath csrc/include)
@@ -76,7 +79,8 @@ include $(NPC_HOME)/csrc/device/filelist.mk
 BIN = $(BUILD_DIR)/$(TOPNAME)
 NPC_EXEC := $(BIN)
 
-default: $(BIN)
+default: all 
+all: $(BIN)
 
 $(BIN): $(CSRCS) verilog $(NVBOARD_ARCHIVE)
 	$(VERILATOR) $(VERILATOR_CONFIG) $(VERILATOR_FLAGS) -top $(TOPNAME) $(CSRCS) $(VSRCS) $(NVBOARD_ARCHIVE)\
