@@ -1,9 +1,10 @@
 TOPNAME = ysyxSoCFull
 NPC_TOPNAME = ysyx_23060246
 MAIN = $(NPC_TOPNAME).npcMain
-BUILD_DIR = ./build
+BUILD_DIR = $(NPC_HOME)/build
 OBJ_DIR = $(BUILD_DIR)/OBJ_DIR
-NXDC_FILES = constr/soc.nxdc
+NXDC_FILES = $(NPC_HOME)/constr/soc.nxdc
+SDC_FILE = $(NPC_HOME)/scripts/top.sdc
 IMG = "$(YSYX_HOME)/am-kernels/tests/cpu-tests/build/add-riscv32e-npc.bin"
 ARGS = -v --diff="$(NEMU_HOME)/build/riscv32-nemu-interpreter-so"
 
@@ -64,6 +65,8 @@ SCALA_FILE = $(shell find ./src/main -name '*.scala')
 
 CSRCS = $(shell find $(abspath ./csrc) \( -path $(abspath ./csrc/device) -prune \) -o \( -name "*.c" -or -name "*.cc" -or -name "*.cpp" \) -print)
 
+SYN_ADDITION_FILES = $(NPC_HOME)/vsrc/debug.v
+
 
 # constraint file
 SRC_AUTO_BIND = $(abspath $(BUILD_DIR)/auto_bind.cpp)
@@ -118,6 +121,13 @@ sim: run
 run: $(BIN)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	$^ $(ARGS) $(IMG)
+
+
+syn: verilog $(SYN_ADDITION_FILES)
+	make -C $(YOSYSSTA_PATH) sta DESIGN=$(NPC_TOPNAME) SDC_FILE=$(SDC_FILE) \
+	RTL_FILES="$(BUILD_DIR)/verilog/$(NPC_TOPNAME).sv $(SYN_ADDITION_FILES)" CLK_FREQ_MHZ=100
+
+
 
 # menuconfig and autoconf.h
 include $(NPC_HOME)/scripts/config.mk
