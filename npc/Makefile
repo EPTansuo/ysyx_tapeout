@@ -128,21 +128,15 @@ run: $(BIN)
 syn: verilog $(SYN_ADDITION_FILES)
 	make -C $(YOSYSSTA_PATH) sta DESIGN=$(NPC_TOPNAME) SDC_FILE=$(SDC_FILE) \
 	RTL_FILES="$(BUILD_DIR)/verilog/$(NPC_TOPNAME).sv $(SYN_ADDITION_FILES)" CLK_FREQ_MHZ=$(CLK_FREQ_MHZ)
-syn_clean:
+clean_syn:
 	make -C $(YOSYSSTA_PATH) clean
 
-perf:syn
-	make -C /home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/benchmarks/microbench \
+perf: clean_syn verilog syn
+	@make -C /home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/benchmarks/microbench \
 		 ARCH=riscv32e-ysyxsoc run BATCH=1 mainargs="train"
-	@echo 
-	@echo -e "\e[1;34m Performance Counter: \e[0m"
-	@cat $(NPC_HOME)/build/perf_statistic.txt
-	@echo 
-	@echo -e "\e[1;34m Area Report: \e[0m"
-	@cat $(YOSYSSTA_PATH)/result/$(NPC_TOPNAME)-$(CLK_FREQ_MHZ)MHz/yosys.log | grep "Chip area for top module"
-	@echo
-	@echo -e "\e[1;34m Timing Report(Max Freq): \e[0m "
-	@cat $(YOSYSSTA_PATH)/result/$(NPC_TOPNAME)-$(CLK_FREQ_MHZ)MHz/$(NPC_TOPNAME).rpt | grep "Freq(MHz)" -A2 -B1
+
+	@bash $(NPC_HOME)/scripts/perf.sh  $(NPC_TOPNAME) $(CLK_FREQ_MHZ) | \
+	tee >(sed -r "s/\x1B\[[0-9;]*m//g" > $(NPC_HOME)/data/perf_$(shell date +%Y-%m%d-%H%M%S).txt)
 
 # menuconfig and autoconf.h
 include $(NPC_HOME)/scripts/config.mk
