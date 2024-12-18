@@ -31,11 +31,12 @@ class EXU(xlen: Int) extends Module{
     val ctrlsig = in_reg.bits.exu
     val sig_csr_cmd = in_reg.bits.wbu.csr_cmd
 
-    val s_idle :: s_wait_ready :: Nil = Enum(2)
+    val s_idle :: s_exe :: s_wait_ready :: Nil = Enum(3)
 
     val state = RegInit(s_idle)         
     state := MuxLookup(state, s_idle)(Seq(
-        s_idle -> Mux(io.in.valid, s_wait_ready, s_idle),
+        s_idle -> Mux(io.in.valid, s_exe, s_idle),
+        s_exe  -> s_wait_ready, // Reserve more time for EXU
         s_wait_ready -> Mux(io.out.ready, s_idle, s_wait_ready)
     ))
 
@@ -62,18 +63,21 @@ class EXU(xlen: Int) extends Module{
     immGen.io.inst := inst 
     immGen.io.sel := ctrlsig.imm_sel
 
-    
-    alu.io.A := MuxLookup(ctrlsig.A_sel, 0.U(xlen.W))(Seq(
+    val alu_A_reg = RegInit(0.U(xlen.W)) 
+    alu_A_reg := MuxLookup(ctrlsig.A_sel, 0.U(xlen.W))(Seq(
         A_RS1 -> src1,
         A_PC  -> pc
         )
     )
+    alu.io.A := alu_A_reg
 
-    alu.io.B := MuxLookup(ctrlsig.B_sel, 0.U(xlen.W))(Seq(
+    val alu_B_reg = RegInit(0.U(xlen.W)) 
+    alu_B_reg := MuxLookup(ctrlsig.B_sel, 0.U(xlen.W))(Seq(
         B_RS2 -> src2,
         B_IMM -> immGen.io.out
         )
     )
+    alu.io.B := alu_B_reg
 
     alu.io.aluop := ctrlsig.alu_op
 
