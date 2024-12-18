@@ -131,12 +131,12 @@ syn: verilog $(SYN_ADDITION_FILES)
 clean_syn:
 	make -C $(YOSYSSTA_PATH) clean
 
-perf:clean clean_syn verilog syn
-	make -C /home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/benchmarks/microbench \
-		 ARCH=riscv32e-ysyxsoc run BATCH=1 mainargs="test"
+perf: clean_syn verilog syn
+	@make -C /home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/benchmarks/microbench \
+		 ARCH=riscv32e-ysyxsoc run BATCH=1 mainargs="train"
 
-	bash ./scripts/perf.sh  ysyx_23060246 530 | \
-	tee >(sed -r "s/\x1B\[[0-9;]*m//g" > ${NPC_HOME}/data/perf_$(date +%Y-%m%d-%H%M%S).txt)
+	@bash $(NPC_HOME)/scripts/perf.sh  $(NPC_TOPNAME) $(CLK_FREQ_MHZ) | \
+	tee >(sed -r "s/\x1B\[[0-9;]*m//g" > $(NPC_HOME)/data/perf_$(shell date +%Y-%m%d-%H%M%S).txt)
 
 # menuconfig and autoconf.h
 include $(NPC_HOME)/scripts/config.mk
