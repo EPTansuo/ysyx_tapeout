@@ -3,7 +3,7 @@
 #include <common.h>
 #include <nvboard.h>
 
-void nvboard_bind_all_pins(VysyxSoCFull* top);
+void nvboard_bind_all_pins(VTOP_NAME* top);
 #ifdef CONFIG_WAVE_VCD
 VerilatedVcdC *tfp = NULL;
 #endif
@@ -12,13 +12,15 @@ VerilatedFstC *tfp = NULL;
 #endif
 
 VerilatedContext *contextp = NULL;
-VysyxSoCFull* top = NULL;
+VTOP_NAME* top = NULL;
 
 void init_sim(int argc, char** argv){
 	//Verilated::commandArgs(argc, argv);
-	top = new VysyxSoCFull;
+	top = new VTOP_NAME;
+#ifdef CONFIG_USE_SOC
 	nvboard_bind_all_pins(top);
 	nvboard_init();
+#endif 
 	top->clock = 0;
 #ifdef CONFIG_WAVE_DUMP
 	Verilated::traceEverOn(true);

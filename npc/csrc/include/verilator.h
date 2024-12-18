@@ -3,7 +3,9 @@
 
 #include <autoconf.h>
 #include <verilated.h>
+#include <common.h>
 
+#ifdef CONFIG_USE_SOC
 #include "VysyxSoCFull.h"
 #include "VysyxSoCFull__Dpi.h"
 #include "VysyxSoCFull_CSR.h"
@@ -19,6 +21,21 @@
 #include "VysyxSoCFull_IDU.h"
 #include "VysyxSoCFull_IFU.h"
 #include "VysyxSoCFull_CPU.h"
+#else
+#include "Vysyx_23060246.h"
+#include "Vysyx_23060246__Dpi.h"
+#include "Vysyx_23060246_CSR.h"
+#include "Vysyx_23060246_EXU.h"
+#include "Vysyx_23060246_Regfile.h"
+#include "Vysyx_23060246_regs_32x32.h"
+#include "Vysyx_23060246_ysyx_23060246.h"
+#include "Vysyx_23060246_ysyx_npc.h"
+#include "Vysyx_23060246_WBU.h"
+#include "Vysyx_23060246_LSU.h"
+#include "Vysyx_23060246_IDU.h"
+#include "Vysyx_23060246_IFU.h"
+//#include "Vysyx_23060246_CPU.h"
+#endif 
 
 #ifdef CONFIG_WAVE_VCD
 #include <verilated_vcd_c.h>
@@ -27,9 +44,18 @@
 #include <verilated_fst_c.h>
 #endif 
 
-extern VysyxSoCFull* top ;
+#ifdef CONFIG_USE_SOC
+#define TOP_NAME ysyxSoCFull, ysyx_23060246
+#define VTOP_NAME VysyxSoCFull, Vysyx_23060246
+#else
+#define TOP_NAME Vysyx_23060246
+#define VTOP_NAME Vysyx_23060246
+#endif
 
-#define NPC_CPU (top->ysyxSoCFull->asic->cpu->cpu->cpu_npc)
+extern VTOP_NAME* top ;
+
+#define NPC_CPU MUXDEF(CONFIG_USE_SOC, (top->ysyxSoCFull->asic->cpu->cpu->cpu_npc), \
+                        (top->ysyx_23060246->cpu_npc))
 
 #define REGS (NPC_CPU->regfile->regs_ext->Memory)
 #define PC (NPC_CPU->ifu->pc)
