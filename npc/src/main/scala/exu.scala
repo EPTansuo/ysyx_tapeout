@@ -67,20 +67,23 @@ class EXU(xlen: Int) extends Module{
     immGen.io.inst := inst 
     immGen.io.sel := ctrlsig.imm_sel
 
-    val imm_out_reg = RegInit(0.U(32.W))
-    imm_out_reg := immGen.io.out 
-
-    alu.io.A := MuxLookup(ctrlsig.A_sel, 0.U(xlen.W))(Seq(
+    //val imm_out_reg = RegInit(0.U(32.W))
+    //imm_out_reg := immGen.io.out 
+    val alu_A_reg = RegInit(0.U(xlen.W))
+    alu_A_reg := MuxLookup(ctrlsig.A_sel, 0.U(xlen.W))(Seq(
         A_RS1 -> src1_reg,
         A_PC  -> pc
         )
     )
+    alu.io.A := alu_A_reg
 
-    alu.io.B := MuxLookup(ctrlsig.B_sel, 0.U(xlen.W))(Seq(
+    val alu_B_reg = RegInit(0.U(xlen.W))
+    alu_B_reg := MuxLookup(ctrlsig.B_sel, 0.U(xlen.W))(Seq(
         B_RS2 -> src2_reg,
-        B_IMM -> imm_out_reg
+        B_IMM -> immGen.io.out 
         )
     )
+    alu.io.B := alu_B_reg
 
     alu.io.aluop := ctrlsig.alu_op
 
