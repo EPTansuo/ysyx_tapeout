@@ -81,11 +81,11 @@ endif
 
 # constraint file
 ifeq ($(CONFIG_USE_SOC),y)
-	SRC_AUTO_BIND = $(abspath $(BUILD_DIR)/auto_bind.cpp)
-	$(SRC_AUTO_BIND): $(NXDC_FILES)
+SRC_AUTO_BIND = $(abspath $(BUILD_DIR)/auto_bind.cpp)
+$(SRC_AUTO_BIND): $(NXDC_FILES)
 		python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
 
-	CSRCS += $(SRC_AUTO_BIND)
+CSRCS += $(SRC_AUTO_BIND)
 endif
 include $(NPC_HOME)/csrc/device/filelist.mk
 
