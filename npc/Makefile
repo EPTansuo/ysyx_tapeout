@@ -8,7 +8,7 @@ SDC_FILE = $(NPC_HOME)/scripts/top.sdc
 IMG = "$(YSYX_HOME)/am-kernels/tests/cpu-tests/build/add-riscv32e-npc.bin"
 ARGS = -v --diff="$(NEMU_HOME)/build/riscv32-nemu-interpreter-so"
 
-CLK_FREQ_MHZ?=530
+CLK_FREQ_MHZ?=890
 
 SCALA_DIR := $(NPC_HOME)/src/main/scala
 VERILOG_DIR := $(BUILD_DIR)/verilog
