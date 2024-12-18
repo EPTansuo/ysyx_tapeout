@@ -1,5 +1,9 @@
 mainmenu "NEMU Configuration Menu"
 
+config USE_SOC 
+  default y
+  bool "Use SOC for Simulation"
+
 choice
   prompt "Base ISA"
   default ISA_riscv

@@ -72,6 +72,8 @@ uint64_t get_rtc_time(){
 
 extern "C" int pmem_read(int raddr){
 
+  raddr = raddr - 0x80000000;
+
 #ifdef CONFIG_HAS_TIMER
   if(raddr == CONFIG_RTC_MMIO) {
     //获取开机时间
@@ -113,6 +115,7 @@ bool regs_equ(const VlUnpacked<word_t,32>&reg1, const VlUnpacked<word_t,32>&reg2
 }
 
 extern "C" void pmem_write(int waddr, int wdata, char wmask){
+  waddr = waddr - 0x80000000;
   static memwrite_info mwinfo;   //防止多次输出
   
   if(waddr < CONFIG_MBASE){
@@ -167,14 +170,14 @@ end_pmem_write:
 extern "C" void flash_read(int32_t addr, int32_t *data) { 
 
  //*data = addr ;
- *data = pmem_read(addr/4*4 );
-// printf("read flash addr = %x, data = %08x\n", addr, *data);
+ *data = host_read(guest_to_host(addr& ~0x3u), 4);
+ //printf("read flash addr = %x, data = %08x\n", addr, *data);
 
 }
 extern "C" void mrom_read(int32_t addr, int32_t *data) { 
   //*data =0x100073; // ebreak
 
-  *data = pmem_read(addr/4*4 - 0x20000000);
+  *data = host_read(guest_to_host(addr& ~0x3u) - 0x20000000, 4);
  // *data = 0x00e78023;
 
 }

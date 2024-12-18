@@ -65,7 +65,9 @@ void cpu_single_cycle(){
 		cpu_eval_dump();
 	}
   g_nr_guest_cycle++;
+#ifdef CONFIG_USE_SOC
   nvboard_update();
+#endif 
 }
 
 void cpu_single_inst(){

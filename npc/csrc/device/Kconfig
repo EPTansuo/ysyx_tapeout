@@ -1,5 +1,5 @@
 menuconfig DEVICE
-  depends on !TARGET_SHARE
+  depends on !USE_SOC
   bool "Devices"
   default n
   help

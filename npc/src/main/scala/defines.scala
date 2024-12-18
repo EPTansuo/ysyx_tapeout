@@ -3,8 +3,9 @@ package cpu
 import chisel3._
 
 object defines {
+  val USE_SOC = true
   val XLEN = 32
-  val PC_INIT = "h30000000".U(XLEN.W)
+  val PC_INIT = if(USE_SOC) "h30000000".U(XLEN.W) else "h80000000".U(XLEN.W)
   val MSTATUS_INIT = 0x1800
   val MTVEC_INIT = 0x100
   val AXI_IDBITS = 4

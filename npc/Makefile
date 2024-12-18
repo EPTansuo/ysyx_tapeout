@@ -1,4 +1,3 @@
-TOPNAME = ysyxSoCFull
 NPC_TOPNAME = ysyx_23060246
 MAIN = $(NPC_TOPNAME).npcMain
 BUILD_DIR = $(NPC_HOME)/build
@@ -41,6 +40,11 @@ ifeq ($(CONFIG_WAVE_VCD),y)
 	VERILATOR_FLAGS += --trace
 endif 
 
+ifeq ($(CONFIG_USE_SOC),y)
+	TOPNAME = ysyxSoCFull
+else
+	TOPNAME = $(NPC_TOPNAME)
+endif
 
 
 # C flags
@@ -59,24 +63,30 @@ LDFLAGS += -lreadline
 
 # source file
 VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
+VSRCS += $(shell find $(abspath $(VERILOG_DIR)) -name "*.v" -or -name "*.sv")
+
+ifeq ($(CONFIG_USE_SOC),y)
 VSRCS += $(shell find $(YSYX_HOME)/ysyxSoC/perip -name "*.v")
 VSRCS += $(shell find $(YSYX_HOME)/ysyxSoC/build -name "*.v")
-VSRCS += $(shell find $(abspath $(VERILOG_DIR)) -name "*.v" -or -name "*.sv")
+endif
 
 SCALA_FILE = $(shell find ./src/main -name '*.scala')
 
 CSRCS = $(shell find $(abspath ./csrc) \( -path $(abspath ./csrc/device) -prune \) -o \( -name "*.c" -or -name "*.cc" -or -name "*.cpp" \) -print)
 
 SYN_ADDITION_FILES = $(NPC_HOME)/vsrc/debug.v
-
+ifeq ($(CONFIG_USE_SOC),y)
+SYN_ADDITION_FILES += $(NPC_HOME)/vsrc/mem.v
+endif
 
 # constraint file
+ifeq ($(CONFIG_USE_SOC),y)
 SRC_AUTO_BIND = $(abspath $(BUILD_DIR)/auto_bind.cpp)
 $(SRC_AUTO_BIND): $(NXDC_FILES)
-	python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
+		python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
 
 CSRCS += $(SRC_AUTO_BIND)
-
+endif
 include $(NPC_HOME)/csrc/device/filelist.mk
 
 

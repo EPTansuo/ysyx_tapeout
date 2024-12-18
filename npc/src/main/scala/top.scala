@@ -27,14 +27,19 @@ class ysyx_23060246(params: AXI4BundleParameters) extends Module {
   val xbar = Module(new AXIXbar(2, 
                         Array((0L,0xFFFFFFFFL),(0x02000000L,0x0200ffffL)),
                         CPUAXI4BundleParameters()))
-  val axi4_conv = Module(new AXI4BundleIFConv(32,32))
-
-
   xbar.io.in <> cpu_npc.io.axi
-  xbar.io.out(0) <> axi4_conv.io.in
-  xbar.io.out(1) <> clint.io.axi 
 
-  axi4_conv.io.out <> io.master
+  if(defines.USE_SOC){
+    val axi4_conv = Module(new AXI4BundleIFConv(32,32))
+    xbar.io.out(0) <> axi4_conv.io.in
+    axi4_conv.io.out <> io.master
+  } else {
+    val sram = Module(new SRAM(params))
+    xbar.io.out(0) <> sram.io.axi
+    io.master <> DontCare 
+  }
+
+  xbar.io.out(1) <> clint.io.axi 
 
 
   val axierror = Module(new AXIError)
