@@ -61,8 +61,10 @@ class EXU(xlen: Int) extends Module{
     val src1_reg = RegInit(0.U(xlen.W))
     val src2_reg = RegInit(0.U(xlen.W))
 
-    src1_reg := io.reg_read1.data
-    src2_reg := io.reg_read2.data
+    val src1 = io.reg_read1.data
+    val src2 = io.reg_read2.data
+    src1_reg := src1
+    src2_reg := src2
 
     immGen.io.inst := inst 
     immGen.io.sel := ctrlsig.imm_sel
@@ -71,7 +73,7 @@ class EXU(xlen: Int) extends Module{
     //imm_out_reg := immGen.io.out 
     val alu_A_reg = RegInit(0.U(xlen.W))
     alu_A_reg := MuxLookup(ctrlsig.A_sel, 0.U(xlen.W))(Seq(
-        A_RS1 -> src1_reg,
+        A_RS1 -> src1,
         A_PC  -> pc
         )
     )
@@ -79,7 +81,7 @@ class EXU(xlen: Int) extends Module{
 
     val alu_B_reg = RegInit(0.U(xlen.W))
     alu_B_reg := MuxLookup(ctrlsig.B_sel, 0.U(xlen.W))(Seq(
-        B_RS2 -> src2_reg,
+        B_RS2 -> src2,
         B_IMM -> immGen.io.out 
         )
     )
