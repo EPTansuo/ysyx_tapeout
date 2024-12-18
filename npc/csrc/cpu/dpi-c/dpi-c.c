@@ -72,6 +72,8 @@ uint64_t get_rtc_time(){
 
 extern "C" int pmem_read(int raddr){
 
+  raddr = raddr - 0x80000000;
+  
 #ifdef CONFIG_HAS_TIMER
   if(raddr == CONFIG_RTC_MMIO) {
     //获取开机时间
