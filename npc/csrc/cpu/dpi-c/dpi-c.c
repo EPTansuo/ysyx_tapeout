@@ -73,7 +73,7 @@ uint64_t get_rtc_time(){
 extern "C" int pmem_read(int raddr){
 
   raddr = raddr - 0x80000000;
-  
+
 #ifdef CONFIG_HAS_TIMER
   if(raddr == CONFIG_RTC_MMIO) {
     //获取开机时间
@@ -115,6 +115,7 @@ bool regs_equ(const VlUnpacked<word_t,32>&reg1, const VlUnpacked<word_t,32>&reg2
 }
 
 extern "C" void pmem_write(int waddr, int wdata, char wmask){
+  waddr = waddr - 0x80000000;
   static memwrite_info mwinfo;   //防止多次输出
   
   if(waddr < CONFIG_MBASE){
