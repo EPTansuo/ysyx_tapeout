@@ -31,11 +31,12 @@ class EXU(xlen: Int) extends Module{
     val ctrlsig = in_reg.bits.exu
     val sig_csr_cmd = in_reg.bits.wbu.csr_cmd
 
-    val s_idle :: s_wait_ready :: Nil = Enum(2)
+    val s_idle :: s_exe :: s_wait_ready :: Nil = Enum(3)
 
     val state = RegInit(s_idle)         
     state := MuxLookup(state, s_idle)(Seq(
-        s_idle -> Mux(io.in.valid, s_wait_ready, s_idle),
+        s_idle -> Mux(io.in.valid, s_exe, s_idle),
+        s_exe  -> s_wait_ready, // Reserve more time for EXU
         s_wait_ready -> Mux(io.out.ready, s_idle, s_wait_ready)
     ))
 
@@ -56,24 +57,35 @@ class EXU(xlen: Int) extends Module{
     
     io.reg_read1.addr := Mux(sig_csr_cmd === csr_cmd.CSR_P, 15.U,rs1_addr)
     io.reg_read2.addr := rs2_addr
+
+    val src1_reg = RegInit(0.U(xlen.W))
+    val src2_reg = RegInit(0.U(xlen.W))
+
     val src1 = io.reg_read1.data
     val src2 = io.reg_read2.data
+    src1_reg := src1
+    src2_reg := src2
 
     immGen.io.inst := inst 
     immGen.io.sel := ctrlsig.imm_sel
 
-    
-    alu.io.A := MuxLookup(ctrlsig.A_sel, 0.U(xlen.W))(Seq(
+    //val imm_out_reg = RegInit(0.U(32.W))
+    //imm_out_reg := immGen.io.out 
+    val alu_A_reg = RegInit(0.U(xlen.W))
+    alu_A_reg := MuxLookup(ctrlsig.A_sel, 0.U(xlen.W))(Seq(
         A_RS1 -> src1,
         A_PC  -> pc
         )
     )
+    alu.io.A := alu_A_reg
 
-    alu.io.B := MuxLookup(ctrlsig.B_sel, 0.U(xlen.W))(Seq(
+    val alu_B_reg = RegInit(0.U(xlen.W))
+    alu_B_reg := MuxLookup(ctrlsig.B_sel, 0.U(xlen.W))(Seq(
         B_RS2 -> src2,
-        B_IMM -> immGen.io.out
+        B_IMM -> immGen.io.out 
         )
     )
+    alu.io.B := alu_B_reg
 
     alu.io.aluop := ctrlsig.alu_op
 
@@ -84,14 +96,14 @@ class EXU(xlen: Int) extends Module{
     csr.io.inst := inst
     csr.io.pc := pc
     csr.io.cmd := sig_csr_cmd
-    csr.io.in := src1  //目前还未用到立即数  WARNING
+    csr.io.in := src1_reg  //目前还未用到立即数  WARNING
     csr.io.update_enable := RegNext(io.out.valid)
     dontTouch(csr.io)  //任何时候都不优化
 
     val branch = Module(new Branch(xlen))
     branch.io.br_sel := ctrlsig.br_sel
-    branch.io.src1 := src1
-    branch.io.src2 := src2
+    branch.io.src1 := src1_reg
+    branch.io.src2 := src2_reg
 
     val npc = MuxCase(
         pc + 4.U,  
@@ -105,8 +117,8 @@ class EXU(xlen: Int) extends Module{
     
     io.out.bits.csr_out  := csr.io.out
     io.out.bits.rd_addr := rd_addr
-    io.out.bits.src1 := src1
-    io.out.bits.src2 := src2
+    io.out.bits.src1 := src1_reg
+    io.out.bits.src2 := src2_reg 
     io.out.bits.alu_out := alu.io.out
     io.out.bits.pc := pc
     io.out.bits.inst := inst
