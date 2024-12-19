@@ -18,6 +18,7 @@ uint64_t g_nr_guest_inst = 0;
 uint64_t g_nr_guest_cycle = 0;
 static bool g_print_step = false;
 volatile sig_atomic_t stop_signal = 0;
+volatile sig_atomic_t printinfo_signal = 0;
 
 extern MUXDEF(CONFIG_WAVE_VCD, VerilatedVcdC, VerilatedFstC)* tfp;
 extern VerilatedContext* contextp;
@@ -27,7 +28,10 @@ void device_update();
 void perf_statistic();
 
 void handle_sigint(int sig) {
-  stop_signal = 1;
+  if(sig == SIGINT)
+    stop_signal = 1;
+  else if(sig == SIGQUIT)
+    printinfo_signal = 1;
 }
 
 void init_sig(){
@@ -37,10 +41,12 @@ void init_sig(){
   sigemptyset(&sa.sa_mask);
   if(sigaction(SIGINT, &sa, NULL) == -1){
     perror("sigaction");
-    //exit(1);
+  }
+  if(sigaction(SIGQUIT, &sa, NULL) == -1){
+    perror("sigaction");
   }
 }
-
+  
 static void inline trace_and_difftest(){
   //printf("pc=0x%x, dnpc=0x%x\n",PC, PC + (top->cpu->pc1->pc_offset_en?top->cpu->pc1->pc_offset:0));
   //IFDEF(CONFIG_DIFFTEST, difftest_step(PC, PC + top->cpu->pc1->pc_offset));
@@ -145,8 +151,12 @@ static void execute(uint64_t n) {
       npc_state.state = NPC_QUIT;
       break;
     }
-
+    if(printinfo_signal){
+      printinfo_signal = 0;
+      statistic();
+    }
     if (npc_state.state != NPC_RUNNING) break;
+
     IFDEF(CONFIG_DEVICE, device_update());
   }
 }
