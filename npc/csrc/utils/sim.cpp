@@ -3,7 +3,10 @@
 #include <common.h>
 #include <nvboard.h>
 
+#ifdef CONFIG_USE_NVBOARD
 void nvboard_bind_all_pins(VTOP_NAME* top);
+#endif 
+
 #ifdef CONFIG_WAVE_VCD
 VerilatedVcdC *tfp = NULL;
 #endif
@@ -17,7 +20,7 @@ VTOP_NAME* top = NULL;
 void init_sim(int argc, char** argv){
 	//Verilated::commandArgs(argc, argv);
 	top = new VTOP_NAME;
-#ifdef CONFIG_USE_SOC
+#ifdef CONFIG_USE_NVBOARD
 	nvboard_bind_all_pins(top);
 	nvboard_init();
 #endif 

@@ -44,6 +44,9 @@
 #include <verilated_fst_c.h>
 #endif 
 
+#ifdef CONFIG_USE_NVBOARD
+#include <nvboard.h>
+#endif 
 
 #define TOP_NAME MUXDEF(CONFIG_USE_SOC, ysyxSoCFull, ysyx_23060246)
 #define VTOP_NAME MUXDEF(CONFIG_USE_SOC, VysyxSoCFull, Vysyx_23060246)

@@ -7,7 +7,6 @@
 #include <reg.h>
 #include <verilator.h>
 #include <memory/paddr.h>
-#include <nvboard.h>
 #include <signal.h>
 
 #define MAX_INST_TO_PRINT 10001
@@ -19,6 +18,7 @@ uint64_t g_nr_guest_inst = 0;
 uint64_t g_nr_guest_cycle = 0;
 static bool g_print_step = false;
 volatile sig_atomic_t stop_signal = 0;
+volatile sig_atomic_t printinfo_signal = 0;
 
 extern MUXDEF(CONFIG_WAVE_VCD, VerilatedVcdC, VerilatedFstC)* tfp;
 extern VerilatedContext* contextp;
@@ -27,29 +27,35 @@ void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
 void device_update();
 void perf_statistic();
 
-void handle_sigint(int sig) {
-  stop_signal = 1;
+void handle_sig(int sig) {
+  if(sig == SIGINT)
+    stop_signal = 1;
+  else if(sig == SIGQUIT)
+    printinfo_signal = 1;
 }
 
 void init_sig(){
   struct sigaction sa;
   memset(&sa, 0, sizeof(sa));
-  sa.sa_handler = handle_sigint;
+  sa.sa_handler = handle_sig;
   sigemptyset(&sa.sa_mask);
   if(sigaction(SIGINT, &sa, NULL) == -1){
     perror("sigaction");
-    //exit(1);
+  }
+  if(sigaction(SIGQUIT, &sa, NULL) == -1){
+    perror("sigaction");
   }
 }
-
-static void trace_and_difftest(){
+  
+static void inline trace_and_difftest(){
   //printf("pc=0x%x, dnpc=0x%x\n",PC, PC + (top->cpu->pc1->pc_offset_en?top->cpu->pc1->pc_offset:0));
   //IFDEF(CONFIG_DIFFTEST, difftest_step(PC, PC + top->cpu->pc1->pc_offset));
   IFDEF(CONFIG_DIFFTEST, difftest_step(0,0));
-  scan_watchpoint();
+  
+  //scan_watchpoint();
 }
 
-void cpu_eval_dump(){
+void inline cpu_eval_dump(){
   top->eval();
 #ifdef CONFIG_WAVE_DUMP
   tfp->dump(contextp->time());
@@ -57,7 +63,7 @@ void cpu_eval_dump(){
 #endif
 }
 
-void cpu_single_cycle(){
+void inline cpu_single_cycle(){
 	int i = 2;
 	while((i--))
 	{
@@ -65,12 +71,12 @@ void cpu_single_cycle(){
 		cpu_eval_dump();
 	}
   g_nr_guest_cycle++;
-#ifdef CONFIG_USE_SOC
+#ifdef CONFIG_USE_NVBOARD
   nvboard_update();
 #endif 
 }
 
-void cpu_single_inst(){
+void inline cpu_single_inst(){
   do{
     cpu_single_cycle();
   }while(!WBU_VALID);
@@ -88,8 +94,9 @@ static void statistic() {
 #define NUMBERIC_FMT MUXDEF(CONFIG_TARGET_AM, "%", "%'") PRIu64
   Log("host time spent = " NUMBERIC_FMT " us", g_timer);
   Log("total guest instructions = " NUMBERIC_FMT, g_nr_guest_inst);
-  if (g_timer > 0) Log("simulation frequency = " NUMBERIC_FMT " inst/s", g_nr_guest_inst * 1000000 / g_timer);
-  else Log("Finish running in less than 1 us and can not calculate the simulation frequency");
+  if (g_timer > 0){ Log("simulation frequency = " NUMBERIC_FMT " inst/s; " NUMBERIC_FMT " cycle/s",
+       g_nr_guest_inst * 1000000 / g_timer, g_nr_guest_cycle * 1000000 / g_timer );}
+  else{} //Log("Finish running in less than 1 us and can not calculate the simulation frequency");
   Log("IPC: %.4lf" , (double)g_nr_guest_inst/g_nr_guest_cycle);
   perf_statistic();
 }
@@ -104,7 +111,8 @@ static void exec_once(){
   
   //cpu_single_cycle();
   cpu_single_inst();
-  
+
+#ifdef CONFIG_DIFFTEST
   for(int i=0; i<MUXDEF(CONFIG_RVE,16,32); i++){
     npc_cpu.gpr[i] = gpr(i);
   }
@@ -114,6 +122,8 @@ static void exec_once(){
   npc_cpu.csr.mcause = CSR->mcause;
   npc_cpu.csr.mstatus = CSR->mstatus;
   npc_cpu.csr.mtvec = CSR->mtvec;
+#endif 
+
   
 #ifdef CONFIG_TRACE
   char logbuf[64];
@@ -141,8 +151,12 @@ static void execute(uint64_t n) {
       npc_state.state = NPC_QUIT;
       break;
     }
-
+    if(printinfo_signal){
+      printinfo_signal = 0;
+      statistic();
+    }
     if (npc_state.state != NPC_RUNNING) break;
+
     IFDEF(CONFIG_DEVICE, device_update());
   }
 }
