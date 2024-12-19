@@ -2,7 +2,7 @@
 #define __UTILS_H_
 
 #include <common.h>
-
+#include <zlib.h>
 
 // ----------- state -----------
 

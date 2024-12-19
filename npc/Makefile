@@ -60,6 +60,8 @@ CXXFLAGS += -Wall $(INCFLAGS) -g -DTOP_NAME="\"V$(TOPNAME)\"" -fpermissive
 CXXFLAGS += $(shell llvm-config --cxxflags)
 LDFLAGS += $(shell  llvm-config --ldflags --libs --system-libs) -fPIE
 LDFLAGS += -lreadline
+LDFLAGS += -lz
+
 
 # source file
 VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")

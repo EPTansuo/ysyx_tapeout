@@ -20,12 +20,16 @@ static bool g_print_step = false;
 volatile sig_atomic_t stop_signal = 0;
 volatile sig_atomic_t printinfo_signal = 0;
 
+
+
+
 extern MUXDEF(CONFIG_WAVE_VCD, VerilatedVcdC, VerilatedFstC)* tfp;
 extern VerilatedContext* contextp;
 
 void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
 void device_update();
 void perf_statistic();
+void pc_trace(word_t pc);
 
 void handle_sig(int sig) {
   if(sig == SIGINT)
@@ -46,12 +50,13 @@ void init_sig(){
     perror("sigaction");
   }
 }
-  
+
+
 static void inline trace_and_difftest(){
   //printf("pc=0x%x, dnpc=0x%x\n",PC, PC + (top->cpu->pc1->pc_offset_en?top->cpu->pc1->pc_offset:0));
   //IFDEF(CONFIG_DIFFTEST, difftest_step(PC, PC + top->cpu->pc1->pc_offset));
   IFDEF(CONFIG_DIFFTEST, difftest_step(0,0));
-  
+  IFDEF(CONFIG_PC_TRACE, pc_trace(PC));
   //scan_watchpoint();
 }
 
@@ -110,6 +115,7 @@ void assert_fail_msg() {
 static void exec_once(){
   
   //cpu_single_cycle();
+
   cpu_single_inst();
 
 #ifdef CONFIG_DIFFTEST
@@ -144,6 +150,7 @@ static void exec_once(){
 static void execute(uint64_t n) {
   for (;n > 0; n --) {
     exec_once();
+    
     g_nr_guest_inst ++;
     trace_and_difftest();
 

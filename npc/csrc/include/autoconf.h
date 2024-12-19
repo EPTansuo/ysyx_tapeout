@@ -5,6 +5,7 @@
 #define CONFIG_CC_OPT "-O2"
 #define CONFIG_WAVE_FILE_TYPE "none"
 #define CONFIG_USE_SOC 1
+#define CONFIG_PC_TRACE 1
 #define CONFIG_DIFFTEST_REF_PATH "none"
 #define CONFIG_DIFFTEST_REF_NAME "none"
 #define CONFIG_MBASE 0x0
