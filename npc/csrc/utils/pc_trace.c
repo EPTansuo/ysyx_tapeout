@@ -6,6 +6,22 @@
 IFDEF(CONFIG_PC_TRACE, static 
 MUXDEF(CONFIG_PC_TRACE_COMPRESS, gzFile, FILE*) pc_trace_fp;)
 
+int gz_printf(gzFile log_file, char *format, ...) {
+    static char buffer[512];
+    va_list args;
+    va_start(args, format);
+    int len = vsnprintf(buffer, sizeof(buffer), format, args);
+    va_end(args);
+
+    if (len < 0) {
+        return -1;
+    }
+
+    if (gzwrite(log_file, buffer, len) != len) {
+        return -1;
+    }
+    return 0;
+}
 
 void init_pc_trace(){
   char buf[100];

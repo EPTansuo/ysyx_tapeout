@@ -63,7 +63,7 @@ uint64_t get_time();
 
 extern "C" void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
 extern "C" void init_disasm(const char *triple);
-int log_printf(gzFile log_file, char *format, ...);
+int gz_printf(gzFile log_file, char *format, ...);
 
 
 #endif
