@@ -12,7 +12,7 @@ void init_pc_trace(){
   MUXDEF(CONFIG_PC_TRACE_BINARY,
   sprintf(buf, "%s/build/pc_trace.bin", getenv("NPC_HOME")),
   sprintf(buf, "%s/build/pc_trace.txt", getenv("NPC_HOME")));
-
+#ifdef CONFIG_PC_TRACE
 #ifdef CONFIG_PC_TRACE_COMPRESS
   strcat(buf, ".gz");
   pc_trace_fp = gzopen(buf, "wb");
@@ -20,9 +20,11 @@ void init_pc_trace(){
   pc_trace_fp = fopen(buf, "wb");
 #endif 
   Log("PC TRACE: %s", buf);
+#endif
 }
 
 void pc_trace(word_t pc){
+#ifdef CONFIG_PC_TRACE
 #ifdef CONFIG_PC_TRACE_COMPRESS
   MUXDEF(CONFIG_PC_TRACE_BINARY, 
   gzwrite(pc_trace_fp, (char*)&pc, sizeof(word_t)),
@@ -32,11 +34,14 @@ void pc_trace(word_t pc){
   fwrite(&pc, sizeof(word_t), 1, pc_trace_fp),
   fprintf(pc_trace_fp, FMT_WORD_HEX "\n", pc));
 #endif
+#endif 
 }
 void pc_trace_close(){
+#ifdef CONFIG_PC_TRACE
 #ifdef CONFIG_PC_TRACE_COMPRESS
   gzclose(pc_trace_fp);
 #else 
   fclose(pc_trace_fp);
 #endif
+#endif 
 }
