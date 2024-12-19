@@ -24,7 +24,7 @@ void init_mem();
 void init_device();
 void sdb_set_batch_mode();
 void init_sig();
-
+void init_pc_trace();
 // uint64_t init_uptime(){
 //   static uint64_t init_time = 0;
 
@@ -105,6 +105,7 @@ void init_monitor(int argc, char** argv){
   init_mem();
   init_sig();
   IFDEF(CONFIG_DEVICE, init_device());
+  IFDEF(CONFIG_PC_TRACE, init_pc_trace());
   cpu_reset(13);
   long img_size = load_img();
   init_difftest(diff_so_file, img_size, 0);  //Do not need to use the  third parameter

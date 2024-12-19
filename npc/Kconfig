@@ -89,6 +89,18 @@ endmenu
 
 menu "Testing and Debugging"
 
+config PC_TRACE
+  bool "Enable PC Tracer"
+  default y
+config PC_TRACE_BINARY
+  depends on PC_TRACE
+  bool "PC Tracer Use Binary Format"
+  default y
+
+config PC_TRACE_COMPRESS
+  depends on PC_TRACE
+  bool "Enable PC Tracer Compress"
+  default y
 
 config TRACE
   bool "Enable tracer"
