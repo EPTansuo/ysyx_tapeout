@@ -151,6 +151,8 @@ perf: verilog syn
 	@bash $(NPC_HOME)/scripts/perf.sh  $(NPC_TOPNAME) $(CLK_FREQ_MHZ) | \
 	tee >(sed -r "s/\x1B\[[0-9;]*m//g" > $(PERF_PATH)/perf.txt)
 	@git rev-parse HEAD > $(PERF_PATH)/commit_hash.txt
+	@echo $(DESP) > $(PERF_PATH)/description.txt
+	@git add -f $(PERF_PATH)/*
 
 # menuconfig and autoconf.h
 include $(NPC_HOME)/scripts/config.mk
