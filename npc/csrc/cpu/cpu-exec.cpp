@@ -7,7 +7,6 @@
 #include <reg.h>
 #include <verilator.h>
 #include <memory/paddr.h>
-#include <nvboard.h>
 #include <signal.h>
 
 #define MAX_INST_TO_PRINT 10001
@@ -42,14 +41,14 @@ void init_sig(){
   }
 }
 
-static void trace_and_difftest(){
+static void inline trace_and_difftest(){
   //printf("pc=0x%x, dnpc=0x%x\n",PC, PC + (top->cpu->pc1->pc_offset_en?top->cpu->pc1->pc_offset:0));
   //IFDEF(CONFIG_DIFFTEST, difftest_step(PC, PC + top->cpu->pc1->pc_offset));
   IFDEF(CONFIG_DIFFTEST, difftest_step(0,0));
   scan_watchpoint();
 }
 
-void cpu_eval_dump(){
+void inline cpu_eval_dump(){
   top->eval();
 #ifdef CONFIG_WAVE_DUMP
   tfp->dump(contextp->time());
@@ -57,7 +56,7 @@ void cpu_eval_dump(){
 #endif
 }
 
-void cpu_single_cycle(){
+void inline cpu_single_cycle(){
 	int i = 2;
 	while((i--))
 	{
@@ -65,12 +64,12 @@ void cpu_single_cycle(){
 		cpu_eval_dump();
 	}
   g_nr_guest_cycle++;
-#ifdef CONFIG_USE_SOC
+#ifdef CONFIG_USE_NVBOARD
   nvboard_update();
 #endif 
 }
 
-void cpu_single_inst(){
+void inline cpu_single_inst(){
   do{
     cpu_single_cycle();
   }while(!WBU_VALID);
@@ -88,7 +87,8 @@ static void statistic() {
 #define NUMBERIC_FMT MUXDEF(CONFIG_TARGET_AM, "%", "%'") PRIu64
   Log("host time spent = " NUMBERIC_FMT " us", g_timer);
   Log("total guest instructions = " NUMBERIC_FMT, g_nr_guest_inst);
-  if (g_timer > 0) Log("simulation frequency = " NUMBERIC_FMT " inst/s", g_nr_guest_inst * 1000000 / g_timer);
+  if (g_timer > 0){ Log("simulation frequency = " NUMBERIC_FMT " inst/s; " NUMBERIC_FMT "cycle/s",
+       g_nr_guest_inst * 1000000 / g_timer, g_nr_guest_cycle * 1000000 / g_timer );}
   else Log("Finish running in less than 1 us and can not calculate the simulation frequency");
   Log("IPC: %.4lf" , (double)g_nr_guest_inst/g_nr_guest_cycle);
   perf_statistic();
@@ -104,7 +104,8 @@ static void exec_once(){
   
   //cpu_single_cycle();
   cpu_single_inst();
-  
+
+#ifdef CONFIG_DIFFTEST
   for(int i=0; i<MUXDEF(CONFIG_RVE,16,32); i++){
     npc_cpu.gpr[i] = gpr(i);
   }
@@ -114,6 +115,8 @@ static void exec_once(){
   npc_cpu.csr.mcause = CSR->mcause;
   npc_cpu.csr.mstatus = CSR->mstatus;
   npc_cpu.csr.mtvec = CSR->mtvec;
+#endif 
+
   
 #ifdef CONFIG_TRACE
   char logbuf[64];

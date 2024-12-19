@@ -80,7 +80,7 @@ SYN_ADDITION_FILES += $(NPC_HOME)/vsrc/mem.v
 endif
 
 # constraint file
-ifeq ($(CONFIG_USE_SOC),y)
+ifeq ($(CONFIG_USE_NVBOARD),y)
 SRC_AUTO_BIND = $(abspath $(BUILD_DIR)/auto_bind.cpp)
 $(SRC_AUTO_BIND): $(NXDC_FILES)
 		python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@

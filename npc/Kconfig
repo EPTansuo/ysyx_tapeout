@@ -1,8 +1,6 @@
 mainmenu "NEMU Configuration Menu"
 
-config USE_SOC 
-  default y
-  bool "Use SOC for Simulation"
+
 
 choice
   prompt "Base ISA"
@@ -52,7 +50,9 @@ config CC_OPT
   default "-O3" if CC_O3
   default "none"
 
-menu "Verilator Simulation"
+menu "Simulation Configuration"
+
+
 config WAVE_DUMP
 	bool "Enable wave dump"
 	default n
@@ -73,6 +73,18 @@ config WAVE_FILE_TYPE
 	default "vcd" if WAVE_VCD
 	default "fst" if WAVE_FST
 	default "none"
+
+
+config USE_SOC
+  default y
+  bool "Use SOC for Simulation"
+
+
+config USE_NVBOARD
+  depends on USE_SOC
+  default y
+  bool "USE NVBoard for SOC Simulation"
+
 endmenu
 
 menu "Testing and Debugging"
