@@ -27,7 +27,7 @@ void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
 void device_update();
 void perf_statistic();
 
-void handle_sigint(int sig) {
+void handle_sig(int sig) {
   if(sig == SIGINT)
     stop_signal = 1;
   else if(sig == SIGQUIT)
@@ -37,7 +37,7 @@ void handle_sigint(int sig) {
 void init_sig(){
   struct sigaction sa;
   memset(&sa, 0, sizeof(sa));
-  sa.sa_handler = handle_sigint;
+  sa.sa_handler = handle_sig;
   sigemptyset(&sa.sa_mask);
   if(sigaction(SIGINT, &sa, NULL) == -1){
     perror("sigaction");
