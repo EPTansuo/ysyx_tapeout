@@ -146,7 +146,7 @@ PERF_PATH=$(NPC_HOME)/data/$(PERF_DATE)
 
 perf: verilog syn
 	@make -C /home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/benchmarks/microbench \
-		 ARCH=riscv32e-ysyxsoc run BATCH=1 mainargs="test"
+		 ARCH=riscv32e-ysyxsoc run BATCH=1 mainargs="train"
 	@mkdir -p $(PERF_PATH)
 	@bash $(NPC_HOME)/scripts/perf.sh  $(NPC_TOPNAME) $(CLK_FREQ_MHZ) | \
 	tee >(sed -r "s/\x1B\[[0-9;]*m//g" > $(PERF_PATH)/perf.txt)
