@@ -19,6 +19,7 @@ void init_pc_trace(){
 #else 
   pc_trace_fp = fopen(buf, "wb");
 #endif 
+  Log("PC TRACE: %s", buf);
 }
 
 void pc_trace(word_t pc){
