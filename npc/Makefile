@@ -132,7 +132,7 @@ sigmap: $(NPC_HOME)/tools/control_gen/control_table.xlsx
 sim: run
 run: $(BIN)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
-	$^ $(ARGS) $(IMG)
+	setsid $^ $(ARGS) $(IMG)
 
 
 syn: verilog $(SYN_ADDITION_FILES)
