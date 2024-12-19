@@ -57,7 +57,7 @@ CXXFLAGS += $(INCFLAGS)
 CXXFLAGS += $(CFLAGS)
 CXXFLAGS += -fmacro-prefix-map=$(NPC_HOME)=npc
 CXXFLAGS += -Wall $(INCFLAGS) -g -DTOP_NAME="\"V$(TOPNAME)\"" -fpermissive
-CXXFLAGS += $(shell llvm-config --cxxflags)
+#CXXFLAGS += $(shell llvm-config --cxxflags)
 LDFLAGS += $(shell  llvm-config --ldflags --libs --system-libs) -fPIE
 LDFLAGS += -lreadline
 LDFLAGS += -lz
@@ -74,7 +74,9 @@ endif
 
 SCALA_FILE = $(shell find ./src/main -name '*.scala')
 
-CSRCS = $(shell find $(abspath ./csrc) \( -path $(abspath ./csrc/device) -prune \) -o \( -name "*.c" -or -name "*.cc" -or -name "*.cpp" \) -print)
+CSRCS = $(shell find $(abspath ./csrc) \( -path $(abspath ./csrc/device) \-prune \
+ 		-or -path $(abspath ./csrc/utils/disasm.cc) -prune \) \
+		-o \( -name "*.c" -or -name "*.cc" -or -name "*.cpp" \) -print)
 
 SYN_ADDITION_FILES = $(NPC_HOME)/vsrc/debug.v
 ifeq ($(CONFIG_USE_SOC),y)
@@ -99,8 +101,12 @@ NPC_EXEC := $(BIN)
 default: all 
 all: $(BIN)
 
-$(BIN): $(CSRCS) verilog $(NVBOARD_ARCHIVE)
-	$(VERILATOR) $(VERILATOR_CONFIG) $(VERILATOR_FLAGS) -top $(TOPNAME) $(CSRCS) $(VSRCS) $(NVBOARD_ARCHIVE)\
+disasm.o: $(abspath csrc/utils/disasm.cc)
+	$(CXX) $(CXXFLAGS) $(shell llvm-config --cxxflags) \
+		-fPIE -c -o $(OBJ_DIR)/$@ $<
+
+$(BIN): $(CSRCS) verilog $(NVBOARD_ARCHIVE) disasm.o
+	$(VERILATOR) $(VERILATOR_CONFIG) $(VERILATOR_FLAGS) -top $(TOPNAME) $(CSRCS) $(VSRCS) disasm.o $(NVBOARD_ARCHIVE)\
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) --top-module $(TOPNAME)
 
