@@ -7,6 +7,7 @@
 #define CONFIG_WAVE_FST 1
 #define CONFIG_WAVE_FILE_TYPE "fst"
 #define CONFIG_USE_SOC 1
+#define CONFIG_USE_NVBOARD 1
 #define CONFIG_DIFFTEST_REF_PATH "none"
 #define CONFIG_DIFFTEST_REF_NAME "none"
 #define CONFIG_MBASE 0x0
