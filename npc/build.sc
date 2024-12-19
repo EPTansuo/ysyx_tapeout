@@ -11,6 +11,7 @@ val defaultScalaVersion = "2.13.10"
 
 object v {
   def chiselIvy: Option[Dep] = Some(ivy"org.chipsalliance::chisel:${chiselVersion}")
+  def chiselTestIvy: Option[Dep] = Some(ivy"edu.berkeley.cs::chiseltest:6.0.0")
   def chiselPluginIvy: Option[Dep] = Some(ivy"org.chipsalliance:::chisel-plugin:${chiselVersion}")
 }
 
@@ -19,11 +20,12 @@ trait HasThisChisel extends SbtModule {
   def chiselModule: Option[ScalaModule] = None
   def chiselPluginJar: T[Option[PathRef]] = None
   def chiselIvy: Option[Dep] = v.chiselIvy
+  def chiselTestIvy: Option[Dep] = v.chiselTestIvy
   def chiselPluginIvy: Option[Dep] = v.chiselPluginIvy
   override def scalaVersion = defaultScalaVersion
   override def scalacOptions = super.scalacOptions() ++
     Agg("-language:reflectiveCalls", "-Ymacro-annotations", "-Ytasty-reader")
-  override def ivyDeps = super.ivyDeps() ++ Agg(chiselIvy.get)
+  override def ivyDeps = super.ivyDeps() ++ Agg(chiselIvy.get) ++ Agg(chiselTestIvy.get)
   override def scalacPluginIvyDeps = super.scalacPluginIvyDeps() ++ Agg(chiselPluginIvy.get)
 }
 
@@ -99,4 +101,11 @@ trait ysyx_23060246 extends ysyx_23060246Module with HasThisChisel {
     "-P:chiselplugin:genBundleElements",
     //"-Xsource:2.13"
   )
+  object test extends SbtTests with TestModule.ScalaTest {
+    def chiselIvy: Option[Dep] = v.chiselIvy
+    def chiselTestIvy: Option[Dep] = v.chiselTestIvy
+    override def ivyDeps = Agg(chiselIvy.get) ++ Agg(chiselTestIvy.get) ++ Agg(
+      ivy"org.scalatest::scalatest::3.2.16"
+    )
+  }
 }
