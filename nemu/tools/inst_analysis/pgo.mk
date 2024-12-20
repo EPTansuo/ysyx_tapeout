@@ -18,12 +18,14 @@ run: $(TARGET)_gen
 tiny_run: $(TARGET)_gen
 	./$(TARGET)_gen pc_trace.bin_sum.gz sum-riscv32-nemu.elf.disasm
 
+train_run:$(TARGET)_gen
+	./$(TARGET)_gen pc_trace.bin_train.gz microbench-riscv32-nemu_train.elf
 # 第三步：使用性能数据重新编译程序
 $(TARGET)_pgo: $(SRCS)
 	gcc $(CFLAGS) -fprofile-use -o $@ $< $(LDFLAGS)
 
 # 完整的 PGO 流程
-pgo: $(TARGET)_gen tiny_run $(TARGET)_pgo
+pgo: $(TARGET)_gen train_run $(TARGET)_pgo
 
 # 清理生成的文件
 clean:
