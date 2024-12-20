@@ -14,15 +14,11 @@ VERILOG_DIR := $(BUILD_DIR)/verilog
 
 VERILATOR = verilator
 VERILATOR_COVERAGE = verilator_coverage
-# # verilator flags
-# VERILATOR_FLAGS += -MMD --trace --build -cc --exe \
-# 		-O3 --x-assign fast --x-initial fast --noassert -report-unoptflat
-#
 
 V_INCPATH+=$(abspath $(YSYX_HOME)/npc/vsrc)
 V_INCPATH+=$(shell find $(YSYX_HOME)/ysyxSoC/perip -type f -name '*defines*.v' -exec dirname {} \;)
 V_INCFLAGS=$(addprefix -I, $(V_INCPATH))
-VERILATOR_FLAGS += -MMD --build -cc --public \
+VERILATOR_FLAGS = -MMD --build -cc --public \
 				--x-assign fast --x-initial fast --noassert \
 				$(V_INCFLAGS) --threads 2 --autoflush #--trace-max-array 2048
 
