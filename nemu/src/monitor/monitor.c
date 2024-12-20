@@ -17,6 +17,7 @@
 #include <memory/paddr.h>
 #include <memory/socmem.h>
 #include <ftrace.h>
+#include <cpu/cpu.h>
 
 void init_rand();
 void init_log(const char *log_file);
