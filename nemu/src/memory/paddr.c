@@ -82,7 +82,9 @@ void init_mem() {
 #endif
 #ifndef CONFIG_SOC_DIFFTEST
   Log("physical memory area [" FMT_PADDR ", " FMT_PADDR "]", PMEM_LEFT, PMEM_RIGHT);
-#endif
+#else  
+  Log("Use YSYX SoC memory model");
+#endif 
 }
 
 word_t paddr_read(paddr_t addr, int len) {
