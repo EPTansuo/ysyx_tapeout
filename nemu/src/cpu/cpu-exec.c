@@ -35,7 +35,7 @@ CPU_state cpu = {};
 uint64_t g_nr_guest_inst = 0;
 static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
-
+extern int is_batch_mode;
 struct{
   uint32_t inst[IRINGBUF_SIZE];
   word_t pc[IRINGBUF_SIZE];
@@ -83,10 +83,10 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 
-
-  scan_watchpoint();
-  scan_breakpoint(dnpc);
-
+  if(!is_batch_mode){
+    scan_watchpoint();
+    scan_breakpoint(dnpc);
+  }
 }
 
 static void exec_once(Decode *s, vaddr_t pc) {

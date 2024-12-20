@@ -151,4 +151,8 @@ config SDCARD_IMG_PATH
 endif # HAS_SDCARD
 endif
 
+config IGNORE_SDL_EVENT
+  bool "Ignore SDL Event (For Fast Simulation)"
+  default n
+
 endif # DEVICE

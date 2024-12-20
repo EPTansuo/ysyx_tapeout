@@ -81,26 +81,42 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
 
     val rdata = Mux1H(hit_way, data_way)
     io.ifu.r.bits.data := rdata
-    io.ifu.r.valid := hit && state === s_wait_ready
+    io.ifu.r.valid := hit || (state === s_bypass && io.imem.r.valid)
+
+    // IF the address is not in the range of the SDRAM address, then it is a bypass
+    val bypass = (io.ifu.ar.bits.addr(31,29) =/= "b101".U)
 
 
-
-    val s_idle :: s_read :: s_wait_ready :: s_fetch :: Nil = Enum(4)
+    val s_idle :: s_read :: s_replace :: s_refill :: s_bypass :: Nil = Enum(5)
 
     val state = RegInit(s_idle)
     state := MuxLookup(state, s_idle)(Seq(
-        s_idle -> Mux(io.ifu.ar.valid, s_read, s_idle),
-        s_read -> Mux(hit , s_wait_ready, s_fetch),
-        s_wait_ready -> Mux(io.ifu.r.ready, s_idle, s_wait_ready),
-        s_fetch -> Mux(io.imem.r.valid, s_wait_ready, s_fetch),
-
+        s_idle -> Mux(io.ifu.r.valid, Mux(bypass, s_bypass, s_read), s_idle),
+        s_read -> Mux(hit, s_idle, s_replace),
+        s_replace -> Mux(io.imem.ar.valid, s_refill, s_replace),
+        s_refill -> Mux(io.imem.r.valid, s_idle, s_refill),
+        s_bypass -> Mux(io.imem.r.valid, s_idle, s_bypass)
     ))
+
+
 
     io.ifu.ar.ready := state === s_idle
 
     io.imem.ar.bits.addr := io.ifu.ar.bits.addr 
-    io.imem.ar.valid := state === s_fetch
-    io.imem.r.ready := state === s_wait_ready 
+    // io.imem.ar.valid := state === s_fetch
+    io.imem.r.ready := (state === s_refill) || (state === s_bypass && io.ifu.r.valid)
+
+    // when(state === s_refill){
+    //     val widx = LFSR16(wayBits)
+    //     cache(widx)(ridx).valid := true.B
+    //     cache(widx)(ridx).tag := rtag
+    //     cache(widx)(ridx).data := io.imem.r.bits.data.asTypeOf(Vec(rowBytes, UInt(8.W)))
+    // }
+
+    when(state === s_bypass){
+        io.ifu.r.bits.data := io.imem.r.bits.data
+    }
+
 
 
 
