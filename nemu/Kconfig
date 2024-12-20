@@ -247,6 +247,16 @@ config SOC_DIFFTEST
   bool "Used as REF for differential testing for SoC"
   default n
 
+choice
+  prompt "Boot from FLAH or MROM"
+  depends on SOC_DIFFTEST
+  default BOOT_FLASH
+  config BOOT_FLASH
+    bool "Boot from FLASH"
+  config BOOT_MROM
+    bool "Boot from MROM"
+endchoice
+
 config MROMBASE
   hex "MROM base address"
   default 0x20000000
@@ -282,5 +292,7 @@ config SDRAMBASE
 config SDRAMSIZE
   hex "SDRAM size"
   default 0x4000000
+
+
 endmenu
 

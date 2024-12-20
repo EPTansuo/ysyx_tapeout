@@ -26,4 +26,9 @@ void invalid_inst(vaddr_t thispc);
 #define NEMUTRAP(thispc, code) set_nemu_state(NEMU_END, thispc, code)
 #define INV(thispc) invalid_inst(thispc)
 
+#ifndef CONFIG_SOC_DIFFTEST
+#define RESET_VECTOR (PMEM_LEFT + CONFIG_PC_RESET_OFFSET)
+#else  
+#define RESET_VECTOR MUXDEF(CONFIG_BOOT_FLASH, CONFIG_FLASHBASE, CONFIG_MROMBASE)
+#endif 
 #endif

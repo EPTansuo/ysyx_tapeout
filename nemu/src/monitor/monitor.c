@@ -15,6 +15,7 @@
 
 #include <isa.h>
 #include <memory/paddr.h>
+#include <memory/socmem.h>
 #include <ftrace.h>
 
 void init_rand();
@@ -68,7 +69,16 @@ static long load_img() {
   Log("The image is %s, size = %ld", img_file, size);
 
   fseek(fp, 0, SEEK_SET);
+#ifndef CONFIG_SOC_DIFFTEST 
   int ret = fread(guest_to_host(RESET_VECTOR), size, 1, fp);
+#else  
+#ifdef CONFIG_BOOT_FLASH
+  int ret = fread(socmem_guest_to_host(CONFIG_FLASHBASE), size, 1, fp);
+#endif 
+#ifdef CONFIG_BOOT_MROM 
+  int ret = fread(socmem_guest_to_host(CONFIG_MROMBASE), size, 1, fp);
+#endif  
+#endif 
   assert(ret == 1);
 
   fclose(fp);

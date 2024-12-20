@@ -80,7 +80,9 @@ void init_mem() {
 #ifndef CONFIG_TARGET_SHARE
   IFDEF(CONFIG_MEM_RANDOM, memset(pmem, rand(), CONFIG_MSIZE));
 #endif
+#ifndef CONFIG_SOC_DIFFTEST
   Log("physical memory area [" FMT_PADDR ", " FMT_PADDR "]", PMEM_LEFT, PMEM_RIGHT);
+#endif
 }
 
 word_t paddr_read(paddr_t addr, int len) {
