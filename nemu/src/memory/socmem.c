@@ -95,3 +95,15 @@ void socmem_write(paddr_t addr, int len, word_t data){
 
 
 
+#ifdef CONFIG_SOC_DIFFTEST
+
+void init_mem(){
+    memset(mrom, 0, CONFIG_MROMSIZE);
+    memset(sram, 0, CONFIG_SRAMSIZE);
+    memset(flash, 0, CONFIG_FLASHSIZE);
+    memset(psram, 0, CONFIG_PSRAMSIZE);
+    memset(sdram, 0, CONFIG_SDRAMSIZE);
+    Log("Use YSYX SoC memory model: MROM, SRAM, FLASH, PSRAM, SDRAM");
+}
+
+#endif 

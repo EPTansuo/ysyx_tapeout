@@ -72,6 +72,8 @@ void print_memwrite(paddr_t addr, int len, word_t data){
 }
 
 #endif
+
+
 void init_mem() {
 #if   defined(CONFIG_PMEM_MALLOC)
   pmem = malloc(CONFIG_MSIZE);
@@ -80,11 +82,7 @@ void init_mem() {
 #ifndef CONFIG_TARGET_SHARE
   IFDEF(CONFIG_MEM_RANDOM, memset(pmem, rand(), CONFIG_MSIZE));
 #endif
-#ifndef CONFIG_SOC_DIFFTEST
   Log("physical memory area [" FMT_PADDR ", " FMT_PADDR "]", PMEM_LEFT, PMEM_RIGHT);
-#else  
-  Log("Use YSYX SoC memory model");
-#endif 
 }
 
 word_t paddr_read(paddr_t addr, int len) {
