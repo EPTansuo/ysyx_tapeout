@@ -18,6 +18,7 @@ DIRS-y += src/cpu src/monitor src/utils
 #DIRS-$(CONFIG_MODE_SYSTEM) += src/memory
 ifeq ($(CONFIG_SOC_DIFFTEST),y)
 	SRCS-y += src/memory/socmem.c
+	SRCS-y += src/memory/vaddr.c
 else
 	SRCS-y += src/memory/vaddr.c
 	SRCS-y += src/memory/paddr.c

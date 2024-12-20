@@ -101,12 +101,14 @@ NPC_EXEC := $(BIN)
 default: all 
 all: $(BIN)
 
-disasm.o: $(abspath csrc/utils/disasm.cc)
-	$(CXX) $(CXXFLAGS) $(shell llvm-config --cxxflags) \
-		-fPIE -c -o $(OBJ_DIR)/$@ $<
+$(OBJ_DIR)/disasm.o: $(abspath csrc/utils/disasm.cc)
+	@mkdir -p $(OBJ_DIR)
+	$(CXX)  $(shell llvm-config --cxxflags) \
+		-fPIE -c $< -o $@ 
+	
 
-$(BIN): $(CSRCS) verilog $(NVBOARD_ARCHIVE) disasm.o
-	$(VERILATOR) $(VERILATOR_CONFIG) $(VERILATOR_FLAGS) -top $(TOPNAME) $(CSRCS) $(VSRCS) disasm.o $(NVBOARD_ARCHIVE)\
+$(BIN): $(CSRCS) verilog $(NVBOARD_ARCHIVE) $(OBJ_DIR)/disasm.o
+	$(VERILATOR) $(VERILATOR_CONFIG) $(VERILATOR_FLAGS) -top $(TOPNAME) $(CSRCS) $(VSRCS) $(OBJ_DIR)/disasm.o $(NVBOARD_ARCHIVE)\
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) --top-module $(TOPNAME)
 
