@@ -44,7 +44,7 @@ void pc_trace(word_t pc){
 #ifdef CONFIG_PC_TRACE_COMPRESS
   MUXDEF(CONFIG_PC_TRACE_BINARY, 
   gzwrite(pc_trace_fp, (char*)&pc, sizeof(word_t)),
-  log_printf(pc_trace_fp, "%lx\n", pc));
+  gz_printf(pc_trace_fp, "%lx\n", pc));
 #else  
   MUXDEF(CONFIG_PC_TRACE_BINARY,
   fwrite(&pc, sizeof(word_t), 1, pc_trace_fp),
