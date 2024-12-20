@@ -241,3 +241,6 @@ config RT_CHECK
 endmenu
 
 menu "SoC DiffTest Configuration"
+
+endmenu
+
