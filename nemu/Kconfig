@@ -241,6 +241,8 @@ config RT_CHECK
 endmenu
 
 menu "SoC DiffTest Configuration"
+depends on !TARGET_SHARE
+config FLASH
 
 endmenu
 
