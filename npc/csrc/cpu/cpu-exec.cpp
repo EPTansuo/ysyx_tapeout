@@ -55,7 +55,8 @@ void init_sig(){
 static void inline trace_and_difftest(){
   //printf("pc=0x%x, dnpc=0x%x\n",PC, PC + (top->cpu->pc1->pc_offset_en?top->cpu->pc1->pc_offset:0));
   //IFDEF(CONFIG_DIFFTEST, difftest_step(PC, PC + top->cpu->pc1->pc_offset));
-  IFDEF(CONFIG_DIFFTEST, difftest_step(0,0));
+  //IFDEF(CONFIG_DIFFTEST, difftest_step(0,0));
+  IFDEF(CONFIG_DIFFTEST, difftest_step(PC, PC ));
   IFDEF(CONFIG_PC_TRACE, pc_trace(PC));
   //scan_watchpoint();
 }
