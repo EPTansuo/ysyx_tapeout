@@ -93,7 +93,7 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
   npc_cpu.csr.mstatus = MUXDEF(CONFIG_RV64, 0xa00001800, 0x1800);
   npc_cpu.csr.mtvec = MUXDEF(CONFIG_RV64, 0x80000000, 0x100);
   npc_cpu.csr.mepc = 0;
-  //ref_difftest_regcpy(&npc_cpu, DIFFTEST_TO_REF);
+  ref_difftest_regcpy(&npc_cpu, DIFFTEST_TO_REF);
 }
 
 static void checkregs(CPU_state *ref, vaddr_t pc) {

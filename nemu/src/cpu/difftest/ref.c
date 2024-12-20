@@ -27,6 +27,7 @@ __EXPORT void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction)
   //assert(0);
   if(direction == DIFFTEST_TO_REF) {
     memcpy(DIFFTEST_GUEST_TO(addr), buf, n);
+    printf("pc set to %x\n", cpu.pc);
   } else {
     memcpy(buf, DIFFTEST_GUEST_TO(addr), n);
   }
