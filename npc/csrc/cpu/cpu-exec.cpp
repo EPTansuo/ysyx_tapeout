@@ -30,6 +30,7 @@ void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
 void device_update();
 void perf_statistic();
 void pc_trace(word_t pc);
+void pc_trace_close();
 
 void handle_sig(int sig) {
   if(sig == SIGINT)
@@ -204,7 +205,7 @@ void cpu_exec(uint64_t n) {
 #endif // CONFIG_ITRACE
     
       // fall through
-    case NPC_QUIT: statistic() ;
+    case NPC_QUIT: pc_trace_close(); statistic() ;
   }
 }
 

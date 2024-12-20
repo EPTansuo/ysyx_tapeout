@@ -25,7 +25,7 @@ extern uint32_t inst_num;
 void engine_start();
 int is_exit_status_bad();
 void stop_sim();
-void pc_trace_close();
+
 
 
 int main(int argc, char **argv)
@@ -34,6 +34,5 @@ int main(int argc, char **argv)
 	init_monitor(argc, argv);
 	engine_start();
 	stop_sim();
-	pc_trace_close();
 	return is_exit_status_bad();
 }
