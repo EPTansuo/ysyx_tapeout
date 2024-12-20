@@ -26,6 +26,7 @@ int gz_printf(gzFile log_file, char *format, ...) {
 
 void init_pc_trace(){
   char buf[100];
+  Log("PC Trace: %s", ANSI_FMT("ON", ANSI_FG_GREEN));
   MUXDEF(CONFIG_PC_TRACE_BINARY,
   sprintf(buf, "%s/build/pc_trace.bin", getenv("NEMU_HOME")),
   sprintf(buf, "%s/build/pc_trace.txt", getenv("NEMU_HOME")));
