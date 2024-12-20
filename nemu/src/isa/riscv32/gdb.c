@@ -19,7 +19,7 @@ void use_gdbstub(bool enable){
         gdbstub_valid = enable;
 }
 
-
+#ifndef CONFIG_SOC_DIFFTEST
 
 void print_nemu_state(){
         printf(nemu_state.state == NEMU_RUNNING ? ":-- STATE: running" 
@@ -224,3 +224,7 @@ bool init_gdbstub()
 
         return true;
 }
+
+#else  
+bool init_gdbstub(){return true;}
+#endif 

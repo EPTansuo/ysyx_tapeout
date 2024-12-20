@@ -239,3 +239,60 @@ config RT_CHECK
   default y
 
 endmenu
+
+menu "SoC DiffTest Configuration"
+depends on TARGET_SHARE
+
+config SOC_DIFFTEST
+  bool "Used as REF for differential testing for SoC"
+  default n
+
+choice
+  prompt "Boot from FLAH or MROM"
+  depends on SOC_DIFFTEST
+  default BOOT_FLASH
+  config BOOT_FLASH
+    bool "Boot from FLASH"
+  config BOOT_MROM
+    bool "Boot from MROM"
+endchoice
+
+config MROMBASE
+  hex "MROM base address"
+  default 0x20000000
+config MROMSIZE
+  hex "MROM size"
+  default 0x1000
+
+config FLASHBASE
+  hex "FLASH base address"
+  default 0x30000000
+
+config FLASHSIZE
+  hex "FLASH size"
+  default 0x1000000
+
+config SRAMBASE
+  hex "SRAM base address"
+  default 0x0f000000
+config SRAMSIZE
+  hex "SRAM size"
+  default 0x2000
+
+config PSRAMBASE
+  hex "PSRAM base address"
+  default 0x80000000
+config PSRAMSIZE
+  hex "PSRAM size"
+  default 0x400000
+
+config SDRAMBASE
+  hex "SDRAM base address"
+  default 0xa0000000
+config SDRAMSIZE
+  hex "SDRAM size"
+  default 0x4000000
+
+
+endmenu
+

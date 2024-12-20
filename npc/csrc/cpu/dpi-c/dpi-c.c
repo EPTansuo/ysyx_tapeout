@@ -170,14 +170,14 @@ end_pmem_write:
 extern "C" void flash_read(int32_t addr, int32_t *data) { 
 
  //*data = addr ;
- *data = host_read(guest_to_host(addr& ~0x3u), 4);
+ *data = host_read(guest_to_host(CONFIG_MBASE + (addr& ~0x3u)), 4);
  //printf("read flash addr = %x, data = %08x\n", addr, *data);
 
 }
 extern "C" void mrom_read(int32_t addr, int32_t *data) { 
   //*data =0x100073; // ebreak
 
-  *data = host_read(guest_to_host(addr& ~0x3u) - 0x20000000, 4);
+  *data = host_read(guest_to_host(CONFIG_MBASE + (addr& ~0x3u)) - 0x20000000, 4);
  // *data = 0x00e78023;
 
 }

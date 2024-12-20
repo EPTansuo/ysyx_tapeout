@@ -15,7 +15,15 @@
 
 SRCS-y += src/nemu-main.c
 DIRS-y += src/cpu src/monitor src/utils
-DIRS-$(CONFIG_MODE_SYSTEM) += src/memory
+#DIRS-$(CONFIG_MODE_SYSTEM) += src/memory
+ifeq ($(CONFIG_SOC_DIFFTEST),y)
+	SRCS-y += src/memory/socmem.c
+	SRCS-y += src/memory/vaddr.c
+else
+	SRCS-y += src/memory/vaddr.c
+	SRCS-y += src/memory/paddr.c
+endif
+
 DIRS-BLACKLIST-$(CONFIG_TARGET_AM) += src/monitor/sdb
 
 SHARE = $(if $(CONFIG_TARGET_SHARE),1,0)

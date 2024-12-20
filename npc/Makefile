@@ -14,15 +14,11 @@ VERILOG_DIR := $(BUILD_DIR)/verilog
 
 VERILATOR = verilator
 VERILATOR_COVERAGE = verilator_coverage
-# # verilator flags
-# VERILATOR_FLAGS += -MMD --trace --build -cc --exe \
-# 		-O3 --x-assign fast --x-initial fast --noassert -report-unoptflat
-#
 
 V_INCPATH+=$(abspath $(YSYX_HOME)/npc/vsrc)
 V_INCPATH+=$(shell find $(YSYX_HOME)/ysyxSoC/perip -type f -name '*defines*.v' -exec dirname {} \;)
 V_INCFLAGS=$(addprefix -I, $(V_INCPATH))
-VERILATOR_FLAGS += -MMD --build -cc --public \
+VERILATOR_FLAGS = -MMD --build -cc --public \
 				--x-assign fast --x-initial fast --noassert \
 				$(V_INCFLAGS) --threads 2 --autoflush #--trace-max-array 2048
 
@@ -101,12 +97,14 @@ NPC_EXEC := $(BIN)
 default: all 
 all: $(BIN)
 
-disasm.o: $(abspath csrc/utils/disasm.cc)
-	$(CXX) $(CXXFLAGS) $(shell llvm-config --cxxflags) \
-		-fPIE -c -o $(OBJ_DIR)/$@ $<
+$(OBJ_DIR)/disasm.o: $(abspath csrc/utils/disasm.cc)
+	@mkdir -p $(OBJ_DIR)
+	$(CXX)  $(shell llvm-config --cxxflags) \
+		-fPIE -c $< -o $@ 
+	
 
-$(BIN): $(CSRCS) verilog $(NVBOARD_ARCHIVE) disasm.o
-	$(VERILATOR) $(VERILATOR_CONFIG) $(VERILATOR_FLAGS) -top $(TOPNAME) $(CSRCS) $(VSRCS) disasm.o $(NVBOARD_ARCHIVE)\
+$(BIN): $(CSRCS) verilog $(NVBOARD_ARCHIVE) $(OBJ_DIR)/disasm.o
+	$(VERILATOR) $(VERILATOR_CONFIG) $(VERILATOR_FLAGS) -top $(TOPNAME) $(CSRCS) $(VSRCS) $(OBJ_DIR)/disasm.o $(NVBOARD_ARCHIVE)\
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) --top-module $(TOPNAME)
 
