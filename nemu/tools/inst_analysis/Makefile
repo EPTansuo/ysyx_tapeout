@@ -1,7 +1,7 @@
 TARGET=instAnaly
 SRCS=instAnaly.c 
 LDFLAGS= -lz
-CFLAGS=-Wall -g -O2
+CFLAGS=-Wall -O3
 
 $(TARGET):$(SRCS)
 	gcc $(LDFLAGS) $(CFLAGS) -o $@ $<
@@ -9,6 +9,9 @@ $(TARGET):$(SRCS)
 
 run: $(TARGET)
 	./$(TARGET) pc_trace.bin.gz microbench-riscv32-nemu.elf.disasm
+
+tiny_run: $(TARGET)
+	./$(TARGET) pc_trace.bin_sum.gz sum-riscv32-nemu.elf.disasm
 
 clean:
 	-rm $(TARGET)

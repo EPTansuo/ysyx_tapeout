@@ -5,7 +5,7 @@
 #include <string.h>
 
 
-#define CHUNK 16384
+#define CHUNK (65536)
 
 #define RV32
 #ifdef RV32
@@ -20,34 +20,18 @@
 #define PC_BYTE 8
 #endif 
 
-
-int read_gzip_file(const char *filename);
-
 #define INSTS(_) \
 _(or) _(sltiu) _(sw) _(lb) _(lui) _(bltu) _(lhu) _(bge) _(mulh) _(sub) _(srli) _(auipc) \
 _(jal) _(sltu) _(xori) _(srai) _(bgeu) _(and) _(add) _(remu) _(ebreak ) _(slt) _(jalr) \
 _(lw) _(srl) _(andi) _(sb) _(addi) _(mulhu) _(ori) _(bne) _(sll) _(blt) _(divu) _(lbu) \
 _(slli) _(sh) _(beq) _(mul) _(div) _(xor)
 
-#define INSTS_ITEM(inst) int inst;
-
-typedef struct{
-    int unknow;
-    INSTS(INSTS_ITEM)
-}InstSet;
-
-#define RECORD_DATA(inst) \
-    if(strcmp(instname, #inst) == 0 ){instSet.inst++; return;}
+#define INSTS_ITEM(inst) uint64_t inst;
 
 
 
-InstSet instSet = {0};
+int read_gzip_file(const char *filename);
 const char* get_instname(PC_T pc);
-void record_data(PC_T pc){
-    const char* instname = get_instname(pc);
-    INSTS(RECORD_DATA)
-    instSet.unknow++;
-}
 
 typedef struct{
     int pc;
@@ -60,9 +44,25 @@ typedef struct InstPCList{
     struct InstPCList *next;
 }InstPCList;
 
+typedef struct{
+    uint64_t unknow;
+    INSTS(INSTS_ITEM)
+}InstSet;
 
+InstSet instSet = {0};
 InstPCList *instpc_head = NULL;
 InstPCList *instpc_tail = NULL;
+
+
+void record_data(PC_T pc){
+    const char* instname = get_instname(pc);
+#define RECORD_DATA(inst) \
+    if(strcmp(instname, #inst) == 0 ){instSet.inst++; return;}
+    INSTS(RECORD_DATA)
+    instSet.unknow++;
+}
+
+
 
 InstPCList* InstPCList_add(InstPCList* l, PC_T pc, const char* instname){
     //static int inst_add_cnt = 0;
@@ -134,11 +134,17 @@ void readDisasm(const char* filename){
 }
 
 void print_data(){
-    printf("unknow: %d\n", instSet.unknow);
-#define PRINT_DATA(inst) printf(#inst": %d\n", instSet.inst);
-    INSTS(
-        PRINT_DATA
-    )
+    uint64_t total_inst = 0;
+#define CNT_INST(inst) total_inst += instSet.inst;
+    INSTS( CNT_INST )
+    printf("total_inst: %lu\n", total_inst);
+    printf("inst, count, per/%%\n");
+    
+#define PRINT_DATA(inst) printf(#inst", %lu, %.3lf\n", instSet.inst, \
+    (double)instSet.inst/total_inst*100);
+    INSTS( PRINT_DATA )
+
+    printf("unknow, %lu, %.3lf\n", instSet.unknow, (double)instSet.unknow/total_inst*100);
 }
 
 int main(int argc, char *argv[]) {
@@ -148,23 +154,24 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
     readDisasm(argv[2]);
-    InstPCList_print(instpc_head);
+    //InstPCList_print(instpc_head);
     const char *filename = argv[1];
     if (read_gzip_file(filename) != 0) {
         return EXIT_FAILURE;
     }
-    
+    print_data();
     return EXIT_SUCCESS;
 }
 
 
 
-
-
 int read_gzip_file(const char *filename) {
+
+    uint64_t read_pc_cnt = 0;
+
     FILE *fp = fopen(filename, "rb");
     if (!fp) {
-        perror("Failed to open file");
+        perror("Failed to open gzip file");
         return -1;
     }
 
@@ -181,6 +188,9 @@ int read_gzip_file(const char *filename) {
     unsigned char in[CHUNK];
     unsigned char out[CHUNK];
     int done = 0;
+
+    // 临时缓冲区用于存储当前块和剩余字节
+    unsigned char temp_buffer[CHUNK + PC_BYTE];
 
     // 缓冲区用于存储上一次剩余的字节
     unsigned char leftover[PC_BYTE];
@@ -222,8 +232,7 @@ int read_gzip_file(const char *filename) {
                 size_t total_bytes = leftover_count + have;
                 size_t full_pc = total_bytes / PC_BYTE;
 
-                // 临时缓冲区用于存储当前块和剩余字节
-                unsigned char temp_buffer[CHUNK + PC_BYTE];
+
                 memcpy(temp_buffer, leftover, leftover_count);
                 memcpy(temp_buffer + leftover_count, out, have);
 
@@ -232,6 +241,10 @@ int read_gzip_file(const char *filename) {
                     memcpy(&value, temp_buffer + i * PC_BYTE, sizeof(PC_T));
                     //printf("%08x\n", value);
                     record_data(value);
+                    read_pc_cnt++;
+                    if(read_pc_cnt % 100000 == 0){
+                        fprintf(stderr,"read_pc_cnt: %lu\n", read_pc_cnt);
+                    }
                 }
 
                 // 更新剩余字节的数量和内容
@@ -257,3 +270,4 @@ int read_gzip_file(const char *filename) {
     fclose(fp);
     return ret == Z_STREAM_END ? 0 : -1;
 }
+
