@@ -135,11 +135,13 @@ static void exec_once(){
 #ifdef CONFIG_TRACE
   char logbuf[64];
   if(g_print_step){
-   disassemble(logbuf, 64, PC , guest_to_host(PC), 4);
+   //disassemble(logbuf, 64, PC , guest_to_host(PC), 4);
+   disassemble(logbuf, 64, PC , ((uint8_t*)&INST), 4);
    printf("0x" FMT_WORD_HEX_WIDTH ":    ", PC);
     
     for(int j = 3; j >= 0; j--){
-      printf("%02x ", ((uint8_t*)guest_to_host(PC))[j]);
+      //printf("%02x ", ((uint8_t*)guest_to_host(PC))[j]);
+      printf("%02x ", ((uint8_t*)&INST)[j]);
     }
   
    printf("%s\n", logbuf);
