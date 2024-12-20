@@ -76,6 +76,14 @@ static word_t socmem_host_read(void* addr, int len){
 }
 
 word_t socmem_read(paddr_t addr, int len){
+
+    if(addr >= 0x10000000 && addr <= 0x10000000 + 0x1000){
+        return 0;  //UART 
+    }else if(addr >= 0x02000000 && addr <= 0x02000040 + 0x10000){
+        return 0;  //CLINT
+    }else if(addr >= 0x21000000 && addr <= 0x21000000 + 0x1200000){
+        return 0;  //VGA
+    }
     return socmem_host_read(socmem_guest_to_host(addr), len);
 }
 
@@ -90,6 +98,12 @@ void socmem_host_write(void* addr, int len, word_t data){
 }
 
 void socmem_write(paddr_t addr, int len, word_t data){
+    if(addr >= 0x10000000 && addr <= 0x10000000 + 0x1000){
+        return;  //UART 
+    }else if(addr >= 0x21000000 && addr <= 0x21000000 + 0x1200000){
+        return;  //VGA
+    }
+
     socmem_host_write(socmem_guest_to_host(addr), len, data);
 }
 
