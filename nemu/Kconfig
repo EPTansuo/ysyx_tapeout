@@ -141,10 +141,24 @@ config TRACE_END
   int "When tracing is disabled (unit: number of instructions)"
   default 10000
 
+config PC_TRACE
+  depends on TRACE
+  bool "Enable PC tracer"
+  default n
+config PC_TRACE_BINARY
+  depends on PC_TRACE
+  bool "PC Tracer Use Binary Format"
+  default y
+config PC_TRACE_COMPRESS
+  depends on PC_TRACE
+  bool "Enable PC Tracer Compress"
+  default y
+
+
 config ITRACE
   depends on TRACE && TARGET_NATIVE_ELF && ENGINE_INTERPRETER
   bool "Enable instruction tracer"
-  default y
+  default n
 
 config ITRACE_COND
   depends on ITRACE
@@ -154,12 +168,12 @@ config ITRACE_COND
 config ETRACE
   depends on TRACE
   bool "Enable ecall tracer"
-  default y
+  default n
 
  config MTRACE
   depends on TRACE
   bool "Enable memory tracer"
-  default y
+  default n
 
 config MTRACE_RANGE_COND
   depends on MTRACE

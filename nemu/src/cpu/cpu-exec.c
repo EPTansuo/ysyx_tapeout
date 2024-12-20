@@ -48,7 +48,8 @@ struct{
 void device_update();
 void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
 void print_iringbuf();
-
+void pc_trace(word_t pc);
+void pc_trace_close();
 
 #ifdef CONFIG_ITRACE
 void print_iringbuf(){
@@ -130,6 +131,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
  void execute(uint64_t n) {
   Decode s;
   for (;n > 0; n --) {
+    IFDEF(CONFIG_PC_TRACE, pc_trace(cpu.pc));
     exec_once(&s, cpu.pc);
     g_nr_guest_inst ++;
     trace_and_difftest(&s, cpu.pc);
@@ -185,6 +187,6 @@ void cpu_exec(uint64_t n) {
 #endif // CONFIG_ITRACE
     
       // fall through
-    case NEMU_QUIT: statistic();
+    case NEMU_QUIT:  pc_trace_close(); statistic();
   }
 }
