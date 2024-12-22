@@ -3,7 +3,9 @@
 #define CONFIG_RVE 1
 #define CONFIG_CC_O2 1
 #define CONFIG_CC_OPT "-O2"
-#define CONFIG_WAVE_FILE_TYPE "none"
+#define CONFIG_WAVE_DUMP 1
+#define CONFIG_WAVE_VCD 1
+#define CONFIG_WAVE_FILE_TYPE "vcd"
 #define CONFIG_USE_SOC 1
 #define CONFIG_DIFFTEST 1
 #define CONFIG_RESET_VECTOR 0x30000000
