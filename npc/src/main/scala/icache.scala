@@ -113,7 +113,7 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
     ))
     state := state_next
 
-    io.ifu.ar.ready := Mux(state === s_bypass , io.imem.ar.ready, state === s_idle)
+    io.ifu.ar.ready := Mux(bypass , io.imem.ar.ready, state === s_idle)
     io.ifu.r.valid := (state === s_read && hit) || (state === s_bypass && io.imem.r.valid)
     io.ifu.r.bits.data := Mux(state === bypass, io.imem.r.bits.data, rdata_cache)
 
