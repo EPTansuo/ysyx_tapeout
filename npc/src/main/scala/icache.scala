@@ -191,6 +191,7 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
         assert(blockSize == 4);
         //cache(victimWay)(widx).tag := wtag 
         cache_tag(victimWay + widx*nWays.U) := wtag
+        cache_valid(victimWay + widx*nWays.U) := 1.U
 
         val nextWay = victimWay + 1.U
         fifoPtr(ridx) := Mux(nextWay === nWays.U, 0.U, nextWay)   // Can be optimized !!!!!!!!
