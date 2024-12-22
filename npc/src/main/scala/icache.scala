@@ -190,7 +190,7 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
         val nextWay = victimWay + 1.U
         fifoPtr(ridx) := Mux(nextWay === nWays.U, 0.U, nextWay)   // Can be optimized !!!!!!!!
     }
-
+    
 
     io.ifu.r.bits.last := Mux(bypass,  io.imem.r.bits.last , true.B)//  TODO ---- 
     io.ifu.r.bits.id := Mux(bypass,  io.imem.r.bits.last , 0.U)
