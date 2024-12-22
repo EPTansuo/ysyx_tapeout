@@ -237,4 +237,12 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
     io.ifu.b.bits.id := 0.U
     io.ifu.b.bits.resp := 0.U
 
+
+    if(defines.PERF_CNT){
+        val icache_total_cnt = RegInit(UInt(64.W))
+        val icache_hit_cnt = RegInit(UInt(64.W))
+
+
+    }
+
 }
