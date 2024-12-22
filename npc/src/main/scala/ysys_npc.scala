@@ -50,15 +50,5 @@ class ysyx_npc(xlen:Int) extends Module {
     axi_arbiter.io.in(1) <> lsu.io.dmem
     axi_arbiter.io.out <> io.axi
 
-/*
-   val axi4lite_arbiter = Module(new AXI4LiteArbiter(2, 32, 32))
-   axi4lite_arbiter.io.masters(0) <> ifu.io.imem
-   axi4lite_arbiter.io.masters(1) <> lsu.io.dmem
-   axi4lite_arbiter.io.slave <> io.axi
-   dontTouch(axi4lite_arbiter.io)
-*/
-
-//     lsu.io.dmem := DontCare
-//    io.axi <> ifu.io.imem
 
 }
