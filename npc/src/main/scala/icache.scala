@@ -95,30 +95,33 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
         rdata_cache := Mux1H(hit_way, data_way.map(dw => (dw>>roffset)(31,0)))
     }
     
-
-    // IF the address is not in the range of the SDRAM address, then it is a bypass
-    val bypass = (io.ifu.ar.bits.addr(31,29) =/= "b101".U)
-
+    val bypass = Wire(UInt(1.W))
+    if(defines.USE_SOC){
+        // IF the address is not in the range of the SDRAM address, then it is a bypass
+        bypass := (io.ifu.ar.bits.addr(31,29) =/= "b101".U)
+    }else{
+        bypass := (io.ifu.ar.bits.addr(31,28) =/= "b1000".U)
+    }
 
     val s_idle :: s_read :: s_replace :: s_refill :: Nil = Enum(4)
 
     val state = RegInit(s_idle)
     val state_next = Wire(UInt(state.getWidth.W))
     state_next := MuxLookup(state, s_idle)(Seq(
-        s_idle -> Mux(io.ifu.ar.valid, Mux(bypass, s_idle, s_read), s_idle),
+        s_idle -> Mux(io.ifu.ar.valid, Mux(bypass.asBool, s_idle, s_read), s_idle),
         s_read -> Mux(hit, s_idle, s_replace),
         s_replace -> Mux(io.imem.ar.valid, s_refill, s_replace),
         s_refill -> Mux(io.imem.r.valid, s_idle, s_refill)
     ))
     state := state_next
 
-    io.ifu.ar.ready := Mux(bypass , io.imem.ar.ready, state === s_idle)
-    io.ifu.r.valid := Mux(bypass, io.imem.r.valid, (state === s_read && hit) )
-    io.ifu.r.bits.data := Mux(bypass, io.imem.r.bits.data, rdata_cache)
+    io.ifu.ar.ready := Mux(bypass.asBool , io.imem.ar.ready, state === s_idle)
+    io.ifu.r.valid := Mux(bypass.asBool, io.imem.r.valid, (state === s_read && hit) )
+    io.ifu.r.bits.data := Mux(bypass.asBool, io.imem.r.bits.data, rdata_cache)
 
     io.imem.ar.bits.addr := io.ifu.ar.bits.addr
-    io.imem.ar.valid := Mux(bypass, io.ifu.ar.valid, state === s_replace)
-    io.imem.r.ready := Mux(bypass, io.ifu.r.valid ,state === s_refill)
+    io.imem.ar.valid := Mux(bypass.asBool, io.ifu.ar.valid, state === s_replace)
+    io.imem.r.ready := Mux(bypass.asBool, io.ifu.r.valid ,state === s_refill)
 
 
     val cache_refill = (state === s_refill && io.imem.r.valid)
@@ -190,11 +193,11 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
         val nextWay = victimWay + 1.U
         fifoPtr(ridx) := Mux(nextWay === nWays.U, 0.U, nextWay)   // Can be optimized !!!!!!!!
     }
-    
 
-    io.ifu.r.bits.last := Mux(bypass,  io.imem.r.bits.last , true.B)//  TODO ---- 
-    io.ifu.r.bits.id := Mux(bypass,  io.imem.r.bits.last , 0.U)
-    io.ifu.r.bits.resp := Mux(bypass, io.imem.r.bits.resp, 0.U)
+
+    io.ifu.r.bits.last := Mux(bypass.asBool,  io.imem.r.bits.last , true.B)//  TODO ---- 
+    io.ifu.r.bits.id := Mux(bypass.asBool,  io.imem.r.bits.last , 0.U)
+    io.ifu.r.bits.resp := Mux(bypass.asBool, io.imem.r.bits.resp, 0.U)
 
 
 
