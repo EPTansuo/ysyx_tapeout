@@ -88,8 +88,8 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
       "If it is not necessary, you can turn it off in menuconfig.", ref_so_file);
 
   ref_difftest_init(port);
-  ref_difftest_memcpy(RESET_VECTOR, guest_to_host(RESET_VECTOR), img_size, DIFFTEST_TO_REF);
-  npc_cpu.pc = 0x30000000;
+  ref_difftest_memcpy(RESET_VECTOR, guest_to_host(CONFIG_MBASE), img_size, DIFFTEST_TO_REF);
+  npc_cpu.pc = RESET_VECTOR;
   npc_cpu.csr.mstatus = MUXDEF(CONFIG_RV64, 0xa00001800, 0x1800);
   npc_cpu.csr.mtvec = MUXDEF(CONFIG_RV64, 0x80000000, 0x100);
   npc_cpu.csr.mepc = 0;

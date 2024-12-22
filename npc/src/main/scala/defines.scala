@@ -9,6 +9,8 @@ object defines {
   val MSTATUS_INIT = 0x1800
   val MTVEC_INIT = 0x100
   val AXI_IDBITS = 4
+  val CLINT_BASE = if(USE_SOC) 0x02000000L else 0xa0000040L
+  val CLINT_END = if(USE_SOC) 0x0200ffffL else 0xa0000050L
   val PERF_CNT = true
 }
 

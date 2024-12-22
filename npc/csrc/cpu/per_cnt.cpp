@@ -8,6 +8,7 @@
 #define EXU (NPC_CPU->exu)
 #define LSU (NPC_CPU->lsu)
 #define WBU (NPC_CPU->wbu)
+#define ICACHE (NPC_CPU->icache)
 
 /************** IFU ***********/
 static uint32_t ifu_cnt = 0;
@@ -41,6 +42,10 @@ static uint64_t cycle_store_cnt = 0;
 static uint64_t inst_cnt = 0;
 static uint64_t cycle_cnt = 0;
 
+/************ ICache ************/
+static uint64_t icache_access_cnt = 0;
+static uint64_t icache_hit_cnt = 0;
+static uint64_t icache_bypass_cnt = 0;
 
 void perf_get_data(){
     ifu_cnt = IFU->ifu_cnt;
@@ -69,6 +74,10 @@ void perf_get_data(){
 
     inst_cnt = WBU->inst_cnt;
     cycle_cnt = WBU->cycle_cnt;
+
+    icache_access_cnt = ICACHE->icache_access_cnt;
+    icache_hit_cnt = ICACHE->icache_hit_cnt;
+    icache_bypass_cnt = ICACHE->icache_bypass_cnt;
 }
 
 FILE *fp;
@@ -118,6 +127,12 @@ void perf_statistic(){
     PRINT_PERF("Store CNT", store_cnt, (double)store_cnt/inst_ldst_cnt*100, "% of ld/st inst");
     PRINT_PERF("Load Cycles CNT", cycle_load_cnt, (double)cycle_load_cnt/load_cnt, "cycle per load");
     PRINT_PERF("Store Cycles CNT", cycle_store_cnt, (double)cycle_store_cnt/store_cnt, "cycle per store");
-    
+
+    printf("\n-------------------------------------- ICache --------------------------------------\n");
+    PRINT_PERF("ICache IFetch CNT", icache_access_cnt+icache_bypass_cnt, 0.0, "");
+    PRINT_PERF("ICache Access CNT", icache_access_cnt, 0.0, "");
+    PRINT_PERF("ICache hit CNT", icache_hit_cnt, (double)icache_hit_cnt/icache_access_cnt*100, "% hit rate");
+    PRINT_PERF("ICache Bypass CNT", icache_bypass_cnt, (double)icache_bypass_cnt/
+                                            (icache_access_cnt+icache_bypass_cnt)*100, "% of ifetch");
     fclose(fp);
 }

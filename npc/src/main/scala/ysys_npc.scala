@@ -41,21 +41,14 @@ class ysyx_npc(xlen:Int) extends Module {
     exu.io.reg_read2 <> regfile.io.read2
     wbu.io.reg_write <> regfile.io.write
 
+    val icache = Module(new ICache(ICacheParameters(), AXI4BundleParameters(xlen, 32, AXI_IDBITS)))
+    ifu.io.imem <> icache.io.ifu 
 
     val axi_arbiter = Module( new AXIArbiter(2, new AXI4BundleParameters(xlen, 32, AXI_IDBITS)))
+    axi_arbiter.io.in(0) <> icache.io.imem
     axi_arbiter.io.in(0) <> ifu.io.imem
     axi_arbiter.io.in(1) <> lsu.io.dmem
     axi_arbiter.io.out <> io.axi
 
-/*
-   val axi4lite_arbiter = Module(new AXI4LiteArbiter(2, 32, 32))
-   axi4lite_arbiter.io.masters(0) <> ifu.io.imem
-   axi4lite_arbiter.io.masters(1) <> lsu.io.dmem
-   axi4lite_arbiter.io.slave <> io.axi
-   dontTouch(axi4lite_arbiter.io)
-*/
-
-//     lsu.io.dmem := DontCare
-//    io.axi <> ifu.io.imem
 
 }
