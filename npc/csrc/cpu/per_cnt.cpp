@@ -128,7 +128,7 @@ void perf_statistic(){
 
     printf("\n-------------------------------------- ICache --------------------------------------\n");
     PRINT_PERF("ICache Access CNT", icache_access_cnt, 0.0, "");
-    PRINT_PERF("ICache HIT CNT", icache_hit_cnt, (double)icache_hit_cnt/icache_access_cnt*100, "% Hit Rate");
+    PRINT_PERF("ICache hit CNT", icache_hit_cnt, (double)icache_hit_cnt/icache_access_cnt*100, "% Hit Rate");
     
     fclose(fp);
 }

@@ -5,7 +5,7 @@ import chisel3.util._
 import freechips.rocketchip.amba.axi4._
 
 //blockSize: Byte
-case class CacheParameters(nSets: Int, nWays: Int, blockSize: Int, addrBits: Int, cntBits: Int) {
+case class CacheParameters(nSets: Int, nWays: Int, blockSize: Int, addrBits: Int) {
   val cacheSize: Int = nSets * nWays * blockSize
   val offsetBits: Int = (math.log(blockSize) / math.log(2)).toInt
   val indexBits: Int = (math.log(nSets) / math.log(2)).toInt
@@ -17,11 +17,10 @@ case class CacheParameters(nSets: Int, nWays: Int, blockSize: Int, addrBits: Int
 
 object ICacheParameters{
     def apply() = CacheParameters(
-        nSets = 64,   // should be 2^n
+        nSets = 128,   // should be 2^n
         nWays = 4,   
         blockSize = 4, // should be 4*n  // only support 4 now 
         addrBits = 32,
-        cntBits = 8,
     )
 }
 
@@ -30,12 +29,7 @@ class ICacheIO(axiparams: AXI4BundleParameters) extends Bundle {
   val imem = (new AXI4Bundle(axiparams))
 }
 
-// class CacheEntry(tagBits: Int, blockSize: Int, cntBits: Int) extends Bundle {
-//   val valid = Bool()
-//   val tag = UInt(tagBits.W)
-//   val data = Vec(blockSize, UInt(8.W))
-// //  val cnt = UInt(cntBits.W)
-// }
+
 
 class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) extends Module{
     val io = IO(new ICacheIO(axiparams))
@@ -46,12 +40,10 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
     val nSets = cacheparams.nSets
     val nWays = cacheparams.nWays
     val blockSize = cacheparams.blockSize
-    val cntBits = cacheparams.cntBits
     
     assert(blockSize % (axiparams.dataBits/8) == 0, "iCache blockSize*8 must be N times of databits"); 
 
 
-    //val cache = SyncReadMem(nWays, Vec(nSets, new CacheEntry(tagBits, blockSize, cntBits)))
     val totalLines = nWays * nSets 
     val cache_data = SyncReadMem(totalLines, UInt((blockSize*8).W))
     val cache_tag = SyncReadMem(totalLines, UInt(tagBits.W))
@@ -66,14 +58,7 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
 
      val data_way = Wire(Vec(nWays, UInt((8*blockSize).W)))
      val hit_way = Wire(Vec(nWays, Bool()))
-    // for (i <- 0 until nWays){
-    //     when(cache(i)(ridx).tag === rtag){
-    //         data_way(i) := cache(i)(ridx).data.asUInt
-    //     }.otherwise{
-    //         data_way(i) := 0.U
-    //     }
-    // }
-    
+
     for (i <- 0 until nWays){
         // Can be optimized !!!!!!  乘法！！
         when(cache_tag(ridx*nWays.U+i.U) === rtag){
@@ -128,22 +113,7 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
 
     val cache_refill = (state === s_refill && io.imem.r.valid)
 
-    //  Refill
-    // for (i <- 0 until nWays){
-    //     for( j <- 0 until nSets){
-    //         when(state === s_idle && state_next =/= s_idle && !cache_refill){
 
-    //             // the cnt will not overflow
-    //             when(cache(i)(j).cnt =/= (math.pow(2,cntBits)-1).toInt.U){
-    //                 cache(i)(j).cnt := cache(i)(j).cnt +1.U;
-    //             }
-    //         }
-    //     }
-    // }
-
-
-    
-    
     val wtag = Wire(UInt(rtag.getWidth.W))
     val widx = Wire(UInt(ridx.getWidth.W))
     val woffset = Wire(UInt(roffset.getWidth.W))
@@ -157,39 +127,10 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
     val victimWay = fifoPtr(widx)
 
 
-    // val cnt_way = Wire(Vec(nWays, UInt((cntBits).W)))
-    // for(i <- 0 until nWays){
-    //     cnt_way(i) :=  cache(i)(widx).cnt
-    // }
-
-    // // Find the index of the maximum cnt
-    // val wayChoice = Wire(UInt(log2Ceil(nWays).W))
-    // wayChoice := 0.U
-    // for (i <- 1 until nWays) {
-    //     when(cnt_way(i) > cnt_way(wayChoice)) {
-    //     wayChoice := i.U
-    //     }
-    // }
-
-    // val maxCnt = cnt_way.reduce((a, b) => Mux(a > b, a, b))
-    // // 再根据谁等于 maxCnt 来拿到下标
-    // val indices = (0 until nWays).map(_.U)
-    // val wayChoiceWire = PriorityMux(
-    //     cnt_way.zip(indices).map{ case (cntVal, idx) => (cntVal === maxCnt, idx) }
-    // )
-
-    // // wayChoiceWire 就是组合逻辑输出，最后赋给 wayChoice
-    // val wayChoice = Wire(UInt(log2Ceil(nWays).W))
-    // wayChoice := wayChoiceWire
-
-// io.max_value := MuxCase(0.U, io.cnt_way.map(elem => (elem === io.cnt_way.reduce((a, b) => Mux(a > b, a, b)), elem)))
-   
    
     when(cache_refill){
-            //cache(victimWay)(widx).data(i+offsetBits>>offsetBits) := io.imem.r.bits.data 
         cache_data(widx*nWays.U+victimWay) := io.imem.r.bits.data 
         assert(blockSize == 4);
-        //cache(victimWay)(widx).tag := wtag 
         cache_tag(victimWay + widx*nWays.U) := wtag
         cache_valid(victimWay + widx*nWays.U) := 1.U
 
