@@ -109,7 +109,7 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
         s_read -> Mux(hit, s_idle, s_replace),
         s_replace -> Mux(io.imem.ar.valid, s_refill, s_replace),
         s_refill -> Mux(io.imem.r.valid, s_idle, s_refill),
-        s_bypass -> Mux(io.ifu.r.ready, s_idle, s_bypass)
+        s_bypass -> Mux(io.ifu.r.ready && io.ifu.r.valid, s_idle, s_bypass)
     ))
     state := state_next
 
