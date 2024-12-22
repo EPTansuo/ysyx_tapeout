@@ -4,12 +4,12 @@ import chisel3._
 import chisel3.util._
 import freechips.rocketchip.amba.axi4._
 
-
-case class CacheParameters(nSets: Int, nWays: Int, rowBytes: Int, xlen: Int) {
-  val cacheSize: Int = nSets * nWays * rowBytes
-  val offsetBits: Int = (math.log(rowBytes) / math.log(2)).toInt
+//blockSize: Byte
+case class CacheParameters(nSets: Int, nWays: Int, blockSize: Int, addrBits: Int, cntBits: Int) {
+  val cacheSize: Int = nSets * nWays * blockSize
+  val offsetBits: Int = (math.log(blockSize) / math.log(2)).toInt
   val indexBits: Int = (math.log(nSets) / math.log(2)).toInt
-  val tagBits: Int = (xlen - indexBits - offsetBits)
+  val tagBits: Int = (addrBits - indexBits - offsetBits)
   override def toString: String = 
     s"Cache Size: $cacheSize bytes, Tag: $tagBits bits, Index: $indexBits bits, Offset: $offsetBits bits"
 }
@@ -17,10 +17,11 @@ case class CacheParameters(nSets: Int, nWays: Int, rowBytes: Int, xlen: Int) {
 
 object ICacheParameters{
     def apply() = CacheParameters(
-        nSets = 64,
-        nWays = 4,
-        rowBytes = 4,
-        xlen = 32
+        nSets = 64,   // should be 2^n
+        nWays = 4,   
+        blockSize = 4, // should be 4*n  // only support 4 now 
+        addrBits = 32,
+        cntBits = 8,
     )
 }
 
@@ -29,10 +30,11 @@ class ICacheIO(axiparams: AXI4BundleParameters) extends Bundle {
   val imem = (new AXI4Bundle(axiparams))
 }
 
-class CacheEntry(tagBits: Int, rowBytes: Int) extends Bundle {
+class CacheEntry(tagBits: Int, blockSize: Int, cntBits: Int) extends Bundle {
   val valid = Bool()
   val tag = UInt(tagBits.W)
-  val data = Vec(rowBytes, UInt(8.W))
+  val data = Vec(blockSize, UInt(8.W))
+//  val cnt = UInt(cntBits.W)
 }
 
 class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) extends Module{
@@ -43,25 +45,21 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
     val offsetBits = cacheparams.offsetBits
     val nSets = cacheparams.nSets
     val nWays = cacheparams.nWays
-    val rowBytes = cacheparams.rowBytes
+    val blockSize = cacheparams.blockSize
+    val cntBits = cacheparams.cntBits
     
-    // var cache = for(i <- 0 until nWays) yield {
-    //     for(j <- 0 until nSets) yield {
-    //         val valid = RegInit(false.B)
-    //         val tag = RegInit(0.U(tagBits.W))
-    //         val data = Reg(Vec(rowBytes, UInt(8.W)))
-    //         (valid, tag, data)
-    //     }
-    // }
-    val cache = SyncReadMem(nWays, Vec(nSets, new CacheEntry(tagBits, rowBytes)))
-
-    val raddr = io.ifu.ar.bits.addr
-    val ridx = raddr(indexBits + offsetBits - 1, offsetBits)
-    val rtag = raddr(tagBits + indexBits + offsetBits - 1, indexBits + offsetBits)
-    val roffset = raddr(offsetBits - 1, 0)
+    assert(blockSize % (axiparams.dataBits/8) == 0, "iCache blockSize*8 must be N times of databits"); 
 
 
-    val data_way = Wire(Vec(nWays, UInt((8*rowBytes).W)))
+    val cache = SyncReadMem(nWays, Vec(nSets, new CacheEntry(tagBits, blockSize, cntBits)))
+
+    val raddr_ifu = io.ifu.ar.bits.addr
+    val rtag = raddr_ifu(tagBits + indexBits + offsetBits - 1, indexBits + offsetBits)
+    val ridx = raddr_ifu(indexBits + offsetBits - 1, offsetBits)
+    val roffset = raddr_ifu(offsetBits - 1, 0)
+
+
+    val data_way = Wire(Vec(nWays, UInt((8*blockSize).W)))
     for (i <- 0 until nWays){
         when(cache(i)(ridx).tag === rtag){
             data_way(i) := cache(i)(ridx).data.asUInt
@@ -70,18 +68,20 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
         }
     }
 
-    // offset 在这里暂时没什么用
-    
+
     val hit_way = Wire(Vec(nWays, Bool()))
     for(i <- 0 until nWays){
         hit_way(i) :=  cache(i)(ridx).valid &&  cache(i)(ridx).tag === rtag
     }
 
     val hit = hit_way.reduce(_ || _)
-
-    val rdata = Mux1H(hit_way, data_way)
-    io.ifu.r.bits.data := rdata
-    io.ifu.r.valid := hit || (state === s_bypass && io.imem.r.valid)
+    val rdata_cache = Wire(UInt(32.W))
+    if(blockSize == 4){
+        rdata_cache := Mux1H(hit_way, data_way.map(dw => dw(31, 0)))
+    }else{
+        rdata_cache := Mux1H(hit_way, data_way.map(dw => (dw>>roffset)(31,0)))
+    }
+    
 
     // IF the address is not in the range of the SDRAM address, then it is a bypass
     val bypass = (io.ifu.ar.bits.addr(31,29) =/= "b101".U)
@@ -90,46 +90,131 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
     val s_idle :: s_read :: s_replace :: s_refill :: s_bypass :: Nil = Enum(5)
 
     val state = RegInit(s_idle)
-    state := MuxLookup(state, s_idle)(Seq(
+    val state_next = Wire(UInt(state.getWidth.W))
+    state_next := MuxLookup(state, s_idle)(Seq(
         s_idle -> Mux(io.ifu.r.valid, Mux(bypass, s_bypass, s_read), s_idle),
         s_read -> Mux(hit, s_idle, s_replace),
         s_replace -> Mux(io.imem.ar.valid, s_refill, s_replace),
         s_refill -> Mux(io.imem.r.valid, s_idle, s_refill),
-        s_bypass -> Mux(io.imem.r.valid, s_idle, s_bypass)
+        s_bypass -> Mux(io.ifu.r.ready, s_idle, s_bypass)
     ))
-
-
+    state := state_next
 
     io.ifu.ar.ready := state === s_idle
+    io.ifu.r.valid := hit || (state === s_bypass && io.imem.r.valid)
+    io.ifu.r.bits.data := Mux(state === bypass, io.imem.r.bits.data, rdata_cache)
 
-    io.imem.ar.bits.addr := io.ifu.ar.bits.addr 
-    // io.imem.ar.valid := state === s_fetch
+
+
+    io.imem.ar.bits.addr := io.ifu.ar.bits.addr
+    io.imem.ar.valid := Mux(bypass, io.ifu.ar.valid, state === s_replace)
     io.imem.r.ready := (state === s_refill) || (state === s_bypass && io.ifu.r.valid)
 
-    // when(state === s_refill){
-    //     val widx = LFSR16(wayBits)
-    //     cache(widx)(ridx).valid := true.B
-    //     cache(widx)(ridx).tag := rtag
-    //     cache(widx)(ridx).data := io.imem.r.bits.data.asTypeOf(Vec(rowBytes, UInt(8.W)))
+
+    val cache_refill = (state === s_refill && io.imem.r.valid)
+
+    //  Refill
+    // for (i <- 0 until nWays){
+    //     for( j <- 0 until nSets){
+    //         when(state === s_idle && state_next =/= s_idle && !cache_refill){
+
+    //             // the cnt will not overflow
+    //             when(cache(i)(j).cnt =/= (math.pow(2,cntBits)-1).toInt.U){
+    //                 cache(i)(j).cnt := cache(i)(j).cnt +1.U;
+    //             }
+    //         }
+    //     }
     // }
 
-    when(state === s_bypass){
-        io.ifu.r.bits.data := io.imem.r.bits.data
+
+    io.imem.r.ready := state === s_refill || (state === s_bypass && io.ifu.r.ready)
+    
+    val wtag = Wire(UInt(rtag.getWidth.W))
+    val widx = Wire(UInt(ridx.getWidth.W))
+    val woffset = Wire(UInt(roffset.getWidth.W))
+    widx := ridx
+    woffset := roffset
+    wtag := rtag
+
+    // FIFO Ptr
+    val fifoPtr = RegInit(VecInit(Seq.fill(nSets)(0.U(log2Ceil(nWays).W))))
+
+    val victimWay = fifoPtr(widx)
+
+
+    // val cnt_way = Wire(Vec(nWays, UInt((cntBits).W)))
+    // for(i <- 0 until nWays){
+    //     cnt_way(i) :=  cache(i)(widx).cnt
+    // }
+
+    // // Find the index of the maximum cnt
+    // val wayChoice = Wire(UInt(log2Ceil(nWays).W))
+    // wayChoice := 0.U
+    // for (i <- 1 until nWays) {
+    //     when(cnt_way(i) > cnt_way(wayChoice)) {
+    //     wayChoice := i.U
+    //     }
+    // }
+
+    // val maxCnt = cnt_way.reduce((a, b) => Mux(a > b, a, b))
+    // // 再根据谁等于 maxCnt 来拿到下标
+    // val indices = (0 until nWays).map(_.U)
+    // val wayChoiceWire = PriorityMux(
+    //     cnt_way.zip(indices).map{ case (cntVal, idx) => (cntVal === maxCnt, idx) }
+    // )
+
+    // // wayChoiceWire 就是组合逻辑输出，最后赋给 wayChoice
+    // val wayChoice = Wire(UInt(log2Ceil(nWays).W))
+    // wayChoice := wayChoiceWire
+
+// io.max_value := MuxCase(0.U, io.cnt_way.map(elem => (elem === io.cnt_way.reduce((a, b) => Mux(a > b, a, b)), elem)))
+    when(cache_refill){
+        for(i <- 0 until 4){ // 32-bit inst 
+            cache(victimWay)(widx).data(i+offsetBits>>offsetBits) := io.imem.r.bits.data 
+        }
+        cache(victimWay)(widx).tag := wtag 
+       // cache(wayChoice)(widx).cnt := 0.U;
+
+        val nextWay = victimWay + 1.U
+        fifoPtr(ridx) := Mux(nextWay === nWays.U, 0.U, nextWay)   // Can be optimized !!!!!!!!
     }
 
 
+    io.ifu.r.bits.last := true.B   //  TODO ---- 
+    io.ifu.r.bits.id := 0.U
+    io.ifu.r.bits.resp := 0.U
+
+    io.imem.ar.bits.prot := 0.U
+    io.imem.ar.bits.id := 0.U
+    io.imem.ar.bits.len := 0.U
+    io.imem.ar.bits.size := 2.U
+    io.imem.ar.bits.burst := 0.U
+    io.imem.ar.bits.lock := 0.U
+    io.imem.ar.bits.cache := 0.U
+    io.imem.ar.bits.qos := 0.U
+
+ //Icache Dont need to write 
+    io.imem.w.valid := false.B
+    io.imem.aw.valid := false.B
+    io.imem.aw.bits.addr := 0.U
+    io.imem.aw.bits.prot := 0.U
+    io.imem.w.bits.data := 0.U
+    io.imem.w.bits.strb := 0.U
+    io.imem.b.ready := false.B
+    io.imem.aw.bits.id := 0.U
+    io.imem.aw.bits.len := 0.U
+    io.imem.aw.bits.size := 2.U
+    io.imem.aw.bits.burst := 0.U
+    io.imem.aw.bits.lock := 0.U
+    io.imem.aw.bits.cache := 0.U
+    io.imem.aw.bits.qos := 0.U
+    io.imem.w.bits.last := true.B
 
 
-
-    // // 访存状态机
-    // val s_idle :: s_read ::s_wait_read :: s_wait_ready :: Nil = Enum(4)
-    // val state = RegInit(s_idle)         
-    //     state := MuxLookup(state, s_idle)(Seq(
-    //     s_idle -> Mux(in_valid, s_read, s_idle),
-    //     s_read -> Mux(io.mem.ar.ready, s_wait_read, s_read),
-    //     s_wait_read -> Mux(io.mem.r.valid, s_wait_ready, s_wait_read),
-    //     s_wait_ready -> Mux(io.out.ready, s_idle, s_wait_ready)
-    // ))
-
+    io.ifu.aw.ready := false.B
+    io.ifu.w.ready := false.B
+    io.ifu.b.valid := false.B
+    io.ifu.b.bits.id := 0.U
+    io.ifu.b.bits.resp := 0.U
 
 }

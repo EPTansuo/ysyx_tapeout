@@ -35,7 +35,7 @@ import freechips.rocketchip.amba.axi4._
 class ICacheFormalTestBench(cacheparams: CacheParameters, 
                             axiparams: AXI4BundleParameters) extends Module {
     val io = IO(new Bundle{
-        val in = (Decoupled(new SigIO_WBU_IFU(32)))
+        val in = Flipped(Decoupled(new SigIO_WBU_IFU(32)))
     })
 
     val icache = Module(new ICache(cacheparams, axiparams))
@@ -55,6 +55,8 @@ class ICacheFormalTestBench(cacheparams: CacheParameters,
     // For REF, directly fetch instruction
     mem_ref.io.axi <> ifu_ref.io.imem
 
+    ifu_dut.io.out.ready := true.B
+    ifu_ref.io.out.ready := true.B
     when(ifu_dut.io.out.valid && ifu_ref.io.out.valid){
         assert(ifu_dut.io.out.bits === ifu_ref.io.out.bits, "ICache Test Failed")
     }
