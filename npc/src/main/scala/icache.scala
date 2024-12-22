@@ -239,9 +239,19 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
 
 
     if(defines.PERF_CNT){
-        val icache_total_cnt = RegInit(UInt(64.W))
-        val icache_hit_cnt = RegInit(UInt(64.W))
-
+        val icache_access_cnt = RegInit(0.U(64.W))
+        val icache_hit_cnt = RegInit(0.U(64.W))
+        val state_last = RegInit(0.U(state.getWidth.W))
+        dontTouch(icache_access_cnt)
+        dontTouch(icache_hit_cnt)
+        dontTouch(state_last)
+        state_last := state 
+        when(state === s_idle && state_next =/= s_idle){
+            icache_access_cnt := icache_access_cnt + 1.U
+        }
+        when(state_last === s_idle && state === s_read && hit){
+            icache_hit_cnt := icache_hit_cnt + 1.U
+        }
 
     }
 

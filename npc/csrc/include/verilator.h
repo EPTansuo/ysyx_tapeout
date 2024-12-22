@@ -34,6 +34,7 @@
 #include "Vysyx_23060246_LSU.h"
 #include "Vysyx_23060246_IDU.h"
 #include "Vysyx_23060246_IFU.h"
+#include "Vysyx_23060246_ICache.h"
 //#include "Vysyx_23060246_CPU.h"
 #endif 
 
