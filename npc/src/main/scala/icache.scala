@@ -30,12 +30,12 @@ class ICacheIO(axiparams: AXI4BundleParameters) extends Bundle {
   val imem = (new AXI4Bundle(axiparams))
 }
 
-class CacheEntry(tagBits: Int, blockSize: Int, cntBits: Int) extends Bundle {
-  val valid = Bool()
-  val tag = UInt(tagBits.W)
-  val data = Vec(blockSize, UInt(8.W))
-//  val cnt = UInt(cntBits.W)
-}
+// class CacheEntry(tagBits: Int, blockSize: Int, cntBits: Int) extends Bundle {
+//   val valid = Bool()
+//   val tag = UInt(tagBits.W)
+//   val data = Vec(blockSize, UInt(8.W))
+// //  val cnt = UInt(cntBits.W)
+// }
 
 class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) extends Module{
     val io = IO(new ICacheIO(axiparams))
@@ -51,7 +51,12 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
     assert(blockSize % (axiparams.dataBits/8) == 0, "iCache blockSize*8 must be N times of databits"); 
 
 
-    val cache = SyncReadMem(nWays, Vec(nSets, new CacheEntry(tagBits, blockSize, cntBits)))
+    //val cache = SyncReadMem(nWays, Vec(nSets, new CacheEntry(tagBits, blockSize, cntBits)))
+    val totalLines = nWays * nSets 
+    val cache_data = SyncReadMem(totalLines, UInt((blockSize*8).W))
+    val cache_tag = SyncReadMem(totalLines, UInt(tagBits.W))
+    val cache_valid = SyncReadMem(totalLines, UInt(1.W))
+
 
     val raddr_ifu = io.ifu.ar.bits.addr
     val rtag = raddr_ifu(tagBits + indexBits + offsetBits - 1, indexBits + offsetBits)
@@ -59,22 +64,30 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
     val roffset = raddr_ifu(offsetBits - 1, 0)
 
 
-    val data_way = Wire(Vec(nWays, UInt((8*blockSize).W)))
+     val data_way = Wire(Vec(nWays, UInt((8*blockSize).W)))
+     val hit_way = Wire(Vec(nWays, Bool()))
+    // for (i <- 0 until nWays){
+    //     when(cache(i)(ridx).tag === rtag){
+    //         data_way(i) := cache(i)(ridx).data.asUInt
+    //     }.otherwise{
+    //         data_way(i) := 0.U
+    //     }
+    // }
+    
     for (i <- 0 until nWays){
-        when(cache(i)(ridx).tag === rtag){
-            data_way(i) := cache(i)(ridx).data.asUInt
+        // Can be optimized !!!!!!  乘法！！
+        when(cache_tag(ridx*nWays.U+i.U) === rtag){
+            data_way(i) := cache_data(ridx*nWays.U+i.U)
+            hit_way(i) :=  cache_valid(ridx*nWays.U+i.U)
         }.otherwise{
-            data_way(i) := 0.U
+            data_way(i) := 0.U 
+            hit_way(i) :=  0.U
         }
     }
 
-
-    val hit_way = Wire(Vec(nWays, Bool()))
-    for(i <- 0 until nWays){
-        hit_way(i) :=  cache(i)(ridx).valid &&  cache(i)(ridx).tag === rtag
-    }
-
     val hit = hit_way.reduce(_ || _)
+
+
     val rdata_cache = Wire(UInt(32.W))
     if(blockSize == 4){
         rdata_cache := Mux1H(hit_way, data_way.map(dw => dw(31, 0)))
@@ -168,12 +181,14 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
     // wayChoice := wayChoiceWire
 
 // io.max_value := MuxCase(0.U, io.cnt_way.map(elem => (elem === io.cnt_way.reduce((a, b) => Mux(a > b, a, b)), elem)))
+   
+   
     when(cache_refill){
-        for(i <- 0 until 4){ // 32-bit inst 
-            cache(victimWay)(widx).data(i+offsetBits>>offsetBits) := io.imem.r.bits.data 
-        }
-        cache(victimWay)(widx).tag := wtag 
-       // cache(wayChoice)(widx).cnt := 0.U;
+            //cache(victimWay)(widx).data(i+offsetBits>>offsetBits) := io.imem.r.bits.data 
+        cache_data(widx*nWays.U+victimWay) := io.imem.r.bits.data 
+        assert(blockSize == 4);
+        //cache(victimWay)(widx).tag := wtag 
+        cache_tag(victimWay + widx*nWays.U) := wtag
 
         val nextWay = victimWay + 1.U
         fifoPtr(ridx) := Mux(nextWay === nWays.U, 0.U, nextWay)   // Can be optimized !!!!!!!!
