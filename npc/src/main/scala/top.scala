@@ -25,7 +25,7 @@ class ysyx_23060246(params: AXI4BundleParameters) extends Module {
 
 
   val xbar = Module(new AXIXbar(2, 
-                        Array((0L,0xFFFFFFFFL),(0x02000000L,0x0200ffffL)),
+                        Array((0L,0xFFFFFFFFL),(CLINT_BASE,CLINT_END)) ,
                         CPUAXI4BundleParameters()))
   xbar.io.in <> cpu_npc.io.axi
 
@@ -35,7 +35,13 @@ class ysyx_23060246(params: AXI4BundleParameters) extends Module {
     axi4_conv.io.out <> io.master
   } else {
     val sram = Module(new SRAM(params))
-    xbar.io.out(0) <> sram.io.axi
+    val uart = Module(new UART_AXI(params))
+    val xbar_2 = Module(new AXIXbar(2, 
+                        Array((0L,0xFFFFFFFFL),(0xa00003f0L,0xa00003ffL)) ,
+                        CPUAXI4BundleParameters()))
+    xbar.io.out(0) <> xbar_2.io.in 
+    xbar_2.io.out(0) <> sram.io.axi 
+    xbar_2.io.out(1) <> uart.io.axi
     io.master <> DontCare 
   }
 
