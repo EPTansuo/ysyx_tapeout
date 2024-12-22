@@ -85,7 +85,9 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
         }
     }
 
-    val hit = hit_way.reduce(_ || _)
+    val hit = Wire(Bool())
+    hit := hit_way.reduce(_ || _)
+    dontTouch(hit)
 
 
     val rdata_cache = Wire(UInt(32.W))
@@ -111,7 +113,7 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
         s_idle -> Mux(io.ifu.ar.valid, Mux(bypass.asBool, s_idle, s_read), s_idle),
         s_read -> Mux(hit, s_idle, s_replace),
         s_replace -> Mux(io.imem.ar.ready, s_refill, s_replace),
-        s_refill -> Mux(io.imem.r.valid, s_idle, s_refill)
+        s_refill -> Mux(io.imem.r.valid, s_read, s_refill)
     ))
     state := state_next
 
