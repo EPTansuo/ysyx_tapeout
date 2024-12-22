@@ -105,7 +105,7 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
     val state = RegInit(s_idle)
     val state_next = Wire(UInt(state.getWidth.W))
     state_next := MuxLookup(state, s_idle)(Seq(
-        s_idle -> Mux(io.ifu.r.valid, Mux(bypass, s_bypass, s_read), s_idle),
+        s_idle -> Mux(io.ifu.ar.valid, Mux(bypass, s_bypass, s_read), s_idle),
         s_read -> Mux(hit, s_idle, s_replace),
         s_replace -> Mux(io.imem.ar.valid, s_refill, s_replace),
         s_refill -> Mux(io.imem.r.valid, s_idle, s_refill),
@@ -114,7 +114,7 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
     state := state_next
 
     io.ifu.ar.ready := state === s_idle
-    io.ifu.r.valid := hit || (state === s_bypass && io.imem.r.valid)
+    io.ifu.r.valid := (state === s_read && hit) || (state === s_bypass && io.imem.r.valid)
     io.ifu.r.bits.data := Mux(state === bypass, io.imem.r.bits.data, rdata_cache)
 
 
