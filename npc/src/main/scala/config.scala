@@ -11,7 +11,7 @@ case class NPCConfig(
   USE_SOC: Boolean,
   XLEN: Int,
   REG_NUM: Int,
-  PC_INIT: UInt,
+  PC_INIT: BigInt,
   MSTATUS_INIT: Long,
   MTVEC_INIT: Long,
   CLINT_BASE: Long,
@@ -19,7 +19,25 @@ case class NPCConfig(
   PERF_CNT: Boolean,
   axiparams: AXI4BundleParameters,
   icacheparams: CacheParameters,
-)
+){
+  def asString: String = {
+    s"""
+       |NPCConfig(
+       |  USE_SOC = $USE_SOC,
+       |  XLEN = $XLEN,
+       |  REG_NUM = $REG_NUM,
+       |  PC_INIT = 0x${PC_INIT.toString(16)},
+       |  MSTATUS_INIT = 0x${MSTATUS_INIT.toHexString},
+       |  MTVEC_INIT = 0x${MTVEC_INIT.toHexString},
+       |  CLINT_BASE = 0x${CLINT_BASE.toHexString},
+       |  CLINT_END = 0x${CLINT_END.toHexString},
+       |  PERF_CNT = $PERF_CNT,
+       |  axiparams = $axiparams,
+       |  icacheparams = $icacheparams
+       |)
+       |""".stripMargin
+  }
+}
 
 object CPUAXI4BundleParameters {
   def apply() = AXI4BundleParameters(addrBits = 32, dataBits = 32, idBits = 4)
@@ -63,7 +81,7 @@ object NPCConfig {
       USE_SOC = SOC_EN,
       XLEN = xlen,
       REG_NUM = if (getConfig("CONFIG_RVE") == "y") 16 else 32,
-      PC_INIT = if (SOC_EN) "h30000000".U(32.W) else "h80000000".U(32.W),
+      PC_INIT = if (SOC_EN) 0x30000000L else 0x80000000L,
       MSTATUS_INIT = if (xlen == 32) 0x1800 else 0xa00001800L,
       MTVEC_INIT = if (xlen == 32) 0x100 else 0x80000000L,
       CLINT_BASE = if(SOC_EN) 0x02000000L else 0xa0000040L,

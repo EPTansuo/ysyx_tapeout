@@ -66,7 +66,7 @@ class ysyx_23060246(config: NPCConfig) extends Module {
 object npcMain extends App {
   
   val config = NPCConfig()
-
+  println(config.asString)
 
   val firtoolOptions = Array("--lowering-options=" + List(
         // make yosys happy

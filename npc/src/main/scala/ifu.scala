@@ -40,7 +40,7 @@ class IFU(config: NPCConfig) extends Module {
   io.out.valid := state === s_wait_ready
   io.in.ready := state === s_idle
 
-  val pc = RegInit(config.PC_INIT)
+  val pc = RegInit(config.PC_INIT.U)
   when( io.in.valid && io.in.ready){
       pc := io.in.bits.npc
   }
