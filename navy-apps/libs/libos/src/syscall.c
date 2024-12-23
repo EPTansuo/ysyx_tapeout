@@ -61,12 +61,12 @@ void _exit(int status) {
 }
 
 int _open(const char *path, int flags, mode_t mode) {
-  _exit(SYS_open);
+  _syscall_(SYS_open);
   return 0;
 }
 
 int _write(int fd, void *buf, size_t count) {
-  _exit(SYS_write);
+  _syscall_(SYS_write);
   return 0;
 }
 
@@ -75,27 +75,27 @@ void *_sbrk(intptr_t increment) {
 }
 
 int _read(int fd, void *buf, size_t count) {
-  _exit(SYS_read);
+  _syscall_(SYS_read);
   return 0;
 }
 
 int _close(int fd) {
-  _exit(SYS_close);
+  _syscall_(SYS_close);
   return 0;
 }
 
 off_t _lseek(int fd, off_t offset, int whence) {
-  _exit(SYS_lseek);
+  _syscall_(SYS_lseek);
   return 0;
 }
 
 int _gettimeofday(struct timeval *tv, struct timezone *tz) {
-  _exit(SYS_gettimeofday);
+  _syscall_(SYS_gettimeofday);
   return 0;
 }
 
 int _execve(const char *fname, char * const argv[], char *const envp[]) {
-  _exit(SYS_execve);
+  _syscall_(SYS_execve);
   return 0;
 }
 
@@ -112,12 +112,12 @@ int _stat(const char *fname, struct stat *buf) {
 }
 
 int _kill(int pid, int sig) {
-  _exit(-SYS_kill);
+  _syscall_(SYS_kill);
   return -1;
 }
 
 pid_t _getpid() {
-  _exit(-SYS_getpid);
+  _syscall_(SYS_getpid);
   return 1;
 }
 

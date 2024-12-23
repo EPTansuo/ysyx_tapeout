@@ -44,6 +44,9 @@ Log("SYSCALL(%s, %d, %d, %d)", syscalls[a[0]], a[1], a[2], a[3]);
       c->GPRx = sys_time((struct timeval *)a[1]);
       break;
     }
+    case SYS_brk: {
+      
+    }
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
 }
