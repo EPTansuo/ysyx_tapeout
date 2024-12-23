@@ -4,12 +4,13 @@ import chisel3._
 import circt.stage.ChiselStage
 import freechips.rocketchip.amba.axi4._
 import cpu._
-import defines._
+//import defines._
 import AXI4._
+import io.circe._ 
+import io.circe.generic.auto._
+import io.circe.parser._
 
-object CPUAXI4BundleParameters {
-  def apply() = AXI4BundleParameters(addrBits = 32, dataBits = 32, idBits = AXI_IDBITS)
-}
+
 
 class npcIO extends Bundle {
   val interrupt = Input(Bool())
@@ -18,27 +19,27 @@ class npcIO extends Bundle {
 }
 
 
-class ysyx_23060246(params: AXI4BundleParameters) extends Module {
+class ysyx_23060246(config: NPCConfig) extends Module {
   val io = IO(new npcIO)
-  val cpu_npc = Module(new ysyx_npc(32))
-  val clint = Module(new CLINT(params))
+  val cpu_npc = Module(new ysyx_npc(config))
+  val clint = Module(new CLINT(config.axiparams))
 
 
   val xbar = Module(new AXIXbar(2, 
-                        Array((0L,0xFFFFFFFFL),(CLINT_BASE,CLINT_END)) ,
-                        CPUAXI4BundleParameters()))
+                        Array((0L,0xFFFFFFFFL),(config.CLINT_BASE,config.CLINT_END)) ,
+                        config.axiparams))
   xbar.io.in <> cpu_npc.io.axi
 
-  if(defines.USE_SOC){
+  if(config.USE_SOC){
     val axi4_conv = Module(new AXI4BundleIFConv(32,32))
     xbar.io.out(0) <> axi4_conv.io.in
     axi4_conv.io.out <> io.master
   } else {
-    val sram = Module(new SRAM(params))
-    val uart = Module(new UART_AXI(params))
+    val sram = Module(new SRAM( config.axiparams))
+    val uart = Module(new UART_AXI( config.axiparams))
     val xbar_2 = Module(new AXIXbar(2, 
                         Array((0L,0xFFFFFFFFL),(0xa00003f0L,0xa00003ffL)) ,
-                        CPUAXI4BundleParameters()))
+                         config.axiparams))
     xbar.io.out(0) <> xbar_2.io.in 
     xbar_2.io.out(0) <> sram.io.axi 
     xbar_2.io.out(1) <> uart.io.axi
@@ -63,7 +64,10 @@ class ysyx_23060246(params: AXI4BundleParameters) extends Module {
 }
 
 object npcMain extends App {
-  // val firtoolOptions = Array("--disable-annotation-unknown")
+  
+  val config = NPCConfig()
+
+
   val firtoolOptions = Array("--lowering-options=" + List(
         // make yosys happy
         // see https://github.com/llvm/circt/blob/main/docs/VerilogGeneration.md
@@ -72,5 +76,5 @@ object npcMain extends App {
         "locationInfoStyle=wrapInAtSquareBracket"
     ).reduce(_ + "," + _),
     "--disable-annotation-unknown")
-  ChiselStage.emitSystemVerilogFile(new ysyx_23060246(CPUAXI4BundleParameters()), args, firtoolOptions)
+  ChiselStage.emitSystemVerilogFile(new ysyx_23060246(config), args, firtoolOptions)
 }

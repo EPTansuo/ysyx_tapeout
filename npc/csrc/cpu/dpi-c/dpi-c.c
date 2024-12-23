@@ -24,7 +24,7 @@ typedef  struct{
   char wmask;
   word_t data;
   word_t pc;
-  VlUnpacked<word_t, 32> regs;
+  VlUnpacked<word_t, MUXDEF(CONFIG_RVE,16,32)> regs;
 }memwrite_info;
 
 
@@ -106,8 +106,8 @@ extern "C" int pmem_read(int raddr){
 
 
 // return true is equ
-bool regs_equ(const VlUnpacked<word_t,32>&reg1, const VlUnpacked<word_t,32>&reg2){
-  for(int i = 0; i < 32; i++){
+bool regs_equ(const VlUnpacked<word_t, MUXDEF(CONFIG_RVE,16,32)>&reg1, const VlUnpacked<word_t, MUXDEF(CONFIG_RVE,16,32)>&reg2){
+  for(int i = 0; i < MUXDEF(CONFIG_RVE,16,32); i++){
     if(reg1[i] != reg2[i])
       return false;
   }

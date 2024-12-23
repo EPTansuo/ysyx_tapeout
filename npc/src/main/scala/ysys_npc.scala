@@ -3,7 +3,7 @@ package cpu
 import AXI4._
 import chisel3._
 import chisel3.util._
-import defines._ 
+//import defines._ 
 import freechips.rocketchip.amba.axi4._
 import org.chipsalliance.cde.config.Parameters
 // object ModuleConnect {
@@ -15,19 +15,19 @@ import org.chipsalliance.cde.config.Parameters
 //   }
 // }
 
-class ysyx_npc(xlen:Int) extends Module {
+class ysyx_npc(config: NPCConfig) extends Module {
     val io = IO(new Bundle {
         // val imem = Flipped(new IMemIO(xlen))
         // val dmem = Flipped(new DMemIO())
         //val axi = new AXILiteMasterIF(addrWidthBits = 32, dataWidthBits = 32)
-        val axi = new AXI4Bundle(AXI4BundleParameters(xlen, 32, AXI_IDBITS))
+        val axi = new AXI4Bundle(config.axiparams)
     })
 
-    val ifu = Module(new IFU(xlen))
-    val idu = Module(new IDU(xlen))
-    val exu = Module(new EXU(xlen))
-    val lsu = Module(new LSU(xlen))
-    val wbu = Module(new WBU(xlen))
+    val ifu = Module(new IFU(config))
+    val idu = Module(new IDU(config))
+    val exu = Module(new EXU(config))
+    val lsu = Module(new LSU(config))
+    val wbu = Module(new WBU(config))
 
     ifu.io.in <> wbu.io.out
     idu.io.in <> ifu.io.out
@@ -36,15 +36,15 @@ class ysyx_npc(xlen:Int) extends Module {
     wbu.io.in <> lsu.io.out
 
 
-    val regfile = Module(new Regfile(xlen))
+    val regfile = Module(new Regfile(config))
     exu.io.reg_read1 <> regfile.io.read1
     exu.io.reg_read2 <> regfile.io.read2
     wbu.io.reg_write <> regfile.io.write
 
-    val icache = Module(new ICache(ICacheParameters(), AXI4BundleParameters(xlen, 32, AXI_IDBITS)))
+    val icache = Module(new ICache(config))
     ifu.io.imem <> icache.io.ifu 
 
-    val axi_arbiter = Module( new AXIArbiter(2, new AXI4BundleParameters(xlen, 32, AXI_IDBITS)))
+    val axi_arbiter = Module( new AXIArbiter(2, config.axiparams))
     axi_arbiter.io.in(0) <> icache.io.imem
     //axi_arbiter.io.in(0) <> ifu.io.imem
     axi_arbiter.io.in(1) <> lsu.io.dmem

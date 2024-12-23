@@ -14,14 +14,14 @@ import csr_cmd._
 
 
 
-class EXU(xlen: Int) extends Module{
+class EXU(config: NPCConfig) extends Module{
     var io = IO(new Bundle{
-        val in = Flipped(Decoupled(new SigIO_IDU_EXU(xlen)))
-        val out = (Decoupled(new SigIO_EXU_LSU(xlen)))
-        val reg_read1 = Flipped(new RegfileReadIO(xlen))
-        val reg_read2 = Flipped(new RegfileReadIO(xlen))
+        val in = Flipped(Decoupled(new SigIO_IDU_EXU(config.XLEN)))
+        val out = (Decoupled(new SigIO_EXU_LSU(config.XLEN)))
+        val reg_read1 = Flipped(new RegfileReadIO(config.XLEN))
+        val reg_read2 = Flipped(new RegfileReadIO(config.XLEN))
     })
-
+    val xlen = config.XLEN
     val alu = Module(new ALU(xlen))
     val immGen = Module(new ImmGen(xlen))
 
@@ -92,7 +92,7 @@ class EXU(xlen: Int) extends Module{
 
 
 
-    val csr = Module(new CSR(xlen))
+    val csr = Module(new CSR(config))
     csr.io.inst := inst
     csr.io.pc := pc
     csr.io.cmd := sig_csr_cmd
@@ -125,7 +125,7 @@ class EXU(xlen: Int) extends Module{
     io.out.bits.wbu <> in_reg.bits.wbu
     io.out.bits.lsu <> in_reg.bits.lsu
 
-    if(defines.PERF_CNT){
+    if(config.PERF_CNT){
         val alu_arith_cnt = RegInit(0.U(32.W))
         val alu_logic_cnt = RegInit(0.U(32.W))
         val alu_shift_cnt = RegInit(0.U(32.W))

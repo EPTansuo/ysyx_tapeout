@@ -11,7 +11,11 @@
 #include "VysyxSoCFull_CSR.h"
 #include "VysyxSoCFull_EXU.h"
 #include "VysyxSoCFull_Regfile.h"
+#ifdef CONFIG_RVE
+#include "VysyxSoCFull_regs_16x32.h"
+#else  
 #include "VysyxSoCFull_regs_32x32.h"
+#endif 
 #include "VysyxSoCFull_ysyx_23060246.h"
 #include "VysyxSoCFull_ysyx_npc.h"
 #include "VysyxSoCFull_ysyxSoCFull.h"
@@ -28,7 +32,11 @@
 #include "Vysyx_23060246_CSR.h"
 #include "Vysyx_23060246_EXU.h"
 #include "Vysyx_23060246_Regfile.h"
+#ifdef CONFIG_RVE
+#include "Vysyx_23060246_regs_16x32.h"
+#else 
 #include "Vysyx_23060246_regs_32x32.h"
+#endif 
 #include "Vysyx_23060246_ysyx_23060246.h"
 #include "Vysyx_23060246_ysyx_npc.h"
 #include "Vysyx_23060246_WBU.h"

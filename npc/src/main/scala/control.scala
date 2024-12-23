@@ -3,7 +3,7 @@ package cpu
 import chisel3._
 import chisel3.util._
 import insts._
-import defines._
+//import defines._
 
 
 
@@ -51,8 +51,7 @@ class Control(xlen: Int) extends Module{
 
   //invaild instruction
   val instInvalid = Module(new InstInvalid)
-  instInvalid.io.isvalid := (ctrlsig(11) === valid.INST_VALID) ||
-                          isebreak || io.in.pc < PC_INIT
+  instInvalid.io.isvalid := (ctrlsig(11) === valid.INST_VALID) || isebreak 
 }
 
 
