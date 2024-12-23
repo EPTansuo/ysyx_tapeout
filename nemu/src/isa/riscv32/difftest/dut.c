@@ -32,7 +32,13 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
     goto print_error_info;
   }
   else{
-    succ = (memcmp(cpu.gpr, ref_r->gpr, DIFFTEST_REG_SIZE) == 0) ; // check gpr
+    //succ = (memcmp(cpu.gpr, ref_r->gpr, DIFFTEST_REG_SIZE) == 0) ; // check gpr
+    for(int i = 0; i < MUXDEF(CONFIG_RVE, 16, 32); i++){
+      if(cpu.gpr[i] != ref_r->gpr[i]){
+        succ = false;
+        break;
+      }
+    }
     
     if(!succ){
       printf("\e[1;31mGPR DIFFTESET ERROR!\e[0m\n");

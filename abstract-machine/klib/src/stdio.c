@@ -95,7 +95,7 @@ int vprintf( const char *fmt, va_list ap) {
         int num = va_arg(ap, int);
         len += _print_itoa(num);
       }
-      else if (*fmt == 'x'|| *fmt == 'X') {
+      else if (*fmt == 'x'|| *fmt == 'X' || *fmt == 'p') { //WARNING: 默认了是32位的指针
         int num = va_arg(ap, int);
         len += _print_hex_int(num, *fmt=='X');
       }
