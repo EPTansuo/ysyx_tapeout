@@ -186,10 +186,14 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
         val icache_hit_cnt = RegInit(0.U(64.W))
         val state_delay = RegInit(0.U(state.getWidth.W))
         val icache_bypass_cnt = RegInit(0.U(64.W))
+        val icache_hit_access_time_cnt = RegInit(0.U(64.W))
+        val icache_miss_penalty_cnt = RegInit(0.U(64.W))
         dontTouch(icache_access_cnt)
         dontTouch(icache_hit_cnt)
         dontTouch(state_delay)
         dontTouch(icache_bypass_cnt)
+        dontTouch(icache_hit_access_time_cnt)
+        dontTouch(icache_miss_penalty_cnt)
         state_delay := state 
         when(state === s_idle && state_next =/= s_idle){
             icache_access_cnt := icache_access_cnt + 1.U
@@ -199,6 +203,12 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
         }
         when(io.ifu.r.valid && io.ifu.r.valid && bypass.asBool){
             icache_bypass_cnt := icache_bypass_cnt + 1.U 
+        }
+        when(state === s_read){
+            icache_hit_access_time_cnt := icache_hit_access_time_cnt + 1.U
+        }
+        when(state === s_refill || state === s_replace){
+            icache_miss_penalty_cnt := icache_miss_penalty_cnt + 1.U
         }
     }
 
