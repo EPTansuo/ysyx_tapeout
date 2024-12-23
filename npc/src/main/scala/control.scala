@@ -51,7 +51,7 @@ class Control(config: NPCConfig) extends Module{
   //invaild instruction
   val instInvalid = Module(new InstInvalid)
   instInvalid.io.isvalid := (ctrlsig(11) === valid.INST_VALID) ||
-                          isebreak || io.in.pc < config.PC_INIT
+                          isebreak || io.in.pc < config.PC_INIT.U
 }
 
 
