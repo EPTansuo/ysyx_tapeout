@@ -47,6 +47,10 @@ Log("SYSCALL(%s, %d, %d, %d)", syscalls[a[0]], a[1], a[2], a[3]);
     case SYS_brk: {
       
     }
+    case SYS_write: {
+      c->GPRx = sys_write(a[1], (void *)a[2], a[3]);
+      break;
+    }
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
 }
