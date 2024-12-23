@@ -98,16 +98,17 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
         s_idle -> Mux(io.ifu.ar.valid, Mux(bypass.asBool, s_idle, s_read), s_idle),
         s_read -> Mux(hit, s_idle, s_replace),
         s_replace -> Mux(io.imem.ar.ready, s_refill, s_replace),
-        s_refill -> Mux(io.imem.r.valid, s_idle, s_refill)
+        s_refill -> Mux(io.imem.r.valid, s_read, s_refill)
     ))
     state := state_next
 
     io.ifu.ar.ready := Mux(bypass.asBool , io.imem.ar.ready, state === s_idle)
     io.ifu.r.valid := Mux(bypass.asBool, io.imem.r.valid, (state === s_read && hit) )
     io.ifu.r.bits.data := Mux(bypass.asBool, io.imem.r.bits.data, rdata_cache)
+    dontTouch(io.ifu.r.valid)
 
     io.imem.ar.bits.addr := io.ifu.ar.bits.addr
-    io.imem.ar.valid := Mux(bypass.asBool, io.ifu.ar.valid, state === s_replace || state === s_refill)
+    io.imem.ar.valid := Mux(bypass.asBool, io.ifu.ar.valid, (state === s_replace) || (state === s_refill))
     io.imem.r.ready := Mux(bypass.asBool, io.ifu.r.valid ,state === s_refill)
 
 
@@ -153,6 +154,7 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
     io.imem.ar.bits.lock := 0.U
     io.imem.ar.bits.cache := 0.U
     io.imem.ar.bits.qos := 0.U
+    
 
  //Icache Dont need to write 
     io.imem.w.valid := false.B
@@ -182,17 +184,17 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
     if(defines.PERF_CNT){
         val icache_access_cnt = RegInit(0.U(64.W))
         val icache_hit_cnt = RegInit(0.U(64.W))
-        val state_last = RegInit(0.U(state.getWidth.W))
+        val state_delay = RegInit(0.U(state.getWidth.W))
         val icache_bypass_cnt = RegInit(0.U(64.W))
         dontTouch(icache_access_cnt)
         dontTouch(icache_hit_cnt)
-        dontTouch(state_last)
+        dontTouch(state_delay)
         dontTouch(icache_bypass_cnt)
-        state_last := state 
+        state_delay := state 
         when(state === s_idle && state_next =/= s_idle){
             icache_access_cnt := icache_access_cnt + 1.U
         }
-        when(state_last === s_idle && state === s_read && hit){
+        when(state_delay === s_idle && state === s_read && hit){
             icache_hit_cnt := icache_hit_cnt + 1.U
         }
         when(io.ifu.r.valid && io.ifu.r.valid && bypass.asBool){

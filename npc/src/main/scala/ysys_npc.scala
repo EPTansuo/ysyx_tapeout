@@ -46,7 +46,7 @@ class ysyx_npc(xlen:Int) extends Module {
 
     val axi_arbiter = Module( new AXIArbiter(2, new AXI4BundleParameters(xlen, 32, AXI_IDBITS)))
     axi_arbiter.io.in(0) <> icache.io.imem
-    axi_arbiter.io.in(0) <> ifu.io.imem
+    //axi_arbiter.io.in(0) <> ifu.io.imem
     axi_arbiter.io.in(1) <> lsu.io.dmem
     axi_arbiter.io.out <> io.axi
 
