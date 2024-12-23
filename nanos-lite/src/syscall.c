@@ -17,7 +17,7 @@ void do_syscall(Context *c) {
   a[2] = c->GPR3;
   a[3] = c->GPR4;
 #ifdef STRACE
-Log("SYSCALL: %s %d, %d, %d, %d", syscalls[a[0]], a[1], a[2], a[3]);
+Log("SYSCALL(%s, %d, %d, %d)", syscalls[a[0]], a[1], a[2], a[3]);
 #endif 
 
 
