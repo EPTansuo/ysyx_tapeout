@@ -38,7 +38,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   assert(*(uint32_t *)(&elf)->e_ident == 0x464c457f);
   assert(elf.e_machine == EXPECT_TYPE);
 
-  Elf_Phdr ph[elf.e_phnum];
+//  Elf_Phdr ph[elf.e_phnum];
  
    TODO();
   return elf.e_entry;

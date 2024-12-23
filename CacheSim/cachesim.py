@@ -22,7 +22,14 @@ class CacheSimulator:
                 else:
                     raise ValueError("Unsupported address size. Use 4 or 8 bytes.")
                 self.cache.access(address)
-
+    def get_stats(self):
+        return {
+            'hits': self.cache.hits,
+            'misses': self.cache.misses,
+            'accesses': self.cache.hits + self.cache.misses,
+            'hit_rate': self.cache.hits / (self.cache.hits + self.cache.misses),
+            'miss_rate': self.cache.misses / (self.cache.hits + self.cache.misses)
+        }
     def report(self):
         print(self.cache)
 
@@ -33,9 +40,9 @@ if __name__ == "__main__":
         description='cachesim',
         epilog='By EPTansuo (Bingjin Han)'
     )
-    parser.add_argument('-f','--dir', help="PC Trace file(.bin.gz)")
+    parser.add_argument('-f','--file', help="PC Trace file(.bin.gz)")
 
-    parser.add_argument('-o','--out',default='out.txt', help="Output results to file")
+    #parser.add_argument('-o','--out',default='out.txt', help="Output results to file")
     parser.add_argument('-w','--nways', type=int, help="Number of ways")
     parser.add_argument('-s','--nsets', type=int, help="Number of sets")
     parser.add_argument('-b','--bs', type=int, help="Size of Cache Block (Unit: Byte)")
@@ -43,7 +50,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    if(args.nways==None or args.nsets==None or args.bs==None):
+    if(args.file == None or args.nways==None or args.nsets==None or args.bs==None):
         # print help 
         print("Error Usage!")
         parser.print_help()
@@ -53,8 +60,8 @@ if __name__ == "__main__":
 
     cache = Cache(cacheSize, args.bs, args.nways, replacement_policy=args.replace)
     simulator = CacheSimulator(cache, address_size=4)
-    simulator.run('pc_trace.bin.gz')
-    simulator.report()
+    simulator.run(args.file)
+    print(simulator.get_stats()["hit_rate"])
 
 
 
