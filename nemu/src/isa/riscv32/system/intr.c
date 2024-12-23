@@ -31,8 +31,9 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
   cpu.csr.mcause = NO;
   cpu.csr.mepc = epc;
   //cpu.csr.mstatus = 0x1800;
-  cpu.csr.mstatus = (cpu.csr.mstatus & ~(1 << 3)) | ((cpu.csr.mstatus & (1 << 7)) >> 4); /* 复制 MPIE 到 MIE */
-
+  uint32_t mie = (cpu.csr.mstatus >> 3) & 0x1;       // 获取当前的 MIE
+  cpu.csr.mstatus &= ~(1 << 3);                      // 清除 MIE
+  cpu.csr.mstatus = (cpu.csr.mstatus & ~(1 << 7)) | (mie << 7); // 将 MIE 保存到 MPIE
 
   return cpu.csr.mtvec;
 }
