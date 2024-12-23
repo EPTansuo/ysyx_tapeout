@@ -108,7 +108,7 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
     dontTouch(io.ifu.r.valid)
 
     io.imem.ar.bits.addr := io.ifu.ar.bits.addr
-    io.imem.ar.valid := Mux(bypass.asBool, io.ifu.ar.valid, state === s_replace)
+    io.imem.ar.valid := Mux(bypass.asBool, io.ifu.ar.valid, (state === s_replace) || (state === s_refill))
     io.imem.r.ready := Mux(bypass.asBool, io.ifu.r.valid ,state === s_refill)
 
 
@@ -154,7 +154,7 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
     io.imem.ar.bits.lock := 0.U
     io.imem.ar.bits.cache := 0.U
     io.imem.ar.bits.qos := 0.U
-
+    
 
  //Icache Dont need to write 
     io.imem.w.valid := false.B
