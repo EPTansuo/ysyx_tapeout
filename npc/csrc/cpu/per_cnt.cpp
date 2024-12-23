@@ -46,46 +46,6 @@ PERF_WBU_CNT(PERF_CNT_DECL)
 PERF_ICACHE_CNT(PERF_CNT_DECL)
 
 
-
-// /************** IFU ***********/
-// static uint32_t ifu_cnt = 0;
-
-// /************** IDU ***********/
-// static uint32_t inst_compute_cnt = 0;
-// static uint32_t inst_branch_cnt = 0;
-// static uint32_t inst_jump_cnt = 0;
-// static uint32_t inst_ldst_cnt = 0;
-// static uint32_t inst_csr_cnt = 0;
-// static uint64_t cycle_compute_cnt = 0;
-// static uint64_t cycle_branch_cnt = 0;
-// static uint64_t cycle_jump_cnt = 0;
-// static uint64_t cycle_ldst_cnt = 0;
-// static uint64_t cycle_csr_cnt = 0;
-
-// /************** EXU ***********/
-// static uint32_t alu_arith_cnt = 0;
-// static uint32_t alu_logic_cnt = 0;
-// static uint32_t alu_shift_cnt = 0;
-// static uint32_t alu_cmp_cnt = 0;
-// static uint32_t alu_copy_cnt = 0;
-
-// /************** LSU ************/
-// static uint32_t load_cnt = 0;
-// static uint32_t store_cnt = 0;
-// static uint64_t cycle_load_cnt = 0;
-// static uint64_t cycle_store_cnt = 0;
-
-// /************** WBU ************/
-// static uint64_t inst_cnt = 0;
-// static uint64_t cycle_cnt = 0;
-
-// /************ ICache ************/
-// static uint64_t icache_access_cnt = 0;
-// static uint64_t icache_hit_cnt = 0;
-// static uint64_t icache_bypass_cnt = 0;
-// static uint64_t icache_access_time_cnt = 0;
-// static uint64_t icache_miss_penalty_cnt = 0;
-
 void perf_get_data(){
 
 #define PERF_IFU_GET(counter) counter = IFU->counter;
@@ -101,38 +61,6 @@ void perf_get_data(){
     PERF_LSU_CNT(PERF_LSU_GET)
     PERF_WBU_CNT(PERF_WBU_GET)
     PERF_ICACHE_CNT(PERF_ICACHE_GET)
-    // ifu_cnt = IFU->ifu_cnt;
-
-    // inst_compute_cnt = IDU->inst_compute_cnt;
-    // inst_branch_cnt = IDU->inst_branch_cnt;
-    // inst_jump_cnt = IDU->inst_jump_cnt;
-    // inst_ldst_cnt = IDU->inst_ldst_cnt;
-    // inst_csr_cnt = IDU->inst_csr_cnt;
-    // cycle_compute_cnt = IDU->cycle_compute_cnt;
-    // cycle_branch_cnt = IDU->cycle_branch_cnt;
-    // cycle_jump_cnt = IDU->cycle_jump_cnt;
-    // cycle_ldst_cnt = IDU->cycle_ldst_cnt;
-    // cycle_csr_cnt = IDU->cycle_csr_cnt;
-
-    // alu_arith_cnt = EXU->alu_arith_cnt;
-    // alu_logic_cnt = EXU->alu_logic_cnt;
-    // alu_shift_cnt = EXU->alu_shift_cnt;
-    // alu_cmp_cnt = EXU->alu_cmp_cnt;
-    // alu_copy_cnt = EXU->alu_copy_cnt;
-
-    // load_cnt = LSU->load_cnt;
-    // store_cnt = LSU->store_cnt;
-    // cycle_load_cnt = LSU->cycle_load_cnt;
-    // cycle_store_cnt = LSU->cycle_store_cnt;
-
-    // inst_cnt = WBU->inst_cnt;
-    // cycle_cnt = WBU->cycle_cnt;
-
-    // icache_access_cnt = ICACHE->icache_access_cnt;
-    // icache_hit_cnt = ICACHE->icache_hit_cnt;
-    // icache_bypass_cnt = ICACHE->icache_bypass_cnt;
-    // icache_access_time_cnt = ICACHE->icache_access_time_cnt;
-    // icache_miss_penalty_cnt = ICACHE->icache_miss_penalty_cnt;
 }
 
 FILE *fp;
