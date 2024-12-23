@@ -12,6 +12,12 @@ const char *syscalls[] = {"SYS_exit", "SYS_yield", "SYS_open",
 
 
 size_t sys_write(int fd, const void *buf, size_t len);
+time_t sys_time(struct timeval *t){ 
+  time_t time = io_read(AM_TIMER_UPTIME).us;
+  t->tv_sec  = time/1000000;
+  t->tv_usec = time%1000000;
+  return time;
+};
 
 void do_syscall(Context *c) {
   uintptr_t a[4];
@@ -31,14 +37,11 @@ Log("SYSCALL(%s, %d, %d, %d)", syscalls[a[0]], a[1], a[2], a[3]);
       break;
     }
     case SYS_yield: {
-      c->GPRx = 0; yield(); 
+      yield(); c->GPRx = 0; 
       break;
     }
     case SYS_time: {
-      uint64_t time = io_read(AM_TIMER_UPTIME).us;
-      ((struct timeval *)a[1])->tv_sec = time / 1000000;
-      ((struct timeval *)a[1])->tv_usec = time % 1000000;
-      c->GPRx = 0;
+      c->GPRx = sys_time((struct timeval *)a[1]);
       break;
     }
     default: panic("Unhandled syscall ID = %d", a[0]);
