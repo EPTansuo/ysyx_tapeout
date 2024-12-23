@@ -122,6 +122,6 @@ void perf_statistic(){
     PRINT_PERF("ICache Access Time CNT", icache_hit_access_time_cnt, 
                                     (double)icache_hit_access_time_cnt/icache_access_cnt, "cycle per hit");
     PRINT_PERF("ICache Miss Penalty CNT", icache_miss_penalty_cnt, 
-                                    (double)icache_miss_penalty_cnt/icache_access_cnt, "cycle per miss");
+                    (double)icache_miss_penalty_cnt/(icache_access_cnt-icache_hit_cnt), "cycle per miss");
     fclose(fp);
 }
