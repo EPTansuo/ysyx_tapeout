@@ -7,7 +7,7 @@ static Context* do_event(Event e, Context* c) {
     case EVENT_YIELD: case EVENT_IRQ_TIMER: 
       c = schedule(c); break;
     case EVENT_SYSCALL: 
-      do_syscall(c); break;
+      printf("do_syscall\n");do_syscall(c); break;
     default: panic("Unhandled event ID = %d", e.event);
   }
   return c;
