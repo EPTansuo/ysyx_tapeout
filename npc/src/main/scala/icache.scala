@@ -205,7 +205,7 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
             icache_bypass_cnt := icache_bypass_cnt + 1.U 
         }
         when(state === s_read){
-            icache_access_cnt := icache_access_cnt + 1.U
+            icache_access_time_cnt := icache_access_time_cnt + 1.U
         }
         when(state === s_refill || state === s_replace){
             icache_miss_penalty_cnt := icache_miss_penalty_cnt + 1.U
