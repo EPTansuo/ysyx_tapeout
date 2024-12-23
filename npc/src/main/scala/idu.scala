@@ -16,7 +16,7 @@ class IDU(config: NPCConfig) extends Module {
     })
 
 
-    val control = Module(new Control(config.XLEN))
+    val control = Module(new Control(config))
     //val inst = io.in.bits.inst 
     //val pc = io.in.bits.pc
     val inst = RegInit(0.U(32.W))
