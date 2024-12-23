@@ -96,7 +96,8 @@ void perf_statistic(){
     PRINT_PERF("Branch  Cyeles CNT", cycle_branch_cnt, (double)cycle_branch_cnt/inst_branch_cnt, "cycle per inst");
     PRINT_PERF("Jump    Cyeles CNT", cycle_jump_cnt, (double)cycle_jump_cnt/inst_jump_cnt, "cycle per inst");
     PRINT_PERF("ld/st   Cyeles CNT", cycle_ldst_cnt, (double)cycle_ldst_cnt/inst_ldst_cnt, "cycle per inst");
-    PRINT_PERF("CSR     Cyeles CNT", cycle_csr_cnt, (double)cycle_csr_cnt/inst_csr_cnt, "cycle per inst");
+    PRINT_PERF("CSR     Cyeles CNT", cycle_csr_cnt, 
+                                    inst_csr_cnt != 0 ? (double)cycle_csr_cnt/inst_csr_cnt: 0.0 , "cycle per inst");
 
     printf("\n----------------------------------- ALUOP Type ------------------------------------\n");
     PRINT_PERF("Alu Arith CNT", alu_arith_cnt, (double)alu_arith_cnt/inst_cnt*100, "% of inst");
