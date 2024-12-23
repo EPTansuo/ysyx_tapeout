@@ -23,7 +23,7 @@ Log("SYSCALL(%s, %d, %d, %d)", syscalls[a[0]], a[1], a[2], a[3]);
 
   switch (a[0]) {
     case SYS_exit: {
-      //halt(0);
+      halt(0);
 
       break;
     }
