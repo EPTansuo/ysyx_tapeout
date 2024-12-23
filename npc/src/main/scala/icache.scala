@@ -4,25 +4,6 @@ import chisel3._
 import chisel3.util._
 import freechips.rocketchip.amba.axi4._
 
-//blockSize: Byte
-case class CacheParameters(nSets: Int, nWays: Int, blockSize: Int, addrBits: Int) {
-  val cacheSize: Int = nSets * nWays * blockSize
-  val offsetBits: Int = (math.log(blockSize) / math.log(2)).toInt
-  val indexBits: Int = (math.log(nSets) / math.log(2)).toInt
-  val tagBits: Int = (addrBits - indexBits - offsetBits)
-  override def toString: String = 
-    s"Cache Size: $cacheSize bytes, Tag: $tagBits bits, Index: $indexBits bits, Offset: $offsetBits bits"
-}
-
-
-object ICacheParameters{
-    def apply() = CacheParameters(
-        nSets = 64,   // should be 2^n
-        nWays = 4,   
-        blockSize = 4, // should be 4*n  // only support 4 now 
-        addrBits = 32,
-    )
-}
 
 class ICacheIO(axiparams: AXI4BundleParameters) extends Bundle {
   val ifu = Flipped(new AXI4Bundle(axiparams))
@@ -31,9 +12,9 @@ class ICacheIO(axiparams: AXI4BundleParameters) extends Bundle {
 
 
 
-class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) extends Module{
-    val io = IO(new ICacheIO(axiparams))
-
+class ICache(config: NPCConfig) extends Module{
+    val io = IO(new ICacheIO(config.axiparams))
+    val cacheparams = config.icacheparams
     val tagBits = cacheparams.tagBits
     val indexBits = cacheparams.indexBits
     val offsetBits = cacheparams.offsetBits
@@ -41,7 +22,7 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
     val nWays = cacheparams.nWays
     val blockSize = cacheparams.blockSize
     
-    assert(blockSize % (axiparams.dataBits/8) == 0, "iCache blockSize*8 must be N times of databits"); 
+    assert(blockSize % (config.axiparams.dataBits/8) == 0, "iCache blockSize*8 must be N times of databits"); 
 
 
     val totalLines = nWays * nSets 
@@ -83,7 +64,7 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
     }
     
     val bypass = Wire(UInt(1.W))
-    if(defines.USE_SOC){
+    if(config.USE_SOC){
         // IF the address is not in the range of the SDRAM address, then it is a bypass
         bypass := (io.ifu.ar.bits.addr(31,29) =/= "b101".U)
     }else{
@@ -181,7 +162,7 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
     io.ifu.b.bits.resp := 0.U
 
 
-    if(defines.PERF_CNT){
+    if(config.PERF_CNT){
         val icache_access_cnt = RegInit(0.U(64.W))
         val icache_hit_cnt = RegInit(0.U(64.W))
         val state_delay = RegInit(0.U(state.getWidth.W))

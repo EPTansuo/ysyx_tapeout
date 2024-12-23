@@ -3,7 +3,6 @@ package cpu
 import chisel3._
 import chisel3.util._
 import insts._
-import defines._
 
 
 
@@ -27,10 +26,10 @@ class ControlIn(xlen: Int) extends Bundle{
     val pc = Input(UInt(xlen.W))
 }
 
-class Control(xlen: Int) extends Module{
+class Control(config: NPCConfig) extends Module{
   val io = IO(new Bundle{
-    val out = Output(new ControlOut(xlen))
-    val in = Input(new ControlIn(xlen))
+    val out = Output(new ControlOut(config.XLEN))
+    val in = Input(new ControlIn(config.XLEN))
   })
   val ctrlsig = ListLookup(io.in.inst, SigMap.default, SigMap.map)
   io.out.pc_sel := ctrlsig(0)
@@ -52,7 +51,7 @@ class Control(xlen: Int) extends Module{
   //invaild instruction
   val instInvalid = Module(new InstInvalid)
   instInvalid.io.isvalid := (ctrlsig(11) === valid.INST_VALID) ||
-                          isebreak || io.in.pc < PC_INIT
+                          isebreak || io.in.pc < config.PC_INIT
 }
 
 
