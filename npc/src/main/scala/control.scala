@@ -51,7 +51,7 @@ class Control(xlen: Int) extends Module{
 
   //invaild instruction
   val instInvalid = Module(new InstInvalid)
-  instInvalid.io.isvalid := (ctrlsig(11) === valid.INST_VALID) || isebreak 
+  instInvalid.io.isvalid := (ctrlsig(11) === valid.INST_VALID) || isebreak || reset.asBool
 }
 
 
