@@ -105,6 +105,7 @@ class ICache(cacheparams: CacheParameters, axiparams: AXI4BundleParameters) exte
     io.ifu.ar.ready := Mux(bypass.asBool , io.imem.ar.ready, state === s_idle)
     io.ifu.r.valid := Mux(bypass.asBool, io.imem.r.valid, (state === s_read && hit) )
     io.ifu.r.bits.data := Mux(bypass.asBool, io.imem.r.bits.data, rdata_cache)
+    dontTouch(io.ifu.r.valid)
 
     io.imem.ar.bits.addr := io.ifu.ar.bits.addr
     io.imem.ar.valid := Mux(bypass.asBool, io.ifu.ar.valid, state === s_replace || state === s_refill)
