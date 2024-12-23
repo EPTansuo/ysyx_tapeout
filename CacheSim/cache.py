@@ -48,12 +48,10 @@ class CacheSet:
 
     def update_on_hit(self, line):
         if self.replacement_policy == 'LRU':
-            # 更新其他行的LRU计数器
             for l in self.lines:
                 if l != line and l.valid:
                     l.lru_counter += 1
             line.lru_counter = 0
-        # RANDOM 和 FIFO 不需要在命中时更新
 
     def access(self, tag):
         line = self.find_line(tag)
@@ -63,17 +61,17 @@ class CacheSet:
             return True
         else:
             # Cache Miss
-            replaced_line = self.replace_line(tag)
+            self.replace_line(tag)
             return False
 
     def __str__(self):
         return '\n'.join([str(line) for line in self.lines])
 
 class Cache:
-    def __init__(self, cache_size, block_size, associativity, replacement_policy='LRU'):
-        self.cache_size = cache_size  # 总缓存大小，字节
-        self.block_size = block_size  # 块大小，字节
-        self.associativity = associativity  # 关联度
+    def __init__(self, cache_size, block_size, associativity, addressbits = 32,replacement_policy='LRU'):
+        self.cache_size = cache_size  
+        self.block_size = block_size 
+        self.associativity = associativity
         self.replacement_policy = replacement_policy.upper()
 
         self.num_blocks = self.cache_size // self.block_size
@@ -81,10 +79,9 @@ class Cache:
 
         self.sets = [CacheSet(associativity, self.replacement_policy) for _ in range(self.num_sets)]
 
-        # 计算地址划分
         self.block_offset_bits = int(math.log2(self.block_size))
         self.index_bits = int(math.log2(self.num_sets))
-        self.tag_bits = 32 - self.index_bits - self.block_offset_bits  # 假设32位地址
+        self.tag_bits = addressbits - self.index_bits - self.block_offset_bits  
 
         # 统计数据
         self.accesses = 0
@@ -95,7 +92,7 @@ class Cache:
         self.accesses += 1
 
         # 提取地址的各部分
-        block_offset = address & (self.block_size - 1)
+        #block_offset = address & (self.block_size - 1)
         index = (address >> self.block_offset_bits) & (self.num_sets - 1)
         tag = address >> (self.block_offset_bits + self.index_bits)
 

@@ -41,30 +41,19 @@ if __name__ == "__main__":
     parser.add_argument('-b','--bs', type=int, help="Size of Cache Block (Unit: Byte)")
     parser.add_argument('-r','--replace', default="FIFO", help="Repalce Methology: FIFO, RANDOM, LRU(Only Support FIFO Now)")
 
-    # args = parser.parse_args()
+    args = parser.parse_args()
 
-    # if(args.nways==None or args.nsets==None or args.bs==None):
-    #     # print help 
-    #     print("Error Usage!")
-    #     parser.print_help()
-    #     exit()
+    if(args.nways==None or args.nsets==None or args.bs==None):
+        # print help 
+        print("Error Usage!")
+        parser.print_help()
+        exit()
 
-    # 配置缓存参数
-    cache_size = 64  # 32 KB
-    block_size = 4  # 64 bytes
-    associativity = 2  # 4-way set associative
-    replacement_policy = 'FIFO'  # 可选: 'LRU', 'RANDOM', 'FIFO'
+    cacheSize = args.nways * args.nsets * args.bs
 
-    # 创建缓存对象
-    cache = Cache(cache_size, block_size, associativity, replacement_policy=replacement_policy)
-
-    # 创建模拟器，指定地址大小为4字节（32位）
+    cache = Cache(cacheSize, args.bs, args.nways, replacement_policy=args.replace)
     simulator = CacheSimulator(cache, address_size=4)
-
-    # 运行模拟器
-    simulator.run('./pc_trace.bin_test.gz')
-
-    # 打印统计结果
+    simulator.run('pc_trace.bin.gz')
     simulator.report()
 
 
