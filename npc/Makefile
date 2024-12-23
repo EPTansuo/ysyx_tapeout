@@ -114,7 +114,7 @@ $(shell mkdir -p $(BUILD_DIR)/verilog)
 VERILOG_TIME = $(shell find $(VERILOG_DIR) -type f -exec stat --format '%Y' {} \; | sort -n | tail -n 1)
 VERILOG_TIME := $(if $(VERILOG_TIME),$(VERILOG_TIME),0)
 
-verilog: $(SCALA_FILE) sigmap
+verilog: $(SCALA_FILE) sigmap .config.json
 
 	@if [ "$(SCALA_TIME)" -gt "$(VERILOG_TIME)" ]; then \
 		echo "Scala directory changed or Verilog directory missing, generating Verilog..."; \
@@ -122,6 +122,8 @@ verilog: $(SCALA_FILE) sigmap
 	else \
 		echo "No changes detected in Scala directory, skipping Verilog generation."; \
 	fi
+
+
 
 SIGMAP_TIME = $(shell find $(SCALA_DIR) -name sigmap.scala -exec stat --format '%Y' {} \; | sort -n | tail -n 1)
 SIGMAP_TABLE_TIME = $(shell find $(NPC_HOME)/tools -name control_table.xlsx -exec stat --format '%Y' {} \; | sort -n | tail -n 1)
