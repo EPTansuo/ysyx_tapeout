@@ -30,7 +30,10 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
 
   cpu.csr.mcause = NO;
   cpu.csr.mepc = epc;
-  cpu.csr.mstatus = 0x1800;
+  //cpu.csr.mstatus = 0x1800;
+  cpu.csr.mstatus = (cpu.csr.mstatus & ~(1 << 3)) | ((cpu.csr.mstatus & (1 << 7)) >> 4); /* 复制 MPIE 到 MIE */
+
+
   return cpu.csr.mtvec;
 }
 
