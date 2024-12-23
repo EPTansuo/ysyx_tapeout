@@ -78,6 +78,7 @@ void perf_get_data(){
     icache_access_cnt = ICACHE->icache_access_cnt;
     icache_hit_cnt = ICACHE->icache_hit_cnt;
     icache_bypass_cnt = ICACHE->icache_bypass_cnt;
+    icache
 }
 
 FILE *fp;
