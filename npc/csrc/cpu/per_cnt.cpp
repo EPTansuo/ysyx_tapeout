@@ -28,7 +28,7 @@ _(load_cnt) _(store_cnt) _(cycle_load_cnt) _(cycle_store_cnt)
 _(inst_cnt) _(cycle_cnt)
 
 #define PERF_ICACHE_CNT(_) \
-_(icache_access_cnt) _(icache_hit_cnt) _(icache_bypass_cnt) _(icache_access_time_cnt) _(icache_miss_penalty_cnt)
+_(icache_access_cnt) _(icache_hit_cnt) _(icache_bypass_cnt) _(icache_hit_access_time_cnt) _(icache_miss_penalty_cnt)
 
 
 #define CPU_UNIT(_) \
@@ -112,14 +112,16 @@ void perf_statistic(){
     PRINT_PERF("Store Cycles CNT", cycle_store_cnt, (double)cycle_store_cnt/store_cnt, "cycle per store");
 
     printf("\n-------------------------------------- ICache --------------------------------------\n");
-    PRINT_PERF("ICache IFetch CNT", icache_access_cnt+icache_bypass_cnt, 0.0, "");
-    PRINT_PERF("ICache Access CNT", icache_access_cnt, 0.0, "");
     double hit_rate = (double)icache_hit_cnt/icache_access_cnt;
+    PRINT_PERF("ICache IFetch CNT", icache_access_cnt+icache_bypass_cnt, 
+            (icache_hit_access_time_cnt + (1-hit_rate)*icache_miss_penalty_cnt)/icache_access_cnt, "AMAT");
+    PRINT_PERF("ICache Access CNT", icache_access_cnt, 0.0, "");
     PRINT_PERF("ICache hit CNT", icache_hit_cnt, hit_rate*100, "% hit rate");
     PRINT_PERF("ICache Bypass CNT", icache_bypass_cnt, (double)icache_bypass_cnt/
                                             (icache_access_cnt+icache_bypass_cnt)*100, "% of ifetch");
-    PRINT_PERF("ICache Access Time CNT", icache_access_time_cnt, 0.0, "");
+    PRINT_PERF("ICache Access Time CNT", icache_hit_access_time_cnt, 
+                                    (double)icache_hit_access_time_cnt/icache_access_cnt, "cycle per hit");
     PRINT_PERF("ICache Miss Penalty CNT", icache_miss_penalty_cnt, 
-                    (icache_access_time_cnt + (1-hit_rate)*icache_miss_penalty_cnt)/icache_access_cnt, "AMAT");
+                                    (double)icache_miss_penalty_cnt/icache_access_cnt, "cycle per miss");
     fclose(fp);
 }
