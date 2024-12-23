@@ -10,6 +10,9 @@ const char *syscalls[] = {"SYS_exit", "SYS_yield", "SYS_open",
 "SYS_times", "SYS_gettimeofday"};
 #endif 
 
+
+size_t sys_write(int fd, const void *buf, size_t len);
+
 void do_syscall(Context *c) {
   uintptr_t a[4];
   a[0] = c->GPR1;
