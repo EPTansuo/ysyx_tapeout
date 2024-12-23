@@ -31,9 +31,19 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
   cpu.csr.mcause = NO;
   cpu.csr.mepc = epc;
   //cpu.csr.mstatus = 0x1800;
-  uint32_t mie = (cpu.csr.mstatus >> 3) & 0x1;       // 获取当前的 MIE
-  cpu.csr.mstatus &= ~(1 << 3);                      // 清除 MIE
-  cpu.csr.mstatus = (cpu.csr.mstatus & ~(1 << 7)) | (mie << 7); // 将 MIE 保存到 MPIE
+
+#define MSTATUS_MIE   (1 << 3)
+#define MSTATUS_MPIE  (1 << 7)
+#define MSTATUS_MPP   (3 << 11)  // MPP 占用 11 和 12 位
+
+// 保存当前的 MIE 到 MPIE
+uint32_t mie = (cpu.csr.mstatus & MSTATUS_MIE) ? 1 : 0;
+cpu.csr.mstatus &= ~MSTATUS_MIE;                      // 清除 MIE
+cpu.csr.mstatus = (cpu.csr.mstatus & ~MSTATUS_MPIE) | (mie << 7); // 设置 MPIE
+
+
+cpu.csr.mstatus = (cpu.csr.mstatus & ~MSTATUS_MPP) | (0x3 << 11); // 设置 MPP = 11 (Machine Mode)
+
 
   return cpu.csr.mtvec;
 }
