@@ -49,11 +49,11 @@ class ysyx_23060246(config: NPCConfig) extends Module {
   xbar.io.out(1) <> clint.io.axi 
 
 
-  val axierror = Module(new AXIError)
-  axierror.io.bresp := io.master.bresp
-  axierror.io.rresp := io.master.rresp
-  axierror.io.wen := io.master.bvalid 
-  axierror.io.ren := io.master.arvalid
+  // val axierror = Module(new AXIError)
+  // axierror.io.bresp := io.master.bresp
+  // axierror.io.rresp := io.master.rresp
+  // axierror.io.wen := io.master.bvalid 
+  // axierror.io.ren := io.master.arvalid
 
 
   io.slave <> DontCare 
