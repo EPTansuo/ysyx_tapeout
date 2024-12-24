@@ -87,7 +87,7 @@ void init_mem() {
 
 word_t paddr_read(paddr_t addr, int len) {
   word_t mem_read = 0;
-  if (likely(in_pmem(addr))) {
+  if (MUXDEF(CONFIG_RT_CHECK, likely(in_pmem(addr)), true)) {
     mem_read = pmem_read(addr, len);
 #ifdef CONFIG_MTRACE
 #ifdef CONFIG_MTRACE_RANGE_COND
