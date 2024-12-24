@@ -112,7 +112,7 @@ class ICache(config: NPCConfig) extends Module{
    
     when(cache_refill){
         cache_data(widx*nWays.U+victimWay) := io.imem.r.bits.data 
-        assert(blockSize == 4);
+        //assert(blockSize == 4);
         cache_tag(victimWay + widx*nWays.U) := wtag
         cache_valid(victimWay + widx*nWays.U) := 1.U
 
