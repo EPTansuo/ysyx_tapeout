@@ -21,7 +21,7 @@
 #include <fmt-def.h>
 
 
-//#define CONFIG_USE_ICAHE //Not Config in Kconfig
+#define CONFIG_USE_ICAHE //Not Config in Kconfig
 
 extern CPU_state cpu;
 
