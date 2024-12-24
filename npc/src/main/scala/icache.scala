@@ -26,7 +26,7 @@ class ICache(config: NPCConfig) extends Module{
 
 
     val totalLines = nWays * nSets 
-    val cache_data = SyncReadMem(totalLines, UInt((blockSize*8).W))
+    val cache_data = SyncReadMem(totalLines, Vec(blockSize/4, UInt(32.W)))
     val cache_tag = SyncReadMem(totalLines, UInt(tagBits.W))
     val cache_valid = SyncReadMem(totalLines, UInt(1.W))
 
@@ -37,16 +37,16 @@ class ICache(config: NPCConfig) extends Module{
     val roffset = raddr_ifu(offsetBits - 1, 0)
 
 
-     val data_way = Wire(Vec(nWays, UInt((8*blockSize).W)))
+     val data_way = Wire(Vec(nWays, Vec(blockSize/4, UInt(32.W))))
      val hit_way = Wire(Vec(nWays, Bool()))
 
-    for (i <- 0 until nWays){
+    for (i <- 0 until nWays){ 
         // Can be optimized !!!!!!  乘法！！
         when(cache_tag(ridx*nWays.U+i.U) === rtag){
             data_way(i) := cache_data(ridx*nWays.U+i.U)
             hit_way(i) :=  cache_valid(ridx*nWays.U+i.U)
         }.otherwise{
-            data_way(i) := 0.U 
+            data_way(i) := VecInit(Seq.fill(blockSize/4)(0.U(32.W)))
             hit_way(i) :=  0.U
         }
     }
@@ -54,14 +54,14 @@ class ICache(config: NPCConfig) extends Module{
     val hit = Wire(Bool())
     hit := hit_way.reduce(_ || _)
     dontTouch(hit)
+    
+    val blockdata = Wire(Vec(blockSize/4, UInt(32.W)))
+    blockdata := Mux1H(hit_way, data_way)
 
 
     val rdata_cache = Wire(UInt(32.W))
-    if(blockSize == 4){
-        rdata_cache := Mux1H(hit_way, data_way.map(dw => dw(31, 0)))
-    }else{
-        rdata_cache := Mux1H(hit_way, data_way.map(dw => (dw>>roffset)(31,0)))
-    }
+    rdata_cache := blockdata(roffset)
+
     
     val bypass = Wire(UInt(1.W))
     if(config.USE_SOC){
@@ -111,8 +111,8 @@ class ICache(config: NPCConfig) extends Module{
 
    
     when(cache_refill){
-        cache_data(widx*nWays.U+victimWay) := io.imem.r.bits.data 
-        assert(blockSize == 4);
+        cache_data(widx*nWays.U+victimWay)(0) := io.imem.r.bits.data 
+        //assert(blockSize == 4);
         cache_tag(victimWay + widx*nWays.U) := wtag
         cache_valid(victimWay + widx*nWays.U) := 1.U
 

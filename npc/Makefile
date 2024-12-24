@@ -20,7 +20,7 @@ V_INCPATH+=$(shell find $(YSYX_HOME)/ysyxSoC/perip -type f -name '*defines*.v' -
 V_INCFLAGS=$(addprefix -I, $(V_INCPATH))
 VERILATOR_FLAGS = -MMD --build -cc --public \
 				--x-assign fast --x-initial fast --noassert \
-				$(V_INCFLAGS) --threads 2 --autoflush --trace-underscore    #--trace-max-array 2048 
+				$(V_INCFLAGS) --threads 1 --autoflush --trace-underscore    #--trace-max-array 2048 
 
 # timescale set
 VERILATOR_FLAGS += --timescale 1us/1us --no-timing
@@ -109,7 +109,9 @@ $(BIN): $(CSRCS) verilog $(NVBOARD_ARCHIVE) $(OBJ_DIR)/disasm.o
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) --top-module $(TOPNAME)
 
 
-SCALA_TIME = $(shell find $(SCALA_DIR) -type f -exec stat --format '%Y' {} \; | sort -n | tail -n 1)
+#SCALA_TIME = $(shell find $(SCALA_DIR) -type f -exec stat --format '%Y' {} \; | sort -n | tail -n 1)
+SCALA_TIME = $(shell ( find ./src -type f -exec stat --format '%Y' {} \; ;  find . -name ".config.json" -exec stat --format '%Y' {} \; ) | sort -n | tail -n 1)
+
 $(shell mkdir -p $(BUILD_DIR)/verilog)
 VERILOG_TIME = $(shell find $(VERILOG_DIR) -type f -exec stat --format '%Y' {} \; | sort -n | tail -n 1)
 VERILOG_TIME := $(if $(VERILOG_TIME),$(VERILOG_TIME),0)
