@@ -119,19 +119,21 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
 }
 
 
-#define ICACHE_SIZE (1024*1024*64) //64M
-
+#define ICACHE_SIZE (1024*1024*16) //16M
 
 typedef struct {
   void *label;
   uint32_t inst;
   uint32_t type;
+  word_t rs1;
+  word_t rd;
+  word_t rs2;
+  word_t imm;
 } ICacheEntry;
 
-
-
-ICacheEntry  icache[ICACHE_SIZE] = {0};
-
+ICacheEntry  icache[ICACHE_SIZE] PG_ALIGN =  {0};
+uint64_t icache_hit = 0;
+uint64_t icache_miss = 0;
 
 
 
@@ -142,27 +144,31 @@ static int decode_exec(Decode *s) {
   s->dnpc = s->snpc;
 
 #define INSTPAT_INST(s) ((s)->isa.inst.val)
-#define INSTPAT_MATCH(s, name, type, ... /* execute body */ ) { \
-  decode_operand(s, &rd, &src1, &src2, &imm, concat(TYPE_, type)); \
-  __VA_ARGS__ ; \
-}
-#define EXPAND_CONCAT(a, b) CONCAT(a, b)
-#define INSTPAT_ICACHE(s, name, type, ...) { \
+/* #define INSTPAT_MATCH(s, name, type, ... ) { \
+   decode_operand(s, &rd, &src1, &src2, &imm, concat(TYPE_, type)); \
+   __VA_ARGS__ ; \
+}*/
+
+#define INSTPAT_MATCH(s, name, t, ...) { \
   icache[index].inst = INSTPAT_INST(s); \
   icache[index].label = &&exe_##name; \
-  icache[index].type = TYPE_##type; \
+  icache[index].type = TYPE_##t; \
+  decode_operand(s, &rd, &src1, &src2, &imm, icache[index].type); \
+  icache[index].rd = rd; \
+  icache[index].rs1 = BITS(icache[index].inst, 19, 15); \
+  icache[index].rs2 = BITS(icache[index].inst, 24, 20); \
+  icache[index].imm = imm; \
+  __VA_ARGS__ ; \
 }
 
-  uint32_t  inst = INSTPAT_INST(s);
   unsigned index = (s->pc) % ICACHE_SIZE;
-  if (icache[index].inst == inst ) {
+  if (icache[index].inst == s->isa.inst.val ) {
         if(icache[index].label != NULL){
-          decode_operand(s, &rd, &src1, &src2, &imm, icache[index].type);
-          printf("Hit Cache\n");
+          icache_hit++;
           goto *icache[index].label;
         }
   }
-
+  icache_miss++;
 
   //printf("s->pc: 0x" FMT_WORD_HEX "\n",s->pc);
   INSTPAT_START();
@@ -267,70 +273,75 @@ static int decode_exec(Decode *s) {
    INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak , N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
    INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv    , N, INV(s->pc));
 
-exe_addi  :  R(rd) = src1 + imm; goto __instpat_end_;
-exe_sw    :  Mw(src1 + imm, 4, src2); goto __instpat_end_;
-exe_bne   :  s->dnpc = (src1 != src2 ? s->pc + imm : s->dnpc); goto __instpat_end_;
-exe_lw    :  R(rd) = SEXT(Mr(src1 + imm, 4), 32); goto __instpat_end_;
-exe_add   :  R(rd) = src1 + src2; goto __instpat_end_;
-exe_slli  :  R(rd) = src1 << SHAMT_LONG; goto __instpat_end_;
-exe_beq   :  s->dnpc = (src1 == src2 ? s->pc + imm : s->dnpc); goto __instpat_end_;
-exe_bltu  :  s->dnpc = ((word_t)src1 < (word_t)src2 ? s->pc + imm : s->dnpc); goto __instpat_end_;
-exe_jalr  :  R(rd) = s->pc + 4; s->dnpc = (src1 + imm) & (~1); goto __instpat_end_;
-exe_lhu   :  R(rd) = Mr(src1 + imm, 2); goto __instpat_end_;
-exe_or    :  R(rd) = src1 | src2; goto __instpat_end_;
-exe_jal   :  R(rd) = s->pc + 4; s->dnpc = s->pc + imm; goto __instpat_end_;
-exe_auipc :  R(rd) = s->pc + imm; goto __instpat_end_;
-exe_lui   :  R(rd) = imm; goto __instpat_end_;
-exe_lbu   :  R(rd) = Mr(src1 + imm, 1); goto __instpat_end_;
-exe_lb    :  R(rd) = SEXT(Mr(src1 + imm, 1), 8); goto __instpat_end_;
-exe_lh    :  R(rd) = SEXT(Mr(src1 + imm, 2), 16); goto __instpat_end_;
-exe_andi  :  R(rd) = src1 & imm; goto __instpat_end_;
-exe_addiw :  R(rd) = SEXT(BITS(src1 + imm, 31, 0),32); goto __instpat_end_;
-exe_sltiu :  R(rd) = ((word_t)src1 < (word_t)imm ? 1 : 0); goto __instpat_end_;
-exe_slti  :  R(rd) = ((sword_t)src1 < (sword_t)imm ? 1 : 0); goto __instpat_end_;
-exe_ld    :  R(rd) = Mr(src1 + imm, 8); goto __instpat_end_;
-exe_xori  :  R(rd) = src1 ^ imm; goto __instpat_end_;
-exe_ori   :  R(rd) = src1 | imm; goto __instpat_end_;
-exe_srai  :  R(rd) = (sword_t)src1 >> (sword_t)SHAMT_LONG; goto __instpat_end_;
-exe_sraiw :  R(rd) = SEXT((int32_t)src1 >> (int32_t)SHAMT, 32); goto __instpat_end_;
-exe_srli  :  R(rd) = src1 >> SHAMT_LONG; goto __instpat_end_;
-exe_sd    :  Mw(src1 + imm, 8, src2); goto __instpat_end_;
-exe_sh    :  Mw(src1 + imm, 2, src2); goto __instpat_end_;
-exe_sb    :  Mw(src1 + imm, 1, src2); goto __instpat_end_;
-exe_blt   :  s->dnpc = ((sword_t)src1 < (sword_t)src2 ? s->pc + imm : s->dnpc); goto __instpat_end_;
-exe_bge   :  s->dnpc = ((sword_t)src1 >= (sword_t)src2 ? s->pc + imm : s->dnpc); goto __instpat_end_;
-exe_bgeu  :  s->dnpc = ((word_t)src1 >= (word_t)src2 ? s->pc + imm : s->dnpc); goto __instpat_end_;
-exe_addw  :  R(rd) = SEXT(BITS((uint32_t)src1 + (uint32_t)src2, 31, 0),32); goto __instpat_end_;
-exe_sub   :  R(rd) = src1 - src2; goto __instpat_end_;
-exe_and   :  R(rd) = src1 & src2; goto __instpat_end_;
-exe_xor   :  R(rd) = src1 ^ src2; goto __instpat_end_;
-exe_sllw  :  R(rd) = SEXT((uint32_t)src1 << BITS(src2, 4, 0), 32); goto __instpat_end_;
-exe_sltu  :  R(rd) = ((word_t)src1 < (word_t)src2 ? 1 : 0); goto __instpat_end_;
-exe_slt   :  R(rd) = ((sword_t)src1 < (sword_t)src2 ? 1 : 0); goto __instpat_end_;
-exe_sra   :  R(rd) = (sword_t)src1 >> (sword_t)src2; goto __instpat_end_;
-exe_srl   :  R(rd) = (word_t)src1 >> (word_t)src2; goto __instpat_end_;
-exe_sraw  :  R(rd) = SEXT((int32_t)src1 >> (int32_t)BITS(src2, 4, 0), 32); goto __instpat_end_;
-exe_srlw  :  R(rd) = SEXT((uint32_t)src1 >> (uint32_t)BITS(src2, 4, 0), 32); goto __instpat_end_;
-exe_sll   :  R(rd) = src1 << BITS(src2, 4, 0); goto __instpat_end_;
-exe_mulh  :  R(rd) = BITS((int64_t)(int32_t)src1 * (int64_t)(int32_t)src2, 63,32); goto __instpat_end_;
-exe_mulhu :  R(rd) = BITS((uint64_t)(uint32_t)src1 * (uint64_t)(uint32_t)src2, 63,32); goto __instpat_end_;
-exe_mul   :  R(rd) = (sword_t)src1 * (sword_t)src2; goto __instpat_end_;
-exe_mulw  :  R(rd) = SEXT(BITS(src1 * src2, 31, 0), 32); goto __instpat_end_;
-exe_rem   :  R(rd) = (sword_t)src1 % (sword_t)src2; goto __instpat_end_;
-exe_remu  :  R(rd) = (word_t)src1 % (word_t)src2; goto __instpat_end_;
-exe_remw  :  R(rd) = SEXT((int32_t)BITS(src1,31,0)%(int32_t)BITS(src2,31,0) ,32); goto __instpat_end_;
-exe_remuv :  R(rd) = SEXT((uint32_t)BITS(src1,31,0)%(uint32_t)BITS(src2,31,0) ,32); goto __instpat_end_;
-exe_subw  :  R(rd) = SEXT(BITS(src1 - src2, 31, 0), 32); goto __instpat_end_;
-exe_div   :  R(rd) = ((sword_t)src1 / (sword_t)src2); goto __instpat_end_;
-exe_divu  :  R(rd) = ((word_t)src1 / (word_t)src2); goto __instpat_end_;
-exe_divw  :  R(rd) = SEXT((int32_t)BITS(src1,31,0)/(int32_t)BITS(src2,31,0),  32); goto __instpat_end_;
-exe_divuw :  R(rd) = SEXT((uint32_t)BITS(src1,31,0)/(uint32_t)BITS(src2,31,0), 32); goto __instpat_end_;
-exe_csrrw :  R(rd) = CSR(imm); CSR(imm) = src1; goto __instpat_end_;
-exe_csrrs :  R(rd) = CSR(imm); CSR(imm) |= src1; goto __instpat_end_;
-exe_ecall :  ECALL(s->dnpc); goto __instpat_end_;
-exe_mret  :  MRET(); goto __instpat_end_;
-exe_ebreak:  NEMUTRAP(s->pc, R(10)); goto __instpat_end_;
-exe_inv   :  INV(s->pc); goto __instpat_end_;
+
+
+
+exe_addi  :  src1 = R(icache[index].rs1); imm = icache[index].imm;rd = icache[index].rd; R(rd) = src1 + imm; goto __instpat_end_;
+exe_sw    :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); imm = icache[index].imm;rd = icache[index].rd; Mw(src1 + imm, 4, src2); goto __instpat_end_;
+exe_bne   :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); imm = icache[index].imm;rd = icache[index].rd; s->dnpc = (src1 != src2 ? s->pc + imm : s->dnpc); goto __instpat_end_;
+exe_lw    :  src1 = R(icache[index].rs1); imm = icache[index].imm;rd = icache[index].rd; R(rd) = SEXT(Mr(src1 + imm, 4), 32); goto __instpat_end_;
+exe_add   :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); rd = icache[index].rd; R(rd) = src1 + src2; goto __instpat_end_;
+exe_slli  :  src1 = R(icache[index].rs1); imm = icache[index].imm;rd = icache[index].rd; R(rd) = src1 << SHAMT_LONG; goto __instpat_end_;
+exe_beq   :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); imm = icache[index].imm;rd = icache[index].rd; s->dnpc = (src1 == src2 ? s->pc + imm : s->dnpc); goto __instpat_end_;
+exe_bltu  :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); imm = icache[index].imm;rd = icache[index].rd; s->dnpc = ((word_t)src1 < (word_t)src2 ? s->pc + imm : s->dnpc); goto __instpat_end_;
+exe_jalr  :  src1 = R(icache[index].rs1); imm = icache[index].imm;rd = icache[index].rd; R(rd) = s->pc + 4; s->dnpc = (src1 + imm) & (~1); goto __instpat_end_;
+exe_lhu   :  src1 = R(icache[index].rs1); imm = icache[index].imm;rd = icache[index].rd; R(rd) = Mr(src1 + imm, 2); goto __instpat_end_;
+exe_or    :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); rd = icache[index].rd; R(rd) = src1 | src2; goto __instpat_end_;
+exe_jal   :  imm = icache[index].imm;rd = icache[index].rd; R(rd) = s->pc + 4; s->dnpc = s->pc + imm; goto __instpat_end_;
+exe_auipc :  imm = icache[index].imm;rd = icache[index].rd; R(rd) = s->pc + imm; goto __instpat_end_;
+exe_lui   :  imm = icache[index].imm;rd = icache[index].rd; R(rd) = imm; goto __instpat_end_;
+exe_lbu   :  src1 = R(icache[index].rs1); imm = icache[index].imm;rd = icache[index].rd; R(rd) = Mr(src1 + imm, 1); goto __instpat_end_;
+exe_lb    :  src1 = R(icache[index].rs1); imm = icache[index].imm;rd = icache[index].rd; R(rd) = SEXT(Mr(src1 + imm, 1), 8); goto __instpat_end_;
+exe_lh    :  src1 = R(icache[index].rs1); imm = icache[index].imm;rd = icache[index].rd; R(rd) = SEXT(Mr(src1 + imm, 2), 16); goto __instpat_end_;
+exe_andi  :  src1 = R(icache[index].rs1); imm = icache[index].imm;rd = icache[index].rd; R(rd) = src1 & imm; goto __instpat_end_;
+exe_addiw :  src1 = R(icache[index].rs1); imm = icache[index].imm;rd = icache[index].rd; R(rd) = SEXT(BITS(src1 + imm, 31, 0),32); goto __instpat_end_;
+exe_sltiu :  src1 = R(icache[index].rs1); imm = icache[index].imm;rd = icache[index].rd; R(rd) = ((word_t)src1 < (word_t)imm ? 1 : 0); goto __instpat_end_;
+exe_slti  :  src1 = R(icache[index].rs1); imm = icache[index].imm;rd = icache[index].rd; R(rd) = ((sword_t)src1 < (sword_t)imm ? 1 : 0); goto __instpat_end_;
+exe_ld    :  src1 = R(icache[index].rs1); imm = icache[index].imm;rd = icache[index].rd; R(rd) = Mr(src1 + imm, 8); goto __instpat_end_;
+exe_xori  :  src1 = R(icache[index].rs1); imm = icache[index].imm;rd = icache[index].rd; R(rd) = src1 ^ imm; goto __instpat_end_;
+exe_ori   :  src1 = R(icache[index].rs1); imm = icache[index].imm;rd = icache[index].rd; R(rd) = src1 | imm; goto __instpat_end_;
+exe_srai  :  src1 = R(icache[index].rs1); imm = icache[index].imm;rd = icache[index].rd; R(rd) = (sword_t)src1 >> (sword_t)SHAMT_LONG; goto __instpat_end_;
+exe_sraiw :  src1 = R(icache[index].rs1); imm = icache[index].imm;rd = icache[index].rd; R(rd) = SEXT((int32_t)src1 >> (int32_t)SHAMT, 32); goto __instpat_end_;
+exe_srli  :  src1 = R(icache[index].rs1); imm = icache[index].imm;rd = icache[index].rd; R(rd) = src1 >> SHAMT_LONG; goto __instpat_end_;
+exe_sd    :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); imm = icache[index].imm;rd = icache[index].rd; Mw(src1 + imm, 8, src2); goto __instpat_end_;
+exe_sh    :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); imm = icache[index].imm;rd = icache[index].rd; Mw(src1 + imm, 2, src2); goto __instpat_end_;
+exe_sb    :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); imm = icache[index].imm;rd = icache[index].rd; Mw(src1 + imm, 1, src2); goto __instpat_end_;
+exe_blt   :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); imm = icache[index].imm;rd = icache[index].rd; s->dnpc = ((sword_t)src1 < (sword_t)src2 ? s->pc + imm : s->dnpc); goto __instpat_end_;
+exe_bge   :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); imm = icache[index].imm;rd = icache[index].rd; s->dnpc = ((sword_t)src1 >= (sword_t)src2 ? s->pc + imm : s->dnpc); goto __instpat_end_;
+exe_bgeu  :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); imm = icache[index].imm;rd = icache[index].rd; s->dnpc = ((word_t)src1 >= (word_t)src2 ? s->pc + imm : s->dnpc); goto __instpat_end_;
+exe_addw  :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); rd = icache[index].rd; R(rd) = SEXT(BITS((uint32_t)src1 + (uint32_t)src2, 31, 0),32); goto __instpat_end_;
+exe_sub   :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); rd = icache[index].rd; R(rd) = src1 - src2; goto __instpat_end_;
+exe_and   :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); rd = icache[index].rd; R(rd) = src1 & src2; goto __instpat_end_;
+exe_xor   :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); rd = icache[index].rd; R(rd) = src1 ^ src2; goto __instpat_end_;
+exe_sllw  :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); rd = icache[index].rd; R(rd) = SEXT((uint32_t)src1 << BITS(src2, 4, 0), 32); goto __instpat_end_;
+exe_sltu  :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); rd = icache[index].rd; R(rd) = ((word_t)src1 < (word_t)src2 ? 1 : 0); goto __instpat_end_;
+exe_slt   :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); rd = icache[index].rd; R(rd) = ((sword_t)src1 < (sword_t)src2 ? 1 : 0); goto __instpat_end_;
+exe_sra   :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); rd = icache[index].rd; R(rd) = (sword_t)src1 >> (sword_t)src2; goto __instpat_end_;
+exe_srl   :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); rd = icache[index].rd; R(rd) = (word_t)src1 >> (word_t)src2; goto __instpat_end_;
+exe_sraw  :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); rd = icache[index].rd; R(rd) = SEXT((int32_t)src1 >> (int32_t)BITS(src2, 4, 0), 32); goto __instpat_end_;
+exe_srlw  :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); rd = icache[index].rd; R(rd) = SEXT((uint32_t)src1 >> (uint32_t)BITS(src2, 4, 0), 32); goto __instpat_end_;
+exe_sll   :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); rd = icache[index].rd; R(rd) = src1 << BITS(src2, 4, 0); goto __instpat_end_;
+exe_mulh  :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); rd = icache[index].rd; R(rd) = BITS((int64_t)(int32_t)src1 * (int64_t)(int32_t)src2, 63,32); goto __instpat_end_;
+exe_mulhu :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); rd = icache[index].rd; R(rd) = BITS((uint64_t)(uint32_t)src1 * (uint64_t)(uint32_t)src2, 63,32); goto __instpat_end_;
+exe_mul   :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); rd = icache[index].rd; R(rd) = (sword_t)src1 * (sword_t)src2; goto __instpat_end_;
+exe_mulw  :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); rd = icache[index].rd; R(rd) = SEXT(BITS(src1 * src2, 31, 0), 32); goto __instpat_end_;
+exe_rem   :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); rd = icache[index].rd; R(rd) = (sword_t)src1 % (sword_t)src2; goto __instpat_end_;
+exe_remu  :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); rd = icache[index].rd; R(rd) = (word_t)src1 % (word_t)src2; goto __instpat_end_;
+exe_remw  :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); rd = icache[index].rd; R(rd) = SEXT((int32_t)BITS(src1,31,0)%(int32_t)BITS(src2,31,0) ,32); goto __instpat_end_;
+exe_remuv :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); rd = icache[index].rd; R(rd) = SEXT((uint32_t)BITS(src1,31,0)%(uint32_t)BITS(src2,31,0) ,32); goto __instpat_end_;
+exe_subw  :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); rd = icache[index].rd; R(rd) = SEXT(BITS(src1 - src2, 31, 0), 32); goto __instpat_end_;
+exe_div   :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); rd = icache[index].rd; R(rd) = ((sword_t)src1 / (sword_t)src2); goto __instpat_end_;
+exe_divu  :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); rd = icache[index].rd; R(rd) = ((word_t)src1 / (word_t)src2); goto __instpat_end_;
+exe_divw  :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); rd = icache[index].rd; R(rd) = SEXT((int32_t)BITS(src1,31,0)/(int32_t)BITS(src2,31,0),  32); goto __instpat_end_;
+exe_divuw :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); rd = icache[index].rd; R(rd) = SEXT((uint32_t)BITS(src1,31,0)/(uint32_t)BITS(src2,31,0), 32); goto __instpat_end_;
+exe_csrrw :  src1 = R(icache[index].rs1); imm = icache[index].imm;rd = icache[index].rd; R(rd) = CSR(imm); CSR(imm) = src1; goto __instpat_end_;
+exe_csrrs :  src1 = R(icache[index].rs1); imm = icache[index].imm;rd = icache[index].rd; R(rd) = CSR(imm); CSR(imm) |= src1; goto __instpat_end_;
+exe_ecall :  rd = icache[index].rd; ECALL(s->dnpc); goto __instpat_end_;
+exe_mret  :  rd = icache[index].rd; MRET(); goto __instpat_end_;
+exe_ebreak:  rd = icache[index].rd; NEMUTRAP(s->pc, R(10)); goto __instpat_end_;
+exe_inv   :  rd = icache[index].rd; INV(s->pc); goto __instpat_end_;
+
+
 
   INSTPAT_END();
 
@@ -342,6 +353,7 @@ exe_inv   :  INV(s->pc); goto __instpat_end_;
 
 int isa_exec_once(Decode *s) {
   s->isa.inst.val = inst_fetch(&s->snpc, 4);
+  //printf( "hit rate: %lf\n",(double)icache_hit / (1+icache_hit + icache_miss));
   //printf("nemu: s->isa.inst.val: 0x%08x\n",s->isa.inst.val);
   return decode_exec(s);
 }

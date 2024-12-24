@@ -85,7 +85,7 @@ finish:
   *shift = __shift;
 }
 
-/*
+
 // --- pattern matching wrappers for decode ---
 #define INSTPAT(pattern, ...) do { \
   uint64_t key, mask, shift; \
@@ -95,17 +95,7 @@ finish:
     goto *(__instpat_end); \
   } \
 } while (0)
-*/
 
-#define INSTPAT(pattern, ...) do { \
-  uint64_t key, mask, shift; \
-  pattern_decode(pattern, STRLEN(pattern), &key, &mask, &shift); \
-  if ((((uint64_t)INSTPAT_INST(s) >> shift) & mask) == key) { \
-    INSTPAT_MATCH(s, ##__VA_ARGS__); \
-    INSTPAT_ICACHE(s, ##__VA_ARGS__); \
-    goto *(__instpat_end); \
-  } \
-} while (0)
 
 #define INSTPAT_START(name) { const void ** __instpat_end = &&concat(__instpat_end_, name);
 #define INSTPAT_END(name)   concat(__instpat_end_, name): ; }
