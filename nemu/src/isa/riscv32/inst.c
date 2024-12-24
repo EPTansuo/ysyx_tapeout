@@ -166,6 +166,8 @@ static int decode_exec(Decode *s) {
         if(icache[index].label != NULL){
           src1 = R(icache[index].rs1);
           src2 = R(icache[index].rs2);
+          imm = icache[index].imm;
+          rd = icache[index].rd;
           icache_hit++;
           goto *icache[index].label;
         }
