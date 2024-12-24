@@ -125,6 +125,7 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
 typedef struct {
   void *label;
   uint32_t inst;
+  uint32_t type;
 } ICacheEntry;
 
 
@@ -145,16 +146,18 @@ static int decode_exec(Decode *s) {
   decode_operand(s, &rd, &src1, &src2, &imm, concat(TYPE_, type)); \
   __VA_ARGS__ ; \
 }
-
-#define INSTPAT_ICACHE(s, name, ...) { \
+#define EXPAND_CONCAT(a, b) CONCAT(a, b)
+#define INSTPAT_ICACHE(s, name, type, ...) { \
   icache[index].inst = INSTPAT_INST(s); \
   icache[index].label = &&exe_##name; \
+  icache[index].type = TYPE_##type; \
 }
 
   uint32_t  inst = INSTPAT_INST(s);
   unsigned index = (s->pc) % ICACHE_SIZE;
   if (icache[index].inst == inst ) {
         if(icache[index].label != NULL){
+          decode_operand(s, &rd, &src1, &src2, &imm, icache[index].type);
           printf("Hit Cache\n");
           goto *icache[index].label;
         }
