@@ -158,7 +158,6 @@ static int decode_exec(Decode *s) {
   if (icache[index].inst == inst ) {
         if(icache[index].label != NULL){
           decode_operand(s, &rd, &src1, &src2, &imm, icache[index].type);
-          printf("Hit Cache\n");
           goto *icache[index].label;
         }
   }
