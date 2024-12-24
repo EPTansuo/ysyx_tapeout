@@ -63,3 +63,4 @@ exe_mret  :  rd = icache[index].rd; MRET(); goto __instpat_end_;
 exe_ebreak:  rd = icache[index].rd; NEMUTRAP(s->pc, R(10)); goto __instpat_end_;
 exe_inv   :  rd = icache[index].rd; INV(s->pc); goto __instpat_end_;
 exe_slliw :  src1 = R(icache[index].rs1); imm = icache[index].imm;rd = icache[index].rd; R(rd) = SEXT((uint32_t)src1 << SHAMT, 32); goto __instpat_end_;
+exe_srliw :  src1 = R(icache[index].rs1); imm = icache[index].imm;rd = icache[index].rd; R(rd) = SEXT((uint32_t)src1 >> SHAMT, 32); goto __instpat_end_;
