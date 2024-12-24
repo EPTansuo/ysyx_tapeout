@@ -119,16 +119,13 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
 }
 
 
-#define ICACHE_SIZE (1024*1024*64) //64M
-
+#define ICACHE_SIZE (1024*1024*4) //4M
 
 typedef struct {
   void *label;
   uint32_t inst;
   uint32_t type;
 } ICacheEntry;
-
-
 
 ICacheEntry  icache[ICACHE_SIZE] = {0};
 uint64_t icache_hit = 0;
