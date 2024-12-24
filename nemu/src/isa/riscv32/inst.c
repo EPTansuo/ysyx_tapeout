@@ -20,6 +20,9 @@
 #include <ftrace.h>
 #include <fmt-def.h>
 
+
+#define CONFIG_USE_ICAHE
+
 extern CPU_state cpu;
 
 static vaddr_t *csr_register(word_t imm) {
@@ -118,6 +121,7 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
   }
 }
 
+#ifdef CONFIG_USE_ICAHE
 
 #define ICACHE_SIZE (1024*1024*16) //16M
 
@@ -134,7 +138,7 @@ typedef struct {
 ICacheEntry  icache[ICACHE_SIZE] PG_ALIGN =  {0};
 uint64_t icache_hit = 0;
 uint64_t icache_miss = 0;
-
+#endif 
 
 
 static int decode_exec(Decode *s) {
@@ -144,11 +148,13 @@ static int decode_exec(Decode *s) {
   s->dnpc = s->snpc;
 
 #define INSTPAT_INST(s) ((s)->isa.inst.val)
-/* #define INSTPAT_MATCH(s, name, type, ... ) { \
+
+#ifndef CONFIG_USE_ICAHE
+#define INSTPAT_MATCH(s, name, type, ... ) { \
    decode_operand(s, &rd, &src1, &src2, &imm, concat(TYPE_, type)); \
    __VA_ARGS__ ; \
-}*/
-
+}
+#else 
 #define INSTPAT_MATCH(s, name, t, ...) { \
   icache[index].inst = INSTPAT_INST(s); \
   icache[index].label = &&exe_##name; \
@@ -169,7 +175,7 @@ static int decode_exec(Decode *s) {
         }
   }
   icache_miss++;
-
+#endif 
   //printf("s->pc: 0x" FMT_WORD_HEX "\n",s->pc);
   INSTPAT_START();
   //printf("nemu: src1: %08x src2: %08x imm: %08x\n",src1,src2,imm);
@@ -275,7 +281,7 @@ static int decode_exec(Decode *s) {
 
 
 
-
+#ifdef CONFIG_USE_ICAHE
 exe_addi  :  src1 = R(icache[index].rs1); imm = icache[index].imm;rd = icache[index].rd; R(rd) = src1 + imm; goto __instpat_end_;
 exe_sw    :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); imm = icache[index].imm;rd = icache[index].rd; Mw(src1 + imm, 4, src2); goto __instpat_end_;
 exe_bne   :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); imm = icache[index].imm;rd = icache[index].rd; s->dnpc = (src1 != src2 ? s->pc + imm : s->dnpc); goto __instpat_end_;
@@ -341,7 +347,7 @@ exe_mret  :  rd = icache[index].rd; MRET(); goto __instpat_end_;
 exe_ebreak:  rd = icache[index].rd; NEMUTRAP(s->pc, R(10)); goto __instpat_end_;
 exe_inv   :  rd = icache[index].rd; INV(s->pc); goto __instpat_end_;
 
-
+#endif 
 
   INSTPAT_END();
 
