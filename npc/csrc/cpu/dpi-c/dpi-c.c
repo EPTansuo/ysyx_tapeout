@@ -57,6 +57,7 @@ extern "C" void inst_invalid(){
     printf("%02x ", ((uint8_t*)(&INST))[j]);
   }
   fflush(stdout);
+  printf("\n");
   //disassemble(logbuf, 64, PC , (uint8_t*)(&INST), 4);
   //printf("%s\n", logbuf);
 	set_npc_state(NPC_ABORT, PC, -1);

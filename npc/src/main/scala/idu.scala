@@ -58,7 +58,7 @@ class IDU(config: NPCConfig) extends Module {
     
     //invaild instruction
     val instInvalid = Module(new InstInvalid)
-    instInvalid.io.isvalid := Mux(io.out.valid, true.B, control.io.out.inst_valid === valid.INST_VALID)
+    instInvalid.io.isvalid := Mux(io.out.valid, control.io.out.inst_valid === valid.INST_VALID, true.B)
 
 
 
