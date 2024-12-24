@@ -131,7 +131,8 @@ typedef struct {
 
 
 ICacheEntry  icache[ICACHE_SIZE] = {0};
-
+uint64_t icache_hit = 0;
+uint64_t icache_miss = 0;
 
 
 
@@ -158,10 +159,11 @@ static int decode_exec(Decode *s) {
   if (icache[index].inst == inst ) {
         if(icache[index].label != NULL){
           decode_operand(s, &rd, &src1, &src2, &imm, icache[index].type);
+          icache_hit++;
           goto *icache[index].label;
         }
   }
-
+  icache_miss++;
 
   //printf("s->pc: 0x" FMT_WORD_HEX "\n",s->pc);
   INSTPAT_START();
@@ -341,6 +343,7 @@ exe_inv   :  INV(s->pc); goto __instpat_end_;
 
 int isa_exec_once(Decode *s) {
   s->isa.inst.val = inst_fetch(&s->snpc, 4);
+  printf( "hit rate: %lf\n",(double)icache_hit / (1+icache_hit + icache_miss));
   //printf("nemu: s->isa.inst.val: 0x%08x\n",s->isa.inst.val);
   return decode_exec(s);
 }
