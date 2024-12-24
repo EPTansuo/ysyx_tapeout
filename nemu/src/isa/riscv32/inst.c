@@ -119,7 +119,7 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
 }
 
 
-#define ICACHE_SIZE (1024*1024*4) //4M
+#define ICACHE_SIZE (1024*1024*16) //16M
 
 typedef struct {
   void *label;
