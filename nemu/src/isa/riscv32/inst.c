@@ -343,7 +343,7 @@ exe_inv   :  INV(s->pc); goto __instpat_end_;
 
 int isa_exec_once(Decode *s) {
   s->isa.inst.val = inst_fetch(&s->snpc, 4);
-  printf( "hit rate: %lf\n",(double)icache_hit / (1+icache_hit + icache_miss));
+  //printf( "hit rate: %lf\n",(double)icache_hit / (1+icache_hit + icache_miss));
   //printf("nemu: s->isa.inst.val: 0x%08x\n",s->isa.inst.val);
   return decode_exec(s);
 }
