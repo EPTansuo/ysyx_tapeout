@@ -147,10 +147,10 @@ static int decode_exec(Decode *s) {
   __VA_ARGS__ ; \
 }
 #define EXPAND_CONCAT(a, b) CONCAT(a, b)
-#define INSTPAT_ICACHE(s, name, type, ...) { \
+#define INSTPAT_ICACHE(s, name, t, ...) { \
   icache[index].inst = INSTPAT_INST(s); \
   icache[index].label = &&exe_##name; \
-  icache[index].type = TYPE_##type; \
+  icache[index].type = TYPE_##t; \
 }
 
   uint32_t  inst = INSTPAT_INST(s);
