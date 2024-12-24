@@ -138,7 +138,9 @@ static void exec_once(Decode *s, vaddr_t pc) {
     g_nr_guest_inst ++;
     trace_and_difftest(&s, cpu.pc);
     if (nemu_state.state != NEMU_RUNNING) break;
+    #ifndef CONFIG_IGNORE_DEVICE_UPDATE
     IFDEF(CONFIG_DEVICE, device_update());
+    #endif // !CONFIG_IGNORE_DEVICE_UPDATE
   }
 }
 
