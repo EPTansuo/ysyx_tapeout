@@ -95,7 +95,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
   s->snpc = pc;
   isa_exec_once(s);
-  ftrace_func_call(s->pc,s->dnpc, s->isa.inst.val);
+  IFDEF(CONFIG_FTRACE, ftrace_func_call(s->pc,s->dnpc, s->isa.inst.val));
 
 #ifdef CONFIG_ITRACE
   iringbuf.inst[iringbuf.head] = s->isa.inst.val;
