@@ -21,7 +21,7 @@
 #include <fmt-def.h>
 
 
-//#define CONFIG_USE_ICAHE //Not Config in Kconfig
+#define CONFIG_USE_ICAHE //Not Config in Kconfig
 
 extern CPU_state cpu;
 
@@ -123,16 +123,15 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
 
 #ifdef CONFIG_USE_ICAHE
 
-#define ICACHE_SIZE (1024*1024*4) //4M
+#define ICACHE_SIZE (1024*4) //4k
 
 typedef struct {
   void *label;
-  uint32_t inst;
-  uint32_t type;
-  word_t rs1;
-  word_t rd;
-  word_t rs2;
   word_t imm;
+  word_t rs1;
+  word_t rs2;
+  word_t rd;
+  uint32_t inst;
 } ICacheEntry;
 
 ICacheEntry  icache[ICACHE_SIZE] PG_ALIGN =  {0};
@@ -158,8 +157,7 @@ static int decode_exec(Decode *s) {
 #define INSTPAT_MATCH(s, name, t, ...) { \
   icache[index].inst = INSTPAT_INST(s); \
   icache[index].label = &&exe_##name; \
-  icache[index].type = TYPE_##t; \
-  decode_operand(s, &rd, &src1, &src2, &imm, icache[index].type); \
+  decode_operand(s, &rd, &src1, &src2, &imm, concat(TYPE_,t)); \
   icache[index].rd = rd; \
   icache[index].rs1 = BITS(icache[index].inst, 19, 15); \
   icache[index].rs2 = BITS(icache[index].inst, 24, 20); \
@@ -167,7 +165,7 @@ static int decode_exec(Decode *s) {
   __VA_ARGS__ ; \
 }
 
-  unsigned index = (s->pc) % ICACHE_SIZE;
+  unsigned index = s->pc & (ICACHE_SIZE - 1);
   if (icache[index].inst == s->isa.inst.val ) {
         if(icache[index].label != NULL){
           icache_hit++;
@@ -203,7 +201,7 @@ static int decode_exec(Decode *s) {
    INSTPAT("??????? ????? ????? 100 ????? 00000 11", lbu    , I, R(rd) = Mr(src1 + imm, 1));
    INSTPAT("??????? ????? ????? 000 ????? 00000 11", lb     , I, R(rd) = SEXT(Mr(src1 + imm, 1), 8));
    INSTPAT("??????? ????? ????? 001 ????? 00000 11", lh     , I, R(rd) = SEXT(Mr(src1 + imm, 2), 16));
-   
+  INSTPAT("??????? ????? ????? 110 ????? 00000 11", lwu    , I, R(rd) = Mr(src1 + imm, 4));
    
    INSTPAT("??????? ????? ????? 111 ????? 00100 11", andi   , I, R(rd) = src1 & imm);
    
@@ -217,6 +215,9 @@ static int decode_exec(Decode *s) {
    INSTPAT("010000? ????? ????? 101 ????? 00100 11", srai   , I, R(rd) = (sword_t)src1 >> (sword_t)SHAMT_LONG);
    
    INSTPAT("0100000 ????? ????? 101 ????? 00110 11", sraiw  , I, R(rd) = SEXT((int32_t)src1 >> (int32_t)SHAMT, 32));
+   INSTPAT("0100000 ????? ????? 101 ????? 00110 11", sraiw  , I, R(rd) = SEXT((int32_t)src1 >> (int32_t)SHAMT, 32));
+  INSTPAT("0000000 ????? ????? 001 ????? 00110 11", slliw  , I, R(rd) = SEXT((uint32_t)src1 << SHAMT, 32));
+  INSTPAT("0000000 ????? ????? 101 ????? 00110 11", srliw  , I, R(rd) = SEXT((uint32_t)src1 >> SHAMT, 32));
    INSTPAT("000000? ????? ????? 101 ????? 00100 11", srli   , I, R(rd) = src1 >> SHAMT_LONG);
 
    INSTPAT("??????? ????? ????? 011 ????? 01000 11", sd     , S, Mw(src1 + imm, 8, src2)); 
