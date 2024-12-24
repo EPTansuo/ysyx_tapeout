@@ -127,7 +127,7 @@ typedef struct {
   uint32_t type;
 } ICacheEntry;
 
-ICacheEntry  icache[ICACHE_SIZE] = {0};
+ICacheEntry  icache[ICACHE_SIZE] PG_ALIGN =  {};
 uint64_t icache_hit = 0;
 uint64_t icache_miss = 0;
 
