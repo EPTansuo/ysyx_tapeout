@@ -48,8 +48,8 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
         s_read_2       -> Mux(io.dmem.ar.ready, s_wait_read_2, s_read_2),
         s_wait_read    -> Mux(io.dmem.r.valid, Mux(r_twice, s_read_2, s_wait_ready), s_wait_read),
         s_wait_read_2  -> Mux(io.dmem.r.valid, s_wait_ready, s_wait_read_2),
-        s_write        -> Mux(io.dmem.aw.ready && io.dmem.w.ready, s_wait_write, s_write),
-        s_write_2      -> Mux(io.dmem.aw.ready && io.dmem.w.ready, s_wait_write_2, s_write_2),
+        s_write        -> Mux(io.dmem.aw.ready , s_wait_write, s_write),
+        s_write_2      -> Mux(io.dmem.aw.ready , s_wait_write_2, s_write_2),
         s_wait_write_2 -> Mux(io.dmem.b.valid, s_wait_ready, s_wait_write_2),
         s_wait_write   -> Mux(io.dmem.b.valid, Mux(w_twice, s_write_2,s_wait_ready), s_wait_write),
         s_wait_ready   -> Mux(io.out.ready, s_idle, s_wait_ready)
