@@ -40,7 +40,7 @@ class ICache(config: NPCConfig) extends Module{
      val data_way = Wire(Vec(nWays, Vec(blockSize/4, UInt(32.W))))
      val hit_way = Wire(Vec(nWays, Bool()))
 
-    for (i <- 0 until nWays){
+    for (i <- 0 until nWays){ 
         // Can be optimized !!!!!!  乘法！！
         when(cache_tag(ridx*nWays.U+i.U) === rtag){
             data_way(i) := cache_data(ridx*nWays.U+i.U)
