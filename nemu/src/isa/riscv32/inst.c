@@ -128,10 +128,10 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
 typedef struct {
   void *label;
   word_t imm;
+  word_t rs1;
+  word_t rs2;
+  word_t rd;
   uint32_t inst;
-  uint8_t rs1;
-  uint8_t rs2;
-  uint8_t rd;
 } ICacheEntry;
 
 ICacheEntry  icache[ICACHE_SIZE] PG_ALIGN =  {0};
@@ -157,7 +157,7 @@ static int decode_exec(Decode *s) {
 #define INSTPAT_MATCH(s, name, t, ...) { \
   icache[index].inst = INSTPAT_INST(s); \
   icache[index].label = &&exe_##name; \
-  decode_operand(s, &rd, &src1, &src2, &imm, concat(TYPE_, t)); \
+  decode_operand(s, &rd, &src1, &src2, &imm, concat(TYPE_,t)); \
   icache[index].rd = rd; \
   icache[index].rs1 = BITS(icache[index].inst, 19, 15); \
   icache[index].rs2 = BITS(icache[index].inst, 24, 20); \
