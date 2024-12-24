@@ -273,6 +273,9 @@ static int decode_exec(Decode *s) {
    INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak , N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
    INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv    , N, INV(s->pc));
 
+
+
+
 exe_addi  :  src1 = R(icache[index].rs1); imm = icache[index].imm;rd = icache[index].rd; R(rd) = src1 + imm; goto __instpat_end_;
 exe_sw    :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); imm = icache[index].imm;rd = icache[index].rd; Mw(src1 + imm, 4, src2); goto __instpat_end_;
 exe_bne   :  src1 = R(icache[index].rs1); src2 = R(icache[index].rs2); imm = icache[index].imm;rd = icache[index].rd; s->dnpc = (src1 != src2 ? s->pc + imm : s->dnpc); goto __instpat_end_;
@@ -337,6 +340,8 @@ exe_ecall :  rd = icache[index].rd; ECALL(s->dnpc); goto __instpat_end_;
 exe_mret  :  rd = icache[index].rd; MRET(); goto __instpat_end_;
 exe_ebreak:  rd = icache[index].rd; NEMUTRAP(s->pc, R(10)); goto __instpat_end_;
 exe_inv   :  rd = icache[index].rd; INV(s->pc); goto __instpat_end_;
+
+
 
   INSTPAT_END();
 
