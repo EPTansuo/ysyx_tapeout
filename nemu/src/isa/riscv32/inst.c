@@ -125,9 +125,9 @@ typedef struct {
   void *label;
   uint32_t inst;
   uint32_t type;
-  word_t src1;
+  word_t rs1;
   word_t rd;
-  word_t src2;
+  word_t rs2;
   word_t imm;
 } ICacheEntry;
 
@@ -155,8 +155,8 @@ static int decode_exec(Decode *s) {
   icache[index].type = TYPE_##t; \
   decode_operand(s, &rd, &src1, &src2, &imm, icache[index].type); \
   icache[index].rd = rd; \
-  icache[index].src1 = src1; \
-  icache[index].src2 = src2; \
+  icache[index].rs1 = BITS(icache[index].inst, 19, 15); \
+  icache[index].rs2 = BITS(icache[index].inst, 24, 20); \
   icache[index].imm = imm; \
   __VA_ARGS__ ; \
 }
@@ -164,7 +164,8 @@ static int decode_exec(Decode *s) {
   unsigned index = (s->pc) % ICACHE_SIZE;
   if (icache[index].inst == s->isa.inst.val ) {
         if(icache[index].label != NULL){
-          
+          src1 = R(icache[index].rs1);
+          src2 = R(icache[index].rs2);
           icache_hit++;
           goto *icache[index].label;
         }
