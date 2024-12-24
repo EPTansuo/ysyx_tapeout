@@ -155,6 +155,7 @@ static int decode_exec(Decode *s) {
   unsigned index = (s->pc) % ICACHE_SIZE;
   if (icache[index].inst == inst ) {
         if(icache[index].label != NULL){
+          printf("Hit Cache\n");
           goto *icache[index].label;
         }
   }
