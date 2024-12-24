@@ -127,7 +127,7 @@ typedef struct {
   uint32_t type;
 } ICacheEntry;
 
-ICacheEntry  icache[ICACHE_SIZE] PG_ALIGN =  {};
+ICacheEntry  icache[ICACHE_SIZE] PG_ALIGN =  {0};
 uint64_t icache_hit = 0;
 uint64_t icache_miss = 0;
 
@@ -151,9 +151,8 @@ static int decode_exec(Decode *s) {
   icache[index].type = TYPE_##t; \
 }
 
-  uint32_t  inst = INSTPAT_INST(s);
   unsigned index = (s->pc) % ICACHE_SIZE;
-  if (icache[index].inst == inst ) {
+  if (icache[index].inst == s->isa.inst.val ) {
         if(icache[index].label != NULL){
           decode_operand(s, &rd, &src1, &src2, &imm, icache[index].type);
           icache_hit++;
