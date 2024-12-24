@@ -136,10 +136,10 @@ typedef struct {
 } ICacheEntry;
 
 ICacheEntry  icache[ICACHE_SIZE] PG_ALIGN =  {0};
-uint64_t icache_hit = 0;
-uint64_t icache_miss = 0;
 #endif 
 
+uint64_t icache_hit = 0;
+uint64_t icache_miss = 0;
 
 static int decode_exec(Decode *s) {
   int rd = 0;

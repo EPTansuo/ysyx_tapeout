@@ -36,6 +36,8 @@ uint64_t g_nr_guest_inst = 0;
 static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
 extern int is_batch_mode;
+extern uint64_t icache_hit;
+extern uint64_t icache_miss;
 struct{
   uint32_t inst[IRINGBUF_SIZE];
   word_t pc[IRINGBUF_SIZE];
@@ -147,6 +149,8 @@ static void statistic() {
   Log("total guest instructions = " NUMBERIC_FMT, g_nr_guest_inst);
   if (g_timer > 0) Log("simulation frequency = " NUMBERIC_FMT " inst/s", g_nr_guest_inst * 1000000 / g_timer);
   else Log("Finish running in less than 1 us and can not calculate the simulation frequency");
+  if(icache_hit+icache_miss != 0){
+    Log("ICache hit rate = %lf", (double)icache_hit / (icache_hit + icache_miss));}
 }
 
 void assert_fail_msg() {
