@@ -109,7 +109,9 @@ $(BIN): $(CSRCS) verilog $(NVBOARD_ARCHIVE) $(OBJ_DIR)/disasm.o
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) --top-module $(TOPNAME)
 
 
-SCALA_TIME = $(shell find $(SCALA_DIR) -type f -exec stat --format '%Y' {} \; | sort -n | tail -n 1)
+#SCALA_TIME = $(shell find $(SCALA_DIR) -type f -exec stat --format '%Y' {} \; | sort -n | tail -n 1)
+SCALA_TIME = $(shell ( find ./src -type f -exec stat --format '%Y' {} \; ;  find . -name ".config.json" -exec stat --format '%Y' {} \; ) | sort -n | tail -n 1)
+
 $(shell mkdir -p $(BUILD_DIR)/verilog)
 VERILOG_TIME = $(shell find $(VERILOG_DIR) -type f -exec stat --format '%Y' {} \; | sort -n | tail -n 1)
 VERILOG_TIME := $(if $(VERILOG_TIME),$(VERILOG_TIME),0)
