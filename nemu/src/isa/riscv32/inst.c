@@ -125,6 +125,10 @@ typedef struct {
   void *label;
   uint32_t inst;
   uint32_t type;
+  word_t src1;
+  word_t rd;
+  word_t src2;
+  word_t imm;
 } ICacheEntry;
 
 ICacheEntry  icache[ICACHE_SIZE] PG_ALIGN =  {0};
@@ -140,21 +144,27 @@ static int decode_exec(Decode *s) {
   s->dnpc = s->snpc;
 
 #define INSTPAT_INST(s) ((s)->isa.inst.val)
-#define INSTPAT_MATCH(s, name, type, ... /* execute body */ ) { \
-  decode_operand(s, &rd, &src1, &src2, &imm, concat(TYPE_, type)); \
-  __VA_ARGS__ ; \
-}
-#define EXPAND_CONCAT(a, b) CONCAT(a, b)
-#define INSTPAT_ICACHE(s, name, t, ...) { \
+/* #define INSTPAT_MATCH(s, name, type, ... ) { \
+   decode_operand(s, &rd, &src1, &src2, &imm, concat(TYPE_, type)); \
+   __VA_ARGS__ ; \
+}*/
+
+#define INSTPAT_MATCH(s, name, t, ...) { \
   icache[index].inst = INSTPAT_INST(s); \
   icache[index].label = &&exe_##name; \
   icache[index].type = TYPE_##t; \
+  decode_operand(s, &rd, &src1, &src2, &imm, icache[index].type); \
+  icache[index].rd = rd; \
+  icache[index].src1 = src1; \
+  icache[index].src2 = src2; \
+  icache[index].imm = imm; \
+  __VA_ARGS__ ; \
 }
 
   unsigned index = (s->pc) % ICACHE_SIZE;
   if (icache[index].inst == s->isa.inst.val ) {
         if(icache[index].label != NULL){
-          decode_operand(s, &rd, &src1, &src2, &imm, icache[index].type);
+          
           icache_hit++;
           goto *icache[index].label;
         }
