@@ -60,7 +60,12 @@ class ICache(config: NPCConfig) extends Module{
 
 
     val rdata_cache = Wire(UInt(32.W))
-    rdata_cache := blockdata(roffset)
+    if(blockSize == 4){
+        rdata_cache := blockdata(0)
+    }else {
+        rdata_cache := blockdata(roffset(roffset.getWidth-1,2))
+    }
+    
 
     
     val bypass = Wire(UInt(1.W))
