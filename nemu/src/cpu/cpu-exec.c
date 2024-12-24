@@ -78,6 +78,7 @@ void print_iringbuf(){
 
 #endif
 
+#if defined(CONFIG_TRACE) || defined(CONFIG_DIFFTEST)
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
   if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
@@ -90,6 +91,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
     scan_breakpoint(dnpc);
   }
 }
+#endif
 
 static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
@@ -136,7 +138,9 @@ static void exec_once(Decode *s, vaddr_t pc) {
     IFDEF(CONFIG_PC_TRACE, pc_trace(cpu.pc));
     exec_once(&s, cpu.pc);
     g_nr_guest_inst ++;
+#if defined(CONFIG_TRACE) || defined(CONFIG_DIFFTEST)
     trace_and_difftest(&s, cpu.pc);
+#endif
     if (nemu_state.state != NEMU_RUNNING) break;
     #ifndef CONFIG_IGNORE_DEVICE_UPDATE
     IFDEF(CONFIG_DEVICE, device_update());
