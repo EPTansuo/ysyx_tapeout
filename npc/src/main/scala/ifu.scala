@@ -32,7 +32,7 @@ class IFU(config: NPCConfig) extends Module {
   state := MuxLookup(state, s_idle)(Seq(
     s_idle -> Mux(in_valid, s_read, s_idle),
     s_read -> Mux(io.imem.ar.ready, s_wait_read, s_read),
-    s_wait_read -> Mux(io.imem.r.valid | axi_already_valid, s_wait_ready, s_wait_read),
+    s_wait_read -> Mux(io.imem.r.valid, s_wait_ready, s_wait_read),
     s_wait_ready -> Mux(io.out.ready , s_idle, s_wait_ready)
   ))
   when(state === s_idle){
