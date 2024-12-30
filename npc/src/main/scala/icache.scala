@@ -105,6 +105,7 @@ class ICache(config: NPCConfig) extends Module{
     val widx = Wire(UInt(ridx.getWidth.W))
     val woffset = Wire(UInt(roffset.getWidth.W))
     widx := ridx
+    dontTouch(widx)
     woffset := roffset
     wtag := rtag
 
