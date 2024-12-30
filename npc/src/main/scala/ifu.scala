@@ -50,7 +50,7 @@ class IFU(config: NPCConfig) extends Module {
   }
 
 
-  io.imem.ar.valid := state === s_read || state === s_wait_read
+  io.imem.ar.valid := state === s_read
   io.imem.ar.bits.addr := pc
   io.imem.ar.bits.prot := 0.U
   io.imem.r.ready := true.B
