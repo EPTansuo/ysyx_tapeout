@@ -75,7 +75,7 @@ class ICache(config: NPCConfig) extends Module{
     }else{
         bypass := (io.ifu.ar.bits.addr(31,28) =/= "b1000".U)
     }
-    bypass := 1.U 
+    //bypass := 1.U 
     val s_idle :: s_read :: s_replace :: s_refill :: Nil = Enum(4)
 
     val state = RegInit(s_idle)
