@@ -79,6 +79,11 @@ config USE_SOC
   default y
   bool "Use SOC for Simulation"
 
+config SOC_EN #For Chisel
+  string 
+  default "enable" if USE_SOC
+  default "disable" if !USE_SOC 
+
 
 config USE_NVBOARD
   depends on USE_SOC

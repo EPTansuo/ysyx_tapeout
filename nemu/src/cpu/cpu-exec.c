@@ -35,7 +35,9 @@ CPU_state cpu = {};
 uint64_t g_nr_guest_inst = 0;
 static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
-
+extern int is_batch_mode;
+extern uint64_t icache_hit;
+extern uint64_t icache_miss;
 struct{
   uint32_t inst[IRINGBUF_SIZE];
   word_t pc[IRINGBUF_SIZE];
@@ -76,6 +78,7 @@ void print_iringbuf(){
 
 #endif
 
+#if defined(CONFIG_TRACE) || defined(CONFIG_DIFFTEST)
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
   if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
@@ -83,17 +86,18 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 
-
-  scan_watchpoint();
-  scan_breakpoint(dnpc);
-
+  if(!is_batch_mode){
+    scan_watchpoint();
+    scan_breakpoint(dnpc);
+  }
 }
+#endif
 
 static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
   s->snpc = pc;
   isa_exec_once(s);
-  ftrace_func_call(s->pc,s->dnpc, s->isa.inst.val);
+  IFDEF(CONFIG_FTRACE, ftrace_func_call(s->pc,s->dnpc, s->isa.inst.val));
 
 #ifdef CONFIG_ITRACE
   iringbuf.inst[iringbuf.head] = s->isa.inst.val;
@@ -134,9 +138,13 @@ static void exec_once(Decode *s, vaddr_t pc) {
     IFDEF(CONFIG_PC_TRACE, pc_trace(cpu.pc));
     exec_once(&s, cpu.pc);
     g_nr_guest_inst ++;
+#if defined(CONFIG_TRACE) || defined(CONFIG_DIFFTEST)
     trace_and_difftest(&s, cpu.pc);
+#endif
     if (nemu_state.state != NEMU_RUNNING) break;
+    #ifndef CONFIG_IGNORE_DEVICE_UPDATE
     IFDEF(CONFIG_DEVICE, device_update());
+    #endif // !CONFIG_IGNORE_DEVICE_UPDATE
   }
 }
 
@@ -147,6 +155,8 @@ static void statistic() {
   Log("total guest instructions = " NUMBERIC_FMT, g_nr_guest_inst);
   if (g_timer > 0) Log("simulation frequency = " NUMBERIC_FMT " inst/s", g_nr_guest_inst * 1000000 / g_timer);
   else Log("Finish running in less than 1 us and can not calculate the simulation frequency");
+  if(icache_hit+icache_miss != 0){
+    Log("ICache hit rate = %lf", (double)icache_hit / (icache_hit + icache_miss));}
 }
 
 void assert_fail_msg() {

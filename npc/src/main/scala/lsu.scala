@@ -7,19 +7,20 @@ import st_sel._
 import ld_sel._
 
 import AXI4._ 
-import defines._
+//import defines._
 import freechips.rocketchip.amba.axi4._
 
 
-class LSU(xlen: Int) extends Module {
+class LSU(config: NPCConfig) extends Module {
     val io = IO(new Bundle {
-        val in = Flipped(Decoupled(new SigIO_EXU_LSU(xlen)))
-        val out = (Decoupled(new SigIO_LSU_WBU(xlen)))
+        val in = Flipped(Decoupled(new SigIO_EXU_LSU(config.XLEN)))
+        val out = (Decoupled(new SigIO_LSU_WBU(config.XLEN)))
         //val dmem = Flipped(new DMemIO())
         //val dmem = new AXILiteMasterIF(addrWidthBits = 32, dataWidthBits = xlen)
-        val dmem = new AXI4Bundle(AXI4BundleParameters(xlen, 32, AXI_IDBITS))
+        val dmem = new AXI4Bundle(config.axiparams)
     })
 
+    val xlen = config.XLEN 
 
     val in_reg = Reg(Output(chiselTypeOf(io.in)))
     val pc = in_reg.bits.pc
@@ -269,7 +270,7 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
     io.out.bits.csr_out := io.in.bits.csr_out
 
 
-    if(defines.PERF_CNT){
+    if(config.PERF_CNT){
         val load_cnt = RegInit(0.U(32.W))
         val store_cnt = RegInit(0.U(32.W))
         val cycle_load_cnt = RegInit(0.U(64.W))
