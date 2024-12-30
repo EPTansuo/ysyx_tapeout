@@ -48,8 +48,8 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
         s_read_2       -> Mux(io.dmem.ar.ready, s_wait_read_2, s_read_2),
         s_wait_read    -> Mux(io.dmem.r.valid, Mux(r_twice, s_read_2, s_wait_ready), s_wait_read),
         s_wait_read_2  -> Mux(io.dmem.r.valid, s_wait_ready, s_wait_read_2),
-        s_write        -> Mux(io.dmem.aw.ready , s_wait_write, s_write),
-        s_write_2      -> Mux(io.dmem.aw.ready , s_wait_write_2, s_write_2),
+        s_write        -> Mux(io.dmem.aw.ready && io.dmem.w.ready, s_wait_write, s_write),
+        s_write_2      -> Mux(io.dmem.aw.ready && io.dmem.w.ready, s_wait_write_2, s_write_2),
         s_wait_write_2 -> Mux(io.dmem.b.valid, s_wait_ready, s_wait_write_2),
         s_wait_write   -> Mux(io.dmem.b.valid, Mux(w_twice, s_write_2,s_wait_ready), s_wait_write),
         s_wait_ready   -> Mux(io.out.ready, s_idle, s_wait_ready)
@@ -119,7 +119,7 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
     )
 
         
-    io.dmem.ar.valid := state === s_read || state === s_read_2 || state === s_wait_read || state === s_wait_read_2
+    io.dmem.ar.valid := state === s_read || state === s_read_2 
     io.dmem.ar.bits.addr := Mux(state === s_read_2 || state === s_wait_read_2, alu_out + 4.U, alu_out);
     io.dmem.ar.bits.prot := 0.U
     io.dmem.r.ready := true.B
@@ -251,8 +251,8 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
 
     io.dmem.aw.bits.size := w_size
     io.dmem.w.bits.last := true.B
-    io.dmem.aw.valid := state === s_write || state === s_write_2 || state === s_wait_write || state === s_wait_write_2
-    io.dmem.w.valid := state === s_write || state === s_write_2 || state === s_wait_write || state === s_wait_write_2
+    io.dmem.aw.valid := state === s_write || state === s_write_2
+    io.dmem.w.valid := state === s_write || state === s_write_2
     io.dmem.aw.bits.addr := Mux(state === s_write_2 || state === s_wait_write_2, alu_out + 4.U, alu_out);
     io.dmem.aw.bits.prot := 0.U
     io.dmem.w.bits.data := st_data
