@@ -114,8 +114,9 @@ class ICache(config: NPCConfig) extends Module{
     val victimWay = fifoPtr(widx)
 
 
-   
-    when(cache_refill){
+   val cache_refill_prev = RegInit(false.B)
+   cache_refill_prev := cache_refill
+    when(!cache_refill_prev & cache_refill){
         cache_data(widx*nWays.U+victimWay)(0) := io.imem.r.bits.data 
         //assert(blockSize == 4);
         cache_tag(victimWay + widx*nWays.U) := wtag
