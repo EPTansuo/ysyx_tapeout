@@ -44,8 +44,8 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
     state := MuxLookup(state, s_idle)(Seq(
         s_idle -> Mux(io.in.valid, s_exe, s_idle),
         s_exe  -> Mux(load_en, s_read, Mux(store_en, s_write, s_wait_ready)),  //需要等待信号生成完毕，来判断是否需要读写数据
-        s_read         -> Mux(io.dmem.ar.ready, Mux(io.dmem.r.valid, Mux(r_twice, s_read_2, s_wait_ready), s_wait_read), s_read),
-        s_read_2       -> Mux(io.dmem.ar.ready, Mux(io.dmem.r.valid, s_wait_ready, s_wait_read_2), s_read_2),
+        s_read         -> Mux(io.dmem.ar.ready, s_wait_read, s_read),
+        s_read_2       -> Mux(io.dmem.ar.ready, s_wait_read_2, s_read_2),
         s_wait_read    -> Mux(io.dmem.r.valid, Mux(r_twice, s_read_2, s_wait_ready), s_wait_read),
         s_wait_read_2  -> Mux(io.dmem.r.valid, s_wait_ready, s_wait_read_2),
         s_write        -> Mux(io.dmem.aw.ready && io.dmem.w.ready, s_wait_write, s_write),
@@ -79,9 +79,9 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
     dontTouch(r_twice_lw)
 
     when(io.dmem.r.valid){
-        when(state === s_wait_read || state === s_read){    
+        when(state === s_wait_read){    
             dmem_rdata_reg(0) := dmem_rdata_tmp   // first read   addr = alu_out
-        }.elsewhen(state === s_wait_read_2 || state === s_read_2){
+        }.elsewhen(state === s_wait_read_2){
             dmem_rdata_reg(1) := dmem_rdata_tmp   // second read  addr = alu_out + 4
         }
     }
@@ -119,7 +119,7 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
     )
 
         
-    io.dmem.ar.valid := state === s_read || state === s_read_2 || state === s_wait_read || state === s_wait_read_2
+    io.dmem.ar.valid := state === s_read || state === s_read_2
     io.dmem.ar.bits.addr := Mux(state === s_read_2 || state === s_wait_read_2, alu_out + 4.U, alu_out);
     io.dmem.ar.bits.prot := 0.U
     io.dmem.r.ready := true.B
@@ -251,13 +251,13 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
 
     io.dmem.aw.bits.size := w_size
     io.dmem.w.bits.last := true.B
-    io.dmem.aw.valid := state === s_write || state === s_write_2 || state === s_wait_write || state === s_wait_write_2
-    io.dmem.w.valid := state === s_write || state === s_write_2 || state === s_wait_write || state === s_wait_write_2
+    io.dmem.aw.valid := state === s_write || state === s_write_2
+    io.dmem.w.valid := state === s_write || state === s_write_2
     io.dmem.aw.bits.addr := Mux(state === s_write_2 || state === s_wait_write_2, alu_out + 4.U, alu_out);
     io.dmem.aw.bits.prot := 0.U
     io.dmem.w.bits.data := st_data
     io.dmem.w.bits.strb := wmask
-    io.dmem.b.ready := (state === s_wait_write || state === s_wait_write_2)// && io.dmem.b.valid
+    io.dmem.b.ready := (state === s_wait_write || state === s_wait_write_2) && io.dmem.b.valid
 
     io.out.bits.inst := inst
     io.out.bits.pc := pc
