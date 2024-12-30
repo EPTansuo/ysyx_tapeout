@@ -76,7 +76,7 @@ class ICache(config: NPCConfig) extends Module{
         bypass := (io.ifu.ar.bits.addr(31,28) =/= "b1000".U)
     }
     //bypass := 1.U 
-    val s_idle :: s_read :: s_replace :: s_refill :: Nil = Enum(4)
+    val s_idle :: s_read :: s_replace :: s_refill :: s_wait :: Nil = Enum(5)
 
     val state = RegInit(s_idle)
     val state_next = Wire(UInt(state.getWidth.W))
@@ -84,7 +84,8 @@ class ICache(config: NPCConfig) extends Module{
         s_idle -> Mux(io.ifu.ar.valid, Mux(bypass.asBool, s_idle, s_read), s_idle),
         s_read -> Mux(hit, s_idle, s_replace),
         s_replace -> Mux(io.imem.ar.ready, s_refill, s_replace),
-        s_refill -> Mux(io.imem.r.valid, s_read, s_refill)
+        s_refill -> Mux(io.imem.r.valid, s_wait, s_refill),
+        s_wait -> s_read,
     ))
     state := state_next
 
