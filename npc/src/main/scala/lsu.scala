@@ -44,8 +44,8 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
     state := MuxLookup(state, s_idle)(Seq(
         s_idle -> Mux(io.in.valid, s_exe, s_idle),
         s_exe  -> Mux(load_en, s_read, Mux(store_en, s_write, s_wait_ready)),  //需要等待信号生成完毕，来判断是否需要读写数据
-        s_read         -> Mux(io.dmem.ar.ready, s_wait_read, s_read),
-        s_read_2       -> Mux(io.dmem.ar.ready, s_wait_read_2, s_read_2),
+        s_read         -> Mux(io.dmem.ar.ready, Mux(io.dmem.r.valid, Mux(r_twice, s_read_2, s_wait_ready), s_wait_read), s_read),
+        s_read_2       -> Mux(io.dmem.ar.ready, Mux(io.dmem.r.valid, s_wait_ready, s_wait_read_2), s_read_2),
         s_wait_read    -> Mux(io.dmem.r.valid, Mux(r_twice, s_read_2, s_wait_ready), s_wait_read),
         s_wait_read_2  -> Mux(io.dmem.r.valid, s_wait_ready, s_wait_read_2),
         s_write        -> Mux(io.dmem.aw.ready && io.dmem.w.ready, s_wait_write, s_write),
@@ -79,9 +79,9 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
     dontTouch(r_twice_lw)
 
     when(io.dmem.r.valid){
-        when(state === s_wait_read){    
+        when(state === s_wait_read || state === s_read){    
             dmem_rdata_reg(0) := dmem_rdata_tmp   // first read   addr = alu_out
-        }.elsewhen(state === s_wait_read_2){
+        }.elsewhen(state === s_wait_read_2 || state === s_read_2){
             dmem_rdata_reg(1) := dmem_rdata_tmp   // second read  addr = alu_out + 4
         }
     }
