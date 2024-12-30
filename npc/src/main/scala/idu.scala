@@ -56,6 +56,12 @@ class IDU(config: NPCConfig) extends Module {
     io.out.bits.exu.pc_sel := control.io.out.pc_sel
 
     
+    //invaild instruction
+    val instInvalid = Module(new InstInvalid)
+    instInvalid.io.isvalid := Mux(io.out.valid, control.io.out.inst_valid === valid.INST_VALID, true.B)
+
+
+
     if(config.PERF_CNT){
         val inst_compute_cnt = RegInit(0.U(32.W))
         val inst_branch_cnt = RegInit(0.U(32.W))

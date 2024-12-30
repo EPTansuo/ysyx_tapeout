@@ -1,7 +1,9 @@
 `ifndef SYNTHESIS
+`ifdef VERILATOR
 import "DPI-C" function void npc_ebreak();
 import "DPI-C" function void inst_invalid();
 import "DPI-C" function void axi_error(input byte unsigned errno, input byte unsigned isRead);//读错误还是写错误
+`endif
 `endif
 
 module InstInvalid(
@@ -9,11 +11,13 @@ module InstInvalid(
 );
 
 `ifndef SYNTHESIS
+`ifdef VERILATOR
 always @(*) begin
     if(!isvalid)begin
             inst_invalid();
     end
 end
+`endif
 `endif
 
 endmodule
@@ -24,11 +28,13 @@ module Ebreak(
 );
 
 `ifndef SYNTHESIS
+`ifdef VERILATOR
 always @(*) begin
     if(isebreak)begin
             npc_ebreak();
     end
 end
+`endif
 `endif
 
 endmodule
@@ -41,6 +47,7 @@ module AXIError(
 );
 
 `ifndef SYNTHESIS
+`ifdef VERILATOR
 always @(*) begin
     if(wen & bresp[1]) begin
         axi_error({6'b0,bresp}, 8'b0);
@@ -50,6 +57,7 @@ always @(*) begin
         axi_error({6'b0,rresp}, 8'b1);
     end
 end
+`endif
 `endif
 
 endmodule

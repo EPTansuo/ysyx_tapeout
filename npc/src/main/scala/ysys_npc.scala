@@ -41,12 +41,12 @@ class ysyx_npc(config: NPCConfig) extends Module {
     exu.io.reg_read2 <> regfile.io.read2
     wbu.io.reg_write <> regfile.io.write
 
-    val icache = Module(new ICache(config))
-    ifu.io.imem <> icache.io.ifu 
+    //val icache = Module(new ICache(config))
+    //ifu.io.imem <> icache.io.ifu 
 
     val axi_arbiter = Module( new AXIArbiter(2, config.axiparams))
-    axi_arbiter.io.in(0) <> icache.io.imem
-    //axi_arbiter.io.in(0) <> ifu.io.imem
+    //axi_arbiter.io.in(0) <> icache.io.imem
+    axi_arbiter.io.in(0) <> ifu.io.imem
     axi_arbiter.io.in(1) <> lsu.io.dmem
     axi_arbiter.io.out <> io.axi
 

@@ -57,8 +57,9 @@ extern "C" void inst_invalid(){
     printf("%02x ", ((uint8_t*)(&INST))[j]);
   }
   fflush(stdout);
-  disassemble(logbuf, 64, PC , (uint8_t*)(&INST), 4);
-  printf("%s\n", logbuf);
+  printf("\n");
+  //disassemble(logbuf, 64, PC , (uint8_t*)(&INST), 4);
+  //printf("%s\n", logbuf);
 	set_npc_state(NPC_ABORT, PC, -1);
 }
 
@@ -171,7 +172,7 @@ extern "C" void flash_read(int32_t addr, int32_t *data) {
 
  //*data = addr ;
  *data = host_read(guest_to_host(CONFIG_MBASE + (addr& ~0x3u)), 4);
- //printf("read flash addr = %x, data = %08x\n", addr, *data);
+ printf("read flash addr = %x, data = %08x\n", addr, *data);
 
 }
 extern "C" void mrom_read(int32_t addr, int32_t *data) { 
