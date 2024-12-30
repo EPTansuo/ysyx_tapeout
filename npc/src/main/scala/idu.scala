@@ -55,10 +55,13 @@ class IDU(config: NPCConfig) extends Module {
     io.out.bits.exu.br_sel := control.io.out.br_sel
     io.out.bits.exu.pc_sel := control.io.out.pc_sel
 
-    
+      //Ebreak
+    val ebreak_ = Module(new Ebreak)
+    val isebreak = inst === insts.ebreak
+    ebreak_.io.isebreak := isebreak
     //invaild instruction
     val instInvalid = Module(new InstInvalid)
-    instInvalid.io.isvalid := Mux(io.out.valid, control.io.out.inst_valid === valid.INST_VALID, true.B)
+    instInvalid.io.isvalid := Mux(io.out.valid, control.io.out.inst_valid === valid.INST_VALID || isebreak, true.B)
 
 
 

@@ -45,10 +45,7 @@ class Control(config: NPCConfig) extends Module{
   io.out.br_sel := ctrlsig(9)
   io.out.csr_cmd := ctrlsig(10)
   io.out.inst_valid := ctrlsig(11)
-  //Ebreak
-  val ebreak_ = Module(new Ebreak)
-  val isebreak = io.in.inst === insts.ebreak
-  ebreak_.io.isebreak := isebreak
+
 
 }
 
