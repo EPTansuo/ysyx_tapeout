@@ -2,17 +2,15 @@ package cpu
 
 import chisel3._
 
-// object defines {
-//   val USE_SOC = false
-//   val XLEN = 32
-//   val PC_INIT = if(USE_SOC) "h30000000".U(XLEN.W) else "h80000000".U(XLEN.W)
-//   val MSTATUS_INIT = 0x1800
-//   val MTVEC_INIT = 0x100
-//   val AXI_IDBITS = 4
-//   val CLINT_BASE = if(USE_SOC) 0x02000000L else 0xa0000040L
-//   val CLINT_END = if(USE_SOC) 0x0200ffffL else 0xa0000050L
-//   val PERF_CNT = true
-// }
+object defines {
+  val USE_SOC = true
+  val XLEN = 32
+  val PC_INIT = if(USE_SOC) "h30000000".U(XLEN.W) else "h80000000".U(XLEN.W)
+  val MSTATUS_INIT = 0x1800
+  val MTVEC_INIT = 0x100
+  val AXI_IDBITS = 4
+  val PERF_CNT = true
+}
 
 
 

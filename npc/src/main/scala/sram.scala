@@ -118,9 +118,9 @@ class SRAM(params: AXI4BundleParameters) extends Module {
 
   mem.io.clock := clock
   mem.io.reset := reset
-  mem.io.raddr := Cat(axi.ar.bits.addr(params.addrBits-1,2), 0.U(2.W))
+  mem.io.raddr := axi.ar.bits.addr
   mem.io.we := state_w === s_write
-  mem.io.waddr := Cat(waddr(params.addrBits-1,2), 0.U(2.W))
+  mem.io.waddr := waddr
   mem.io.wdata := wdata
   mem.io.wmask := wstrb
 

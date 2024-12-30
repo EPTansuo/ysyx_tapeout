@@ -6,7 +6,7 @@ import chisel3.util._
 
 import csr_addr._
 import csr_cmd._
-//import defines._
+import defines._
 
 class CSRIO(xlen:Int) extends Bundle{
   val cmd = Input(UInt(3.W))
@@ -21,17 +21,16 @@ class CSRIO(xlen:Int) extends Bundle{
   val update_enable = Input(Bool()) 
 }
 
-class CSR(config: NPCConfig) extends Module{
-  val io = IO(new CSRIO(config.XLEN))
+class CSR(xlen:Int) extends Module{
+  val io = IO(new CSRIO(xlen))
 
-  val xlen = config.XLEN 
-
+  
   val mepc = RegInit(0.U(xlen.W))
   val mcause = RegInit(0.U(xlen.W))
   //val mtvec = RegInit(Mux((xlen.U === 32.U), 0x100.U(32.W), 0x80000000L.U(64.W)))
   //val mstatus = RegInit(Mux((xlen.U === 32.U), 0x1800.U(32.W), 0xa00001800L.U(64.W)))
-  val mtvec = RegInit(config.MTVEC_INIT.U(xlen.W))
-  val mstatus = RegInit(config.MSTATUS_INIT.U(xlen.W))
+  val mtvec = RegInit(MTVEC_INIT.U(32.W))
+  val mstatus = RegInit(MSTATUS_INIT.U(32.W))
 
   var csr_regs = Seq(
     BitPat(CSR_MEPC) -> mepc,
@@ -77,7 +76,7 @@ class CSR(config: NPCConfig) extends Module{
   }
 
   //防止一条指令内变化多次
-  val mstatus_tmp = RegInit(config.MSTATUS_INIT.U(32.W))
+  val mstatus_tmp = RegInit(MSTATUS_INIT.U(32.W))
   when(io.update_enable && is_mret){
     mstatus := mstatus_tmp
   }

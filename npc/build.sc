@@ -25,9 +25,7 @@ trait HasThisChisel extends SbtModule {
   override def scalaVersion = defaultScalaVersion
   override def scalacOptions = super.scalacOptions() ++
     Agg("-language:reflectiveCalls", "-Ymacro-annotations", "-Ytasty-reader")
-  override def ivyDeps = super.ivyDeps() ++ Agg(chiselIvy.get) ++ Agg(chiselTestIvy.get) ++
-    Agg(ivy"io.circe::circe-core:0.14.1") ++ Agg(ivy"io.circe::circe-generic:0.14.1") ++
-    Agg(ivy"io.circe::circe-parser:0.14.1") 
+  override def ivyDeps = super.ivyDeps() ++ Agg(chiselIvy.get) ++ Agg(chiselTestIvy.get)
   override def scalacPluginIvyDeps = super.scalacPluginIvyDeps() ++ Agg(chiselPluginIvy.get)
 }
 

@@ -3,6 +3,7 @@ package cpu
 import chisel3._
 import chisel3.util._
 import insts._
+import defines._
 
 
 
@@ -19,7 +20,6 @@ class ControlOut(xlen: Int) extends Bundle{
   val mask_sel = Output(UInt(8.W))
   val br_sel =  Output(UInt(3.W))
   val csr_cmd = Output(UInt(3.W))
-  val inst_valid = Output(UInt(1.W))
 }
 
 class ControlIn(xlen: Int) extends Bundle{
@@ -27,10 +27,10 @@ class ControlIn(xlen: Int) extends Bundle{
     val pc = Input(UInt(xlen.W))
 }
 
-class Control(config: NPCConfig) extends Module{
+class Control(xlen: Int) extends Module{
   val io = IO(new Bundle{
-    val out = Output(new ControlOut(config.XLEN))
-    val in = Input(new ControlIn(config.XLEN))
+    val out = Output(new ControlOut(xlen))
+    val in = Input(new ControlIn(xlen))
   })
   val ctrlsig = ListLookup(io.in.inst, SigMap.default, SigMap.map)
   io.out.pc_sel := ctrlsig(0)
@@ -44,12 +44,15 @@ class Control(config: NPCConfig) extends Module{
   io.out.mask_sel := ctrlsig(8)
   io.out.br_sel := ctrlsig(9)
   io.out.csr_cmd := ctrlsig(10)
-  io.out.inst_valid := ctrlsig(11)
   //Ebreak
   val ebreak_ = Module(new Ebreak)
   val isebreak = io.in.inst === insts.ebreak
   ebreak_.io.isebreak := isebreak
 
+  //invaild instruction
+  val instInvalid = Module(new InstInvalid)
+  instInvalid.io.isvalid := (ctrlsig(11) === valid.INST_VALID) ||
+                          isebreak || io.in.pc < PC_INIT
 }
 
 

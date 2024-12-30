@@ -8,59 +8,67 @@
 #define EXU (NPC_CPU->exu)
 #define LSU (NPC_CPU->lsu)
 #define WBU (NPC_CPU->wbu)
-#define ICACHE (NPC_CPU->icache)
 
+/************** IFU ***********/
+static uint32_t ifu_cnt = 0;
 
-#define PERF_IFU_CNT(_) \
-_(ifu_cnt) 
+/************** IDU ***********/
+static uint32_t inst_compute_cnt = 0;
+static uint32_t inst_branch_cnt = 0;
+static uint32_t inst_jump_cnt = 0;
+static uint32_t inst_ldst_cnt = 0;
+static uint32_t inst_csr_cnt = 0;
+static uint64_t cycle_compute_cnt = 0;
+static uint64_t cycle_branch_cnt = 0;
+static uint64_t cycle_jump_cnt = 0;
+static uint64_t cycle_ldst_cnt = 0;
+static uint64_t cycle_csr_cnt = 0;
 
-#define PERF_IDU_CNT(_) \
-_(inst_compute_cnt) _(inst_branch_cnt) _(inst_jump_cnt) _(inst_ldst_cnt) _(inst_csr_cnt) \
-_(cycle_compute_cnt) _(cycle_branch_cnt) _(cycle_jump_cnt) _(cycle_ldst_cnt) _(cycle_csr_cnt)
+/************** EXU ***********/
+static uint32_t alu_arith_cnt = 0;
+static uint32_t alu_logic_cnt = 0;
+static uint32_t alu_shift_cnt = 0;
+static uint32_t alu_cmp_cnt = 0;
+static uint32_t alu_copy_cnt = 0;
 
-#define PERF_EXU_CNT(_) \
-_(alu_arith_cnt) _(alu_logic_cnt) _(alu_shift_cnt) _(alu_cmp_cnt) _(alu_copy_cnt)
+/************** LSU ************/
+static uint32_t load_cnt = 0;
+static uint32_t store_cnt = 0;
+static uint64_t cycle_load_cnt = 0;
+static uint64_t cycle_store_cnt = 0;
 
-#define PERF_LSU_CNT(_) \
-_(load_cnt) _(store_cnt) _(cycle_load_cnt) _(cycle_store_cnt)
-
-#define PERF_WBU_CNT(_) \
-_(inst_cnt) _(cycle_cnt)
-
-#define PERF_ICACHE_CNT(_) \
-_(icache_access_cnt) _(icache_hit_cnt) _(icache_bypass_cnt) _(icache_hit_access_time_cnt) _(icache_miss_penalty_cnt)
-
-
-#define CPU_UNIT(_) \
-_(IDU) _(EXU) _(LSU) _(WBU) _(ICACHE)
-
-
-
-#define PERF_CNT_DECL(counter) static uint64_t counter = 0;
-
-PERF_IFU_CNT(PERF_CNT_DECL)
-PERF_IDU_CNT(PERF_CNT_DECL)
-PERF_EXU_CNT(PERF_CNT_DECL)
-PERF_LSU_CNT(PERF_CNT_DECL)
-PERF_WBU_CNT(PERF_CNT_DECL)
-PERF_ICACHE_CNT(PERF_CNT_DECL)
+/************** WBU ************/
+static uint64_t inst_cnt = 0;
+static uint64_t cycle_cnt = 0;
 
 
 void perf_get_data(){
+    ifu_cnt = IFU->ifu_cnt;
 
-#define PERF_IFU_GET(counter) counter = IFU->counter;
-#define PERF_IDU_GET(counter) counter = IDU->counter;
-#define PERF_EXU_GET(counter) counter = EXU->counter;
-#define PERF_LSU_GET(counter) counter = LSU->counter;
-#define PERF_WBU_GET(counter) counter = WBU->counter;
-#define PERF_ICACHE_GET(counter) counter = ICACHE->counter;
+    inst_compute_cnt = IDU->inst_compute_cnt;
+    inst_branch_cnt = IDU->inst_branch_cnt;
+    inst_jump_cnt = IDU->inst_jump_cnt;
+    inst_ldst_cnt = IDU->inst_ldst_cnt;
+    inst_csr_cnt = IDU->inst_csr_cnt;
+    cycle_compute_cnt = IDU->cycle_compute_cnt;
+    cycle_branch_cnt = IDU->cycle_branch_cnt;
+    cycle_jump_cnt = IDU->cycle_jump_cnt;
+    cycle_ldst_cnt = IDU->cycle_ldst_cnt;
+    cycle_csr_cnt = IDU->cycle_csr_cnt;
 
-    PERF_IFU_CNT(PERF_IFU_GET)
-    PERF_IDU_CNT(PERF_IDU_GET)
-    PERF_EXU_CNT(PERF_EXU_GET)
-    PERF_LSU_CNT(PERF_LSU_GET)
-    PERF_WBU_CNT(PERF_WBU_GET)
- //   PERF_ICACHE_CNT(PERF_ICACHE_GET)
+    alu_arith_cnt = EXU->alu_arith_cnt;
+    alu_logic_cnt = EXU->alu_logic_cnt;
+    alu_shift_cnt = EXU->alu_shift_cnt;
+    alu_cmp_cnt = EXU->alu_cmp_cnt;
+    alu_copy_cnt = EXU->alu_copy_cnt;
+
+    load_cnt = LSU->load_cnt;
+    store_cnt = LSU->store_cnt;
+    cycle_load_cnt = LSU->cycle_load_cnt;
+    cycle_store_cnt = LSU->cycle_store_cnt;
+
+    inst_cnt = WBU->inst_cnt;
+    cycle_cnt = WBU->cycle_cnt;
 }
 
 FILE *fp;
@@ -96,8 +104,7 @@ void perf_statistic(){
     PRINT_PERF("Branch  Cyeles CNT", cycle_branch_cnt, (double)cycle_branch_cnt/inst_branch_cnt, "cycle per inst");
     PRINT_PERF("Jump    Cyeles CNT", cycle_jump_cnt, (double)cycle_jump_cnt/inst_jump_cnt, "cycle per inst");
     PRINT_PERF("ld/st   Cyeles CNT", cycle_ldst_cnt, (double)cycle_ldst_cnt/inst_ldst_cnt, "cycle per inst");
-    PRINT_PERF("CSR     Cyeles CNT", cycle_csr_cnt, 
-                                    inst_csr_cnt != 0 ? (double)cycle_csr_cnt/inst_csr_cnt: 0.0 , "cycle per inst");
+    PRINT_PERF("CSR     Cyeles CNT", cycle_csr_cnt, (double)cycle_csr_cnt/inst_csr_cnt, "cycle per inst");
 
     printf("\n----------------------------------- ALUOP Type ------------------------------------\n");
     PRINT_PERF("Alu Arith CNT", alu_arith_cnt, (double)alu_arith_cnt/inst_cnt*100, "% of inst");
@@ -111,19 +118,6 @@ void perf_statistic(){
     PRINT_PERF("Store CNT", store_cnt, (double)store_cnt/inst_ldst_cnt*100, "% of ld/st inst");
     PRINT_PERF("Load Cycles CNT", cycle_load_cnt, (double)cycle_load_cnt/load_cnt, "cycle per load");
     PRINT_PERF("Store Cycles CNT", cycle_store_cnt, (double)cycle_store_cnt/store_cnt, "cycle per store");
-
-    printf("\n-------------------------------------- ICache --------------------------------------\n");
-    double hit_rate = (double)icache_hit_cnt/icache_access_cnt;
-    PRINT_PERF("ICache IFetch CNT", icache_access_cnt+icache_bypass_cnt, 0.0, ""); 
-           
-    PRINT_PERF("ICache Access CNT", icache_access_cnt, 
-            (icache_hit_access_time_cnt + (1-hit_rate)*icache_miss_penalty_cnt)/icache_access_cnt, "AMAT");
-    PRINT_PERF("ICache hit CNT", icache_hit_cnt, hit_rate*100, "% hit rate");
-    PRINT_PERF("ICache Bypass CNT", icache_bypass_cnt, (double)icache_bypass_cnt/
-                                            (icache_access_cnt+icache_bypass_cnt)*100, "% of ifetch");
-    PRINT_PERF("ICache Access Time CNT", icache_hit_access_time_cnt, 
-                                    (double)icache_hit_access_time_cnt/icache_access_cnt, "cycle per hit");
-    PRINT_PERF("ICache Miss Penalty CNT", icache_miss_penalty_cnt, 
-                    (double)icache_miss_penalty_cnt/(icache_access_cnt-icache_hit_cnt), "cycle per miss");
+    
     fclose(fp);
 }

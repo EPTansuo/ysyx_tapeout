@@ -24,7 +24,7 @@
 #include <ftrace.h>
 #include <fmt-def.h>
 
-int is_batch_mode = false;
+static int is_batch_mode = false;
 
 void init_regex();
 void init_wp_pool();

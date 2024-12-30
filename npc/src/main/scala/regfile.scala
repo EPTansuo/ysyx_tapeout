@@ -22,10 +22,10 @@ class RegfileIO(xlen: Int) extends Bundle{
 }
 
 
-class Regfile(config: NPCConfig) extends Module{
-    val io = IO(new RegfileIO(config.XLEN))
+class Regfile(xlen: Int) extends Module{
+    val io = IO(new RegfileIO(xlen))
 
-    var regs = Mem(config.REG_NUM, UInt(config.XLEN.W))
+    var regs = Mem(32, UInt(xlen.W))
 
     io.read1.data := regs(io.read1.addr)
     io.read2.data := regs(io.read2.addr)

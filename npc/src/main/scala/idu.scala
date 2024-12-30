@@ -6,17 +6,17 @@ import chisel3.util._
 
 
 
-//import defines._
+import defines._
 
-class IDU(config: NPCConfig) extends Module {
+class IDU(xlen: Int) extends Module {
     val io = IO(new Bundle {
-        val in = Flipped(Decoupled(new SigIO_IFU_IDU(config.XLEN)))
+        val in = Flipped(Decoupled(new SigIO_IFU_IDU(xlen)))
         //val out = Output(new ControlOut(xlen))
-        val out = (Decoupled(new SigIO_IDU_EXU(config.XLEN)))
+        val out = (Decoupled(new SigIO_IDU_EXU(xlen)))
     })
 
 
-    val control = Module(new Control(config))
+    val control = Module(new Control(xlen))
     //val inst = io.in.bits.inst 
     //val pc = io.in.bits.pc
     val inst = RegInit(0.U(32.W))
@@ -56,13 +56,7 @@ class IDU(config: NPCConfig) extends Module {
     io.out.bits.exu.pc_sel := control.io.out.pc_sel
 
     
-    //invaild instruction
-    val instInvalid = Module(new InstInvalid)
-    instInvalid.io.isvalid := Mux(io.out.valid, control.io.out.inst_valid === valid.INST_VALID, true.B)
-
-
-
-    if(config.PERF_CNT){
+    if(defines.PERF_CNT){
         val inst_compute_cnt = RegInit(0.U(32.W))
         val inst_branch_cnt = RegInit(0.U(32.W))
         val inst_ldst_cnt = RegInit(0.U(32.W))

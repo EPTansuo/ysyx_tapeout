@@ -12,7 +12,6 @@ module Mem(
 );
 
 `ifndef SYNTHESIS
-`ifdef VERILATOR
 import "DPI-C" function int pmem_read(input int raddr);
 import "DPI-C" function void pmem_write(input int waddr, input int wdata, input byte wmask);
 
@@ -29,7 +28,7 @@ always @(*) begin
         end
       end
 `endif
-`endif
+
 endmodule
 
 

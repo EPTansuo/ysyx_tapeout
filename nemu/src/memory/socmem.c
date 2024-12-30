@@ -73,7 +73,6 @@ static word_t socmem_host_read(void* addr, int len){
         IFDEF(CONFIG_ISA64, case 8: return *(uint64_t *)addr);
         IFDEF(CONFIG_RT_CHECK, default: assert(0));
     }
-	return 0;
 }
 
 word_t socmem_read(paddr_t addr, int len){

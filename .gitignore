@@ -28,4 +28,3 @@ am-kernels
 !.gitmodules
 !*.cc
 !/npc/rocket-chip
-!/perf-data/*

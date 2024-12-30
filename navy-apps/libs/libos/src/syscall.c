@@ -66,40 +66,36 @@ int _open(const char *path, int flags, mode_t mode) {
 }
 
 int _write(int fd, void *buf, size_t count) {
-  _syscall_(SYS_write, fd, (intptr_t)buf, count);
+  _exit(SYS_write);
+  return 0;
 }
 
-extern char end;
 void *_sbrk(intptr_t increment) {
-  int ret = _syscall_(SYS_brk, (intptr_t)(&end+increment), 0, 0);
-  if(ret == 0) 
-    return (&end + increment);
-  else
-    return (void *)-1;
+  return (void *)-1;
 }
 
 int _read(int fd, void *buf, size_t count) {
-  return _syscall_(SYS_read, fd, (intptr_t)buf, count);
+  _exit(SYS_read);
+  return 0;
 }
 
 int _close(int fd) {
-  return _syscall_(SYS_close, fd, 0, 0);
+  _exit(SYS_close);
+  return 0;
 }
 
 off_t _lseek(int fd, off_t offset, int whence) {
-  return _syscall_(SYS_lseek, fd, offset, whence);
+  _exit(SYS_lseek);
+  return 0;
 }
 
 int _gettimeofday(struct timeval *tv, struct timezone *tz) {
-  return _syscall_(SYS_time, (intptr_t)tv, (intptr_t)tz, 0);
+  _exit(SYS_gettimeofday);
+  return 0;
 }
 
 int _execve(const char *fname, char * const argv[], char *const envp[]) {
-  int retval = _syscall_(SYS_execve,(intptr_t)fname, (intptr_t)argv, (intptr_t)envp);
-  if(ret < 0) {
-    errno = -ret;
-    return -1;
-  }
+  _exit(SYS_execve);
   return 0;
 }
 
