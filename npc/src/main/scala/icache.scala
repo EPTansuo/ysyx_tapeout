@@ -80,7 +80,7 @@ class ICache(config: NPCConfig) extends Module{
     }
 
     val rdata_cache = Wire(UInt(32.W))
-    val wordIndex = Wire(UInt(2.W))
+    val wordIndex = Wire(UInt((offsetBits-2).W))  // WARNING
     wordIndex := roffset(roffset.getWidth - 1, 2)
     dontTouch(wordIndex)
     dontTouch(rdata_cache)
