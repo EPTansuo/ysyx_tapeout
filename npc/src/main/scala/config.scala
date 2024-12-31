@@ -77,6 +77,8 @@ object NPCConfig {
         decodedConfig(key).flatMap(_.asString).getOrElse("")
     }
     val SOC_EN = getConfig("CONFIG_SOC_EN") == "\"enable\""
+    val USE_ICACHE = getConfig("CONFIG_USE_ICACHE") == "y"
+    val PERF_CNT = getConfig("CONFIG_PERF_CNT") == "y"
     val xlen = if (getConfig("CONFIG_ISA") == "\"riscv32\"") 32 else 64
 
     NPCConfig(
@@ -88,10 +90,10 @@ object NPCConfig {
       MTVEC_INIT = if (xlen == 32) 0x100 else 0x80000000L,
       CLINT_BASE = if(SOC_EN) 0x02000000L else 0xa0000040L,
       CLINT_END = if(SOC_EN) 0x0200ffffL else 0xa0000050L,
-      PERF_CNT = true,
+      PERF_CNT = PERF_CNT,
       axiparams = CPUAXI4BundleParameters(),
       icacheparams = ICacheParameters(),
-      USE_ICACHE = true,
+      USE_ICACHE = USE_ICACHE,
     )
   }
 }

@@ -29,6 +29,16 @@ source "csrc/isa/riscv32/Kconfig"
 endif
 
 
+menu "Configuration for NPC"
+config USE_ICACHE
+  bool "Use ICache"
+  default y
+config PERF_CNT
+  bool "Enable Performance Counter"
+  default y
+
+endmenu
+
 choice
   prompt "Optimization Level"
   default CC_O2
