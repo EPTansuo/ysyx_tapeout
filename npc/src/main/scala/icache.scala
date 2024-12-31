@@ -87,7 +87,6 @@ class ICache(config: NPCConfig) extends Module{
     if(blockSize == 4){
         rdata_cache := blockdata(0)
     }else {
-        
         //rdata_cache := blockdata(wordIndex)
         rdata_cache := MuxLookup(wordIndex, 0.U)( // Default value if no case matches
             (0 until (blockSize / 4)).map(i => (i.U, blockdata(i)))
