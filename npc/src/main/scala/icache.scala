@@ -180,7 +180,7 @@ class ICache(config: NPCConfig) extends Module{
     io.ifu.r.bits.resp := Mux(bypass.asBool, io.imem.r.bits.resp, 0.U)
 
 
-    io.imem.ar.bits.len := (blockSize/4 - 1).U
+    io.imem.ar.bits.len := Mux(bypass.asBool, io.ifu.ar.bits.len, (blockSize/4 - 1).U)
 
     io.imem.ar.bits.prot := 0.U
     io.imem.ar.bits.id := 0.U
