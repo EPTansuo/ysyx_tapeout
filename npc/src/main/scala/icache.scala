@@ -40,30 +40,54 @@ class ICache(config: NPCConfig) extends Module{
      val data_way = Wire(Vec(nWays, Vec(blockSize/4, UInt(32.W))))
      val hit_way = Wire(Vec(nWays, Bool()))
 
-    for (i <- 0 until nWays){ 
-        // Can be optimized !!!!!!  乘法！！
-        when(cache_tag(ridx*nWays.U+i.U) === rtag){
-            data_way(i) := cache_data(ridx*nWays.U+i.U)
-            hit_way(i) :=  cache_valid(ridx*nWays.U+i.U)
-        }.otherwise{
-            data_way(i) := VecInit(Seq.fill(blockSize/4)(0.U(32.W)))
-            hit_way(i) :=  0.U
+    if(math.abs(math.log(nWays).toInt - math.log(nWays)) > 0.0001){
+        println("NPC WARNING: It is recommended for nWays to be a power of 2, "
+                +"but the current setup is acceptable.")
+        for (i <- 0 until nWays){ 
+            when(cache_tag(ridx*nWays.U+i.U) === rtag){
+                data_way(i) := cache_data(ridx*nWays.U+i.U)
+                hit_way(i) :=  cache_valid(ridx*nWays.U+i.U)
+            }.otherwise{
+                data_way(i) := VecInit(Seq.fill(blockSize/4)(0.U(32.W)))
+                hit_way(i) :=  0.U
+            }
+        }
+    }else{
+        val wayIdx = log2Ceil(nWays)
+        for (i <- 0 until nWays) {
+            val lineIdx = (ridx << wayIdx) | i.U
+            when(cache_tag(lineIdx) === rtag) {
+                data_way(i) := cache_data(lineIdx)
+                hit_way(i) := cache_valid(lineIdx)
+            }.otherwise {
+                data_way(i) := VecInit(Seq.fill(blockSize / 4)(0.U(32.W)))
+                hit_way(i) := false.B
+            }
         }
     }
+    
 
     val hit = Wire(Bool())
     hit := hit_way.reduce(_ || _)
     dontTouch(hit)
     
     val blockdata = Wire(Vec(blockSize/4, UInt(32.W)))
-    blockdata := Mux1H(hit_way, data_way)
-
+    //blockdata := Mux1H(hit_way, data_way)
+    for (i <- 0 until (blockSize / 4)) {
+        blockdata(i) := Mux1H(hit_way, data_way.map(_(i)))
+    }
 
     val rdata_cache = Wire(UInt(32.W))
     if(blockSize == 4){
         rdata_cache := blockdata(0)
     }else {
-        rdata_cache := blockdata(roffset(roffset.getWidth-1,2))
+        val wordIndex = roffset(roffset.getWidth - 1, 2)
+        //rdata_cache := blockdata(wordIndex)
+        rdata_cache := MuxLookup(
+            wordIndex,
+            0.U)( // Default value if no case matches
+            (0 until (blockSize / 4)).map(i => (i.U, blockdata(i)))
+        )
     }
     
 
