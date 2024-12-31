@@ -101,6 +101,8 @@ class ICache(config: NPCConfig) extends Module{
     }else{
         bypass := (io.ifu.ar.bits.addr(31,28) =/= "b1000".U)
     }
+
+    val burst_cnt = RegInit(0.U(log2Ceil(blockSize/4).W))
     //bypass := 1.U 
     val s_idle :: s_read :: s_replace :: s_refill :: s_wait :: Nil = Enum(5)
 
@@ -110,7 +112,7 @@ class ICache(config: NPCConfig) extends Module{
         s_idle -> Mux(io.ifu.ar.valid, Mux(bypass.asBool, s_idle, s_read), s_idle),
         s_read -> Mux(hit, s_idle, s_replace),
         s_replace -> Mux(io.imem.ar.ready, s_refill, s_replace),
-        s_refill -> Mux(io.imem.r.valid, s_wait, s_refill),
+        s_refill -> Mux(io.imem.r.valid, Mux(burst_cnt === (blockSize/4 - 1).U, s_wait, s_read), s_refill),
         s_wait -> s_read,
     ))
     state := state_next
@@ -142,7 +144,7 @@ class ICache(config: NPCConfig) extends Module{
     val victimWay = fifoPtr(widx)
     val cache_refill_data = RegInit(VecInit(Seq.fill(blockSize/4)(0.U(32.W))))
     val cache_refill_prev = RegInit(false.B)
-    val burst_cnt = RegInit(0.U(log2Ceil(blockSize/4).W))
+    
     when(!cache_refill_prev & cache_refill){
         cache_refill_data(burst_cnt) := io.imem.r.bits.data
     }
