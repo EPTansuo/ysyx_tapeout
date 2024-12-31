@@ -132,7 +132,10 @@ class ICache(config: NPCConfig) extends Module{
     io.ifu.r.bits.data := Mux(bypass, io.imem.r.bits.data, rdata_cache)
     dontTouch(io.ifu.r.valid)
 
-    io.imem.ar.bits.addr := io.ifu.ar.bits.addr 
+
+    val alignMask = ~(((1 << log2Ceil(blockSize)) - 1).U(config.axiparams.addrBits.W))
+    dontTouch(alignMask)
+    io.imem.ar.bits.addr := Mux(bypass, io.ifu.ar.bits.addr, io.ifu.ar.bits.addr & alignMask)
     io.imem.ar.valid := Mux(bypass, io.ifu.ar.valid, (state === s_replace && imem_first_read))
     io.imem.r.ready := Mux(bypass, io.ifu.r.ready ,state === s_refill)
 
