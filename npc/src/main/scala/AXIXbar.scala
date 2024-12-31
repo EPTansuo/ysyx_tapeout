@@ -23,7 +23,7 @@ class AXIXbar(val OutNum: Int, val AddressMap: Array[(Long, Long)], param : AXI4
   // read state 
   state_r := MuxLookup(state_r, OutNum.U)(
     (0 until OutNum).map(i => {
-      i.U(log2Ceil(OutNum+1).W) -> Mux(io.in.r.ready && io.out(i).r.valid, state_r_idle, i.U(log2Ceil(OutNum+1).W))
+      i.U(log2Ceil(OutNum+1).W) -> Mux(io.in.r.ready && io.out(i).r.valid && io.out(i).r.bits.last, state_r_idle, i.U(log2Ceil(OutNum+1).W))
     }) :+ (state_r_idle -> Mux(io.in.ar.valid, RangeLookup(io.in.ar.bits.addr, state_r_idle,
       AddressMap.map { case (start, end) =>
         (start.U(param.addrBits.W), end.U(param.addrBits.W), AddressMap.indexOf((start, end)).U)
@@ -33,7 +33,7 @@ class AXIXbar(val OutNum: Int, val AddressMap: Array[(Long, Long)], param : AXI4
   // write state 
   state_w := MuxLookup(state_w, OutNum.U)(
     (0 until OutNum).map(i => {
-      i.U(log2Ceil(OutNum+1).W) -> Mux(io.in.b.ready && io.out(i).b.valid, state_w_idle, i.U(log2Ceil(OutNum+1).W))
+      i.U(log2Ceil(OutNum+1).W) -> Mux(io.in.b.ready && io.out(i).b.valid && io.out(i).w.bits.last , state_w_idle, i.U(log2Ceil(OutNum+1).W))
     }) :+ (state_w_idle -> Mux(io.in.aw.valid, RangeLookup(io.in.aw.bits.addr, state_w_idle,
       AddressMap.map { case (start, end) =>
         (start.U(param.addrBits.W), end.U(param.addrBits.W), AddressMap.indexOf((start, end)).U)

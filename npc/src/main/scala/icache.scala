@@ -23,7 +23,9 @@ class ICache(config: NPCConfig) extends Module{
     val blockSize = cacheparams.blockSize
     
     assert(blockSize % (config.axiparams.dataBits/8) == 0, "iCache blockSize*8 must be N times of databits"); 
-
+    assert(nWays > 0, "iCache nWays must be greater than 0")
+    assert(nSets > 0, "iCache nSets must be greater than 0")
+    assert(blockSize > 0, "iCache blockSize must be greater than 0")
 
     val totalLines = nWays * nSets 
     val cache_data = SyncReadMem(totalLines, Vec(blockSize/4, UInt(32.W)))
@@ -40,66 +42,106 @@ class ICache(config: NPCConfig) extends Module{
      val data_way = Wire(Vec(nWays, Vec(blockSize/4, UInt(32.W))))
      val hit_way = Wire(Vec(nWays, Bool()))
 
-    for (i <- 0 until nWays){ 
-        // Can be optimized !!!!!!  乘法！！
-        when(cache_tag(ridx*nWays.U+i.U) === rtag){
-            data_way(i) := cache_data(ridx*nWays.U+i.U)
-            hit_way(i) :=  cache_valid(ridx*nWays.U+i.U)
-        }.otherwise{
-            data_way(i) := VecInit(Seq.fill(blockSize/4)(0.U(32.W)))
-            hit_way(i) :=  0.U
+    if(!isPow2(nWays)){
+        println("NPC WARNING: It is recommended for nWays to be a power of 2, "
+                +"but the current setup is acceptable.")
+        for (i <- 0 until nWays){ 
+            when(cache_tag(ridx*nWays.U+i.U) === rtag){
+                data_way(i) := cache_data(ridx*nWays.U+i.U)
+                hit_way(i) :=  cache_valid(ridx*nWays.U+i.U)
+            }.otherwise{
+                data_way(i) := VecInit(Seq.fill(blockSize/4)(0.U(32.W)))
+                hit_way(i) :=  0.U
+            }
+        }
+    }else{
+        val wayIdx = log2Ceil(nWays)
+        for (i <- 0 until nWays) {
+            val lineIdx = (ridx << wayIdx) | i.U
+            when(cache_tag(lineIdx) === rtag) {
+                data_way(i) := cache_data(lineIdx)
+                hit_way(i) := cache_valid(lineIdx)
+            }.otherwise {
+                data_way(i) := VecInit(Seq.fill(blockSize / 4)(0.U(32.W)))
+                hit_way(i) := false.B
+            }
         }
     }
+    
 
     val hit = Wire(Bool())
     hit := hit_way.reduce(_ || _)
     dontTouch(hit)
     
     val blockdata = Wire(Vec(blockSize/4, UInt(32.W)))
-    blockdata := Mux1H(hit_way, data_way)
-
+    //blockdata := Mux1H(hit_way, data_way)
+    for (i <- 0 until (blockSize / 4)) {
+        blockdata(i) := Mux1H(hit_way, data_way.map(_(i)))
+    }
 
     val rdata_cache = Wire(UInt(32.W))
+    val wordIndex = Wire(UInt((offsetBits-2).W))  // WARNING
+    wordIndex := roffset(roffset.getWidth - 1, 2)
+    dontTouch(wordIndex)
+    dontTouch(rdata_cache)
     if(blockSize == 4){
         rdata_cache := blockdata(0)
     }else {
-        rdata_cache := blockdata(roffset(roffset.getWidth-1,2))
+        //rdata_cache := blockdata(wordIndex)
+        rdata_cache := MuxLookup(wordIndex, 0.U)( // Default value if no case matches
+            (0 until (blockSize / 4)).map(i => (i.U, blockdata(i)))
+        )
     }
     
 
     
-    val bypass = Wire(UInt(1.W))
+    val bypass = Wire(Bool())
     if(config.USE_SOC){
         // IF the address is not in the range of the SDRAM address, then it is a bypass
         bypass := (io.ifu.ar.bits.addr(31,29) =/= "b101".U)
     }else{
         bypass := (io.ifu.ar.bits.addr(31,28) =/= "b1000".U)
     }
+    
+    val burst_cnt = RegInit(0.U(log2Ceil(blockSize/4).W))
+    val imem_first_read = burst_cnt === 0.U
     //bypass := 1.U 
     val s_idle :: s_read :: s_replace :: s_refill :: s_wait :: Nil = Enum(5)
 
     val state = RegInit(s_idle)
     val state_next = Wire(UInt(state.getWidth.W))
     state_next := MuxLookup(state, s_idle)(Seq(
-        s_idle -> Mux(io.ifu.ar.valid, Mux(bypass.asBool, s_idle, s_read), s_idle),
-        s_read -> Mux(hit, s_idle, s_replace),
-        s_replace -> Mux(io.imem.ar.ready, s_refill, s_replace),
-        s_refill -> Mux(io.imem.r.valid, s_wait, s_refill),
+        s_idle -> Mux(io.ifu.ar.valid, Mux(bypass, s_idle, s_read), s_idle),
+        s_read -> Mux(hit && burst_cnt === 0.U, s_idle,Mux(burst_cnt =/= 0.U, s_refill, s_replace)),
+        s_replace -> Mux(io.imem.ar.ready,  s_refill, s_replace),
+        s_refill -> Mux(io.imem.r.valid, Mux(burst_cnt === (blockSize/4-1).U, s_wait, s_read), s_refill),
         s_wait -> s_read,
     ))
     state := state_next
 
-    io.ifu.ar.ready := Mux(bypass.asBool , io.imem.ar.ready, state === s_idle)
-    io.ifu.r.valid := Mux(bypass.asBool, io.imem.r.valid, (state === s_read && hit) )
-    io.ifu.r.bits.data := Mux(bypass.asBool, io.imem.r.bits.data, rdata_cache)
+
+    val imem_read_valid = state === s_refill && io.imem.r.valid
+    when(imem_read_valid){
+        burst_cnt := burst_cnt + 1.U
+    }.elsewhen(state === s_idle){
+        burst_cnt := 0.U
+    }
+
+    io.ifu.ar.ready := Mux(bypass , io.imem.ar.ready, state === s_idle)
+    io.ifu.r.valid := Mux(bypass, io.imem.r.valid, (state === s_read && hit && imem_first_read))
+    io.ifu.r.bits.data := Mux(bypass, io.imem.r.bits.data, rdata_cache)
     dontTouch(io.ifu.r.valid)
 
-    io.imem.ar.bits.addr := io.ifu.ar.bits.addr
-    io.imem.ar.valid := Mux(bypass.asBool, io.ifu.ar.valid, (state === s_replace))
-    io.imem.r.ready := Mux(bypass.asBool, io.ifu.r.valid ,state === s_refill)
+
+    val alignMask = ~(((1 << log2Ceil(blockSize)) - 1).U(config.axiparams.addrBits.W))
+    dontTouch(alignMask)
+    io.imem.ar.bits.addr := Mux(bypass, io.ifu.ar.bits.addr, io.ifu.ar.bits.addr & alignMask)
+    io.imem.ar.valid := Mux(bypass, io.ifu.ar.valid, (state === s_replace && imem_first_read))
+    io.imem.r.ready := Mux(bypass, io.ifu.r.ready ,state === s_refill)
 
 
-    val cache_refill = (state === s_refill && io.imem.r.valid)
+    
+    val cache_refill = (imem_read_valid && burst_cnt === (blockSize/4-1).U)
 
 
     val wtag = Wire(UInt(rtag.getWidth.W))
@@ -114,32 +156,48 @@ class ICache(config: NPCConfig) extends Module{
     val fifoPtr = RegInit(VecInit(Seq.fill(nSets)(0.U(log2Ceil(nWays).W))))
 
     val victimWay = fifoPtr(widx)
-
-
-   val cache_refill_prev = RegInit(false.B)
-   cache_refill_prev := cache_refill
-    when(!cache_refill_prev & cache_refill){
-        cache_data(widx*nWays.U+victimWay)(0) := io.imem.r.bits.data 
-        //assert(blockSize == 4);
-        cache_tag(victimWay + widx*nWays.U) := wtag
-        cache_valid(victimWay + widx*nWays.U) := 1.U
-
-        val nextWay = victimWay + 1.U
-        fifoPtr(ridx) := Mux(nextWay === nWays.U, 0.U, nextWay)   // Can be optimized !!!!!!!!
+    val cache_refill_data = RegInit(VecInit(Seq.fill(blockSize/4)(0.U(32.W))))
+    val cache_refill_prev = RegInit(false.B)
+    
+    when(imem_read_valid){
+        cache_data(widx*nWays.U + victimWay)(burst_cnt) := io.imem.r.bits.data
     }
 
+    cache_refill_prev := cache_refill
+    if(isPow2(nWays)){
+        when(!cache_refill_prev & cache_refill){
+            //cache_data(widx*nWays.U+victimWay)(0) := cache_refill_data.asUInt
+            //assert(blockSize == 4);
+            cache_tag(victimWay + widx*nWays.U) := wtag
+            cache_valid(victimWay + widx*nWays.U) := 1.U
 
-    io.ifu.r.bits.last := Mux(bypass.asBool,  io.imem.r.bits.last , true.B)//  TODO ---- 
-    io.ifu.r.bits.id := Mux(bypass.asBool,  io.imem.r.bits.last , 0.U)
-    io.ifu.r.bits.resp := Mux(bypass.asBool, io.imem.r.bits.resp, 0.U)
+            val nextWay = victimWay + 1.U
+            fifoPtr(ridx) := Mux(nextWay === nWays.U, 0.U, nextWay)   // Can be optimized !!!!!!!!
+        }
+    }else{
+        when(!cache_refill_prev & cache_refill){
+            //cache_data(widx*nWays.U+victimWay)(0) := cache_refill_data.asUInt
+            //assert(blockSize == 4);
+            cache_tag(victimWay + widx*nWays.U) := wtag
+            cache_valid(victimWay + widx*nWays.U) := 1.U
+
+            val nextWay = victimWay + 1.U
+            fifoPtr(ridx) := Mux(nextWay === nWays.U, 0.U, nextWay)   // Can be optimized !!!!!!!!
+        }
+    }
+
+    
+    io.ifu.r.bits.last := Mux(bypass,  io.imem.r.bits.last , burst_cnt === (blockSize/4 - 1).U)
+    io.ifu.r.bits.id := Mux(bypass,  io.imem.r.bits.last , 0.U)
+    io.ifu.r.bits.resp := Mux(bypass, io.imem.r.bits.resp, 0.U)
 
 
+    io.imem.ar.bits.len := Mux(bypass, io.ifu.ar.bits.len, (blockSize/4 - 1).U)
 
     io.imem.ar.bits.prot := 0.U
     io.imem.ar.bits.id := 0.U
-    io.imem.ar.bits.len := 0.U
     io.imem.ar.bits.size := 2.U
-    io.imem.ar.bits.burst := 0.U
+    io.imem.ar.bits.burst := 01.U // INCR
     io.imem.ar.bits.lock := 0.U
     io.imem.ar.bits.cache := 0.U
     io.imem.ar.bits.qos := 0.U
@@ -190,7 +248,7 @@ class ICache(config: NPCConfig) extends Module{
         when(state_delay === s_idle && state === s_read && hit){
             icache_hit_cnt := icache_hit_cnt + 1.U
         }
-        when(io.ifu.r.valid && io.ifu.r.valid && bypass.asBool){
+        when(io.ifu.r.valid && io.ifu.r.valid && bypass){
             icache_bypass_cnt := icache_bypass_cnt + 1.U 
         }
         when(state === s_read){
