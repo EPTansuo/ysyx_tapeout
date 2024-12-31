@@ -110,7 +110,7 @@ class ICache(config: NPCConfig) extends Module{
     val state_next = Wire(UInt(state.getWidth.W))
     state_next := MuxLookup(state, s_idle)(Seq(
         s_idle -> Mux(io.ifu.ar.valid, Mux(bypass.asBool, s_idle, s_read), s_idle),
-        s_read -> Mux(hit, s_idle, s_replace),
+        s_read -> Mux(hit && burst_cnt =/= 0.U, s_idle, s_replace),
         s_replace -> Mux(io.imem.ar.ready, s_refill, s_replace),
         s_refill -> Mux(io.imem.r.valid, Mux(burst_cnt === (blockSize/4-1).U, s_wait, s_read), s_refill),
         s_wait -> s_read,
@@ -132,7 +132,7 @@ class ICache(config: NPCConfig) extends Module{
     io.imem.r.ready := Mux(bypass.asBool, io.ifu.r.valid ,state === s_refill)
 
 
-    val cache_refill = (state === s_refill && io.imem.r.valid)
+    val cache_refill = (state === s_refill && io.imem.r.valid && burst_cnt === (blockSize/4-1).U)
 
 
     val wtag = Wire(UInt(rtag.getWidth.W))
