@@ -44,7 +44,7 @@ class ysyx_npc(config: NPCConfig) extends Module {
     val icache = if(config.USE_ICACHE) Some(Module(new ICache(config))) else None
     icache.map { cache =>
         ifu.io.imem <> cache.io.ifu
-        ifu.io.fencei <> cache.io.fencei
+        cache.io.fencei := ifu.io.fencei
     }
 
 
