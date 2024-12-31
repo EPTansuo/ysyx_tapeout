@@ -6,6 +6,7 @@ import freechips.rocketchip.amba.axi4._
 
 
 class ICacheIO(axiparams: AXI4BundleParameters) extends Bundle {
+  val fencei = Input(Bool())
   val ifu = Flipped(new AXI4Bundle(axiparams))
   val imem = (new AXI4Bundle(axiparams))
 }
@@ -31,6 +32,13 @@ class ICache(config: NPCConfig) extends Module{
     val cache_data = SyncReadMem(totalLines, Vec(blockSize/4, UInt(32.W)))
     val cache_tag = SyncReadMem(totalLines, UInt(tagBits.W))
     val cache_valid = SyncReadMem(totalLines, UInt(1.W))
+
+    when (reset.asBool || io.fencei) {
+        for (i <- 0 until totalLines) {
+            cache_valid.write(i.U, 0.U)
+        }
+    }
+    dontTouch(io.fencei)
 
 
     val raddr_ifu = io.ifu.ar.bits.addr

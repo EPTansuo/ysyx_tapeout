@@ -70,6 +70,7 @@ val map = Array(
 	csrrs   ->  List(PC_4  , A_RS1, B_RS2, ALU_ADD   , IMM_I, WB_CSR, LD_XX , ST_XX, MASK_XX, BR_XX , CSR_S , INST_VALID  ),
 	ecall   ->  List(PC_CSR, A_RS1, B_IMM, ALU_ADD   , IMM_I, WB_CSR, LD_XX , ST_XX, MASK_XX, BR_XX , CSR_P , INST_VALID  ),
 	mret    ->  List(PC_CSR, A_RS1, B_IMM, ALU_ADD   , IMM_I, WB_CSR, LD_XX , ST_XX, MASK_XX, BR_XX , CSR_P , INST_VALID  ),
+	fencei  ->  List(PC_4  , A_RS1, B_IMM, ALU_ADD   , IMM_I, WB_XX , LD_XX , ST_XX, MASK_XX, BR_XX , CSR_XX, INST_VALID  ),
 )
 val 
 	default  =  List(PC_4  , A_RS1, B_IMM, ALU_ADD   , IMM_I, WB_XX , LD_XX , ST_XX, MASK_XX, BR_XX , CSR_XX, INST_INVALID)
