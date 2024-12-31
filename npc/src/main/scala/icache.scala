@@ -112,10 +112,15 @@ class ICache(config: NPCConfig) extends Module{
         s_idle -> Mux(io.ifu.ar.valid, Mux(bypass.asBool, s_idle, s_read), s_idle),
         s_read -> Mux(hit, s_idle, s_replace),
         s_replace -> Mux(io.imem.ar.ready, s_refill, s_replace),
-        s_refill -> Mux(io.imem.r.valid, s_wait, s_refill),
+        s_refill -> Mux(io.imem.r.valid, Mux(burst_cnt === (blockSize/4-1).U, s_wait, s_read), s_refill),
         s_wait -> s_read,
     ))
     state := state_next
+    when(state === s_refill && io.imem.r.valid){
+        burst_cnt := burst_cnt + 1.U
+    }.elsewhen(state === s_idle){
+        burst_cnt := 0.U
+    }
 
     io.ifu.ar.ready := Mux(bypass.asBool , io.imem.ar.ready, state === s_idle)
     io.ifu.r.valid := Mux(bypass.asBool, io.imem.r.valid, (state === s_read && hit) )
@@ -172,11 +177,7 @@ class ICache(config: NPCConfig) extends Module{
         }
     }
 
-    when(state === s_wait){
-        burst_cnt := burst_cnt + 1.U
-    }.elsewhen(state === s_idle){
-        burst_cnt := 0.U
-    }
+    
     io.ifu.r.bits.last := Mux(bypass.asBool,  io.imem.r.bits.last , burst_cnt === (blockSize/4 - 1).U)
     io.ifu.r.bits.id := Mux(bypass.asBool,  io.imem.r.bits.last , 0.U)
     io.ifu.r.bits.resp := Mux(bypass.asBool, io.imem.r.bits.resp, 0.U)
