@@ -54,13 +54,14 @@ void perf_get_data(){
 #define PERF_LSU_GET(counter) counter = LSU->counter;
 #define PERF_WBU_GET(counter) counter = WBU->counter;
 #define PERF_ICACHE_GET(counter) counter = ICACHE->counter;
-
+#ifdef CONFIG_PERF_CNT
     PERF_IFU_CNT(PERF_IFU_GET)
     PERF_IDU_CNT(PERF_IDU_GET)
     PERF_EXU_CNT(PERF_EXU_GET)
     PERF_LSU_CNT(PERF_LSU_GET)
     PERF_WBU_CNT(PERF_WBU_GET)
-    PERF_ICACHE_CNT(PERF_ICACHE_GET)
+    IFDEF(CONFIG_USE_ICACHE, PERF_ICACHE_CNT(PERF_ICACHE_GET))
+#endif 
 }
 
 FILE *fp;
@@ -72,6 +73,7 @@ FILE *fp;
            name, (uint64_t)cnt, process_cnt, unit);
 
 void perf_statistic(){
+#ifdef CONFIG_PERF_CNT
     perf_get_data();
     char buf[100];
     sprintf(buf, "%s/build/perf_statistic.txt", getenv("NPC_HOME"));
@@ -111,7 +113,7 @@ void perf_statistic(){
     PRINT_PERF("Store CNT", store_cnt, (double)store_cnt/inst_ldst_cnt*100, "% of ld/st inst");
     PRINT_PERF("Load Cycles CNT", cycle_load_cnt, (double)cycle_load_cnt/load_cnt, "cycle per load");
     PRINT_PERF("Store Cycles CNT", cycle_store_cnt, (double)cycle_store_cnt/store_cnt, "cycle per store");
-
+#ifdef CONFIG_USE_ICACHE
     printf("\n-------------------------------------- ICache --------------------------------------\n");
     double hit_rate = (double)icache_hit_cnt/icache_access_cnt;
     PRINT_PERF("ICache IFetch CNT", icache_access_cnt+icache_bypass_cnt, 0.0, ""); 
@@ -125,5 +127,7 @@ void perf_statistic(){
                                     (double)icache_hit_access_time_cnt/icache_access_cnt, "cycle per hit");
     PRINT_PERF("ICache Miss Penalty CNT", icache_miss_penalty_cnt, 
                     (double)icache_miss_penalty_cnt/(icache_access_cnt-icache_hit_cnt), "cycle per miss");
+#endif 
     fclose(fp);
+#endif // CONFIG_PERF_CNT
 }
