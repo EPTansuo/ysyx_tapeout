@@ -95,7 +95,7 @@ class ICache(config: NPCConfig) extends Module{
     dontTouch(io.ifu.r.valid)
 
     io.imem.ar.bits.addr := io.ifu.ar.bits.addr
-    io.imem.ar.valid := Mux(bypass.asBool, io.ifu.ar.valid, (state === s_replace) || (state === s_refill))
+    io.imem.ar.valid := Mux(bypass.asBool, io.ifu.ar.valid, (state === s_replace))
     io.imem.r.ready := Mux(bypass.asBool, io.ifu.r.valid ,state === s_refill)
 
 
