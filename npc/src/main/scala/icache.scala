@@ -132,6 +132,7 @@ class ICache(config: NPCConfig) extends Module{
     io.imem.r.ready := Mux(bypass.asBool, io.ifu.r.valid ,state === s_refill)
 
 
+    val imem_read_
     val cache_refill = (state === s_refill && io.imem.r.valid && burst_cnt === (blockSize/4-1).U)
 
 
@@ -151,13 +152,14 @@ class ICache(config: NPCConfig) extends Module{
     val cache_refill_prev = RegInit(false.B)
     
     when(!cache_refill_prev & cache_refill){
-        cache_refill_data(burst_cnt) := io.imem.r.bits.data
+        //cache_refill_data(burst_cnt) := io.imem.r.bits.data
+        cache_data(widx*nWays.U + victimWay)(burst_cnt) := io.imem.r.bits.data
     }
 
     cache_refill_prev := cache_refill
     if(isPow2(nWays)){
         when(!cache_refill_prev & cache_refill){
-            cache_data(widx*nWays.U+victimWay)(0) := cache_refill_data.asUInt
+            //cache_data(widx*nWays.U+victimWay)(0) := cache_refill_data.asUInt
             //assert(blockSize == 4);
             cache_tag(victimWay + widx*nWays.U) := wtag
             cache_valid(victimWay + widx*nWays.U) := 1.U
@@ -167,7 +169,7 @@ class ICache(config: NPCConfig) extends Module{
         }
     }else{
         when(!cache_refill_prev & cache_refill){
-            cache_data(widx*nWays.U+victimWay)(0) := cache_refill_data.asUInt
+            //cache_data(widx*nWays.U+victimWay)(0) := cache_refill_data.asUInt
             //assert(blockSize == 4);
             cache_tag(victimWay + widx*nWays.U) := wtag
             cache_valid(victimWay + widx*nWays.U) := 1.U
