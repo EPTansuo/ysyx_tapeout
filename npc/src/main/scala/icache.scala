@@ -31,8 +31,12 @@ class ICache(config: NPCConfig) extends Module{
     val totalLines = nWays * nSets 
     val cache_data = SyncReadMem(totalLines, Vec(blockSize/4, UInt(32.W)))
     val cache_tag = SyncReadMem(totalLines, UInt(tagBits.W))
-    val cache_valid = withClockAndReset(clock, (reset.asBool || io.fencei)){
-        SyncReadMem(totalLines, UInt(1.W))
+    val cache_valid = SyncReadMem(totalLines, UInt(1.W))
+
+    when (reset.asBool || io.fencei) {
+        for (i <- 0 until totalLines) {
+            cache_valid.write(i.U, 0.U)
+        }
     }
     dontTouch(io.fencei)
 
