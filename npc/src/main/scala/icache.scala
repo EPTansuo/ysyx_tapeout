@@ -95,7 +95,7 @@ class ICache(config: NPCConfig) extends Module{
     
 
     
-    val bypass = Wire(UInt(1.W))
+    val bypass = Wire(Bool())
     if(config.USE_SOC){
         // IF the address is not in the range of the SDRAM address, then it is a bypass
         bypass := (io.ifu.ar.bits.addr(31,29) =/= "b101".U)
@@ -131,8 +131,10 @@ class ICache(config: NPCConfig) extends Module{
     io.ifu.r.valid := Mux(bypass.asBool, io.imem.r.valid, (state === s_read && hit && imem_first_read))
     io.ifu.r.bits.data := Mux(bypass.asBool, io.imem.r.bits.data, rdata_cache)
     dontTouch(io.ifu.r.valid)
-
-    io.imem.ar.bits.addr := io.ifu.ar.bits.addr
+    
+    
+    val alignMask = ~((1.U << log2Ceil(blockSize)) - 1.U)
+    io.imem.ar.bits.addr := Mux(bypass.asBool, io.ifu.ar.bits.addr, io.ifu.ar.bits.addr & alignMask)
     io.imem.ar.valid := Mux(bypass.asBool, io.ifu.ar.valid, (state === s_replace && imem_first_read))
     io.imem.r.ready := Mux(bypass.asBool, io.ifu.r.ready ,state === s_refill)
 
