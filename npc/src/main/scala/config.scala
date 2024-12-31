@@ -60,7 +60,7 @@ object ICacheParameters{
     def apply() = CacheParameters(
         nSets = 2,   // should be 2^n
         nWays = 1,   
-        blockSize = 32, // should be 4*n  // only support 4 now 
+        blockSize = 16, // should be 4*n  // only support 4 now 
         addrBits = 32,
     )
 }
