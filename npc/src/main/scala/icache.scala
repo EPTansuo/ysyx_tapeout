@@ -80,14 +80,16 @@ class ICache(config: NPCConfig) extends Module{
     }
 
     val rdata_cache = Wire(UInt(32.W))
+    val wordIndex = Wire(UInt(2.W))
+    wordIndex := roffset(roffset.getWidth - 1, 2)
+    dontTouch(wordIndex)
+    dontTouch(rdata_cache)
     if(blockSize == 4){
         rdata_cache := blockdata(0)
     }else {
-        val wordIndex = roffset(roffset.getWidth - 1, 2)
+        
         //rdata_cache := blockdata(wordIndex)
-        rdata_cache := MuxLookup(
-            wordIndex,
-            0.U)( // Default value if no case matches
+        rdata_cache := MuxLookup(wordIndex, 0.U)( // Default value if no case matches
             (0 until (blockSize / 4)).map(i => (i.U, blockdata(i)))
         )
     }
