@@ -34,6 +34,7 @@ class ICache(config: NPCConfig) extends Module{
     val cache_valid = withClockAndReset(clock, (reset.asBool || io.fencei)){
         SyncReadMem(totalLines, UInt(1.W))
     }
+    dontTouch(io.fencei)
 
 
     val raddr_ifu = io.ifu.ar.bits.addr
