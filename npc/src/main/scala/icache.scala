@@ -140,16 +140,28 @@ class ICache(config: NPCConfig) extends Module{
     val victimWay = fifoPtr(widx)
 
 
-   val cache_refill_prev = RegInit(false.B)
-   cache_refill_prev := cache_refill
-    when(!cache_refill_prev & cache_refill){
-        cache_data(widx*nWays.U+victimWay)(0) := io.imem.r.bits.data 
-        //assert(blockSize == 4);
-        cache_tag(victimWay + widx*nWays.U) := wtag
-        cache_valid(victimWay + widx*nWays.U) := 1.U
+    val cache_refill_prev = RegInit(false.B)
+    cache_refill_prev := cache_refill
+    if(math.abs(math.log(nWays).toInt - math.log(nWays)) > 0.0001){
+        when(!cache_refill_prev & cache_refill){
+            cache_data(widx*nWays.U+victimWay)(0) := io.imem.r.bits.data 
+            //assert(blockSize == 4);
+            cache_tag(victimWay + widx*nWays.U) := wtag
+            cache_valid(victimWay + widx*nWays.U) := 1.U
 
-        val nextWay = victimWay + 1.U
-        fifoPtr(ridx) := Mux(nextWay === nWays.U, 0.U, nextWay)   // Can be optimized !!!!!!!!
+            val nextWay = victimWay + 1.U
+            fifoPtr(ridx) := Mux(nextWay === nWays.U, 0.U, nextWay)   // Can be optimized !!!!!!!!
+        }
+    }else{
+        when(!cache_refill_prev & cache_refill){
+            cache_data(widx*nWays.U+victimWay)(0) := io.imem.r.bits.data 
+            //assert(blockSize == 4);
+            cache_tag(victimWay + widx*nWays.U) := wtag
+            cache_valid(victimWay + widx*nWays.U) := 1.U
+
+            val nextWay = victimWay + 1.U
+            fifoPtr(ridx) := Mux(nextWay === nWays.U, 0.U, nextWay)   // Can be optimized !!!!!!!!
+        }
     }
 
 
