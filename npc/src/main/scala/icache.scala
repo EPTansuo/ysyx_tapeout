@@ -101,7 +101,7 @@ class ICache(config: NPCConfig) extends Module{
     }else{
         bypass := (io.ifu.ar.bits.addr(31,28) =/= "b1000".U)
     }
-
+    
     val burst_cnt = RegInit(0.U(log2Ceil(blockSize/4).W))
     //bypass := 1.U 
     val s_idle :: s_read :: s_replace :: s_refill :: s_wait :: Nil = Enum(5)
@@ -110,20 +110,23 @@ class ICache(config: NPCConfig) extends Module{
     val state_next = Wire(UInt(state.getWidth.W))
     state_next := MuxLookup(state, s_idle)(Seq(
         s_idle -> Mux(io.ifu.ar.valid, Mux(bypass.asBool, s_idle, s_read), s_idle),
-        s_read -> Mux(hit && burst_cnt =/= 0.U, s_idle, s_replace),
+        s_read -> Mux(hit && burst_cnt === 0.U, s_idle, s_replace),
         s_replace -> Mux(io.imem.ar.ready, s_refill, s_replace),
         s_refill -> Mux(io.imem.r.valid, Mux(burst_cnt === (blockSize/4-1).U, s_wait, s_read), s_refill),
         s_wait -> s_read,
     ))
     state := state_next
-    when(state === s_refill && io.imem.r.valid){
+
+
+    val imem_read_valid = state === s_refill && io.imem.r.valid
+    when(imem_read_valid){
         burst_cnt := burst_cnt + 1.U
     }.elsewhen(state === s_idle){
         burst_cnt := 0.U
     }
 
     io.ifu.ar.ready := Mux(bypass.asBool , io.imem.ar.ready, state === s_idle)
-    io.ifu.r.valid := Mux(bypass.asBool, io.imem.r.valid, (state === s_read && hit) )
+    io.ifu.r.valid := Mux(bypass.asBool, io.imem.r.valid, (state === s_read && hit && burst_cnt === 0.U))
     io.ifu.r.bits.data := Mux(bypass.asBool, io.imem.r.bits.data, rdata_cache)
     dontTouch(io.ifu.r.valid)
 
@@ -132,8 +135,8 @@ class ICache(config: NPCConfig) extends Module{
     io.imem.r.ready := Mux(bypass.asBool, io.ifu.r.valid ,state === s_refill)
 
 
-    val imem_read_
-    val cache_refill = (state === s_refill && io.imem.r.valid && burst_cnt === (blockSize/4-1).U)
+    
+    val cache_refill = (imem_read_valid && burst_cnt === (blockSize/4-1).U)
 
 
     val wtag = Wire(UInt(rtag.getWidth.W))
@@ -151,8 +154,7 @@ class ICache(config: NPCConfig) extends Module{
     val cache_refill_data = RegInit(VecInit(Seq.fill(blockSize/4)(0.U(32.W))))
     val cache_refill_prev = RegInit(false.B)
     
-    when(!cache_refill_prev & cache_refill){
-        //cache_refill_data(burst_cnt) := io.imem.r.bits.data
+    when(imem_read_valid){
         cache_data(widx*nWays.U + victimWay)(burst_cnt) := io.imem.r.bits.data
     }
 
