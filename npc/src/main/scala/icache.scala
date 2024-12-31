@@ -95,7 +95,7 @@ class ICache(config: NPCConfig) extends Module{
     
 
     
-    val bypass = Wire(UInt(1.W))
+    val bypass = Wire(Bool())
     if(config.USE_SOC){
         // IF the address is not in the range of the SDRAM address, then it is a bypass
         bypass := (io.ifu.ar.bits.addr(31,29) =/= "b101".U)
@@ -111,7 +111,7 @@ class ICache(config: NPCConfig) extends Module{
     val state = RegInit(s_idle)
     val state_next = Wire(UInt(state.getWidth.W))
     state_next := MuxLookup(state, s_idle)(Seq(
-        s_idle -> Mux(io.ifu.ar.valid, Mux(bypass.asBool, s_idle, s_read), s_idle),
+        s_idle -> Mux(io.ifu.ar.valid, Mux(bypass, s_idle, s_read), s_idle),
         s_read -> Mux(hit && burst_cnt === 0.U, s_idle,Mux(burst_cnt =/= 0.U, s_refill, s_replace)),
         s_replace -> Mux(io.imem.ar.ready,  s_refill, s_replace),
         s_refill -> Mux(io.imem.r.valid, Mux(burst_cnt === (blockSize/4-1).U, s_wait, s_read), s_refill),
@@ -127,14 +127,14 @@ class ICache(config: NPCConfig) extends Module{
         burst_cnt := 0.U
     }
 
-    io.ifu.ar.ready := Mux(bypass.asBool , io.imem.ar.ready, state === s_idle)
-    io.ifu.r.valid := Mux(bypass.asBool, io.imem.r.valid, (state === s_read && hit && imem_first_read))
-    io.ifu.r.bits.data := Mux(bypass.asBool, io.imem.r.bits.data, rdata_cache)
+    io.ifu.ar.ready := Mux(bypass , io.imem.ar.ready, state === s_idle)
+    io.ifu.r.valid := Mux(bypass, io.imem.r.valid, (state === s_read && hit && imem_first_read))
+    io.ifu.r.bits.data := Mux(bypass, io.imem.r.bits.data, rdata_cache)
     dontTouch(io.ifu.r.valid)
 
     io.imem.ar.bits.addr := io.ifu.ar.bits.addr 
-    io.imem.ar.valid := Mux(bypass.asBool, io.ifu.ar.valid, (state === s_replace && imem_first_read))
-    io.imem.r.ready := Mux(bypass.asBool, io.ifu.r.ready ,state === s_refill)
+    io.imem.ar.valid := Mux(bypass, io.ifu.ar.valid, (state === s_replace && imem_first_read))
+    io.imem.r.ready := Mux(bypass, io.ifu.r.ready ,state === s_refill)
 
 
     
@@ -184,12 +184,12 @@ class ICache(config: NPCConfig) extends Module{
     }
 
     
-    io.ifu.r.bits.last := Mux(bypass.asBool,  io.imem.r.bits.last , burst_cnt === (blockSize/4 - 1).U)
-    io.ifu.r.bits.id := Mux(bypass.asBool,  io.imem.r.bits.last , 0.U)
-    io.ifu.r.bits.resp := Mux(bypass.asBool, io.imem.r.bits.resp, 0.U)
+    io.ifu.r.bits.last := Mux(bypass,  io.imem.r.bits.last , burst_cnt === (blockSize/4 - 1).U)
+    io.ifu.r.bits.id := Mux(bypass,  io.imem.r.bits.last , 0.U)
+    io.ifu.r.bits.resp := Mux(bypass, io.imem.r.bits.resp, 0.U)
 
 
-    io.imem.ar.bits.len := Mux(bypass.asBool, io.ifu.ar.bits.len, (blockSize/4 - 1).U)
+    io.imem.ar.bits.len := Mux(bypass, io.ifu.ar.bits.len, (blockSize/4 - 1).U)
 
     io.imem.ar.bits.prot := 0.U
     io.imem.ar.bits.id := 0.U
@@ -245,7 +245,7 @@ class ICache(config: NPCConfig) extends Module{
         when(state_delay === s_idle && state === s_read && hit){
             icache_hit_cnt := icache_hit_cnt + 1.U
         }
-        when(io.ifu.r.valid && io.ifu.r.valid && bypass.asBool){
+        when(io.ifu.r.valid && io.ifu.r.valid && bypass){
             icache_bypass_cnt := icache_bypass_cnt + 1.U 
         }
         when(state === s_read){
