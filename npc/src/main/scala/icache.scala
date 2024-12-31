@@ -196,7 +196,7 @@ class ICache(config: NPCConfig) extends Module{
         when(state === s_read){
             icache_hit_access_time_cnt := icache_hit_access_time_cnt + 1.U
         }
-        when(state === s_refill || state === s_replace){
+        when(state === s_refill || state === s_replace || state === s_wait){
             icache_miss_penalty_cnt := icache_miss_penalty_cnt + 1.U
         }
     }
