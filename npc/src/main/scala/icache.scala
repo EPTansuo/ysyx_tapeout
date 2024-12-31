@@ -75,8 +75,8 @@ class ICache(config: NPCConfig) extends Module{
     }else{
         bypass := (io.ifu.ar.bits.addr(31,28) =/= "b1000".U)
     }
-
-    val s_idle :: s_read :: s_replace :: s_refill :: Nil = Enum(4)
+    //bypass := 1.U 
+    val s_idle :: s_read :: s_replace :: s_refill :: s_wait :: Nil = Enum(5)
 
     val state = RegInit(s_idle)
     val state_next = Wire(UInt(state.getWidth.W))
@@ -84,7 +84,8 @@ class ICache(config: NPCConfig) extends Module{
         s_idle -> Mux(io.ifu.ar.valid, Mux(bypass.asBool, s_idle, s_read), s_idle),
         s_read -> Mux(hit, s_idle, s_replace),
         s_replace -> Mux(io.imem.ar.ready, s_refill, s_replace),
-        s_refill -> Mux(io.imem.r.valid, s_read, s_refill)
+        s_refill -> Mux(io.imem.r.valid, s_wait, s_refill),
+        s_wait -> s_read,
     ))
     state := state_next
 
@@ -94,7 +95,7 @@ class ICache(config: NPCConfig) extends Module{
     dontTouch(io.ifu.r.valid)
 
     io.imem.ar.bits.addr := io.ifu.ar.bits.addr
-    io.imem.ar.valid := Mux(bypass.asBool, io.ifu.ar.valid, (state === s_replace) || (state === s_refill))
+    io.imem.ar.valid := Mux(bypass.asBool, io.ifu.ar.valid, (state === s_replace))
     io.imem.r.ready := Mux(bypass.asBool, io.ifu.r.valid ,state === s_refill)
 
 
@@ -105,6 +106,7 @@ class ICache(config: NPCConfig) extends Module{
     val widx = Wire(UInt(ridx.getWidth.W))
     val woffset = Wire(UInt(roffset.getWidth.W))
     widx := ridx
+    dontTouch(widx)
     woffset := roffset
     wtag := rtag
 
@@ -114,8 +116,9 @@ class ICache(config: NPCConfig) extends Module{
     val victimWay = fifoPtr(widx)
 
 
-   
-    when(cache_refill){
+   val cache_refill_prev = RegInit(false.B)
+   cache_refill_prev := cache_refill
+    when(!cache_refill_prev & cache_refill){
         cache_data(widx*nWays.U+victimWay)(0) := io.imem.r.bits.data 
         //assert(blockSize == 4);
         cache_tag(victimWay + widx*nWays.U) := wtag
@@ -193,7 +196,7 @@ class ICache(config: NPCConfig) extends Module{
         when(state === s_read){
             icache_hit_access_time_cnt := icache_hit_access_time_cnt + 1.U
         }
-        when(state === s_refill || state === s_replace){
+        when(state === s_refill || state === s_replace || state === s_wait){
             icache_miss_penalty_cnt := icache_miss_penalty_cnt + 1.U
         }
     }

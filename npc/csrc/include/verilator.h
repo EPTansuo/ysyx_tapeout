@@ -40,7 +40,7 @@ _(_Dpi) IFDEF(CONFIG_USE_SOC, _(ysyxSoCFull)) IFNDEF(CONFIG_USE_SOC, _(ysyxSoCAS
 #include "VysyxSoCFull_IDU.h"
 #include "VysyxSoCFull_IFU.h"
 #include "VysyxSoCFull_CPU.h"
-//#include "VysyxSoCFull_ICache.h"
+#include "VysyxSoCFull_ICache.h"
 #else
 #include "Vysyx_23060246.h"
 #include "Vysyx_23060246__Dpi.h"

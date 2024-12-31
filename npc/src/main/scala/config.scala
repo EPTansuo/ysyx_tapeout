@@ -19,6 +19,7 @@ case class NPCConfig(
   PERF_CNT: Boolean,
   axiparams: AXI4BundleParameters,
   icacheparams: CacheParameters,
+  USE_ICACHE: Boolean,
 ){
   def asString: String = {
     s"""
@@ -33,7 +34,8 @@ case class NPCConfig(
        |  CLINT_END = 0x${CLINT_END.toHexString},
        |  PERF_CNT = $PERF_CNT,
        |  axiparams = $axiparams,
-       |  icacheparams = $icacheparams
+       |  icacheparams = $icacheparams,
+       |  USE_ICACHE = $USE_ICACHE,
        |)
        |""".stripMargin
   }
@@ -89,6 +91,7 @@ object NPCConfig {
       PERF_CNT = true,
       axiparams = CPUAXI4BundleParameters(),
       icacheparams = ICacheParameters(),
+      USE_ICACHE = true,
     )
   }
 }
