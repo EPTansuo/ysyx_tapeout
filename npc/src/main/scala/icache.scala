@@ -103,7 +103,7 @@ class ICache(config: NPCConfig) extends Module{
     }
     
     val burst_cnt = RegInit(0.U(log2Ceil(blockSize/4).W))
-    val imem_first_read = 
+    val imem_first_read = burst_cnt === 0.U
     //bypass := 1.U 
     val s_idle :: s_read :: s_replace :: s_refill :: s_wait :: Nil = Enum(5)
 
@@ -112,7 +112,7 @@ class ICache(config: NPCConfig) extends Module{
     state_next := MuxLookup(state, s_idle)(Seq(
         s_idle -> Mux(io.ifu.ar.valid, Mux(bypass.asBool, s_idle, s_read), s_idle),
         s_read -> Mux(hit && burst_cnt === 0.U, s_idle,Mux(burst_cnt =/= 0.U, s_refill, s_replace)),
-        s_replace -> Mux(io.imem.ar.ready  s_refill, s_replace),
+        s_replace -> Mux(io.imem.ar.ready,  s_refill, s_replace),
         s_refill -> Mux(io.imem.r.valid, Mux(burst_cnt === (blockSize/4-1).U, s_wait, s_read), s_refill),
         s_wait -> s_read,
     ))
@@ -127,12 +127,12 @@ class ICache(config: NPCConfig) extends Module{
     }
 
     io.ifu.ar.ready := Mux(bypass.asBool , io.imem.ar.ready, state === s_idle)
-    io.ifu.r.valid := Mux(bypass.asBool, io.imem.r.valid, (state === s_read && hit && burst_cnt === 0.U))
+    io.ifu.r.valid := Mux(bypass.asBool, io.imem.r.valid, (state === s_read && hit && imem_first_read))
     io.ifu.r.bits.data := Mux(bypass.asBool, io.imem.r.bits.data, rdata_cache)
     dontTouch(io.ifu.r.valid)
 
     io.imem.ar.bits.addr := io.ifu.ar.bits.addr
-    io.imem.ar.valid := Mux(bypass.asBool, io.ifu.ar.valid, (state === s_replace && burst_cnt === 0.U))
+    io.imem.ar.valid := Mux(bypass.asBool, io.ifu.ar.valid, (state === s_replace && imem_first_read))
     io.imem.r.ready := Mux(bypass.asBool, io.ifu.r.ready ,state === s_refill)
 
 
