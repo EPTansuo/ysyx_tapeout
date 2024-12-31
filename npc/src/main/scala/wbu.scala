@@ -9,11 +9,11 @@ import wb_sel._
 
 
 
-class WBU(xlen: Int) extends Module {
+class WBU(config: NPCConfig) extends Module {
     val io = IO(new Bundle {
-        val in = Flipped(Decoupled(new SigIO_LSU_WBU(xlen)))
-        val out = Decoupled(new SigIO_WBU_IFU(xlen))
-        val reg_write = Flipped(new RegfileWriteIO(xlen))
+        val in = Flipped(Decoupled(new SigIO_LSU_WBU(config.XLEN)))
+        val out = Decoupled(new SigIO_WBU_IFU(config.XLEN))
+        val reg_write = Flipped(new RegfileWriteIO(config.XLEN))
     })
 
     val in_reg = Reg(Output(chiselTypeOf(io.in)))
@@ -52,7 +52,7 @@ class WBU(xlen: Int) extends Module {
     io.reg_write.addr := rd_addr
     io.reg_write.en := ctrlsig.wb_sel =/= WB_XX;
         
-    val wb_data = MuxLookup(ctrlsig.wb_sel, 0.U(xlen.W))(Seq(
+    val wb_data = MuxLookup(ctrlsig.wb_sel, 0.U(config.XLEN.W))(Seq(
         WB_ALU -> alu_out,
         WB_MEM -> ld_data,
         WB_PC4  -> (pc + 4.U),
@@ -63,5 +63,17 @@ class WBU(xlen: Int) extends Module {
 
 
     io.out.bits.npc := npc
+
+
+    if(config.PERF_CNT){
+        val inst_cnt = RegInit(0.U(64.W))
+        val cycle_cnt = RegInit(0.U(64.W))
+        when(wbu_valid){
+            inst_cnt := inst_cnt + 1.U
+        }
+        cycle_cnt := cycle_cnt + 1.U
+        dontTouch(inst_cnt)
+        dontTouch(cycle_cnt)
+    }
 
 }

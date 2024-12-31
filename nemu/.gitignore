@@ -11,3 +11,5 @@
 include/config
 include/generated
 !.config
+!*.sh
+!tools/gen_icache_label/*

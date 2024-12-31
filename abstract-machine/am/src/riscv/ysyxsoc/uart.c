@@ -25,11 +25,22 @@
 #define DIVISOR 1 
 
 void __am_uart_init() {
-    UART_LC |= 0x80;
+    // UART_LC |= 0x80;
+    // UART_DVMSB = (DIVISOR >> 8);
+    // UART_DVLSB = DIVISOR;
+    // UART_LC &= ~0x80;
+    // UART_LC |= 0x3;
+    // UART_FC = 0x7;
+
+    // To pass difftest
+    uint8_t uart_lc = 0x03;
+    uart_lc |= 0x80;
+    UART_LC = uart_lc;
     UART_DVMSB = (DIVISOR >> 8);
     UART_DVLSB = DIVISOR;
-    UART_LC &= ~0x80;
-    UART_LC |= 0x3;
+    uart_lc &= ~0x80;
+    uart_lc |= 0x3;
+    UART_LC = uart_lc;
     UART_FC = 0x7;
 }
 

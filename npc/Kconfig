@@ -1,5 +1,7 @@
 mainmenu "NEMU Configuration Menu"
 
+
+
 choice
   prompt "Base ISA"
   default ISA_riscv
@@ -27,6 +29,16 @@ source "csrc/isa/riscv32/Kconfig"
 endif
 
 
+menu "Configuration for NPC"
+config USE_ICACHE
+  bool "Use ICache"
+  default y
+config PERF_CNT
+  bool "Enable Performance Counter"
+  default y
+
+endmenu
+
 choice
   prompt "Optimization Level"
   default CC_O2
@@ -48,7 +60,9 @@ config CC_OPT
   default "-O3" if CC_O3
   default "none"
 
-menu "Verilator Simulation"
+menu "Simulation Configuration"
+
+
 config WAVE_DUMP
 	bool "Enable wave dump"
 	default n
@@ -69,10 +83,39 @@ config WAVE_FILE_TYPE
 	default "vcd" if WAVE_VCD
 	default "fst" if WAVE_FST
 	default "none"
+
+
+config USE_SOC
+  default y
+  bool "Use SOC for Simulation"
+
+config SOC_EN #For Chisel
+  string 
+  default "enable" if USE_SOC
+  default "disable" if !USE_SOC 
+
+
+config USE_NVBOARD
+  depends on USE_SOC
+  default y
+  bool "USE NVBoard for SOC Simulation"
+
 endmenu
 
 menu "Testing and Debugging"
 
+config PC_TRACE
+  bool "Enable PC Tracer"
+  default y
+config PC_TRACE_BINARY
+  depends on PC_TRACE
+  bool "PC Tracer Use Binary Format"
+  default y
+
+config PC_TRACE_COMPRESS
+  depends on PC_TRACE
+  bool "Enable PC Tracer Compress"
+  default y
 
 config TRACE
   bool "Enable tracer"
@@ -123,7 +166,10 @@ config DIFFTEST
   default n
   help
     Enable differential testing with a reference design.
-
+config RESET_VECTOR
+  hex "Reset PC Vector"
+  default 0x80000000 if !USE_SOC
+  default 0x30000000 if USE_SOC
 choice
   prompt "Reference design"
   default DIFFTEST_REF_NEMU if ISA_riscv

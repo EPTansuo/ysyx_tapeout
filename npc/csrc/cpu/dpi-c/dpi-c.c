@@ -24,7 +24,7 @@ typedef  struct{
   char wmask;
   word_t data;
   word_t pc;
-  VlUnpacked<word_t, 32> regs;
+  VlUnpacked<word_t, MUXDEF(CONFIG_RVE,16,32)> regs;
 }memwrite_info;
 
 
@@ -57,8 +57,9 @@ extern "C" void inst_invalid(){
     printf("%02x ", ((uint8_t*)(&INST))[j]);
   }
   fflush(stdout);
-  disassemble(logbuf, 64, PC , (uint8_t*)(&INST), 4);
-  printf("%s\n", logbuf);
+  printf("\n");
+  //disassemble(logbuf, 64, PC , (uint8_t*)(&INST), 4);
+  //printf("%s\n", logbuf);
 	set_npc_state(NPC_ABORT, PC, -1);
 }
 
@@ -71,6 +72,8 @@ uint64_t get_rtc_time(){
 
 
 extern "C" int pmem_read(int raddr){
+
+  //raddr = raddr - 0x80000000;
 
 #ifdef CONFIG_HAS_TIMER
   if(raddr == CONFIG_RTC_MMIO) {
@@ -104,8 +107,8 @@ extern "C" int pmem_read(int raddr){
 
 
 // return true is equ
-bool regs_equ(const VlUnpacked<word_t,32>&reg1, const VlUnpacked<word_t,32>&reg2){
-  for(int i = 0; i < 32; i++){
+bool regs_equ(const VlUnpacked<word_t, MUXDEF(CONFIG_RVE,16,32)>&reg1, const VlUnpacked<word_t, MUXDEF(CONFIG_RVE,16,32)>&reg2){
+  for(int i = 0; i < MUXDEF(CONFIG_RVE,16,32); i++){
     if(reg1[i] != reg2[i])
       return false;
   }
@@ -113,6 +116,7 @@ bool regs_equ(const VlUnpacked<word_t,32>&reg1, const VlUnpacked<word_t,32>&reg2
 }
 
 extern "C" void pmem_write(int waddr, int wdata, char wmask){
+  //waddr = waddr - 0x80000000;
   static memwrite_info mwinfo;   //防止多次输出
   
   if(waddr < CONFIG_MBASE){
@@ -167,19 +171,19 @@ end_pmem_write:
 extern "C" void flash_read(int32_t addr, int32_t *data) { 
 
  //*data = addr ;
- *data = pmem_read(addr/4*4 );
-// printf("read flash addr = %x, data = %08x\n", addr, *data);
+ *data = host_read(guest_to_host(CONFIG_MBASE + (addr& ~0x3u)), 4);
+ //printf("read flash addr = %x, data = %08x\n", addr, *data);
 
 }
 extern "C" void mrom_read(int32_t addr, int32_t *data) { 
   //*data =0x100073; // ebreak
 
-  *data = pmem_read(addr/4*4 - 0x20000000);
+  *data = host_read(guest_to_host(CONFIG_MBASE + (addr& ~0x3u)) - 0x20000000, 4);
  // *data = 0x00e78023;
 
 }
 
-extern "C" void axi_error(char errno, char isRead) {
+extern "C" void axi_error(unsigned char errno, unsigned char isRead) {
   printf(L_RED "AXI ERROR: errno = %x, isRead = %d" COLOR_NONE "\n", errno, isRead);
   set_npc_state(NPC_ABORT, PC, -1);
 }
@@ -216,7 +220,7 @@ void sdram_write(input byte bank, input int row, input int col,
 extern "C" int sdram_read(char bank, int row, int col, char block_num) { 
   //printf("sdram_read bank = %d, row = %d, col = %d, block_num = %d, data = %x\n", bank, row, col, 
   //              block_num, sdram[block_num][bank][row][col]);
-  return sdram[block_num][bank][row][col];
+  return sdram[(int)block_num][(int)bank][row][col];
 }
 
 extern "C" void sdram_write(char bank, int row, int col , int wdata, char wmask, char block_num) { 
@@ -227,8 +231,8 @@ extern "C" void sdram_write(char bank, int row, int col , int wdata, char wmask,
 
   for(int i = 0; i < 2; i++){
     if(wmask & (1 << i)){
-      sdram[block_num][bank][row][col] &= ~(0xff << (i * 8));
-      sdram[block_num][bank][row][col] |= ((wdata >> (i * 8)) & 0xff) << (i * 8);
+      sdram[(int)block_num][(int)bank][row][col] &= ~(0xff << (i * 8));
+      sdram[(int)block_num][(int)bank][row][col] |= ((wdata >> (i * 8)) & 0xff) << (i * 8);
     }
   }
 

@@ -27,4 +27,6 @@ test_run_dir/
 !*.vlt
 !tools/disasm/
 tools/disasm/disasm
-
+!data/*
+!scripts/*
+*.kate-swp

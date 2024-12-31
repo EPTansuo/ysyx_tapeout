@@ -7,19 +7,20 @@ import st_sel._
 import ld_sel._
 
 import AXI4._ 
-import defines._
+//import defines._
 import freechips.rocketchip.amba.axi4._
 
 
-class LSU(xlen: Int) extends Module {
+class LSU(config: NPCConfig) extends Module {
     val io = IO(new Bundle {
-        val in = Flipped(Decoupled(new SigIO_EXU_LSU(xlen)))
-        val out = (Decoupled(new SigIO_LSU_WBU(xlen)))
+        val in = Flipped(Decoupled(new SigIO_EXU_LSU(config.XLEN)))
+        val out = (Decoupled(new SigIO_LSU_WBU(config.XLEN)))
         //val dmem = Flipped(new DMemIO())
         //val dmem = new AXILiteMasterIF(addrWidthBits = 32, dataWidthBits = xlen)
-        val dmem = new AXI4Bundle(AXI4BundleParameters(xlen, 32, AXI_IDBITS))
+        val dmem = new AXI4Bundle(config.axiparams)
     })
 
+    val xlen = config.XLEN 
 
     val in_reg = Reg(Output(chiselTypeOf(io.in)))
     val pc = in_reg.bits.pc
@@ -121,7 +122,7 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
     io.dmem.ar.valid := state === s_read || state === s_read_2
     io.dmem.ar.bits.addr := Mux(state === s_read_2 || state === s_wait_read_2, alu_out + 4.U, alu_out);
     io.dmem.ar.bits.prot := 0.U
-    io.dmem.r.ready := true.B
+    io.dmem.r.ready := state === s_read || state === s_read_2 || state === s_wait_read || state === s_wait_read_2
     
 
     io.dmem.ar.bits.id := 0.U
@@ -268,4 +269,28 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
     io.out.bits.npc := npc 
     io.out.bits.csr_out := io.in.bits.csr_out
 
+
+    if(config.PERF_CNT){
+        val load_cnt = RegInit(0.U(32.W))
+        val store_cnt = RegInit(0.U(32.W))
+        val cycle_load_cnt = RegInit(0.U(64.W))
+        val cycle_store_cnt = RegInit(0.U(64.W))
+        when(state === s_wait_read && io.dmem.r.valid && io.dmem.r.ready){
+            load_cnt := load_cnt + 1.U
+        }
+        when(state === s_wait_write && io.dmem.b.valid && io.dmem.b.ready){
+            store_cnt := store_cnt + 1.U
+        }
+        
+        when(state === s_read || state === s_wait_read || state === s_wait_read_2){
+            cycle_load_cnt := cycle_load_cnt + 1.U
+        }
+        when(state === s_write || state === s_wait_write || state === s_wait_write_2){
+            cycle_store_cnt := cycle_store_cnt + 1.U
+        }
+        dontTouch(cycle_load_cnt)
+        dontTouch(cycle_store_cnt)
+        dontTouch(load_cnt)
+        dontTouch(store_cnt)
+    }
 }

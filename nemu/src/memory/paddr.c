@@ -72,6 +72,8 @@ void print_memwrite(paddr_t addr, int len, word_t data){
 }
 
 #endif
+
+
 void init_mem() {
 #if   defined(CONFIG_PMEM_MALLOC)
   pmem = malloc(CONFIG_MSIZE);

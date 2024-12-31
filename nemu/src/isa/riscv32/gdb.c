@@ -19,7 +19,7 @@ void use_gdbstub(bool enable){
         gdbstub_valid = enable;
 }
 
-
+#ifndef CONFIG_SOC_DIFFTEST
 
 void print_nemu_state(){
         printf(nemu_state.state == NEMU_RUNNING ? ":-- STATE: running" 
@@ -81,7 +81,7 @@ static int nemu_read_mem(void *args, size_t addr, size_t len, void *val)
 
 static int nemu_write_mem(void *args, size_t addr, size_t len, void *val)
 {
-        printf(":---write_mem = " FMT_WORD_HEX " %zx %x\n", (word_t)addr, len, *(word_t *)val);
+        printf(":---write_mem = " FMT_WORD_HEX " %zx %x\n", (word_t)addr, len, *(uint32_t *)val);
 
         if (addr + len > CONFIG_MSIZE + CONFIG_MBASE)
         {
@@ -224,3 +224,7 @@ bool init_gdbstub()
 
         return true;
 }
+
+#else  
+bool init_gdbstub(){return true;}
+#endif 

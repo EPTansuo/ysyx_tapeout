@@ -1,24 +1,20 @@
-`include "defines.v"
-
-
 module Mem(
         input clock,
         input reset,
 
         input wire we,
-        input wire [`InstAddrBus] waddr,
-        input wire [`InstAddrBus] raddr,
-        input wire [`WordBus] wdata,
+        input wire [31:0] waddr,
+        input wire [31:0] raddr,
+        input wire [31:0] wdata,
         input wire [7:0] wmask,
 
-        output reg [`WordBus] rdata
+        output reg [31:0] rdata
 );
 
-
+`ifndef SYNTHESIS
+`ifdef VERILATOR
 import "DPI-C" function int pmem_read(input int raddr);
 import "DPI-C" function void pmem_write(input int waddr, input int wdata, input byte wmask);
-
-
 
 
 always @(*) begin
@@ -32,8 +28,8 @@ always @(*) begin
           rdata = 0;
         end
       end
-
-
+`endif
+`endif
 endmodule
 
 

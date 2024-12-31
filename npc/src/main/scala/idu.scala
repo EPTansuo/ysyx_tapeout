@@ -6,17 +6,17 @@ import chisel3.util._
 
 
 
-import defines._
+//import defines._
 
-class IDU(xlen: Int) extends Module {
+class IDU(config: NPCConfig) extends Module {
     val io = IO(new Bundle {
-        val in = Flipped(Decoupled(new SigIO_IFU_IDU(xlen)))
+        val in = Flipped(Decoupled(new SigIO_IFU_IDU(config.XLEN)))
         //val out = Output(new ControlOut(xlen))
-        val out = (Decoupled(new SigIO_IDU_EXU(xlen)))
+        val out = (Decoupled(new SigIO_IDU_EXU(config.XLEN)))
     })
 
 
-    val control = Module(new Control(xlen))
+    val control = Module(new Control(config))
     //val inst = io.in.bits.inst 
     //val pc = io.in.bits.pc
     val inst = RegInit(0.U(32.W))
@@ -55,6 +55,68 @@ class IDU(xlen: Int) extends Module {
     io.out.bits.exu.br_sel := control.io.out.br_sel
     io.out.bits.exu.pc_sel := control.io.out.pc_sel
 
+      //Ebreak
+    val ebreak_ = Module(new Ebreak)
+    val isebreak = inst === insts.ebreak
+    ebreak_.io.isebreak := isebreak
+    //invaild instruction
+    val instInvalid = Module(new InstInvalid)
+    instInvalid.io.isvalid := Mux(io.out.valid, control.io.out.inst_valid === valid.INST_VALID || isebreak, true.B)
 
+
+
+    if(config.PERF_CNT){
+        val inst_compute_cnt = RegInit(0.U(32.W))
+        val inst_branch_cnt = RegInit(0.U(32.W))
+        val inst_ldst_cnt = RegInit(0.U(32.W))
+        val inst_csr_cnt = RegInit(0.U(32.W))
+        val inst_jump_cnt = RegInit(0.U(32.W))
+        val cycle_compute_cnt = RegInit(0.U(64.W))
+        val cycle_branch_cnt = RegInit(0.U(64.W))
+        val cycle_ldst_cnt = RegInit(0.U(64.W))
+        val cycle_csr_cnt = RegInit(0.U(64.W))
+        val cycle_jump_cnt = RegInit(0.U(64.W))
+        val sig = control.io.out
+        import pc_sel._
+        import br_sel._
+        import ld_sel._
+        import st_sel._
+        import csr_cmd._
+
+        when(io.out.valid && io.out.ready){
+            when(sig.csr_cmd =/= CSR_XX){
+                inst_csr_cnt := inst_csr_cnt + 1.U
+            }.elsewhen(sig.br_sel =/= BR_XX){
+                inst_branch_cnt := inst_branch_cnt + 1.U
+            }.elsewhen(sig.ld_sel =/= LD_XX || sig.st_sel =/= ST_XX){
+                inst_ldst_cnt := inst_ldst_cnt + 1.U
+            }.elsewhen(sig.pc_sel === PC_ALU){
+                inst_jump_cnt := inst_jump_cnt + 1.U
+            }.otherwise{
+                inst_compute_cnt := inst_compute_cnt + 1.U
+            }
+        }
+        when(sig.csr_cmd =/= CSR_XX){
+            cycle_csr_cnt := cycle_csr_cnt + 1.U
+        }.elsewhen(sig.br_sel =/= BR_XX){
+            cycle_branch_cnt := cycle_branch_cnt + 1.U
+        }.elsewhen(sig.ld_sel =/= LD_XX || sig.st_sel =/= ST_XX){
+            cycle_ldst_cnt := cycle_ldst_cnt + 1.U
+        }.elsewhen(sig.pc_sel === PC_ALU){
+            cycle_jump_cnt := cycle_jump_cnt + 1.U
+        }.otherwise{
+            cycle_compute_cnt := cycle_compute_cnt + 1.U
+        }
+        dontTouch(inst_compute_cnt)
+        dontTouch(inst_branch_cnt)
+        dontTouch(inst_ldst_cnt)
+        dontTouch(inst_csr_cnt)
+        dontTouch(inst_jump_cnt)
+        dontTouch(cycle_compute_cnt)
+        dontTouch(cycle_branch_cnt)
+        dontTouch(cycle_ldst_cnt)
+        dontTouch(cycle_csr_cnt)
+        dontTouch(cycle_jump_cnt)
+    }
 
 }

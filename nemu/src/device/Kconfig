@@ -151,4 +151,8 @@ config SDCARD_IMG_PATH
 endif # HAS_SDCARD
 endif
 
+config IGNORE_DEVICE_UPDATE
+  bool "Ignore Device Update (For Fast Simulation)"
+  default n
+
 endif # DEVICE

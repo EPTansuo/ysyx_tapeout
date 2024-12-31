@@ -3,7 +3,7 @@ package cpu
 import AXI4._
 import chisel3._
 import chisel3.util._
-import defines._ 
+//import defines._ 
 import freechips.rocketchip.amba.axi4._
 import org.chipsalliance.cde.config.Parameters
 // object ModuleConnect {
@@ -15,19 +15,19 @@ import org.chipsalliance.cde.config.Parameters
 //   }
 // }
 
-class ysyx_npc(xlen:Int) extends Module {
+class ysyx_npc(config: NPCConfig) extends Module {
     val io = IO(new Bundle {
         // val imem = Flipped(new IMemIO(xlen))
         // val dmem = Flipped(new DMemIO())
         //val axi = new AXILiteMasterIF(addrWidthBits = 32, dataWidthBits = 32)
-        val axi = new AXI4Bundle(AXI4BundleParameters(xlen, 32, AXI_IDBITS))
+        val axi = new AXI4Bundle(config.axiparams)
     })
 
-    val ifu = Module(new IFU(xlen))
-    val idu = Module(new IDU(xlen))
-    val exu = Module(new EXU(xlen))
-    val lsu = Module(new LSU(xlen))
-    val wbu = Module(new WBU(xlen))
+    val ifu = Module(new IFU(config))
+    val idu = Module(new IDU(config))
+    val exu = Module(new EXU(config))
+    val lsu = Module(new LSU(config))
+    val wbu = Module(new WBU(config))
 
     ifu.io.in <> wbu.io.out
     idu.io.in <> ifu.io.out
@@ -36,26 +36,22 @@ class ysyx_npc(xlen:Int) extends Module {
     wbu.io.in <> lsu.io.out
 
 
-    val regfile = Module(new Regfile(xlen))
+    val regfile = Module(new Regfile(config))
     exu.io.reg_read1 <> regfile.io.read1
     exu.io.reg_read2 <> regfile.io.read2
     wbu.io.reg_write <> regfile.io.write
 
+    val icache = if(config.USE_ICACHE) Some(Module(new ICache(config))) else None
+    icache.map { cache =>
+        ifu.io.imem <> cache.io.ifu
+        cache.io.fencei := ifu.io.fencei
+    }
 
-    val axi_arbiter = Module( new AXIArbiter(2, new AXI4BundleParameters(xlen, 32, AXI_IDBITS)))
-    axi_arbiter.io.in(0) <> ifu.io.imem
+
+    val axi_arbiter = Module( new AXIArbiter(2, config.axiparams))
+    axi_arbiter.io.in(0) <> icache.map(_.io.imem).getOrElse(ifu.io.imem)
     axi_arbiter.io.in(1) <> lsu.io.dmem
     axi_arbiter.io.out <> io.axi
 
-/*
-   val axi4lite_arbiter = Module(new AXI4LiteArbiter(2, 32, 32))
-   axi4lite_arbiter.io.masters(0) <> ifu.io.imem
-   axi4lite_arbiter.io.masters(1) <> lsu.io.dmem
-   axi4lite_arbiter.io.slave <> io.axi
-   dontTouch(axi4lite_arbiter.io)
-*/
-
-//     lsu.io.dmem := DontCare
-//    io.axi <> ifu.io.imem
 
 }

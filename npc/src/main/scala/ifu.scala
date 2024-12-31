@@ -2,20 +2,21 @@ package cpu
 
 import chisel3._
 import chisel3.util._
-import defines._ 
+//import defines._ 
 
 import AXI4._ 
 import freechips.rocketchip.amba.axi4._
 
 
-class IFU(xlen:Int) extends Module {
+class IFU(config: NPCConfig) extends Module {
   val io = IO(new Bundle { 
-    val in = Flipped(Decoupled(new SigIO_WBU_IFU(xlen)))
-    val out = (Decoupled(new SigIO_IFU_IDU(xlen)))
+    val in = Flipped(Decoupled(new SigIO_WBU_IFU(config.XLEN)))
+    val out = (Decoupled(new SigIO_IFU_IDU(config.XLEN)))
+    val fencei = Output(Bool())
     // val mem_pc = Output(UInt(xlen.W))
     // val mem_inst = Input(UInt(32.W))
     //val imem = new AXILiteMasterIF(addrWidthBits = 32, dataWidthBits = xlen)
-    val imem = new AXI4Bundle(AXI4BundleParameters(xlen, 32, AXI_IDBITS))
+    val imem = new AXI4Bundle(config.axiparams)
   })
 
   val isFirst = RegInit(true.B)
@@ -27,7 +28,6 @@ class IFU(xlen:Int) extends Module {
 
 
   val s_idle :: s_read ::s_wait_read :: s_wait_ready :: Nil = Enum(4)
-
   val state = RegInit(s_idle)         
   state := MuxLookup(state, s_idle)(Seq(
     s_idle -> Mux(in_valid, s_read, s_idle),
@@ -36,11 +36,11 @@ class IFU(xlen:Int) extends Module {
     s_wait_ready -> Mux(io.out.ready, s_idle, s_wait_ready)
   ))
 
-  
+
   io.out.valid := state === s_wait_ready
   io.in.ready := state === s_idle
 
-  val pc = RegInit(PC_INIT)
+  val pc = RegInit(config.PC_INIT.U)
   when( io.in.valid && io.in.ready){
       pc := io.in.bits.npc
   }
@@ -64,6 +64,12 @@ class IFU(xlen:Int) extends Module {
     inst := io.imem.r.bits.data
   }
 
+  when(io.imem.r.bits.data === insts.fencei){
+    io.fencei := io.out.valid
+  }.otherwise{
+    io.fencei := false.B
+  }
+  dontTouch(io.fencei)
   io.out.bits.inst := inst
   io.out.bits.pc := pc
 
@@ -85,4 +91,12 @@ class IFU(xlen:Int) extends Module {
   io.imem.aw.bits.qos := 0.U
   io.imem.w.bits.last := true.B
 
+
+  if(config.PERF_CNT){
+    val ifu_cnt = RegInit(0.U(32.W))
+    when(io.in.valid && io.in.ready){
+      ifu_cnt := ifu_cnt + 1.U
+    }
+    dontTouch(ifu_cnt)
+  }
 }

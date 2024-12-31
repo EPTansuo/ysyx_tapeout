@@ -141,10 +141,24 @@ config TRACE_END
   int "When tracing is disabled (unit: number of instructions)"
   default 10000
 
+config PC_TRACE
+  depends on TRACE
+  bool "Enable PC tracer"
+  default n
+config PC_TRACE_BINARY
+  depends on PC_TRACE
+  bool "PC Tracer Use Binary Format"
+  default y
+config PC_TRACE_COMPRESS
+  depends on PC_TRACE
+  bool "Enable PC Tracer Compress"
+  default y
+
+
 config ITRACE
   depends on TRACE && TARGET_NATIVE_ELF && ENGINE_INTERPRETER
   bool "Enable instruction tracer"
-  default y
+  default n
 
 config ITRACE_COND
   depends on ITRACE
@@ -154,12 +168,12 @@ config ITRACE_COND
 config ETRACE
   depends on TRACE
   bool "Enable ecall tracer"
-  default y
+  default n
 
  config MTRACE
   depends on TRACE
   bool "Enable memory tracer"
-  default y
+  default n
 
 config MTRACE_RANGE_COND
   depends on MTRACE
@@ -239,3 +253,60 @@ config RT_CHECK
   default y
 
 endmenu
+
+menu "SoC DiffTest Configuration"
+depends on TARGET_SHARE
+
+config SOC_DIFFTEST
+  bool "Used as REF for differential testing for SoC"
+  default n
+
+choice
+  prompt "Boot from FLAH or MROM"
+  depends on SOC_DIFFTEST
+  default BOOT_FLASH
+  config BOOT_FLASH
+    bool "Boot from FLASH"
+  config BOOT_MROM
+    bool "Boot from MROM"
+endchoice
+
+config MROMBASE
+  hex "MROM base address"
+  default 0x20000000
+config MROMSIZE
+  hex "MROM size"
+  default 0x1000
+
+config FLASHBASE
+  hex "FLASH base address"
+  default 0x30000000
+
+config FLASHSIZE
+  hex "FLASH size"
+  default 0x1000000
+
+config SRAMBASE
+  hex "SRAM base address"
+  default 0x0f000000
+config SRAMSIZE
+  hex "SRAM size"
+  default 0x2000
+
+config PSRAMBASE
+  hex "PSRAM base address"
+  default 0x80000000
+config PSRAMSIZE
+  hex "PSRAM size"
+  default 0x400000
+
+config SDRAMBASE
+  hex "SDRAM base address"
+  default 0xa0000000
+config SDRAMSIZE
+  hex "SDRAM size"
+  default 0x4000000
+
+
+endmenu
+

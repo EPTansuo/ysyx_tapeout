@@ -12,9 +12,10 @@
 *
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
-
+#include <cpu/cpu.h>
 #include <isa.h>
 #include <memory/paddr.h>
+#include <memory/socmem.h>
 
 // this is not consistent with uint8_t
 // but it is ok since we do not access the array directly
@@ -45,8 +46,11 @@ static void restart() {
 
 void init_isa() {
   /* Load built-in image. */
+#ifndef CONFIG_SOC_DIFFTEST
   memcpy(guest_to_host(RESET_VECTOR), img, sizeof(img));
-
+#else
+  memcpy(socmem_guest_to_host(RESET_VECTOR), img, sizeof(img));
+#endif 
   /* Initialize this virtual computer system. */
   restart();
 }

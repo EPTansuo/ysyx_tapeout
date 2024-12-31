@@ -15,7 +15,9 @@
 
 #include <isa.h>
 #include <memory/paddr.h>
+#include <memory/socmem.h>
 #include <ftrace.h>
+#include <cpu/cpu.h>
 
 void init_rand();
 void init_log(const char *log_file);
@@ -26,6 +28,7 @@ void init_sdb();
 void init_disasm(const char *triple);
 bool init_gdbstub();
 void use_gdbstub(bool);
+void init_pc_trace();
 
 static void welcome() {
   Log("Trace: %s", MUXDEF(CONFIG_TRACE, ANSI_FMT("ON", ANSI_FG_GREEN), ANSI_FMT("OFF", ANSI_FG_RED)));
@@ -68,7 +71,16 @@ static long load_img() {
   Log("The image is %s, size = %ld", img_file, size);
 
   fseek(fp, 0, SEEK_SET);
+#ifndef CONFIG_SOC_DIFFTEST 
   int ret = fread(guest_to_host(RESET_VECTOR), size, 1, fp);
+#else  
+#ifdef CONFIG_BOOT_FLASH
+  int ret = fread(socmem_guest_to_host(CONFIG_FLASHBASE), size, 1, fp);
+#endif 
+#ifdef CONFIG_BOOT_MROM 
+  int ret = fread(socmem_guest_to_host(CONFIG_MROMBASE), size, 1, fp);
+#endif  
+#endif 
   assert(ret == 1);
 
   fclose(fp);
@@ -124,6 +136,9 @@ void init_monitor(int argc, char *argv[]) {
 
   /* Initialize memory. */
   init_mem();
+
+  /* Initialize pc_trace. */
+  IFDEF(CONFIG_PC_TRACE, init_pc_trace());
 
   /* Initialize devices. */
   IFDEF(CONFIG_DEVICE, init_device());

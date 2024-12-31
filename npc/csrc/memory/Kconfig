@@ -1,4 +1,4 @@
-menu "Memory Configuration"
+menu "Memory Configuration(Won't be Uesd: Don't Touch)"
 
 config MBASE
   hex "Memory base address"
