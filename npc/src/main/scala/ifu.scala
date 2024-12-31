@@ -12,6 +12,7 @@ class IFU(config: NPCConfig) extends Module {
   val io = IO(new Bundle { 
     val in = Flipped(Decoupled(new SigIO_WBU_IFU(config.XLEN)))
     val out = (Decoupled(new SigIO_IFU_IDU(config.XLEN)))
+    val fencei = Output(Bool())
     // val mem_pc = Output(UInt(xlen.W))
     // val mem_inst = Input(UInt(32.W))
     //val imem = new AXILiteMasterIF(addrWidthBits = 32, dataWidthBits = xlen)
@@ -61,6 +62,12 @@ class IFU(config: NPCConfig) extends Module {
   val inst = RegInit(0.U(32.W))
   when(io.imem.r.valid && io.imem.r.ready){
     inst := io.imem.r.bits.data
+  }
+
+  when(io.imem.r.bits.data === insts.fencei){
+    io.fencei := io.imem.r.valid
+  }.otherwise{
+    io.fencei := false.B
   }
 
   io.out.bits.inst := inst
