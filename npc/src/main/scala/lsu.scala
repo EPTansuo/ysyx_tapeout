@@ -122,7 +122,7 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
     io.dmem.ar.valid := state === s_read || state === s_read_2
     io.dmem.ar.bits.addr := Mux(state === s_read_2 || state === s_wait_read_2, alu_out + 4.U, alu_out);
     io.dmem.ar.bits.prot := 0.U
-    io.dmem.r.ready := state === s_read || state === s_read_2
+    io.dmem.r.ready := state === s_read || state === s_read_2 || state === s_wait_read || state === s_wait_read_2
     
 
     io.dmem.ar.bits.id := 0.U
