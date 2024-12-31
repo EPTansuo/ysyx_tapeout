@@ -28,4 +28,5 @@ test_run_dir/
 !tools/disasm/
 tools/disasm/disasm
 !data/*
-
+!scripts/*
+*.kate-swp
