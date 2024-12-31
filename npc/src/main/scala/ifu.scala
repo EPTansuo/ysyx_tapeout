@@ -65,11 +65,11 @@ class IFU(config: NPCConfig) extends Module {
   }
 
   when(io.imem.r.bits.data === insts.fencei){
-    io.fencei := io.imem.r.valid
+    io.fencei := io.out.valid
   }.otherwise{
     io.fencei := false.B
   }
-
+  dontTouch(io.fencei)
   io.out.bits.inst := inst
   io.out.bits.pc := pc
 
