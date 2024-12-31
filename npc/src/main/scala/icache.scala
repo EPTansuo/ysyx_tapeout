@@ -112,7 +112,7 @@ class ICache(config: NPCConfig) extends Module{
         s_idle -> Mux(io.ifu.ar.valid, Mux(bypass.asBool, s_idle, s_read), s_idle),
         s_read -> Mux(hit, s_idle, s_replace),
         s_replace -> Mux(io.imem.ar.ready, s_refill, s_replace),
-        s_refill -> Mux(io.imem.r.valid, Mux(burst_cnt === (blockSize/4 - 1).U, s_wait, s_read), s_refill),
+        s_refill -> Mux(io.imem.r.valid, s_wait, s_refill),
         s_wait -> s_read,
     ))
     state := state_next
