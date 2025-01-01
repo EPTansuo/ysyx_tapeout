@@ -36,6 +36,9 @@ class IDU(config: NPCConfig) extends Module {
     io.out.valid := state === s_wait_ready && ~io.flush
     io.in.ready := state === s_idle
 
+    when(io.flush){
+        state := s_idle
+    }
 
     io.pc.bits := pc
     io.pc.valid := state =/= s_idle
