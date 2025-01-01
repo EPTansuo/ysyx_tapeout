@@ -43,7 +43,7 @@ class IFU(config: NPCConfig) extends Module {
 
   val pc = RegInit(config.PC_INIT.U)
   when( io.in.valid && io.in.ready){
-      pc := io.in.bits.npc
+      pc := pc+4.U //io.in.bits.npc
   }
 
 
