@@ -128,6 +128,8 @@ void perf_statistic(){
                                     (double)icache_hit_access_time_cnt/icache_access_cnt, "cycle per hit");
     PRINT_PERF("ICache Miss Penalty CNT", icache_miss_penalty_cnt, 
                     (double)icache_miss_penalty_cnt/icache_miss_cnt, "cycle per miss");
+    }else{
+        printf("No data\n");
     }
 #endif 
     fclose(fp);
