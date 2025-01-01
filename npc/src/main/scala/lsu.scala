@@ -18,6 +18,7 @@ class LSU(config: NPCConfig) extends Module {
         //val dmem = Flipped(new DMemIO())
         //val dmem = new AXILiteMasterIF(addrWidthBits = 32, dataWidthBits = xlen)
         val dmem = new AXI4Bundle(config.axiparams)
+        //val forward = Decoupled(SigIO_FORWARD(config.XLEN))
     })
 
     val xlen = config.XLEN 
@@ -50,6 +51,28 @@ class LSU(config: NPCConfig) extends Module {
     val npc = io.in.bits.npc
     val store_en = ctrlsig.st_sel =/= ST_XX
     val load_en = ctrlsig.ld_sel =/= LD_XX
+    val wb_sel = wbu_data.wb_sel
+
+    // Forwarding
+    // val rd_addr = inst(11, 7)
+    // val rs1_addr = inst(19, 15)
+    // val rs2_addr = inst(24, 20)
+    
+    // forward.bits.rs1 := rs1_addr
+    // forward.bits.rs2 := rs2_addr
+    // forward.bits.rd := rd_addr
+    // forward.bits.rd_data := MuxLookup(wb_sel, 0.U(xlen.W))(Seq(
+    //     WB_ALU -> alu.io.out,
+    //     //WB_MEM -> io.in.bits.lsu.ld_data,
+    //     WB_PC4 -> (pc + 4.U),
+    //     //WB_CSR -> io.out.bits.csr_out
+    //     )
+    // )
+    // forward.bits.valid := wb_sle === WB_ALU || wb_sel === WB_MEM && (state === s_exe || state === s_wait_ready)
+
+
+
+
 val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_write :: s_wait_write :: s_write_2 :: s_wait_write_2 :: s_wait_ready :: Nil = Enum(11)
 
     val r_twice = Wire(Bool());    // Must Read/Write twice because of unaligned access
@@ -57,7 +80,7 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
 
     val state = RegInit(s_idle)         
     state := MuxLookup(state, s_idle)(Seq(
-        s_idle -> Mux(io.in.valid && io.out.ready, s_exe, s_idle),
+        s_idle -> Mux(io.in.valid, s_exe, s_idle),
         s_exe  -> Mux(load_en, s_read, Mux(store_en, s_write, s_wait_ready)),  //需要等待信号生成完毕，来判断是否需要读写数据
         s_read         -> Mux(io.dmem.ar.ready, s_wait_read, s_read),
         s_read_2       -> Mux(io.dmem.ar.ready, s_wait_read_2, s_read_2),

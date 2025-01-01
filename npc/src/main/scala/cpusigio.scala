@@ -74,3 +74,12 @@ class SigIO_LSU_WBU(xlen: Int) extends Bundle{
 class SigIO_WBU_IFU(xlen: Int) extends Bundle{
     val npc = Input(UInt(xlen.W))
 }
+
+
+class SigIO_FORWARD(xlen: Int) extends Bundle{
+    val rs1 = Output(UInt(5.W))
+    val rs2 = Output(UInt(5.W))
+    val rd = Output(UInt(5.W))
+    val src1 = Output(UInt(xlen.W))
+    val src2 = Output(UInt(xlen.W))
+}

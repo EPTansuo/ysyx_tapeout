@@ -50,12 +50,28 @@ class ysyx_npc(config: NPCConfig) extends Module {
     exu.io.in <> idu.io.out
     lsu.io.in <> exu.io.out 
     wbu.io.in <> lsu.io.out*/
-    val stage_arch = "multi"
+    val stage_arch = "pipeline"
     ModuleConnect(wbu.io.out, ifu.io.in, ifu.io.out, stage_arch)
     ModuleConnect(ifu.io.out, idu.io.in, idu.io.out, stage_arch)
     ModuleConnect(idu.io.out, exu.io.in, exu.io.out, stage_arch)
     ModuleConnect(exu.io.out, lsu.io.in, lsu.io.out, stage_arch)
     ModuleConnect(lsu.io.out, wbu.io.in, wbu.io.out, stage_arch)
+
+    val hazard = Module(new ControlHazard(config))
+    hazard.io.ifu_pc <> ifu.io.pc
+    hazard.io.idu_pc <> idu.io.pc
+    hazard.io.exu_npc <> exu.io.npc
+    ifu.io.flush := hazard.io.flush
+    idu.io.flush := hazard.io.flush
+    ifu.io.npc := exu.io.npc.bits 
+
+    def conflictWithStage[T <: Bundle](rs1: UInt, rs2: UInt, rd: UInt, valid: Bool): Bool = {
+         valid && ((rs1 === rd) || (rs2 === rd))
+    }
+    val isRAWMem = conflictWithStage(IDU.rs1, IDU.rs2, EXU.rd) ||
+                   conflictWithStage(IDU.rs1, IDU.rs2, LSU.rd) ||
+                   conflictWithStage(EXU.rs1, EXU.rs2, LSU.rd)
+
 
     val regfile = Module(new Regfile(config))
     exu.io.reg_read1 <> regfile.io.read1

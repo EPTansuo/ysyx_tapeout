@@ -42,7 +42,7 @@ class WBU(config: NPCConfig) extends Module {
 
     val state = RegInit(s_idle)         
     state := MuxLookup(state, s_idle)(Seq(
-        s_idle -> Mux(io.in.valid && io.out.ready, s_wait_ready, s_idle),
+        s_idle -> Mux(io.in.valid, s_wait_ready, s_idle),
         s_wait_ready -> Mux(io.out.ready, s_idle, s_wait_ready)
     ))
 
@@ -73,7 +73,7 @@ class WBU(config: NPCConfig) extends Module {
 
 
     io.out.bits.npc := npc
-
+    dontTouch(io.in.bits.pc)
 
     if(config.PERF_CNT){
         val inst_cnt = RegInit(0.U(64.W))
