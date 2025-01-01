@@ -45,12 +45,12 @@ class ysyx_npc(config: NPCConfig) extends Module {
     exu.io.in <> idu.io.out
     lsu.io.in <> exu.io.out 
     wbu.io.in <> lsu.io.out*/
-
-    ModuleConnect(ifu.io.in, wbu.io.out)
-    ModuleConnect(idu.io.in, ifu.io.out)
-    ModuleConnect(exu.io.in, idu.io.out)
-    ModuleConnect(lsu.io.in, exu.io.out)
-    ModuleConnect(wbu.io.in, lsu.io.out)    
+    val stage_arch = "multi"
+    ModuleConnect(ifu.io.in, wbu.io.out, stage_arch)
+    ModuleConnect(idu.io.in, ifu.io.out, stage_arch)
+    ModuleConnect(exu.io.in, idu.io.out, stage_arch)
+    ModuleConnect(lsu.io.in, exu.io.out, stage_arch)
+    ModuleConnect(wbu.io.in, lsu.io.out, stage_arch)    
 
 
     val regfile = Module(new Regfile(config))
