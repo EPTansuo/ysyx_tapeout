@@ -34,6 +34,11 @@ class EXU(config: NPCConfig) extends Module{
     val inst = in_reg.bits.inst
     val ctrlsig = in_reg.bits.exu
     val sig_csr_cmd = in_reg.bits.wbu.csr_cmd
+*/
+    val pc = io.in.bits.pc
+    val inst = io.in.bits.inst
+    val ctrlsig = io.in.bits.exu
+    val sig_csr_cmd = io.in.bits.wbu.csr_cmd
 
     val s_idle :: s_exe :: s_wait_ready :: Nil = Enum(3)
 
@@ -123,8 +128,12 @@ class EXU(config: NPCConfig) extends Module{
     io.out.bits.alu_out := alu.io.out
     io.out.bits.pc := pc
     io.out.bits.inst := inst
+/*
     io.out.bits.wbu <> in_reg.bits.wbu
     io.out.bits.lsu <> in_reg.bits.lsu
+*/
+    io.out.bits.wbu <> io.in.bits.wbu
+    io.out.bits.lsu <> io.in.bits.lsu
 
     if(config.PERF_CNT){
         val alu_arith_cnt = RegInit(0.U(32.W))
