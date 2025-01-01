@@ -56,16 +56,16 @@ class IFU(config: NPCConfig) extends Module {
   // when(io.out.valid){
   //   pc := pc + 4.U
   // }
-  val bpu = Module(new BPU(config))
-  bpu.io.pc := pc 
-  bpu.io.wbu_npc := io.in.bits.npc
-  bpu.io.update := io.in.valid && state === s_idle
+  // val bpu = Module(new BPU(config))
+  // bpu.io.pc := pc 
+  // bpu.io.wbu_npc := io.in.bits.npc
+  // bpu.io.update := io.in.valid && state === s_idle
 
   when(state === s_idle && io.in.valid && io.in.ready){
     pc := io.in.bits.npc
   }
   when(io.out.ready && state === s_wait_ready){
-    pc := bpu.io.npc
+    pc := pc+4.U// bpu.io.npc
   }
 
   io.pc.valid := true.B 
