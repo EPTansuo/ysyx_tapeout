@@ -15,22 +15,6 @@ import org.chipsalliance.cde.config.Parameters
 //   }
 // }
 
-object ModuleConnect {
-    def apply[T <: Data](prevOut: DecoupledIO[T], thisIn: DecoupledIO[T], thisOut: DecoupledIO[T],
-                         arch: String = "multi"): Unit = {
-        arch match {
-            case "multi"  =>   
-                prevOut <> thisIn
-            case "pipeline" =>
-                prevOut.ready := thisIn.ready
-                thisIn.bits := RegEnable(prevOut.bits, prevOut.valid && thisIn.ready)
-                thisIn.valid := RegEnable(prevOut.valid, thisIn.ready)
-            case _        =>   throw new IllegalArgumentException(s"Unsupported architecture")
-        }
-    }
-}
-
-
 class ysyx_npc(config: NPCConfig) extends Module {
     val io = IO(new Bundle {
         // val imem = Flipped(new IMemIO(xlen))
@@ -45,27 +29,11 @@ class ysyx_npc(config: NPCConfig) extends Module {
     val lsu = Module(new LSU(config))
     val wbu = Module(new WBU(config))
 
-    /*ifu.io.in <> wbu.io.out
+    ifu.io.in <> wbu.io.out
     idu.io.in <> ifu.io.out
     exu.io.in <> idu.io.out
     lsu.io.in <> exu.io.out 
-    wbu.io.in <> lsu.io.out*/
-    val stage_arch = "pipeline"
-    ModuleConnect(wbu.io.out, ifu.io.in, ifu.io.out, stage_arch)
-    ModuleConnect(ifu.io.out, idu.io.in, idu.io.out, stage_arch)
-    ModuleConnect(idu.io.out, exu.io.in, exu.io.out, stage_arch)
-    ModuleConnect(exu.io.out, lsu.io.in, lsu.io.out, stage_arch)
-    ModuleConnect(lsu.io.out, wbu.io.in, wbu.io.out, stage_arch)
-
-    val hazard = Module(new ControlHazard(config))
-    hazard.io.ifu_pc <> ifu.io.pc
-    hazard.io.idu_pc <> idu.io.pc
-    hazard.io.exu_npc <> exu.io.npc
-    ifu.io.flush := hazard.io.flush
-    idu.io.flush := hazard.io.flush
-    ifu.io.npc := exu.io.npc.bits 
-
-
+    wbu.io.in <> lsu.io.out
 
 
     val regfile = Module(new Regfile(config))

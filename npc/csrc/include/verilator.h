@@ -82,7 +82,7 @@ extern VTOP_NAME* top ;
                         (top->ysyx_23060246->cpu_npc))
 
 #define REGS (NPC_CPU->regfile->regs_ext->Memory)
-#define PC (NPC_CPU->wbu->io_in_bits_pc)
+#define PC (NPC_CPU->ifu->pc)
 #define CSR (NPC_CPU->exu->csr)
 #define WBU_VALID (NPC_CPU->wbu->wbu_valid)
 #define INST (NPC_CPU->ifu->io_out_bits_inst)
