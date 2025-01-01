@@ -13,8 +13,8 @@ class ControlHazard(config: NPCConfig) extends Module{
         val flush = Output(Bool())
     })
 
-    val ifu_flush = io.ifu_pc.valid && io.exu_npc.bits =/= io.ifu_pc.bits + 8.U
-    val idu_flush = io.ifu_pc.valid && io.exu_npc.bits =/= io.ifu_pc.bits + 4.U
+    val ifu_flush = io.ifu_pc.valid && (io.exu_npc.bits =/= io.ifu_pc.bits + 8.U)
+    val idu_flush = io.idu_pc.valid && io.exu_npc.bits =/= io.idu_pc.bits + 4.U)
 
     io.flush := ifu_flush || idu_flush
 
