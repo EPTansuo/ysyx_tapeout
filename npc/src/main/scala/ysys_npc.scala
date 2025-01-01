@@ -24,7 +24,7 @@ object ModuleConnect {
             case "pipeline" =>
                 prevOut.ready := thisIn.ready
                 thisIn.bits := RegEnable(prevOut.bits, prevOut.valid && thisIn.ready)
-                thisIn.valid := RegNext(prevOut.valid && thisOut.valid)
+                thisIn.valid := RegNext(prevOut.valid)
             case _        =>   throw new IllegalArgumentException(s"Unsupported architecture")
         }
     }
@@ -56,6 +56,10 @@ class ysyx_npc(config: NPCConfig) extends Module {
     ModuleConnect(idu.io.out, exu.io.in, exu.io.out, stage_arch)
     ModuleConnect(exu.io.out, lsu.io.in, lsu.io.out, stage_arch)
     ModuleConnect(lsu.io.out, wbu.io.in, wbu.io.out, stage_arch)
+
+    if(stage_arch == "pipeline"){
+        ifu.io.in.valid := true.B
+    }
 
     val regfile = Module(new Regfile(config))
     exu.io.reg_read1 <> regfile.io.read1
