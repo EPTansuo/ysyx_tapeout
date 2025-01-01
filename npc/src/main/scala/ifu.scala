@@ -61,9 +61,9 @@ class IFU(config: NPCConfig) extends Module {
   // bpu.io.wbu_npc := io.in.bits.npc
   // bpu.io.update := io.in.valid && state === s_idle
 
-  when(state === s_idle && io.in.valid && io.in.ready){
-    pc := io.in.bits.npc
-  }
+  // when(state === s_idle && io.in.valid && io.in.ready){
+  //   pc := io.in.bits.npc
+  // }
   when(io.out.ready && state === s_wait_ready){
     pc := pc+4.U// bpu.io.npc
   }
