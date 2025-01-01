@@ -22,7 +22,9 @@ object ModuleConnect {
             case "multi"  =>   
                 prevOut <> thisIn
             case "pipeline" =>
-
+                prevOut.ready := thisIn.ready
+                thisIn.bits := RegEnable(prevOut.bits, prevOut.valid && thisIn.ready)
+                thisIn.valid := prevOut.valid
             case _        =>   throw new IllegalArgumentException(s"Unsupported architecture")
         }
     }
