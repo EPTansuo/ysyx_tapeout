@@ -23,7 +23,8 @@ class IFU(config: NPCConfig) extends Module {
   when(isFirst){
     isFirst := false.B
   }
-  val in_valid = Mux(isFirst, true.B, io.in.valid)
+  //val in_valid = Mux(isFirst, true.B, io.in.valid)
+  val in_valid = true.B
   val in_ready = io.in.ready
 
 
