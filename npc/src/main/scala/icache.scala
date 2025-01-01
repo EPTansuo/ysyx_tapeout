@@ -261,11 +261,15 @@ class ICache(config: NPCConfig) extends Module{
         when(io.ifu.r.valid && io.ifu.r.valid && bypass){
             icache_bypass_cnt := icache_bypass_cnt + 1.U 
         }
-        when(state === s_read){
+        when(state === s_read && hit && burst_cnt === 0.U){
             icache_hit_access_time_cnt := icache_hit_access_time_cnt + 1.U
         }
         when(state === s_refill || state === s_replace || state === s_wait){
             icache_miss_penalty_cnt := icache_miss_penalty_cnt + 1.U
+        }.elsewhen(state === s_read){
+            when(burst_cnt =/= 0.U){
+                icache_miss_penalty_cnt := icache_miss_penalty_cnt + 1.U
+            }
         }
     }
 

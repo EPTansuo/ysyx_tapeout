@@ -9,7 +9,7 @@ def handle_process(process, nways, nsets, bs, replace, process_id):
     except Exception as e:
         print(f"Error in process {process_id}: {e}")
 
-def runJobs(njobs, nways, nsets, bs, replace, trace_file):
+def runJobs(njobs, nways, nsets, bs, replace, access_time, miss_penalty trace_file):
     num_processes = njobs
     processes = []
     threads = []
@@ -20,7 +20,9 @@ def runJobs(njobs, nways, nsets, bs, replace, trace_file):
             "--nsets", str(nsets[i]),
             "--bs", str(bs[i]),
             "--replace", replace[i],
-            "-f", trace_file
+            "-f", trace_file,
+            "--access-time",
+            "--miss-penalty",
         ]
 
         process = subprocess.Popen(
@@ -50,6 +52,7 @@ def runJobs(njobs, nways, nsets, bs, replace, trace_file):
         thread.join()
 
 def main():
+    pc_trace = "pc_trace.bin.gz"
     maxJobs = 8
     ways = [1, 2, 4]
     sets = [2, 4, 8, 16]
@@ -63,19 +66,21 @@ def main():
     for nways in ways:
         for nsets in sets:
             for nbs in bs:
+                if(nways*nsets*nbs > 64):
+                    continue
                 for replace in replaces:  # Corrected loop variable
                     arg_ways.append(nways)
                     arg_sets.append(nsets)
                     arg_bs.append(nbs)
                     arg_replace.append(replace)
                     if len(arg_ways) == maxJobs:
-                        runJobs(maxJobs, arg_ways, arg_sets, arg_bs, arg_replace, "pc_trace.bin.gz")
+                        runJobs(maxJobs, arg_ways, arg_sets, arg_bs, arg_replace, pc_trace)
                         arg_ways = []
                         arg_sets = []
                         arg_bs = []
                         arg_replace = []
     if len(arg_ways) > 0:
-        runJobs(len(arg_ways), arg_ways, arg_sets, arg_bs, arg_replace, "pc_trace.bin.gz")
+        runJobs(len(arg_ways), arg_ways, arg_sets, arg_bs, arg_replace, pc_trace)
 
 if __name__ == "__main__":
     main()

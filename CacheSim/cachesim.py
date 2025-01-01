@@ -47,10 +47,13 @@ if __name__ == "__main__":
     parser.add_argument('-s','--nsets', type=int, help="Number of sets")
     parser.add_argument('-b','--bs', type=int, help="Size of Cache Block (Unit: Byte)")
     parser.add_argument('-r','--replace', default="FIFO", help="Repalce Methology: FIFO, RANDOM, LRU(Only Support FIFO Now)")
+    parser.add_argument('-a','--access-time',type=float, help="Access time(cycle)")
+    parser.add_argument('-m','--miss-penalty',type=float, help="Miss Penalty time(cycle)")
 
     args = parser.parse_args()
 
-    if(args.file == None or args.nways==None or args.nsets==None or args.bs==None):
+    if(args.file == None or args.nways==None or args.nsets==None or args.bs==None
+       or args.access_time == None or args.miss_menalty ):
         # print help 
         print("Error Usage!")
         parser.print_help()
@@ -61,7 +64,8 @@ if __name__ == "__main__":
     cache = Cache(cacheSize, args.bs, args.nways, replacement_policy=args.replace)
     simulator = CacheSimulator(cache, address_size=4)
     simulator.run(args.file)
-    print(simulator.get_stats()["hit_rate"])
+    hit_rate = simulator.get_stats()["hit_rate"]
+    print(f"{hit_rate}, {args.access_time + (1-hit_rate)*args.miss_menalty}")
 
 
 
