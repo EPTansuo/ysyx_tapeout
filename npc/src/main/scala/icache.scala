@@ -33,7 +33,9 @@ class ICache(config: NPCConfig) extends Module{
     val cache_tag = SyncReadMem(totalLines, UInt(tagBits.W))
     val cache_valid = SyncReadMem(totalLines, UInt(1.W))
 
-    when (reset.asBool || io.fencei) {
+    val fencei_reg = RegInit(false.B)
+    fencei_reg := io.fencei
+    when (reset.asBool || fencei_reg) {
         for (i <- 0 until totalLines) {
             cache_valid.write(i.U, 0.U)
         }
