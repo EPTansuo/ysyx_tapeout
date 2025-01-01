@@ -47,6 +47,8 @@ class IDU(config: NPCConfig) extends Module {
     //     pc := io.in.bits.pc
     // }
 
+
+
     control.io.in.inst := inst 
     control.io.in.pc := pc 
 

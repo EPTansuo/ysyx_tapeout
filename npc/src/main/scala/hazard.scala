@@ -23,3 +23,25 @@ class ControlHazard(config: NPCConfig) extends Module{
     io.exu_npc.ready := true.B
 
 }
+
+// class DataHazards(config: NPCConfig) extends Module{
+//     val io = IO(new Bundle{
+//         val exu = Flipped(Decoupled(new SigIO_IDU_EXU(config.XLEN)))
+//         val idu = Flipped(Decoupled(new SigIO_IFU_IDU(config.XLEN)))
+//         val flush = Input(Bool())
+//     })
+
+//     val exu_inst = io.exu.bits.inst
+//     val idu_inst = io.idu.bits.inst
+
+//     val exu_rd = exu_inst(11,7)
+//     val idu_rs1 = idu_inst(19,15)
+//     val idu_rs2 = idu_inst(24,20)
+
+//     val rs1_hazard = exu_rd =/= 0.U && exu_rd === idu_rs1
+//     val rs2_hazard = exu_rd =/= 0.U && exu_rd === idu_rs2
+
+//     io.exu.ready := ~rs1_hazard && ~rs2_hazard && ~io.flush
+//     io.idu.ready := ~rs1_hazard && ~rs2_hazard && ~io.flush
+
+// }

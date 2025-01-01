@@ -66,6 +66,8 @@ class ysyx_npc(config: NPCConfig) extends Module {
     ifu.io.npc := exu.io.npc.bits 
 
 
+
+
     val regfile = Module(new Regfile(config))
     exu.io.reg_read1 <> regfile.io.read1
     exu.io.reg_read2 <> regfile.io.read2
