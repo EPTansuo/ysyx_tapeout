@@ -50,7 +50,7 @@ class ysyx_npc(config: NPCConfig) extends Module {
     exu.io.in <> idu.io.out
     lsu.io.in <> exu.io.out 
     wbu.io.in <> lsu.io.out*/
-    val stage_arch = "multi"
+    val stage_arch = "pipeline"
     ModuleConnect(wbu.io.out, ifu.io.in, ifu.io.out, stage_arch)
     ModuleConnect(ifu.io.out, idu.io.in, idu.io.out, stage_arch)
     ModuleConnect(idu.io.out, exu.io.in, exu.io.out, stage_arch)
