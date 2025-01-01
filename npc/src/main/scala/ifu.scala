@@ -24,13 +24,14 @@ class IFU(config: NPCConfig) extends Module {
     isFirst := false.B
   }
   val in_valid = Mux(isFirst, true.B, io.in.valid)
+  //val in_valid = true.B
   val in_ready = io.in.ready
 
 
   val s_idle :: s_read ::s_wait_read :: s_wait_ready :: Nil = Enum(4)
   val state = RegInit(s_idle)         
   state := MuxLookup(state, s_idle)(Seq(
-    s_idle -> Mux(in_valid, s_read, s_idle),
+    s_idle -> Mux(in_valid && io.out.ready, s_read, s_idle),
     s_read -> Mux(io.imem.ar.ready, s_wait_read, s_read),
     s_wait_read -> Mux(io.imem.r.valid, s_wait_ready, s_wait_read),
     s_wait_ready -> Mux(io.out.ready, s_idle, s_wait_ready)
@@ -44,7 +45,9 @@ class IFU(config: NPCConfig) extends Module {
   when( io.in.valid && io.in.ready){
       pc := io.in.bits.npc
   }
-
+  // when(io.out.valid){
+  //   pc := pc + 4.U
+  // }
 
   io.imem.ar.valid := state === s_read
   io.imem.ar.bits.addr := pc

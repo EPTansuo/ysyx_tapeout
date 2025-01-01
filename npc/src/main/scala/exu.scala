@@ -44,7 +44,7 @@ class EXU(config: NPCConfig) extends Module{
 
     val state = RegInit(s_idle)         
     state := MuxLookup(state, s_idle)(Seq(
-        s_idle -> Mux(io.in.valid, s_exe, s_idle),
+        s_idle -> Mux(io.in.valid && io.out.ready, s_exe, s_idle),
         s_exe  -> s_wait_ready, // Reserve more time for EXU
         s_wait_ready -> Mux(io.out.ready, s_idle, s_wait_ready)
     ))
