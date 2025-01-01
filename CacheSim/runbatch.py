@@ -4,7 +4,7 @@ import threading
 def handle_process(process, nways, nsets, bs, replace, process_id):
     try:
         for line in process.stdout:
-            print(f"{nways}, {nsets}, {bs}, {replace}, {line.strip()}")
+            print(f"{nways}, {nsets}, {bs}, {replace}, {line.strip()}, {nways*nsets*bs}")
         process.wait()
     except Exception as e:
         print(f"Error in process {process_id}: {e}")
@@ -21,8 +21,8 @@ def runJobs(njobs, nways, nsets, bs, replace, access_time, miss_penalty, trace_f
             "--bs", str(bs[i]),
             "--replace", replace[i],
             "-f", trace_file,
-            "--access-time",
-            "--miss-penalty",
+            "--access-time", str(access_time),
+            "--miss-penalty", str(miss_penalty[i])
         ]
 
         process = subprocess.Popen(
@@ -62,30 +62,33 @@ def main():
     axi_hand_shake = 30
     axi_read_time = 53
 
-    print("ways, sets, bs, replace, hit_rate")
+    print("ways, sets, bs, replace, hit_rate, AMAT, size")
     arg_ways = []
     arg_sets = []
     arg_bs = []
     arg_replace = []
+    arg_miss_penalty = []
     for nways in ways:
         for nsets in sets:
             for nbs in bs:
                 if(nways*nsets*nbs > 64):
                     continue
-                miss_penalty = axi_hand_shake + axi_read_time * bs / 4
+
                 for replace in replaces:  # Corrected loop variable
                     arg_ways.append(nways)
                     arg_sets.append(nsets)
                     arg_bs.append(nbs)
                     arg_replace.append(replace)
+                    arg_miss_penalty.append(axi_hand_shake + axi_read_time * nbs / 4)
                     if len(arg_ways) == maxJobs:
-                        runJobs(maxJobs, arg_ways, arg_sets, arg_bs, arg_replace, access_time, miss_penalty, pc_trace)
+                        runJobs(maxJobs, arg_ways, arg_sets, arg_bs, arg_replace, access_time, arg_miss_penalty, pc_trace)
                         arg_ways = []
                         arg_sets = []
                         arg_bs = []
                         arg_replace = []
+                        arg_miss_penalty = []
     if len(arg_ways) > 0:
-        runJobs(len(arg_ways), arg_ways, arg_sets, arg_bs, arg_replace, pc_trace)
+        runJobs(len(arg_ways), arg_ways, arg_sets, arg_bs, arg_replace, access_time, arg_miss_penalty, pc_trace)
 
 if __name__ == "__main__":
     main()

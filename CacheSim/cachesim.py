@@ -52,8 +52,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    if(args.file == None or args.nways==None or args.nsets==None or args.bs==None
-       or args.access_time == None or args.miss_menalty ):
+    if(args.file == None or args.nways==None or args.nsets==None or args.bs==None or
+        args.access_time == None or args.miss_penalty ==None ):
         # print help 
         print("Error Usage!")
         parser.print_help()
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     simulator = CacheSimulator(cache, address_size=4)
     simulator.run(args.file)
     hit_rate = simulator.get_stats()["hit_rate"]
-    print(f"{hit_rate}, {args.access_time + (1-hit_rate)*args.miss_menalty}")
+    print(f"{hit_rate}, {args.access_time + (1-hit_rate)*args.miss_penalty}")
 
 
 
