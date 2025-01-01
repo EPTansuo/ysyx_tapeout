@@ -24,7 +24,7 @@ object ModuleConnect {
             case "pipeline" =>
                 prevOut.ready := thisIn.ready
                 thisIn.bits := RegEnable(prevOut.bits, prevOut.valid && thisIn.ready)
-                thisIn.valid := RegNext(prevOut.valid)
+                thisIn.valid := RegEnable(prevOut.valid, thisIn.ready)
             case _        =>   throw new IllegalArgumentException(s"Unsupported architecture")
         }
     }
