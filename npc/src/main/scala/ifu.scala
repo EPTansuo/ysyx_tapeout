@@ -45,7 +45,7 @@ class IFU(config: NPCConfig) extends Module {
   // when( io.in.valid && io.in.ready){
   //     pc := io.in.bits.npc
   // }
-  when(in_valid && io.out.ready){
+  when(io.out.valid){
     pc := pc + 4.U
   }
 
