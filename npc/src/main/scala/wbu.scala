@@ -73,7 +73,7 @@ class WBU(config: NPCConfig) extends Module {
 
 
     io.out.bits.npc := npc
-
+    dontTouch(io.in.bits.pc)
 
     if(config.PERF_CNT){
         val inst_cnt = RegInit(0.U(64.W))
