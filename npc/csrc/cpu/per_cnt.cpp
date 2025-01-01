@@ -73,7 +73,6 @@ FILE *fp;
            name, (uint64_t)cnt, process_cnt, unit);
 
 void perf_statistic(){
-#undef CONFIG_PERF_CNT
 #ifdef CONFIG_PERF_CNT
     perf_get_data();
     char buf[100];

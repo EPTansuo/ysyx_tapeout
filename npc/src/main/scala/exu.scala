@@ -24,8 +24,12 @@ class EXU(config: NPCConfig) extends Module{
     val xlen = config.XLEN
     val alu = Module(new ALU(xlen))
     val immGen = Module(new ImmGen(xlen))
-
+/*
     val in_reg = Reg(Output(chiselTypeOf(io.in)))
+    when( io.in.valid && io.in.ready){
+        in_reg := io.in
+    }
+
     val pc = in_reg.bits.pc
     val inst = in_reg.bits.inst
     val ctrlsig = in_reg.bits.exu
@@ -44,9 +48,6 @@ class EXU(config: NPCConfig) extends Module{
     io.out.valid := state === s_wait_ready
     io.in.ready := state === s_idle
 
-    when( io.in.valid && io.in.ready){
-        in_reg := io.in
-    }
 
  
 
