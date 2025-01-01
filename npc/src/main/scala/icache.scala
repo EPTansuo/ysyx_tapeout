@@ -110,7 +110,7 @@ class ICache(config: NPCConfig) extends Module{
         // IF the address is not in the range of the SDRAM address, then it is a bypass
         bypass := (io.ifu.ar.bits.addr(31,29) =/= "b101".U)
     }else{
-        bypass := (io.ifu.ar.bits.addr(31,28) =/= "b1000".U)
+        bypass := true.B //NPC的SRAM还不支持突发传输
     }
     
     val burst_cnt = RegInit(0.U(log2Ceil(blockSize/4).W))
