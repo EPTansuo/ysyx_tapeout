@@ -16,27 +16,27 @@ class WBU(config: NPCConfig) extends Module {
         val reg_write = Flipped(new RegfileWriteIO(config.XLEN))
     })
 
-    val in_reg = Reg(Output(chiselTypeOf(io.in)))
-    when( io.in.valid && io.in.ready){
-        in_reg := io.in
-    }
-    val pc = in_reg.bits.pc
-    val ctrlsig = in_reg.bits.wbu
-    val src1 = in_reg.bits.src1
-    val alu_out = in_reg.bits.alu_out
-    val ld_data = in_reg.bits.ld_data
-    val rd_addr = in_reg.bits.rd_addr
-    val npc = in_reg.bits.npc
-    val csr_out = in_reg.bits.csr_out
+    // val in_reg = Reg(Output(chiselTypeOf(io.in)))
+    // when( io.in.valid && io.in.ready){
+    //     in_reg := io.in
+    // }
+    // val pc = in_reg.bits.pc
+    // val ctrlsig = in_reg.bits.wbu
+    // val src1 = in_reg.bits.src1
+    // val alu_out = in_reg.bits.alu_out
+    // val ld_data = in_reg.bits.ld_data
+    // val rd_addr = in_reg.bits.rd_addr
+    // val npc = in_reg.bits.npc
+    // val csr_out = in_reg.bits.csr_out
 
-    // val pc = io.in.bits.pc
-    // val ctrlsig = io.in.bits.wbu
-    // val src1 = io.in.bits.src1
-    // val alu_out = io.in.bits.alu_out
-    // val ld_data = io.in.bits.ld_data
-    // val rd_addr = io.in.bits.rd_addr
-    // val npc = io.in.bits.npc
-    // val csr_out = io.in.bits.csr_out
+    val pc = io.in.bits.pc
+    val ctrlsig = io.in.bits.wbu
+    val src1 = io.in.bits.src1
+    val alu_out = io.in.bits.alu_out
+    val ld_data = io.in.bits.ld_data
+    val rd_addr = io.in.bits.rd_addr
+    val npc = io.in.bits.npc
+    val csr_out = io.in.bits.csr_out
 
     val s_idle :: s_wait_ready :: Nil = Enum(2)
 
