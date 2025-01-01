@@ -42,10 +42,12 @@ class IFU(config: NPCConfig) extends Module {
   io.in.ready := state === s_idle
 
   val pc = RegInit(config.PC_INIT.U)
-  when( io.in.valid && io.in.ready){
-      pc := pc+4.U //io.in.bits.npc
+  // when( io.in.valid && io.in.ready){
+  //     pc := io.in.bits.npc
+  // }
+  when(in_valid && io.out.ready){
+    pc := pc + 4.U
   }
-
 
   io.imem.ar.valid := state === s_read
   io.imem.ar.bits.addr := pc
