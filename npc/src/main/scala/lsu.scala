@@ -21,11 +21,11 @@ class LSU(config: NPCConfig) extends Module {
     })
 
     val xlen = config.XLEN 
-
+/*
     val in_reg = Reg(Output(chiselTypeOf(io.in)))
     when( io.in.valid && io.in.ready){
         in_reg := io.in
-    }
+    }*/
     //val in_reg = RegInit(0.U.asTypeOf(Output(chiselTypeOf(io.in))))
  /*   val pc = in_reg.bits.pc
     val inst = in_reg.bits.inst
