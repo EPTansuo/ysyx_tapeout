@@ -17,6 +17,8 @@ class IFU(config: NPCConfig) extends Module {
     // val mem_inst = Input(UInt(32.W))
     //val imem = new AXILiteMasterIF(addrWidthBits = 32, dataWidthBits = xlen)
     val imem = new AXI4Bundle(config.axiparams)
+    val pc = Decoupled((UInt(config.XLEN.W)))
+    val flush = Input(Bool())
   })
 
   val isFirst = RegInit(true.B)
@@ -37,9 +39,15 @@ class IFU(config: NPCConfig) extends Module {
     s_wait_ready -> Mux(io.out.ready, s_idle, s_wait_ready)
   ))
 
+  when(io.flush){
+    state := s_idle
+  }
+
 
   io.out.valid := state === s_wait_ready
   io.in.ready := state === s_idle
+
+
 
   val pc = RegInit(config.PC_INIT.U)
   // when( io.in.valid && io.in.ready){
@@ -60,7 +68,8 @@ class IFU(config: NPCConfig) extends Module {
     pc := bpu.io.npc
   }
 
-
+  io.pc.valid := true.B 
+  io.pc.bits := pc 
 
   io.imem.ar.valid := state === s_read
   io.imem.ar.bits.addr := pc

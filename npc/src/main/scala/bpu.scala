@@ -11,6 +11,6 @@ class BPU(config:NPCConfig) extends Module{
         val npc = Output(UInt(config.XLEN.W))
 
     })
-
+    // 推测为PC+4
     io.npc := Mux(io.update, io.wbu_npc, io.pc + 4.U)
 }

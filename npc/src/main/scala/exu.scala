@@ -20,6 +20,8 @@ class EXU(config: NPCConfig) extends Module{
         val out = (Decoupled(new SigIO_EXU_LSU(config.XLEN)))
         val reg_read1 = Flipped(new RegfileReadIO(config.XLEN))
         val reg_read2 = Flipped(new RegfileReadIO(config.XLEN))
+       // val flush = Input(Bool())
+        val npc = Decoupled(UInt(config.XLEN.W))
     })
     val xlen = config.XLEN
     val alu = Module(new ALU(xlen))
@@ -120,7 +122,11 @@ class EXU(config: NPCConfig) extends Module{
         )
     )
     io.out.bits.npc := npc
-    
+    io.npc.bits := npc 
+    io.npc.valid := state === s_exe
+
+
+
     io.out.bits.csr_out  := csr.io.out
     io.out.bits.rd_addr := rd_addr
     io.out.bits.src1 := src1_reg
