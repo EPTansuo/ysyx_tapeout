@@ -15,6 +15,17 @@ import org.chipsalliance.cde.config.Parameters
 //   }
 // }
 
+object ModuleConnect {
+    def apply[T <: Data](left: DecoupledIO[T], right: DecoupledIO[T], arch: String = "multi"): Unit = {
+        arch match {
+            case "multi"  =>   
+                right <> left
+            case _        =>   throw new IllegalArgumentException(s"Unsupported architecture")
+        }
+    }
+}
+
+
 class ysyx_npc(config: NPCConfig) extends Module {
     val io = IO(new Bundle {
         // val imem = Flipped(new IMemIO(xlen))
@@ -29,11 +40,17 @@ class ysyx_npc(config: NPCConfig) extends Module {
     val lsu = Module(new LSU(config))
     val wbu = Module(new WBU(config))
 
-    ifu.io.in <> wbu.io.out
+    /*ifu.io.in <> wbu.io.out
     idu.io.in <> ifu.io.out
     exu.io.in <> idu.io.out
     lsu.io.in <> exu.io.out 
-    wbu.io.in <> lsu.io.out
+    wbu.io.in <> lsu.io.out*/
+
+    ModuleConnect(ifu.io.in, wbu.io.out)
+    ModuleConnect(idu.io.in, ifu.io.out)
+    ModuleConnect(exu.io.in, idu.io.out)
+    ModuleConnect(lsu.io.in, exu.io.out)
+    ModuleConnect(wbu.io.in, lsu.io.out)    
 
 
     val regfile = Module(new Regfile(config))
