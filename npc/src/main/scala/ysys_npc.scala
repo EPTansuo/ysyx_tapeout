@@ -16,10 +16,13 @@ import org.chipsalliance.cde.config.Parameters
 // }
 
 object ModuleConnect {
-    def apply[T <: Data](left: DecoupledIO[T], right: DecoupledIO[T], arch: String = "multi"): Unit = {
+    def apply[T <: Data](prevOut: DecoupledIO[T], thisIn: DecoupledIO[T], thisOut: DecoupledIO[T],
+                         arch: String = "multi"): Unit = {
         arch match {
             case "multi"  =>   
-                right <> left
+                prevOut <> thisIn
+            case "pipeline" =>
+
             case _        =>   throw new IllegalArgumentException(s"Unsupported architecture")
         }
     }
@@ -46,12 +49,11 @@ class ysyx_npc(config: NPCConfig) extends Module {
     lsu.io.in <> exu.io.out 
     wbu.io.in <> lsu.io.out*/
     val stage_arch = "multi"
-    ModuleConnect(ifu.io.in, wbu.io.out, stage_arch)
-    ModuleConnect(idu.io.in, ifu.io.out, stage_arch)
-    ModuleConnect(exu.io.in, idu.io.out, stage_arch)
-    ModuleConnect(lsu.io.in, exu.io.out, stage_arch)
-    ModuleConnect(wbu.io.in, lsu.io.out, stage_arch)    
-
+    ModuleConnect(wbu.io.out, ifu.io.in, ifu.io.out, stage_arch)
+    ModuleConnect(ifu.io.out, idu.io.in, idu.io.out, stage_arch)
+    ModuleConnect(idu.io.out, exu.io.in, exu.io.out, stage_arch)
+    ModuleConnect(exu.io.out, lsu.io.in, lsu.io.out, stage_arch)
+    ModuleConnect(lsu.io.out, wbu.io.in, wbu.io.out, stage_arch)
 
     val regfile = Module(new Regfile(config))
     exu.io.reg_read1 <> regfile.io.read1
