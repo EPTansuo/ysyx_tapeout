@@ -57,6 +57,7 @@ class ysyx_npc(config: NPCConfig) extends Module {
     ModuleConnect(exu.io.out, lsu.io.in, lsu.io.out, stage_arch)
     ModuleConnect(lsu.io.out, wbu.io.in, wbu.io.out, stage_arch)
     
+    ifu.io.in.valid := true.B
 
     val regfile = Module(new Regfile(config))
     exu.io.reg_read1 <> regfile.io.read1
