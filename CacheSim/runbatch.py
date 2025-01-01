@@ -9,7 +9,7 @@ def handle_process(process, nways, nsets, bs, replace, process_id):
     except Exception as e:
         print(f"Error in process {process_id}: {e}")
 
-def runJobs(njobs, nways, nsets, bs, replace, access_time, miss_penalty trace_file):
+def runJobs(njobs, nways, nsets, bs, replace, access_time, miss_penalty, trace_file):
     num_processes = njobs
     processes = []
     threads = []
@@ -58,6 +58,10 @@ def main():
     sets = [2, 4, 8, 16]
     bs = [4, 8, 12, 16, 20, 24, 28, 32]
     replaces = ["RANDOM", "LRU", "FIFO"]
+    access_time = 1
+    axi_hand_shake = 30
+    axi_read_time = 53
+
     print("ways, sets, bs, replace, hit_rate")
     arg_ways = []
     arg_sets = []
@@ -68,13 +72,14 @@ def main():
             for nbs in bs:
                 if(nways*nsets*nbs > 64):
                     continue
+                miss_penalty = axi_hand_shake + axi_read_time * bs / 4
                 for replace in replaces:  # Corrected loop variable
                     arg_ways.append(nways)
                     arg_sets.append(nsets)
                     arg_bs.append(nbs)
                     arg_replace.append(replace)
                     if len(arg_ways) == maxJobs:
-                        runJobs(maxJobs, arg_ways, arg_sets, arg_bs, arg_replace, pc_trace)
+                        runJobs(maxJobs, arg_ways, arg_sets, arg_bs, arg_replace, access_time, miss_penalty, pc_trace)
                         arg_ways = []
                         arg_sets = []
                         arg_bs = []
