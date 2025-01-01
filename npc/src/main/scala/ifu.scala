@@ -23,8 +23,8 @@ class IFU(config: NPCConfig) extends Module {
   when(isFirst){
     isFirst := false.B
   }
-  val in_valid = Mux(isFirst, true.B, io.in.valid)
-  //val in_valid = true.B
+  //val in_valid = Mux(isFirst, true.B, io.in.valid)
+  val in_valid = true.B
   val in_ready = io.in.ready
 
 
@@ -42,12 +42,12 @@ class IFU(config: NPCConfig) extends Module {
   io.in.ready := state === s_idle
 
   val pc = RegInit(config.PC_INIT.U)
-  when( io.in.valid && io.in.ready){
-      pc := io.in.bits.npc
-  }
-  // when(io.out.valid){
-  //   pc := pc + 4.U
+  // when( io.in.valid && io.in.ready){
+  //     pc := io.in.bits.npc
   // }
+  when(io.out.valid){
+    pc := pc + 4.U
+  }
 
   io.imem.ar.valid := state === s_read
   io.imem.ar.bits.addr := pc
