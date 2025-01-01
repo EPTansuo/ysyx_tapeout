@@ -12,6 +12,8 @@ class IFU(config: NPCConfig) extends Module {
   val io = IO(new Bundle { 
     val in = Flipped(Decoupled(new SigIO_WBU_IFU(config.XLEN)))
     val out = (Decoupled(new SigIO_IFU_IDU(config.XLEN)))
+
+    val npc = Input(UInt(config.XLEN.W))
     val fencei = Output(Bool())
     // val mem_pc = Output(UInt(xlen.W))
     // val mem_inst = Input(UInt(32.W))
@@ -39,9 +41,7 @@ class IFU(config: NPCConfig) extends Module {
     s_wait_ready -> Mux(io.out.ready, s_idle, s_wait_ready)
   ))
 
-  when(io.flush){
-    state := s_idle
-  }
+ 
 
 
   io.out.valid := state === s_wait_ready
@@ -67,7 +67,11 @@ class IFU(config: NPCConfig) extends Module {
   when(io.out.ready && state === s_wait_ready){
     pc := pc+4.U// bpu.io.npc
   }
-
+  
+  when(io.flush){
+    state := s_idle
+    pc := io.npc
+  }
   io.pc.valid := true.B 
   io.pc.bits := pc 
 

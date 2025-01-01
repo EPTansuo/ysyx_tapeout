@@ -63,6 +63,8 @@ class ysyx_npc(config: NPCConfig) extends Module {
     hazard.io.exu_npc <> exu.io.npc
     ifu.io.flush := hazard.io.flush
     idu.io.flush := hazard.io.flush
+    ifu.io.npc := exu.io.npc.bits 
+
 
     val regfile = Module(new Regfile(config))
     exu.io.reg_read1 <> regfile.io.read1
