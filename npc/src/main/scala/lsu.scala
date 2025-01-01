@@ -23,8 +23,11 @@ class LSU(config: NPCConfig) extends Module {
     val xlen = config.XLEN 
 
     val in_reg = Reg(Output(chiselTypeOf(io.in)))
+    when( io.in.valid && io.in.ready){
+        in_reg := io.in
+    }
     //val in_reg = RegInit(0.U.asTypeOf(Output(chiselTypeOf(io.in))))
-    val pc = in_reg.bits.pc
+ /*   val pc = in_reg.bits.pc
     val inst = in_reg.bits.inst
     val ctrlsig = in_reg.bits.lsu
     val src1 = in_reg.bits.src1
@@ -35,7 +38,18 @@ class LSU(config: NPCConfig) extends Module {
     val npc = in_reg.bits.npc
     val store_en = ctrlsig.st_sel =/= ST_XX
     val load_en = ctrlsig.ld_sel =/= LD_XX
-
+*/
+    val pc = io.in.bits.pc
+    val inst = io.in.bits.inst
+    val ctrlsig = io.in.bits.lsu
+    val src1 = io.in.bits.src1
+    val src2 = io.in.bits.src2 
+    val alu_out = io.in.bits.alu_out
+    val rd_addr = io.in.bits.rd_addr
+    val wbu_data = io.in.bits.wbu
+    val npc = io.in.bits.npc
+    val store_en = ctrlsig.st_sel =/= ST_XX
+    val load_en = ctrlsig.ld_sel =/= LD_XX
 val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_write :: s_wait_write :: s_write_2 :: s_wait_write_2 :: s_wait_ready :: Nil = Enum(11)
 
     val r_twice = Wire(Bool());    // Must Read/Write twice because of unaligned access
@@ -60,9 +74,7 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
     io.out.valid := state === s_wait_ready
     io.in.ready := state === s_idle
 
-    when( io.in.valid && io.in.ready){
-        in_reg := io.in
-    }
+
 
 
 
