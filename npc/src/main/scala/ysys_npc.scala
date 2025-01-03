@@ -83,11 +83,11 @@ class ysyx_npc(config: NPCConfig) extends Module {
     }
 
     def conflictWithStage(rs1: UInt, rs2: UInt, rd: UInt, ID_inst_type: UInt, valid: Bool): Bool = {
-         valid && ((rs1 === rd) || (rs2 === rd)) && rs1.orR && rs2.orR && useRs(ID_inst_type)
+         valid && ((rs1 === rd) || (rs2 === rd)) && rs1.orR && rs2.orR && useRs(ID_inst_type) // TODO: if wreiteReg
     }
     
-    val IDU_rs1 = idu.io.out.bits.inst(19, 15)
-    val IDU_rs2 = idu.io.out.bits.inst(24, 20)
+    val IDU_rs1 = idu.io.in.bits.inst(19, 15)
+    val IDU_rs2 = idu.io.in.bits.inst(24, 20)
     val IDU_inst_type = idu.io.inst_type
     val EXU_rd = exu.io.out.bits.rd_addr
     val LSU_rd = lsu.io.out.bits.rd_addr
