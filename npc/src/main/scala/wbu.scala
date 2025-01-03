@@ -54,10 +54,11 @@ class WBU(config: NPCConfig) extends Module {
    
 
     val valid_old = RegNext(io.out.valid)
-    val wbu_valid = !valid_old && io.out.valid 
+    val wbu_valid = RegNext(!valid_old && io.out.valid)
     dontTouch(wbu_valid) // Used for simulation
     dontTouch(pc)
     dontTouch(npc)
+    dontTouch(io.in.bits.inst)
 
     io.reg_write.addr := rd_addr
     io.reg_write.en := ctrlsig.wb_sel =/= WB_XX && io.out.valid; 
