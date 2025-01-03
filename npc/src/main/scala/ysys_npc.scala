@@ -85,7 +85,7 @@ class ysyx_npc(config: NPCConfig) extends Module {
     }
 
     def conflictWithStage(rs1: UInt, rs2: UInt, rd: UInt, ID_inst_type: UInt, valid: Bool): Bool = {
-         valid && ((rs1 === rd) || (rs2 === rd)) && rs1.orR && rs2.orR && useRs(ID_inst_type) // TODO: if wreiteReg
+         valid && ((rs1 === rd) || (rs2 === rd)) && (rs1.orR || rs2.orR) && useRs(ID_inst_type) // TODO: if wreiteReg
 
     }
     
@@ -99,10 +99,10 @@ class ysyx_npc(config: NPCConfig) extends Module {
     val exu_raw = Wire(Bool())
     val lsu_raw = Wire(Bool())
     val wbu_raw = Wire(Bool())
-    when(idu.io.in.bits.inst === 0x0007a783.U){
-        printf("IDU_rs1: %d, IDU_rs2: %d, EXU_rd: %d, IDU_inst_type: %d, exu.io.out.ready: %d\n", IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, exu.io.out.ready)
-        printf("useRs: %d\n", useRs(IDU_inst_type))
-    }
+    // when(idu.io.in.bits.inst === 0x0007a783.U){
+    //     printf("IDU_rs1: %d, IDU_rs2: %d, EXU_rd: %d, IDU_inst_type: %d, exu.io.out.ready: %d\n", IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, exu.io.out.ready)
+    //     printf("useRs: %d\n", useRs(IDU_inst_type))
+    // }
     // exu_raw := conflictWithStage(IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, ~exu.io.out.ready)
     // lsu_raw := conflictWithStage(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, ~lsu.io.out.ready)
     // wbu_raw := conflictWithStage(IDU_rs1, IDU_rs2, WBU_rd, IDU_inst_type, ~wbu.io.out.ready)
