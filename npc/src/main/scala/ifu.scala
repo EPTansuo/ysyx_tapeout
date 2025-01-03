@@ -46,9 +46,9 @@ class IFU(config: NPCConfig) extends Module {
  
 
 
-  io.out.valid := state === s_wait_ready && ~stall 
-  io.in.ready := state === s_idle && ~stall
-
+  io.out.valid := state === s_wait_ready && ~stall
+  // io.in.ready := state === s_idle && ~stall
+  io.in.ready := true.B
 
 
   val pc = RegInit(config.PC_INIT.U)
