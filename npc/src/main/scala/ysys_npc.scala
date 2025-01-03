@@ -17,13 +17,13 @@ import org.chipsalliance.cde.config.Parameters
 
 object ModuleConnect {
     def apply[T <: Data](prevOut: DecoupledIO[T], thisIn: DecoupledIO[T], thisOut: DecoupledIO[T],
-                        stall:Bool, arch: String = "multi"): Unit = {
+                      arch: String = "multi"): Unit = {
         arch match {
             case "multi"  =>   
                 prevOut <> thisIn
             case "pipeline" =>
                 prevOut.ready := thisIn.ready
-                thisIn.bits := RegEnable(prevOut.bits, prevOut.valid && thisIn.ready || (stall&&thisIn.ready))
+                thisIn.bits := RegEnable(prevOut.bits, prevOut.valid && thisIn.ready )
                 thisIn.valid := RegEnable(prevOut.valid, thisIn.ready)
             case _        =>   throw new IllegalArgumentException(s"Unsupported architecture")
         }
@@ -39,8 +39,6 @@ class ysyx_npc(config: NPCConfig) extends Module {
         val axi = new AXI4Bundle(config.axiparams)
     })
 
-    val stall = Wire(Bool())
-
     val ifu = Module(new IFU(config))
     val idu = Module(new IDU(config))
     val exu = Module(new EXU(config))
@@ -48,11 +46,11 @@ class ysyx_npc(config: NPCConfig) extends Module {
     val wbu = Module(new WBU(config))
 
     val stage_arch = "pipeline"
-    ModuleConnect(wbu.io.out, ifu.io.in, ifu.io.out, false.B, stage_arch)
-    ModuleConnect(ifu.io.out, idu.io.in, idu.io.out, false.B, stage_arch)
-    ModuleConnect(idu.io.out, exu.io.in, exu.io.out, stall, stage_arch)
-    ModuleConnect(exu.io.out, lsu.io.in, lsu.io.out, false.B, stage_arch)
-    ModuleConnect(lsu.io.out, wbu.io.in, wbu.io.out, false.B, stage_arch)
+    ModuleConnect(wbu.io.out, ifu.io.in, ifu.io.out, stage_arch)
+    ModuleConnect(ifu.io.out, idu.io.in, idu.io.out, stage_arch)
+    ModuleConnect(idu.io.out, exu.io.in, exu.io.out, stage_arch)
+    ModuleConnect(exu.io.out, lsu.io.in, lsu.io.out, stage_arch)
+    ModuleConnect(lsu.io.out, wbu.io.in, wbu.io.out, stage_arch)
 
 
     // Control Hazard
@@ -89,7 +87,7 @@ class ysyx_npc(config: NPCConfig) extends Module {
     val IDU_rs1 = idu.io.out.bits.inst(19, 15)
     val IDU_rs2 = idu.io.out.bits.inst(24, 20)
     val IDU_inst_type = idu.io.inst_type
-    val EXU_rd = exu.io.out.bits.rd_addr
+    val EXU_rd = exu.io.rd_addr
     val LSU_rd = lsu.io.out.bits.rd_addr
     val WBU_rd = wbu.io.out.bits.rd_addr
 
@@ -112,10 +110,10 @@ class ysyx_npc(config: NPCConfig) extends Module {
     //                conflictWithStage(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, ~lsu.io.out.valid) ||
     //                conflictWithStage(IDU_rs1, IDU_rs2, WBU_rd, IDU_inst_type, ~wbu.io.out.valid)
     // val isRAW = false.B
-    stall := isRAW
+
     ifu.io.stall := isRAW
     idu.io.stall := isRAW
-
+    exu.io.stall := isRAW
 
     // Regfile
     val regfile = Module(new Regfile(config))

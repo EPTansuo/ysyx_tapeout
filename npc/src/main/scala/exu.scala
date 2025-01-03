@@ -23,6 +23,8 @@ class EXU(config: NPCConfig) extends Module{
        // val flush = Input(Bool())
         val npc = Decoupled(UInt(config.XLEN.W))
         //val forward = Decoupled(new SigIO_FORWARD(config.XLEN))
+        val rd_addr = Output(UInt(5.W))
+        val stall = Input(Bool())
     })
     val xlen = config.XLEN
     val alu = Module(new ALU(xlen))
@@ -66,7 +68,15 @@ class EXU(config: NPCConfig) extends Module{
     val rd_addr = inst(11, 7)
     val rs1_addr = inst(19, 15)
     val rs2_addr = inst(24, 20)
+    val rd_addr_reg = RegInit(0.U(5.W))
+    
 
+    io.rd_addr := rd_addr
+    when(io.stall){
+        rd_addr_reg := 0.U
+    }.otherwise{
+        rd_addr_reg := rd_addr
+    }
     // // Forwarding
     // forward.bits.rs1 := rs1_addr
     // forward.bits.rs2 := rs2_addr
