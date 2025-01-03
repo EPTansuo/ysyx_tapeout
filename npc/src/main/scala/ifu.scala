@@ -21,10 +21,10 @@ class IFU(config: NPCConfig) extends Module {
     val imem = new AXI4Bundle(config.axiparams)
     val pc = Decoupled((UInt(config.XLEN.W)))
     val flush = Input(Bool())
-    val stall = Input(Bool())
+    // val stall = Input(Bool())
   })
 
-  val stall = io.stall
+  // val stall = io.stall
   val isFirst = RegInit(true.B)
   when(isFirst){
     isFirst := false.B

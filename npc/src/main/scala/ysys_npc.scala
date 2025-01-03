@@ -89,9 +89,9 @@ class ysyx_npc(config: NPCConfig) extends Module {
     val IDU_rs1 = idu.io.in.bits.inst(19, 15)
     val IDU_rs2 = idu.io.in.bits.inst(24, 20)
     val IDU_inst_type = idu.io.inst_type
-    val EXU_rd = exu.io.out.bits.rd_addr
-    val LSU_rd = lsu.io.out.bits.rd_addr
-    val WBU_rd = wbu.io.out.bits.rd_addr
+    val EXU_rd = exu.io.rd_addr
+    val LSU_rd = lsu.io.rd_addr
+    val WBU_rd = wbu.io.rd_addr
 
     val exu_raw = Wire(Bool())
     val lsu_raw = Wire(Bool())
