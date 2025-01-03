@@ -39,7 +39,7 @@ class ysyx_npc(config: NPCConfig) extends Module {
         val axi = new AXI4Bundle(config.axiparams)
     })
 
-    val stall = Wire(Bool())
+    
     
     val ifu = Module(new IFU(config))
     val idu = Module(new IDU(config))
@@ -66,6 +66,8 @@ class ysyx_npc(config: NPCConfig) extends Module {
 
     
     // Data Hazard
+
+    val stall = Wire(Bool())
     def useRs(itype: UInt): Bool = {
         // useRS1 R,I,S,B,FENCE
         val useRs1 = itype === inst_type.R_TYPE || 
@@ -113,9 +115,9 @@ class ysyx_npc(config: NPCConfig) extends Module {
     //                conflictWithStage(IDU_rs1, IDU_rs2, WBU_rd, IDU_inst_type, ~wbu.io.out.valid)
     // val isRAW = false.B
 
-    ifu.io.stall := isRAW
-    idu.io.stall := isRAW
-    stall := isRAW
+    //ifu.io.stall := stall
+    idu.io.stall := stall
+    stall := isRAW || RegNext(isRAW)
 
     // Regfile
     val regfile = Module(new Regfile(config))
