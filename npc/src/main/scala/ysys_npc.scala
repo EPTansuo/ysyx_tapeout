@@ -92,10 +92,10 @@ class ysyx_npc(config: NPCConfig) extends Module {
     val WBU_rd = wbu.io.out.bits.rd_addr
 
 
-    // val isRAW = conflictWithStage(IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, true.B) ||
-    //                conflictWithStage(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, true.B) ||
-    //                conflictWithStage(IDU_rs1, IDU_rs2, WBU_rd, IDU_inst_type, true.B)
-    val isRAW = false.B
+    val isRAW = conflictWithStage(IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, ~exu.io.out.valid) ||
+                   conflictWithStage(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, ~lsu.io.out.valid) ||
+                   conflictWithStage(IDU_rs1, IDU_rs2, WBU_rd, IDU_inst_type, ~wbu.io.out.valid)
+    // val isRAW = false.B
 
     ifu.io.stall := isRAW
     idu.io.stall := isRAW
