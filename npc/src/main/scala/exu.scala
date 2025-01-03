@@ -20,16 +20,31 @@ class EXU(config: NPCConfig) extends Module{
         val out = (Decoupled(new SigIO_EXU_LSU(config.XLEN)))
         val reg_read1 = Flipped(new RegfileReadIO(config.XLEN))
         val reg_read2 = Flipped(new RegfileReadIO(config.XLEN))
+       // val flush = Input(Bool())
+        val npc = Decoupled(UInt(config.XLEN.W))
+        //val forward = Decoupled(new SigIO_FORWARD(config.XLEN))
     })
     val xlen = config.XLEN
     val alu = Module(new ALU(xlen))
     val immGen = Module(new ImmGen(xlen))
-
+/*
     val in_reg = Reg(Output(chiselTypeOf(io.in)))
+    when( io.in.valid && io.in.ready){
+        in_reg := io.in
+    }
+
     val pc = in_reg.bits.pc
     val inst = in_reg.bits.inst
     val ctrlsig = in_reg.bits.exu
     val sig_csr_cmd = in_reg.bits.wbu.csr_cmd
+*/
+    val pc = io.in.bits.pc
+    val inst = io.in.bits.inst
+    val ctrlsig = io.in.bits.exu
+    val sig_csr_cmd = io.in.bits.wbu.csr_cmd
+    val wb_sel = io.in.bits.wbu.wb_sel
+
+    // val forward = io.forward
 
     val s_idle :: s_exe :: s_wait_ready :: Nil = Enum(3)
 
@@ -44,9 +59,6 @@ class EXU(config: NPCConfig) extends Module{
     io.out.valid := state === s_wait_ready
     io.in.ready := state === s_idle
 
-    when( io.in.valid && io.in.ready){
-        in_reg := io.in
-    }
 
  
 
@@ -54,6 +66,24 @@ class EXU(config: NPCConfig) extends Module{
     val rd_addr = inst(11, 7)
     val rs1_addr = inst(19, 15)
     val rs2_addr = inst(24, 20)
+
+    // // Forwarding
+    // forward.bits.rs1 := rs1_addr
+    // forward.bits.rs2 := rs2_addr
+    // forward.bits.rd := rd_addr
+    // forward.bits.rd_data := MuxLookup(wb_sel, 0.U(xlen.W))(Seq(
+    //     WB_ALU -> alu.io.out,
+    //     //WB_MEM -> io.in.bits.lsu.ld_data,
+    //     WB_PC4 -> (pc + 4.U),
+    //     //WB_CSR -> io.out.bits.csr_out
+    //     )
+    // )
+    // forward.bits.valid := wb_sle === WB_ALU || wb_sel === WB_MEM && (state === s_exe || state === s_wait_ready)
+
+    
+    
+
+
     
     io.reg_read1.addr := Mux(sig_csr_cmd === csr_cmd.CSR_P, 15.U,rs1_addr)
     io.reg_read2.addr := rs2_addr
@@ -114,7 +144,11 @@ class EXU(config: NPCConfig) extends Module{
         )
     )
     io.out.bits.npc := npc
-    
+    io.npc.bits := npc 
+    io.npc.valid := state === s_exe
+
+
+
     io.out.bits.csr_out  := csr.io.out
     io.out.bits.rd_addr := rd_addr
     io.out.bits.src1 := src1_reg
@@ -122,8 +156,12 @@ class EXU(config: NPCConfig) extends Module{
     io.out.bits.alu_out := alu.io.out
     io.out.bits.pc := pc
     io.out.bits.inst := inst
+/*
     io.out.bits.wbu <> in_reg.bits.wbu
     io.out.bits.lsu <> in_reg.bits.lsu
+*/
+    io.out.bits.wbu <> io.in.bits.wbu
+    io.out.bits.lsu <> io.in.bits.lsu
 
     if(config.PERF_CNT){
         val alu_arith_cnt = RegInit(0.U(32.W))

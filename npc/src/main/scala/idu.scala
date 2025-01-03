@@ -13,14 +13,16 @@ class IDU(config: NPCConfig) extends Module {
         val in = Flipped(Decoupled(new SigIO_IFU_IDU(config.XLEN)))
         //val out = Output(new ControlOut(xlen))
         val out = (Decoupled(new SigIO_IDU_EXU(config.XLEN)))
+        val flush = Input(Bool())
+        val pc = Decoupled(UInt(config.XLEN.W))
     })
 
 
     val control = Module(new Control(config))
-    //val inst = io.in.bits.inst 
-    //val pc = io.in.bits.pc
-    val inst = RegInit(0.U(32.W))
-    val pc = RegInit(0.U(32.W))
+    val inst = io.in.bits.inst 
+    val pc = io.in.bits.pc
+    // val inst = RegInit(0.U(32.W))
+    // val pc = RegInit(0.U(32.W))
 
     val s_idle :: s_wait_ready :: Nil = Enum(2)
 
@@ -31,13 +33,21 @@ class IDU(config: NPCConfig) extends Module {
     ))
 
 
-    io.out.valid := state === s_wait_ready
+    io.out.valid := state === s_wait_ready && ~io.flush
     io.in.ready := state === s_idle
 
-    when( io.in.valid && io.in.ready){
-        inst := io.in.bits.inst
-        pc := io.in.bits.pc
+    when(io.flush){
+        state := s_idle
     }
+
+    io.pc.bits := pc
+    io.pc.valid := state =/= s_idle
+    // when( io.in.valid && io.in.ready){
+    //     inst := io.in.bits.inst
+    //     pc := io.in.bits.pc
+    // }
+
+
 
     control.io.in.inst := inst 
     control.io.in.pc := pc 

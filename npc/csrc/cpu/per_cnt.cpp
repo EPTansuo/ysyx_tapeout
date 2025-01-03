@@ -115,6 +115,7 @@ void perf_statistic(){
     PRINT_PERF("Store Cycles CNT", cycle_store_cnt, (double)cycle_store_cnt/store_cnt, "cycle per store");
 #ifdef CONFIG_USE_ICACHE
     printf("\n-------------------------------------- ICache --------------------------------------\n");
+    if(icache_access_cnt != 0){
     double hit_rate = (double)icache_hit_cnt/icache_access_cnt;
     PRINT_PERF("ICache IFetch CNT", icache_access_cnt+icache_bypass_cnt, 0.0, ""); 
     uint64_t icache_miss_cnt = icache_access_cnt-icache_hit_cnt;
@@ -127,6 +128,9 @@ void perf_statistic(){
                                     (double)icache_hit_access_time_cnt/icache_access_cnt, "cycle per hit");
     PRINT_PERF("ICache Miss Penalty CNT", icache_miss_penalty_cnt, 
                     (double)icache_miss_penalty_cnt/icache_miss_cnt, "cycle per miss");
+    }else{
+        printf("No data\n");
+    }
 #endif 
     fclose(fp);
 #endif // CONFIG_PERF_CNT

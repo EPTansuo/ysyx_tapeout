@@ -18,13 +18,17 @@ class LSU(config: NPCConfig) extends Module {
         //val dmem = Flipped(new DMemIO())
         //val dmem = new AXILiteMasterIF(addrWidthBits = 32, dataWidthBits = xlen)
         val dmem = new AXI4Bundle(config.axiparams)
+        //val forward = Decoupled(SigIO_FORWARD(config.XLEN))
     })
 
     val xlen = config.XLEN 
-
+/*
     val in_reg = Reg(Output(chiselTypeOf(io.in)))
+    when( io.in.valid && io.in.ready){
+        in_reg := io.in
+    }*/
     //val in_reg = RegInit(0.U.asTypeOf(Output(chiselTypeOf(io.in))))
-    val pc = in_reg.bits.pc
+ /*   val pc = in_reg.bits.pc
     val inst = in_reg.bits.inst
     val ctrlsig = in_reg.bits.lsu
     val src1 = in_reg.bits.src1
@@ -35,6 +39,39 @@ class LSU(config: NPCConfig) extends Module {
     val npc = in_reg.bits.npc
     val store_en = ctrlsig.st_sel =/= ST_XX
     val load_en = ctrlsig.ld_sel =/= LD_XX
+*/
+    val pc = io.in.bits.pc
+    val inst = io.in.bits.inst
+    val ctrlsig = io.in.bits.lsu
+    val src1 = io.in.bits.src1
+    val src2 = io.in.bits.src2 
+    val alu_out = io.in.bits.alu_out
+    val rd_addr = io.in.bits.rd_addr
+    val wbu_data = io.in.bits.wbu
+    val npc = io.in.bits.npc
+    val store_en = ctrlsig.st_sel =/= ST_XX
+    val load_en = ctrlsig.ld_sel =/= LD_XX
+    val wb_sel = wbu_data.wb_sel
+
+    // Forwarding
+    // val rd_addr = inst(11, 7)
+    // val rs1_addr = inst(19, 15)
+    // val rs2_addr = inst(24, 20)
+    
+    // forward.bits.rs1 := rs1_addr
+    // forward.bits.rs2 := rs2_addr
+    // forward.bits.rd := rd_addr
+    // forward.bits.rd_data := MuxLookup(wb_sel, 0.U(xlen.W))(Seq(
+    //     WB_ALU -> alu.io.out,
+    //     //WB_MEM -> io.in.bits.lsu.ld_data,
+    //     WB_PC4 -> (pc + 4.U),
+    //     //WB_CSR -> io.out.bits.csr_out
+    //     )
+    // )
+    // forward.bits.valid := wb_sle === WB_ALU || wb_sel === WB_MEM && (state === s_exe || state === s_wait_ready)
+
+
+
 
 val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_write :: s_wait_write :: s_write_2 :: s_wait_write_2 :: s_wait_ready :: Nil = Enum(11)
 
@@ -60,9 +97,7 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
     io.out.valid := state === s_wait_ready
     io.in.ready := state === s_idle
 
-    when( io.in.valid && io.in.ready){
-        in_reg := io.in
-    }
+
 
 
 
