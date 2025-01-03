@@ -35,6 +35,9 @@ extern const char *regs[];
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   int i =0;
   bool succ = true;
+
+memcpy(&cpu_state_buf, ref_r, DIFFTEST_REG_SIZE);
+
   if(!first){
     
     //if(ref_r->pc != npc_cpu.pc){
@@ -89,7 +92,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
       printf("IF GPR DIFF TEST ERROR: DO NOT SEE CURRENT INSTRATION, SEE PREVIOUS ONE!\n");
   }
   first = false;
-  memcpy(&cpu_state_buf, ref_r, DIFFTEST_REG_SIZE);
+  
  // printf("npc:nemu:ref_r->pc==0x%x\n",ref_r->pc);
   return succ;
 }
