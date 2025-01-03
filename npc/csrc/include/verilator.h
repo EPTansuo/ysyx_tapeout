@@ -85,8 +85,8 @@ extern VTOP_NAME* top ;
 #define PC (NPC_CPU->wbu->io_in_bits_pc)
 #define CSR (NPC_CPU->exu->csr)
 #define WBU_VALID (NPC_CPU->wbu->wbu_valid)
-#define INST (NPC_CPU->ifu->io_out_bits_inst)
-
+// #define INST (NPC_CPU->ifu->io_out_bits_inst)
+#define INST (NPC_CPU->wbu->io_in_bits_inst)
 #endif // !_VERILATOR_H_
 
 
