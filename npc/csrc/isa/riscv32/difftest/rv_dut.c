@@ -32,10 +32,11 @@ extern const char *regs[];
 
 
 // 为了匹配，所以让ref_r使用cpu_state_buf推迟了一个周期
-// 改了，现在不推迟了
+// 改了，现在不推迟了,只有pc是推迟的
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   int i =0;
   bool succ = true;
+  static word_t ref_pc_last = 0;
 
 memcpy(&cpu_state_buf, ref_r, DIFFTEST_REG_SIZE);
 
@@ -69,6 +70,11 @@ memcpy(&cpu_state_buf, ref_r, DIFFTEST_REG_SIZE);
     //     succ = false;
     //     printf(L_RED "npc: pc = 0x" FMT_WORD_HEX_WIDTH "\tnemu: pc = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.pc,cpu_state_buf.pc);
     //   }
+
+    if(succ && ref_pc_last != npc_cpu.pc){
+        succ = false;
+        printf(L_RED "npc: pc = 0x" FMT_WORD_HEX_WIDTH "\tnemu: pc = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.pc,ref_pc_last);
+    }
     if(ref_r->csr.mepc != npc_cpu.csr.mepc){
       printf(L_RED "npc: mepc   = 0x" FMT_WORD_HEX_WIDTH "\tnemu: mepc   = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.csr.mepc,ref_r->csr.mepc);
       succ = false;
@@ -93,7 +99,7 @@ memcpy(&cpu_state_buf, ref_r, DIFFTEST_REG_SIZE);
       // printf("IF GPR DIFF TEST ERROR: DO NOT SEE CURRENT INSTRATION, SEE PREVIOUS ONE!\n");
   }
   first = false;
-  
+  ref_pc_last = ref_r->pc;
  // printf("npc:nemu:ref_r->pc==0x%x\n",ref_r->pc);
   return succ;
 }
