@@ -32,6 +32,7 @@ extern const char *regs[];
 
 
 // 为了匹配，所以让ref_r使用cpu_state_buf推迟了一个周期
+// 改了，现在不推迟了
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   int i =0;
   bool succ = true;
