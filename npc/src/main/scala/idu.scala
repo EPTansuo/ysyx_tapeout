@@ -72,7 +72,10 @@ class IDU(config: NPCConfig) extends Module {
 
       //Ebreak
     val ebreak_ = Module(new Ebreak)
-    val isebreak = inst === insts.ebreak
+    val isebreak = RegInit(false.B)
+    when(inst === insts.ebreak){
+        isebreak := true.B
+    }
     ebreak_.io.isebreak := isebreak
     //invaild instruction
     val instInvalid = Module(new InstInvalid)
