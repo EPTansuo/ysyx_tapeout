@@ -46,7 +46,7 @@ class IFU(config: NPCConfig) extends Module {
  
 
 
-  io.out.valid := state === s_wait_ready
+  io.out.valid := state === s_wait_ready && ~io.flush
   // io.in.ready := state === s_idle && ~stall
   io.in.ready := true.B
 
@@ -74,6 +74,8 @@ class IFU(config: NPCConfig) extends Module {
     state := s_idle
     pc := io.npc
   }
+
+
   io.pc.valid := true.B 
   io.pc.bits := pc 
 
