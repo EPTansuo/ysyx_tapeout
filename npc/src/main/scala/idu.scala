@@ -31,12 +31,12 @@ class IDU(config: NPCConfig) extends Module {
 
     val state = RegInit(s_idle)         
     state := MuxLookup(state, s_idle)(Seq(
-        s_idle -> Mux(io.in.valid, s_wait_ready, s_idle),
+        s_idle -> Mux(io.in.valid && ~stall, s_wait_ready, s_idle),
         s_wait_ready -> Mux(io.out.ready && io.out.valid, s_idle, s_wait_ready)
     ))
 
 
-    io.out.valid := (state === s_wait_ready) && ~stall
+    io.out.valid := ((state === s_wait_ready) && (~stall))
     io.in.ready := state === s_idle && ~stall 
 
     when(io.flush){
