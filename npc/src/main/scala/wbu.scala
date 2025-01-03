@@ -14,6 +14,7 @@ class WBU(config: NPCConfig) extends Module {
         val in = Flipped(Decoupled(new SigIO_LSU_WBU(config.XLEN)))
         val out = Decoupled(new SigIO_WBU_IFU(config.XLEN))
         val reg_write = Flipped(new RegfileWriteIO(config.XLEN))
+        val wb_valid = Output(Bool())
     })
 
     // val in_reg = Reg(Output(chiselTypeOf(io.in)))
@@ -54,6 +55,7 @@ class WBU(config: NPCConfig) extends Module {
    
 
     val valid_old = RegNext(io.out.valid)
+    io.wb_valid := (!valid_old && io.out.valid)
     val wbu_valid = RegNext(!valid_old && io.out.valid)
     dontTouch(wbu_valid) // Used for simulation
     dontTouch(pc)
