@@ -101,6 +101,7 @@ class ysyx_npc(config: NPCConfig) extends Module {
     val wbu_raw = Wire(Bool())
     when(idu.io.in.bits.inst === 0x0007a783.U){
         printf("IDU_rs1: %d, IDU_rs2: %d, EXU_rd: %d, IDU_inst_type: %d, exu.io.out.ready: %d\n", IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, exu.io.out.ready)
+        printf("useRs: %d\n", useRs(IDU_inst_type))
     }
     // exu_raw := conflictWithStage(IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, ~exu.io.out.ready)
     // lsu_raw := conflictWithStage(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, ~lsu.io.out.ready)
