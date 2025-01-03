@@ -95,45 +95,20 @@ class ysyx_npc(config: NPCConfig) extends Module {
     val lsu_raw = Wire(Bool())
     val wbu_raw = Wire(Bool())
 
-    // exu_raw := conflictWithStage(IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, ~exu.io.out.ready)
-    // lsu_raw := conflictWithStage(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, ~lsu.io.out.ready)
-    // wbu_raw := conflictWithStage(IDU_rs1, IDU_rs2, WBU_rd, IDU_inst_type, ~wbu.io.out.ready)
-    exu_raw := conflictWithStage(IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, true.B)
-    lsu_raw := conflictWithStage(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, true.B)
-    wbu_raw := conflictWithStage(IDU_rs1, IDU_rs2, WBU_rd, IDU_inst_type, true.B)
-    // exu_raw := conflictWithStage(IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, exu.io.out.valid)
-    // lsu_raw := conflictWithStage(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, lsu.io.out.valid)
-    // wbu_raw := conflictWithStage(IDU_rs1, IDU_rs2, WBU_rd, IDU_inst_type, wbu.io.out.valid)
+    exu_raw := conflictWithStage(IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, ~exu.io.out.ready)
+    lsu_raw := conflictWithStage(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, ~lsu.io.out.ready)
+    wbu_raw := conflictWithStage(IDU_rs1, IDU_rs2, WBU_rd, IDU_inst_type, ~wbu.io.out.ready)
     dontTouch(exu_raw)
     dontTouch(lsu_raw)
     dontTouch(wbu_raw)
-
-
-
     val isRAW = exu_raw || lsu_raw || wbu_raw
-
-    val start_stall = RegInit(false.B)
-    val stall_cnt = RegInit(0.U(3.W))
-    when(isRAW && !start_stall){
-        start_stall := true.B
-        stall_cnt := Mux(exu_raw, 3.U, Mux(lsu_raw, 2.U, 1.U))
-    }.elsewhen(stall_cnt === 0.U){
-        start_stall := false.B
-    }
-
-    when(start_stall){
-        when(wbu.io.wb_valid){
-            stall_cnt := stall_cnt - 1.U
-        }
-    }
-
     // val isRAW = conflictWithStage(IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, ~exu.io.out.valid) ||
     //                conflictWithStage(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, ~lsu.io.out.valid) ||
     //                conflictWithStage(IDU_rs1, IDU_rs2, WBU_rd, IDU_inst_type, ~wbu.io.out.valid)
     // val isRAW = false.B
 
-    ifu.io.stall := start_stall
-    idu.io.stall := start_stall
+    ifu.io.stall := isRAW
+    idu.io.stall := isRAW
 
 
     // Regfile
