@@ -19,6 +19,7 @@ class LSU(config: NPCConfig) extends Module {
         //val dmem = new AXILiteMasterIF(addrWidthBits = 32, dataWidthBits = xlen)
         val dmem = new AXI4Bundle(config.axiparams)
         //val forward = Decoupled(SigIO_FORWARD(config.XLEN))
+        val rd_addr = Output(UInt(5.W))
     })
 
     val xlen = config.XLEN 
@@ -53,6 +54,8 @@ class LSU(config: NPCConfig) extends Module {
     val load_en = ctrlsig.ld_sel =/= LD_XX
     val wb_sel = wbu_data.wb_sel
 
+
+    
     // Forwarding
     // val rd_addr = inst(11, 7)
     // val rs1_addr = inst(19, 15)
@@ -98,7 +101,7 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
     io.in.ready := state === s_idle
 
 
-
+    io.rd_addr := Mux(state === s_idle, 0.U, rd_addr)
 
 
     // READ 
