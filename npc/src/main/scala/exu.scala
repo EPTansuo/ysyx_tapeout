@@ -71,7 +71,7 @@ class EXU(config: NPCConfig) extends Module{
     val rd_addr_reg = RegInit(0.U(5.W))
     
 
-    io.rd_addr := rd_addr
+    io.rd_addr := rd_addr_reg
     when(io.stall){
         rd_addr_reg := 0.U
     }.otherwise{
