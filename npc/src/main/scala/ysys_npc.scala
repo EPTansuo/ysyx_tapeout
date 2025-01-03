@@ -57,20 +57,55 @@ class ysyx_npc(config: NPCConfig) extends Module {
     ModuleConnect(exu.io.out, lsu.io.in, lsu.io.out, stage_arch)
     ModuleConnect(lsu.io.out, wbu.io.in, wbu.io.out, stage_arch)
 
-    val hazard = Module(new ControlHazard(config))
-    hazard.io.ifu_pc <> ifu.io.pc
-    hazard.io.idu_pc <> idu.io.pc
-    hazard.io.exu_npc <> exu.io.npc
-    ifu.io.flush := hazard.io.flush
-    idu.io.flush := hazard.io.flush
+
+    // Control Hazard
+    val controlHazard = Module(new ControlHazard(config))
+    controlHazard.io.ifu_pc <> ifu.io.pc
+    controlHazard.io.idu_pc <> idu.io.pc
+    controlHazard.io.exu_npc <> exu.io.npc
+    ifu.io.flush := controlHazard.io.flush
+    idu.io.flush := controlHazard.io.flush
     ifu.io.npc := exu.io.npc.bits 
 
-    def conflictWithStage[T <: Bundle](rs1: UInt, rs2: UInt, rd: UInt, valid: Bool): Bool = {
-         valid && ((rs1 === rd) || (rs2 === rd))
+    
+    // Data Hazard
+    def useRs(itype: UInt): Bool = {
+        // useRS1 R,I,S,B,FENCE
+        val useRs1 = itype === inst_type.R_TYPE || 
+                     itype === inst_type.I_TYPE || 
+                     itype === inst_type.S_TYPE || 
+                     itype === inst_type.B_TYPE || 
+                     itype === inst_type.FENCE_TYPE
+
+        // useRS2 R,S,B
+        val useRs2 = itype === inst_type.R_TYPE || 
+                     itype === inst_type.S_TYPE || 
+                     itype === inst_type.B_TYPE
+
+        useRs1 || useRs2     
     }
-    val isRAWMem = conflictWithStage(IDU.rs1, IDU.rs2, EXU.rd) ||
-                   conflictWithStage(IDU.rs1, IDU.rs2, LSU.rd) ||
-                   conflictWithStage(EXU.rs1, EXU.rs2, LSU.rd)
+
+    def conflictWithStage(rs1: UInt, rs2: UInt, rd: UInt, ID_inst_type: UInt, valid: Bool): Bool = {
+         valid && ((rs1 === rd) || (rs2 === rd)) && rs1.orR && rs2.orR && useRs(ID_inst_type)
+    }
+    
+    val IDU_rs1 = idu.io.out.bits.inst(19, 15)
+    val IDU_rs2 = idu.io.out.bits.inst(24, 20)
+    val IDU_inst_type = idu.io.inst_type
+    val EXU_rd = exu.io.out.bits.rd_addr
+    val LSU_rd = lsu.io.out.bits.rd_addr
+    val WBU_rd = wbu.io.out.bits.rd_addr
+
+
+    val isRAW = conflictWithStage(IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, true.B) ||
+                   conflictWithStage(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, true.B) ||
+                   conflictWithStage(IDU_rs1, IDU_rs2, WBU_rd, IDU_inst_type, true.B)
+
+
+    ifu.io.stall := isRAW
+    idu.io.stall := isRAW
+
+
 
 
     val regfile = Module(new Regfile(config))

@@ -71,7 +71,7 @@ class WBU(config: NPCConfig) extends Module {
     )
     io.reg_write.data := wb_data
 
-
+    io.out.bits.rd_addr := io.in.bits.rd_addr
     io.out.bits.npc := npc
     dontTouch(io.in.bits.pc)
 

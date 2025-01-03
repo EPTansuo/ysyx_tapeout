@@ -15,12 +15,15 @@ class IDU(config: NPCConfig) extends Module {
         val out = (Decoupled(new SigIO_IDU_EXU(config.XLEN)))
         val flush = Input(Bool())
         val pc = Decoupled(UInt(config.XLEN.W))
+        val inst_type = Output(UInt(4.W))
+        val stall = Input(Bool())
     })
 
-
+    
     val control = Module(new Control(config))
     val inst = io.in.bits.inst 
     val pc = io.in.bits.pc
+    val stall = io.stall
     // val inst = RegInit(0.U(32.W))
     // val pc = RegInit(0.U(32.W))
 
@@ -28,8 +31,8 @@ class IDU(config: NPCConfig) extends Module {
 
     val state = RegInit(s_idle)         
     state := MuxLookup(state, s_idle)(Seq(
-        s_idle -> Mux(io.in.valid, s_wait_ready, s_idle),
-        s_wait_ready -> Mux(io.out.ready, s_idle, s_wait_ready)
+        s_idle -> Mux(io.in.valid && ~stall, s_wait_ready, s_idle),
+        s_wait_ready -> Mux(io.out.ready && ~stall, s_idle, s_wait_ready)
     ))
 
 
@@ -64,6 +67,8 @@ class IDU(config: NPCConfig) extends Module {
     io.out.bits.wbu.csr_cmd := control.io.out.csr_cmd
     io.out.bits.exu.br_sel := control.io.out.br_sel
     io.out.bits.exu.pc_sel := control.io.out.pc_sel
+
+    io.inst_type := control.io.out.inst_type
 
       //Ebreak
     val ebreak_ = Module(new Ebreak)

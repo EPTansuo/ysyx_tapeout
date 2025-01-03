@@ -105,6 +105,7 @@ object SigMap{
   import ld_sel._
   import br_sel._
   import csr_cmd._
+  import inst_type._
 
 """
 end_code = "\n}\n\n"
