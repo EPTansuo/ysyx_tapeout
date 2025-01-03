@@ -45,11 +45,6 @@ class ysyx_npc(config: NPCConfig) extends Module {
     val lsu = Module(new LSU(config))
     val wbu = Module(new WBU(config))
 
-    /*ifu.io.in <> wbu.io.out
-    idu.io.in <> ifu.io.out
-    exu.io.in <> idu.io.out
-    lsu.io.in <> exu.io.out 
-    wbu.io.in <> lsu.io.out*/
     val stage_arch = "pipeline"
     ModuleConnect(wbu.io.out, ifu.io.in, ifu.io.out, stage_arch)
     ModuleConnect(ifu.io.out, idu.io.in, idu.io.out, stage_arch)
@@ -97,29 +92,30 @@ class ysyx_npc(config: NPCConfig) extends Module {
     val WBU_rd = wbu.io.out.bits.rd_addr
 
 
-    val isRAW = conflictWithStage(IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, true.B) ||
-                   conflictWithStage(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, true.B) ||
-                   conflictWithStage(IDU_rs1, IDU_rs2, WBU_rd, IDU_inst_type, true.B)
-
+    // val isRAW = conflictWithStage(IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, true.B) ||
+    //                conflictWithStage(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, true.B) ||
+    //                conflictWithStage(IDU_rs1, IDU_rs2, WBU_rd, IDU_inst_type, true.B)
+    val isRAW = false.B
 
     ifu.io.stall := isRAW
     idu.io.stall := isRAW
 
 
-
-
+    // Regfile
     val regfile = Module(new Regfile(config))
     exu.io.reg_read1 <> regfile.io.read1
     exu.io.reg_read2 <> regfile.io.read2
     wbu.io.reg_write <> regfile.io.write
 
+
+    // ICache
     val icache = if(config.USE_ICACHE) Some(Module(new ICache(config))) else None
     icache.map { cache =>
         ifu.io.imem <> cache.io.ifu
         cache.io.fencei := ifu.io.fencei
     }
 
-
+    // AXI Abriter
     val axi_arbiter = Module( new AXIArbiter(2, config.axiparams))
     axi_arbiter.io.in(0) <> icache.map(_.io.imem).getOrElse(ifu.io.imem)
     axi_arbiter.io.in(1) <> lsu.io.dmem
