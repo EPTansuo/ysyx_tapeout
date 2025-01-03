@@ -85,7 +85,7 @@ class ysyx_npc(config: NPCConfig) extends Module {
     }
 
     def conflictWithStage(rs1: UInt, rs2: UInt, rd: UInt, ID_inst_type: UInt, valid: Bool): Bool = {
-         valid && ((rs1 === rd) || (rs2 === rd)) && (rs1.orR || rs2.orR) && useRs(ID_inst_type) // TODO: if wreiteReg
+         valid && ((rs1 === rd) || (rs2 === rd)) && (rd.orR) && useRs(ID_inst_type) // TODO: if wreiteReg
 
     }
     
