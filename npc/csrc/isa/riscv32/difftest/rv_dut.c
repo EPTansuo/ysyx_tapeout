@@ -71,7 +71,7 @@ memcpy(&cpu_state_buf, ref_r, DIFFTEST_REG_SIZE);
     //     printf(L_RED "npc: pc = 0x" FMT_WORD_HEX_WIDTH "\tnemu: pc = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.pc,cpu_state_buf.pc);
     //   }
 
-    if(succ && ref_pc_last != npc_cpu.pc){
+    if(ref_pc_last != npc_cpu.pc){
         succ = false;
         printf(L_RED "npc: pc = 0x" FMT_WORD_HEX_WIDTH "\tnemu: pc = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.pc,ref_pc_last);
     }
