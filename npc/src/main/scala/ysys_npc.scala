@@ -114,7 +114,7 @@ class ysyx_npc(config: NPCConfig) extends Module {
 
     val start_stall = RegInit(false.B)
     val stall_cnt = RegInit(0.U(3.W))
-    when(isRAW){
+    when(isRAW && !start_stall){
         start_stall := true.B
         stall_cnt := Mux(exu_raw, 3.U, Mux(lsu_raw, 2.U, 1.U))
     }.elsewhen(stall_cnt === 0.U){
