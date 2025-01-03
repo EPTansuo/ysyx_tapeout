@@ -91,10 +91,20 @@ class ysyx_npc(config: NPCConfig) extends Module {
     val LSU_rd = lsu.io.out.bits.rd_addr
     val WBU_rd = wbu.io.out.bits.rd_addr
 
+    val exu_raw = Wire(Bool())
+    val lsu_raw = Wire(Bool())
+    val wbu_raw = Wire(Bool())
 
-    val isRAW = conflictWithStage(IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, ~exu.io.out.valid) ||
-                   conflictWithStage(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, ~lsu.io.out.valid) ||
-                   conflictWithStage(IDU_rs1, IDU_rs2, WBU_rd, IDU_inst_type, ~wbu.io.out.valid)
+    exu_raw := conflictWithStage(IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, ~exu.io.out.valid)
+    lsu_raw := conflictWithStage(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, ~lsu.io.out.valid)
+    wbu_raw := conflictWithStage(IDU_rs1, IDU_rs2, WBU_rd, IDU_inst_type, ~wbu.io.out.valid)
+    dontTouch(exu_raw)
+    dontTouch(lsu_raw)
+    dontTouch(wbu_raw)
+    val isRAW = exu_raw || lsu_raw || wbu_raw
+    // val isRAW = conflictWithStage(IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, ~exu.io.out.valid) ||
+    //                conflictWithStage(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, ~lsu.io.out.valid) ||
+    //                conflictWithStage(IDU_rs1, IDU_rs2, WBU_rd, IDU_inst_type, ~wbu.io.out.valid)
     // val isRAW = false.B
 
     ifu.io.stall := isRAW
