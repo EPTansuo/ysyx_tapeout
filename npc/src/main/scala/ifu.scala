@@ -21,8 +21,10 @@ class IFU(config: NPCConfig) extends Module {
     val imem = new AXI4Bundle(config.axiparams)
     val pc = Decoupled((UInt(config.XLEN.W)))
     val flush = Input(Bool())
+    // val stall = Input(Bool())
   })
 
+  // val stall = io.stall
   val isFirst = RegInit(true.B)
   when(isFirst){
     isFirst := false.B
@@ -45,8 +47,8 @@ class IFU(config: NPCConfig) extends Module {
 
 
   io.out.valid := state === s_wait_ready
-  io.in.ready := state === s_idle
-
+  // io.in.ready := state === s_idle && ~stall
+  io.in.ready := true.B
 
 
   val pc = RegInit(config.PC_INIT.U)

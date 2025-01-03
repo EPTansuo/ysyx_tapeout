@@ -73,6 +73,7 @@ class SigIO_LSU_WBU(xlen: Int) extends Bundle{
 
 class SigIO_WBU_IFU(xlen: Int) extends Bundle{
     val npc = Input(UInt(xlen.W))
+    val rd_addr = Input(UInt(5.W))
 }
 
 
