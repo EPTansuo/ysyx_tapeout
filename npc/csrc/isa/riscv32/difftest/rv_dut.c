@@ -90,7 +90,7 @@ memcpy(&cpu_state_buf, ref_r, DIFFTEST_REG_SIZE);
   }
   if(!succ){
       printf("\e[1;31m Difftest ERROR!\e[0m\n ");
-      printf("IF GPR DIFF TEST ERROR: DO NOT SEE CURRENT INSTRATION, SEE PREVIOUS ONE!\n");
+      // printf("IF GPR DIFF TEST ERROR: DO NOT SEE CURRENT INSTRATION, SEE PREVIOUS ONE!\n");
   }
   first = false;
   
