@@ -174,11 +174,15 @@ static int decode_exec(Decode *s) {
           s->isa.inst.val = icache[index].inst;
           //s->snpc = s->pc+4;
           s->dnpc = s->pc+4;
+#ifdef CONFIG_TRACE
           icache_hit++;
+#endif 
           goto *icache[index].label;
         }
   }
+#ifdef CONFIG_TRACE
   icache_miss++;
+#endif 
   s->isa.inst.val = inst_fetch(&s->snpc, 4);
   s->dnpc = s->snpc;
 #endif //!CONFIG_USE_ICAHE
