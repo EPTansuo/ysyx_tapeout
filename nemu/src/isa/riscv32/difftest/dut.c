@@ -83,7 +83,7 @@ print_error_info:
         if((i+1)%4 == 0)
           putchar('\n');
   }
-  printf("ref: $pc = 0x" FMT_WORD_HEX_WIDTH "\n", cpu.pc);
+  printf("ref: $pc = 0x" FMT_WORD_HEX_WIDTH "\n", ref_r->pc);
 
   isa_csr_display();
 
