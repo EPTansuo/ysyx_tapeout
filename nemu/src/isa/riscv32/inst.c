@@ -172,8 +172,8 @@ static int decode_exec(Decode *s) {
   if (icache[index].pc == s->pc ) {
         if(icache[index].label != NULL){
           s->isa.inst.val = icache[index].inst;
-          s->snpc = s->pc+4;
-          s->dnpc = s->snpc;
+          //s->snpc = s->pc+4;
+          s->dnpc = s->pc+4;
           icache_hit++;
           goto *icache[index].label;
         }
