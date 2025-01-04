@@ -109,7 +109,7 @@ class ICache(config: NPCConfig) extends Module{
     if(config.USE_SOC){
         // IF the address is not in the range of the SDRAM address, then it is a bypass
         bypass := (io.ifu.ar.bits.addr(31,29) =/= "b101".U)
-        bypass := true.B
+        //bypass := true.B
     }else{
         bypass := true.B //NPC的SRAM还不支持突发传输，所以不支持icache  
     }

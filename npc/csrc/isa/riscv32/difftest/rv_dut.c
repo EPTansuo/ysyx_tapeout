@@ -55,8 +55,8 @@ memcpy(&cpu_state_buf, ref_r, DIFFTEST_REG_SIZE);
       printf("ref reg info:\n");
       for (int j = 0; j < MUXDEF(CONFIG_RVE,16,32); j++)
       {
-              if(j==i)
-                printf("$%s = 0x%s"  FMT_WORD_HEX_WIDTH COLOR_NONE "%s\t", regs[j], L_RED, cpu_state_buf.gpr[j], COLOR_NONE);
+              if(cpu_state_buf.gpr[j] != npc_cpu.gpr[j])
+                printf("$%s = 0x" L_RED  FMT_WORD_HEX_WIDTH COLOR_NONE "\t", regs[j], cpu_state_buf.gpr[j]);
               else
                 printf("$%s = 0x" FMT_WORD_HEX_WIDTH "\t", regs[j], cpu_state_buf.gpr[j]);
               if ((j + 1) % 4 == 0)
