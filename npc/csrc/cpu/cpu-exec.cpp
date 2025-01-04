@@ -124,7 +124,7 @@ static void exec_once(){
   for(int i=0; i<MUXDEF(CONFIG_RVE,16,32); i++){
     npc_cpu.gpr[i] = gpr(i);
   }
-  npc_cpu.pc = PC;
+  npc_cpu.pc = NPC;
 
   npc_cpu.csr.mepc = CSR->mepc;
   npc_cpu.csr.mcause = CSR->mcause;
