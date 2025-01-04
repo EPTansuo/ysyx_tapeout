@@ -35,6 +35,11 @@ import freechips.rocketchip.amba.axi4._
 class ICacheFormalTestBench(config: NPCConfig) extends Module {
     val io = IO(new Bundle{
         val in = Flipped(Decoupled(new SigIO_WBU_IFU(config.XLEN)))
+        val stall = Input(Bool())
+        val fencei = Input(Bool())
+        val flush = Input(Bool())
+        val npc = Input(UInt(config.XLEN.W))
+        val pc = (Decoupled((UInt(config.XLEN.W))))
     })
 
     val icache = Module(new ICache(config))
@@ -46,6 +51,17 @@ class ICacheFormalTestBench(config: NPCConfig) extends Module {
 
     ifu_dut.io.in <> io.in
     ifu_ref.io.in <> io.in
+    ifu_dut.io.flush := io.flush
+    ifu_ref.io.flush := io.flush
+    ifu_ref.io.npc := io.npc
+    ifu_dut.io.npc := io.npc
+    ifu_dut.io.pc <> io.pc
+    ifu_ref.io.pc <> io.pc
+
+    icache.io.fencei := io.fencei
+
+
+
 
     // For DUT, use I$ to fetch instruction
     icache.io.ifu <> ifu_dut.io.imem
