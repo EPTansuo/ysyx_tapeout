@@ -73,9 +73,9 @@ extern char end;
 intptr_t endpos = (intptr_t)&end;
 void *_sbrk(intptr_t increment) {
   int ret = _syscall_(SYS_brk, endpos+increment, 0, 0);
-  char buffer[128];
-  int len = sprintf(buffer, "_sbrk called with increment: %d, end: %x, ret=%d\n", increment, endpos, ret);
-  _write(STDERR_FILENO, buffer, len);
+  //char buffer[128];
+  //int len = sprintf(buffer, "_sbrk called with increment: %d, end: %x, ret=%d\n", increment, endpos, ret);
+  //_write(STDERR_FILENO, buffer, len);
   if(ret == 0) {
 	uintptr_t ret = endpos;
 	endpos += increment;
