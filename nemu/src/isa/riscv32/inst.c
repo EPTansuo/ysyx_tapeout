@@ -70,7 +70,7 @@ enum {
 #ifdef CONFIG_USE_ICACHE
 #define SHAMT (BITS(icache[index].inst, 24, 20))
 #else  
-#define SHAMT (BITS(s->isa.inst.val), 24, 20)
+#define SHAMT (BITS(s->isa.inst.val, 24, 20))
 #endif 
 
 #ifdef CONFIG_RV64
