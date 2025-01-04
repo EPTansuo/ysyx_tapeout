@@ -175,6 +175,7 @@ static int decode_exec(Decode *s) {
 //#ifdef CONFIG_TRACE
           s->snpc = s->pc+4;
           //s->isa.inst.val = icache[index].inst;
+          printf("cache_hit\n");
           icache_hit++;
 //#endif 
           goto *icache[index].label;
