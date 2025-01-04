@@ -177,9 +177,9 @@ static int decode_exec(Decode *s) {
 
   // TODO: fencei
   unsigned index = s->pc & (ICACHE_SIZE - 1);
-  //if (icache[index].pc == s->pc ) {
-  if(true){
-        if(icache[index].label != NULL){
+  if (icache[index].pc == s->pc ) {
+        //if(icache[index].label != NULL){
+        if(true){
           s->dnpc = s->pc+4;
 #ifdef CONFIG_TRACE
           s->snpc = s->pc+4;
