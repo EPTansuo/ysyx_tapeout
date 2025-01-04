@@ -67,7 +67,7 @@ enum {
     ((SEXT(BITS(i, 30, 25), 6) << 58) >> 58) << 4 | \
     ((SEXT(BITS(i, 11, 8), 4) << 60) >> 60); *imm = *imm << 1; } while (0)
 
-#define SHAMT (printf("SHAMT\n"),BITS(MUXDEF(CONFIG_USE_ICAHE, icache[index].inst, s->isa.inst.val), 24, 20))
+#define SHAMT (printf("SHAMT:%lld\n",(BITS(MUXDEF(CONFIG_USE_ICAHE, icache[index].inst, s->isa.inst.val), 24, 20))),BITS(MUXDEF(CONFIG_USE_ICAHE, icache[index].inst, s->isa.inst.val), 24, 20))
 
 #ifdef CONFIG_RV64
 #define SHAMT_LONG (BITS(MUXDEF(CONFIG_USE_ICAHE, icache[index].inst, s->isa.inst.val), 25, 20))
