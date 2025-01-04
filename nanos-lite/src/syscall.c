@@ -34,26 +34,29 @@ void do_syscall(Context *c) {
   a[1] = c->GPR2;
   a[2] = c->GPR3;
   a[3] = c->GPR4;
-#ifdef STRACE
-if(a[0] == SYS_write || a[0] == SYS_read || a[0] == SYS_lseek || a[0] == SYS_close){
-  Log("SYSCALL(%s, %s, %d, %d)", syscalls[a[0]], fs_get_file_name(a[1]), a[2], a[3]);
-  //fs_strace(syscalls[a[0]], a[1], a[2], a[3]);
-}
-else{
-  Log("SYSCALL(%s, %d, %d, %d)", syscalls[a[0]], a[1], a[2], a[3]);
-}
-#endif 
+
 
 
   switch (a[0]) {
     case SYS_exit:  halt(0); break;
     case SYS_yield: yield(); c->GPRx = 0; break;
     case SYS_time:  c->GPRx = sys_time((struct timeval *)a[1]);  break;
-    case SYS_brk:   c->GPRx = mm_brk(a[1]);
+    case SYS_brk:   c->GPRx = mm_brk(a[1]); break;
     case SYS_write: c->GPRx = sys_write(a[1], (void *)a[2], a[3]); break;
     case SYS_read:  c->GPRx = sys_read(a[1], (void *)a[2], a[3]); break;
     case SYS_lseek: c->GPRx = sys_lseek(a[1], a[2], a[3]); break;
     case SYS_close: c->GPRx = sys_close(a[1]); break;
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
+
+  #ifdef STRACE
+if(a[0] == SYS_write || a[0] == SYS_read || a[0] == SYS_lseek || a[0] == SYS_close){
+  Log("SYSCALL(%s, %s, 0x%x, 0x%x) = %d", syscalls[a[0]], fs_get_file_name(a[1]), a[2], a[3], c->GPRx);
+  //fs_strace(syscalls[a[0]], a[1], a[2], a[3]);
+}
+else{
+  Log("SYSCALL(%s, 0x%x, 0x%x, 0x%x) = %d", syscalls[a[0]], a[1], a[2], a[3], c->GPRx);
+}
+#endif 
+
 }
