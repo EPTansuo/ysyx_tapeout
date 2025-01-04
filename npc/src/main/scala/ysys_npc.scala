@@ -60,7 +60,7 @@ class ysyx_npc(config: NPCConfig) extends Module {
     val stage_arch = "pipeline"
     ModuleConnect(wbu.io.out, ifu.io.in, ifu.io.out, false.B, stage_arch)
     ModuleConnect(ifu.io.out, idu.io.in, idu.io.out, controlHazard.io.flush, stage_arch)
-    ModuleConnect(idu.io.out, exu.io.in, exu.io.out, false.B, stage_arch)
+    ModuleConnect(idu.io.out, exu.io.in, exu.io.out, controlHazard.io.flush, stage_arch)
     ModuleConnect(exu.io.out, lsu.io.in, lsu.io.out, false.B, stage_arch)
     ModuleConnect(lsu.io.out, wbu.io.in, wbu.io.out, false.B, stage_arch)
 
