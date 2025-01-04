@@ -158,7 +158,10 @@ class ysyx_npc(config: NPCConfig) extends Module {
     val loaduse_cnt = RegInit(0.U(64.W))
     when(isRAW_loaduse){
         loaduse_cnt := loaduse_cnt + 1.U
-        printf("load-use conflict: %d\n", loaduse_cnt)
+        when(loaduse_cnt(9, 0) === 0.U){
+            printf("load-use conflict: %d\n", loaduse_cnt)
+        }
+        //printf("load-use conflict: %d\n", loaduse_cnt)
     }
     dontTouch(loaduse_cnt)
 
