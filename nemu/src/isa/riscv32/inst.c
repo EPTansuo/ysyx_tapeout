@@ -176,6 +176,7 @@ static int decode_exec(Decode *s) {
 #ifdef CONFIG_TRACE
           s->isa.inst.val = icache[index].inst;
 #endif 
+          printf("icache hit\n");
           goto *icache[index].label;
         }
   }
