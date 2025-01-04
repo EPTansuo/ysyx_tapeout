@@ -20,8 +20,10 @@
 #include <ftrace.h>
 #include <fmt-def.h>
 
+#ifndef CONFIG_BTRACE 
+#define CONFIG_USE_ICACHE //Not Config in Kconfig
+#endif 
 
-//#define CONFIG_USE_ICACHE //Not Config in Kconfig
 
 extern CPU_state cpu;
 
