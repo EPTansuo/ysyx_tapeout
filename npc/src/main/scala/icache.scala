@@ -43,7 +43,7 @@ class ICache(config: NPCConfig) extends Module{
     dontTouch(io.fencei)
 
 
-    val raddr_ifu = RegEnable(io.ifu.ar.bits.addr, io.ifu.ar.valid)
+    val raddr_ifu = Mux(io.ifu.ar.valid, io.ifu.ar.bits.addr, RegEnable(io.ifu.ar.bits.addr, io.ifu.ar.valid))
     val rtag = raddr_ifu(tagBits + indexBits + offsetBits - 1, indexBits + offsetBits)
     val ridx = raddr_ifu(indexBits + offsetBits - 1, offsetBits)
     val roffset = raddr_ifu(offsetBits - 1, 0)
