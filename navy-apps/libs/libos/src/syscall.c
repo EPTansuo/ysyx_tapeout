@@ -70,14 +70,14 @@ int _write(int fd, void *buf, size_t count) {
 }
 
 extern char end;
+intptr_t end_pos = (intptr_t)&end;
 void *_sbrk(intptr_t increment) {
-  char* endpos = &end;
-  int ret = _syscall_(SYS_brk, (intptr_t)(&end+increment), 0, 0);
+  int ret = _syscall_(SYS_brk, endpos+increment, 0, 0);
   char buffer[128];
   int len = sprintf(buffer, "_sbrk called with increment: %d, end: %x, ret=%d\n", increment, endpos, ret);
   _write(STDERR_FILENO, buffer, len);
   if(ret == 0) {
-	char* ret = endpos;
+	uintptr_t ret = endpos;
 	*endpos += increment;
     return (void*)ret;
   }
