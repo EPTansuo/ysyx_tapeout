@@ -141,6 +141,7 @@ typedef struct {
   word_t rd;
   uint32_t inst;
   word_t pc;
+  word_t snpc;
 } ICacheEntry;
 
 ICacheEntry  icache[ICACHE_SIZE] PG_ALIGN =  {0};
@@ -166,6 +167,7 @@ static int decode_exec(Decode *s) {
 #define INSTPAT_MATCH(s, name, t, ...) { \
   icache[index].inst = INSTPAT_INST(s); \
   icache[index].pc = s->pc; \
+  icache[index].snpc = s->snpc; \
   icache[index].label = &&exe_##name; \
   decode_operand(s, &rd, &src1, &src2, &imm, concat(TYPE_,t)); \
   icache[index].rd = rd; \
@@ -178,16 +180,13 @@ static int decode_exec(Decode *s) {
   // TODO: fencei
   unsigned index = s->pc & (ICACHE_SIZE - 1);
   if (icache[index].pc == s->pc ) {
-        //if(icache[index].label != NULL){
-        if(true){
-          s->dnpc = s->pc+4;
+          s->dnpc = icache[index].snpc;
 #ifdef CONFIG_TRACE
-          s->snpc = s->pc+4;
+          s->snpc = icache[index].snpc;
           s->isa.inst.val = icache[index].inst;
           icache_hit++;
 #endif 
           goto *icache[index].label;
-        }
   }
 #ifdef CONFIG_TRACE
   icache_miss++;
