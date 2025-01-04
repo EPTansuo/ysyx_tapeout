@@ -24,27 +24,13 @@ void free_page(void *p) {
 int mm_brk(uintptr_t brk) {
 
 
-  // if(brk < ROUNDUP(heap.start, PGSIZE)){
-  //   return -1;
-  // }
-  // current->max_brk = brk;
-  // Log("brk set to %p", (void*)brk);
-
-  uintptr_t vaddr = current->max_brk;
-
-  if (vaddr >= brk) 
-    return 0;
-  else {
-    void *paddr = NULL;
-    while (vaddr < brk) {
-      paddr = new_page(1);
-      map(&current->as, (void *)vaddr, paddr, 0);
-      vaddr += PGSIZE;
-    }
+  if(brk < ROUNDUP(heap.start, PGSIZE)){
+    return -1;
   }
-  
-  current->max_brk = vaddr;
-  assert(current->max_brk >= brk);
+  current->max_brk = brk;
+  Log("brk set to %p", (void*)brk);
+
+
   return 0;
 
 }
