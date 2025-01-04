@@ -1,5 +1,9 @@
 #include <fs.h>
 
+
+size_t ramdisk_read (void *buf, size_t offset, size_t len);
+size_t ramdisk_write(const void *buf, size_t offset, size_t len);
+
 typedef size_t (*ReadFn) (void *buf, size_t offset, size_t len);
 typedef size_t (*WriteFn) (const void *buf, size_t offset, size_t len);
 
@@ -9,6 +13,7 @@ typedef struct {
   size_t disk_offset;
   ReadFn read;
   WriteFn write;
+  size_t open_offset;
 } Finfo;
 
 enum {FD_STDIN, FD_STDOUT, FD_STDERR, FD_FB};
@@ -37,9 +42,84 @@ void init_fs() {
   // TODO: initialize the size of /dev/fb
 }
 
+int fs_open(const char *pathname, int flags, int mode) {
+  for (int i = 0; i < sizeof(file_table) / sizeof(Finfo); i++) {
+    if (strcmp(pathname, file_table[i].name) == 0) {
+      file_table[i].open_offset = 0;
+      return i;
+    }
+  }
+  panic("Open file failed: No such file!");
+  return -1;
+}
+
+size_t fs_read(int fd, void *buf, size_t len) {
+  size_t offset = file_table[fd].open_offset;
+  
+  if(offset + len > file_table[fd].size) {
+    len = file_table[fd].size - offset; // read to the end of file
+  }
+
+  size_t ret = file_table[fd].read == 0 ?
+               ramdisk_read(buf, file_table[fd].disk_offset + offset, len) :
+               file_table[fd].read(buf, file_table[fd].disk_offset + offset, len);
+  file_table[fd].open_offset += ret;
+  return ret;
+}
+
+size_t fs_write(int fd, const void *buf, size_t len) {
+  size_t offset = file_table[fd].open_offset;
+  if(offset + len > file_table[fd].size) {
+    panic("Write failed: Write beyond the end of file!");
+  }
+  size_t ret =  file_table[fd].write == 0 ?
+                ramdisk_write(buf, file_table[fd].disk_offset + offset, len) :
+                file_table[fd].write(buf, file_table[fd].disk_offset + offset, len);
+  file_table[fd].open_offset += ret;
+  return ret;
+}
+
+size_t fs_lseek(int fd, size_t offset, int whence) {
+  size_t new_offset = 0;
+  switch(whence) {
+    case SEEK_SET:
+      new_offset = offset;
+      break;
+    case SEEK_CUR:
+      new_offset = file_table[fd].open_offset + offset;
+      break;
+    case SEEK_END:
+      new_offset = file_table[fd].size + offset;
+      break;
+    default:
+      panic("Invalid whence!");
+  }
+  if(new_offset > file_table[fd].size) {
+    panic("Seek failed: Seek beyond the end of file!");
+  }
+  file_table[fd].open_offset = new_offset;
+  return new_offset;
+}
+
+size_t fs_close(int fd) {
+  file_table[fd].open_offset = 0;
+  return 0;
+}
+
+// according to linux syscalls  "include/linux/syscalls.h"
+long sys_write(int fd, const void *buf, size_t len) {
+  return (long)fs_write(fd, buf, len);
+}
+
+long sys_read(int fd, void *buf, size_t len) {
+  return (long)fs_read(fd, buf, len);
+}
 
 
-size_t sys_write(int fd, const void *buf, size_t len) {
-  file_table[fd].write(buf, file_table[fd].disk_offset, len);
-  return len;
+long sys_lseek(int fd, size_t offset, int whence) {
+  return (long)fs_lseek(fd, offset, whence);
+}
+
+long sys_close(int fd){
+  return (long)fs_close(fd);
 }
