@@ -32,7 +32,7 @@ class IFU(config: NPCConfig) extends Module {
   //val in_valid = Mux(isFirst, true.B, io.in.valid)
   val in_valid = true.B
   val in_ready = io.in.ready
-
+  val inst = RegInit(0.U(32.W))
   val flush = RegInit(false.B)
  
 
@@ -72,8 +72,16 @@ class IFU(config: NPCConfig) extends Module {
   // when(state === s_idle && io.in.valid && io.in.ready){
   //   pc := io.in.bits.npc
   // }
+
+  val immB = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U(1.W)).asSInt
+  val immBExtend = Wire(UInt(config.XLEN.W))
+  immBExtend := immB.asUInt
   when(io.out.valid && io.out.ready && ~flush){
-    pc :=  pc + 4.U//bpu.io.npc
+    when(inst(6,0) === "b1100011".U){
+      pc := pc + Mux(immBExtend(config.XLEN-1), immBExtend, 4.U);
+    }.otherwise{
+      pc :=  pc + 4.U//bpu.io.npc
+    }
   }
   
   when(io.flush){
@@ -98,7 +106,7 @@ class IFU(config: NPCConfig) extends Module {
   io.imem.ar.bits.qos := 0.U
 
 
-  val inst = RegInit(0.U(32.W))
+  
   when(io.imem.r.valid && io.imem.r.ready){
     inst := io.imem.r.bits.data
   }
