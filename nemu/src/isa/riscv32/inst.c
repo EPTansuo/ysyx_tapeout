@@ -132,6 +132,7 @@ typedef struct {
   word_t rs2;
   word_t rd;
   uint32_t inst;
+  word_t pc;
 } ICacheEntry;
 
 ICacheEntry  icache[ICACHE_SIZE] PG_ALIGN =  {0};
@@ -156,6 +157,7 @@ static int decode_exec(Decode *s) {
 #else 
 #define INSTPAT_MATCH(s, name, t, ...) { \
   icache[index].inst = INSTPAT_INST(s); \
+  icache[index].pc = s->pc; \
   icache[index].label = &&exe_##name; \
   decode_operand(s, &rd, &src1, &src2, &imm, concat(TYPE_,t)); \
   icache[index].rd = rd; \
@@ -165,8 +167,9 @@ static int decode_exec(Decode *s) {
   __VA_ARGS__ ; \
 }
 
+  // TODO: fencei
   unsigned index = s->pc & (ICACHE_SIZE - 1);
-  if (icache[index].inst == s->isa.inst.val ) {
+  if (icache[index].pc == s->pc ) {
         if(icache[index].label != NULL){
           icache_hit++;
           goto *icache[index].label;
@@ -296,8 +299,8 @@ static int decode_exec(Decode *s) {
 }
 
 int isa_exec_once(Decode *s) {
+#ifdef CONFIG_USE_ICACHE
   s->isa.inst.val = inst_fetch(&s->snpc, 4);
-  //printf( "hit rate: %lf\n",(double)icache_hit / (1+icache_hit + icache_miss));
-  //printf("nemu: s->isa.inst.val: 0x%08x\n",s->isa.inst.val);
+#endif 
   return decode_exec(s);
 }
