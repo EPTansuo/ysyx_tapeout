@@ -194,7 +194,7 @@ static int decode_exec(Decode *s) {
 #endif 
   s->isa.inst.val = inst_fetch(&s->snpc, 4);
   s->dnpc = s->snpc;
-#endif //!CONFIG_USE_ICAHE
+#endif //!CONFIG_USE_ICACHE
 
   
 
