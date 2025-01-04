@@ -99,11 +99,10 @@ void etrace_print_info(){
 #error "CONFIG_USE_ICACHE and CONFIG_BTRACE can not be defined at the same time"
 #endif 
 
+
+void btrace(word_t pc, uint32_t inst, bool taken);
 #define BTRACE(pc, inst,taken) MUXDEF(CONFIG_BTRACE, btrace(pc, inst, taken), 0)
 
-void btrace(word_t pc, uint32_t inst, bool taken){
-  printf("BTRACE: pc: " FMT_WORD_HEX_WIDTH " inst: 0x%08x taken: %d\n", pc, inst, taken);
-}
 
 
 #define XLEN (MUXDEF(CONFIG_RV64, 64, 32)) 
