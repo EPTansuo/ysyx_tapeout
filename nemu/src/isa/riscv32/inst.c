@@ -67,10 +67,10 @@ enum {
     ((SEXT(BITS(i, 30, 25), 6) << 58) >> 58) << 4 | \
     ((SEXT(BITS(i, 11, 8), 4) << 60) >> 60); *imm = *imm << 1; } while (0)
 
-#define SHAMT (BITS(s->isa.inst.val, 24, 20))
+#define SHAMT (BITS(MUXDEF(CONFIG_USE_ICAHE, icache[index].inst, s->isa.inst.val), 24, 20))
 
 #ifdef CONFIG_RV64
-#define SHAMT_LONG (BITS(s->isa.inst.val, 25, 20))
+#define SHAMT_LONG (BITS(MUXDEF(CONFIG_USE_ICAHE, icache[index].inst, s->isa.inst.val), 25, 20))
 #define SHAMT_LONG_LEN 6
 #else
 #define SHAMT_LONG SHAMT
@@ -171,10 +171,10 @@ static int decode_exec(Decode *s) {
   unsigned index = s->pc & (ICACHE_SIZE - 1);
   if (icache[index].pc == s->pc ) {
         if(icache[index].label != NULL){
-          s->isa.inst.val = icache[index].inst;
-          //s->snpc = s->pc+4;
           s->dnpc = s->pc+4;
 #ifdef CONFIG_TRACE
+          s->snpc = s->pc+4;
+          s->isa.inst.val = icache[index].inst;
           icache_hit++;
 #endif 
           goto *icache[index].label;
