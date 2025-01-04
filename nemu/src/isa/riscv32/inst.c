@@ -156,7 +156,7 @@ static int decode_exec(Decode *s) {
 }
 #else 
 #define INSTPAT_MATCH(s, name, t, ...) { \
-  icache[index].inst = ((s)->isa.inst.val); \
+  icache[index].inst = INSTPAT_INST(s); \
   icache[index].pc = s->pc; \
   icache[index].label = &&exe_##name; \
   decode_operand(s, &rd, &src1, &src2, &imm, concat(TYPE_,t)); \
@@ -172,6 +172,7 @@ static int decode_exec(Decode *s) {
   if (icache[index].pc == s->pc ) {
         if(icache[index].label != NULL){
           icache_hit++;
+          s->dnpc = s->pc+4;
           goto *icache[index].label;
         }
   }
