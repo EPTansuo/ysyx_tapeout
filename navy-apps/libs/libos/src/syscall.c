@@ -69,11 +69,11 @@ int _write(int fd, void *buf, size_t count) {
   _syscall_(SYS_write, fd, (intptr_t)buf, count);
 }
 
-extern char end;
+extern char _end;
 void *_sbrk(intptr_t increment) {
-  int ret = _syscall_(SYS_brk, (intptr_t)(&end+increment), 0, 0);
+  int ret = _syscall_(SYS_brk, (intptr_t)(&_end+increment), 0, 0);
   if(ret == 0) 
-    return (&end + increment);
+    return (&_end + increment);
   else
     return (void *)-1;
 }
