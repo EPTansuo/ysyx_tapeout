@@ -143,9 +143,14 @@ class IFU(config: NPCConfig) extends Module {
 
   if(config.PERF_CNT){
     val ifu_cnt = RegInit(0.U(32.W))
+    val flush_cnt = RegInit(0.U(64.W))
     when(io.in.valid && io.in.ready){
       ifu_cnt := ifu_cnt + 1.U
     }
+    when(io.flush || flush){
+      flush_cnt := flush_cnt + 1.U
+    }
     dontTouch(ifu_cnt)
+    dontTouch(flush_cnt)
   }
 }
