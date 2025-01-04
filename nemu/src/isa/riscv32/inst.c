@@ -21,7 +21,7 @@
 #include <fmt-def.h>
 
 
-#define CONFIG_USE_ICAHE //Not Config in Kconfig
+#define CONFIG_USE_ICACHE //Not Config in Kconfig
 
 extern CPU_state cpu;
 
@@ -67,11 +67,18 @@ enum {
     ((SEXT(BITS(i, 30, 25), 6) << 58) >> 58) << 4 | \
     ((SEXT(BITS(i, 11, 8), 4) << 60) >> 60); *imm = *imm << 1; } while (0)
 
-//#define SHAMT (printf("index:%x,inst:%x\n",index,icache[index].inst),BITS(MUXDEF(CONFIG_USE_ICAHE, icache[index].inst, s->isa.inst.val), 24, 20))
+#ifdef CONFIG_USE_ICACHE
 #define SHAMT (BITS(icache[index].inst, 24, 20))
+#else  
+#define SHAMT (BITS(s->isa.inst.val), 24, 20)
+#endif 
 
 #ifdef CONFIG_RV64
-#define SHAMT_LONG (BITS(MUXDEF(CONFIG_USE_ICAHE, icache[index].inst, s->isa.inst.val), 25, 20))
+#ifdef CONFIG_USE_ICACHE
+#define SHAMT_LONG (BITS(icache[index].inst, 25, 20))
+#else 
+#define SHAMT_LONG (BITS(s->isa.inst.val, 25, 20))
+#endif 
 #define SHAMT_LONG_LEN 6
 #else
 #define SHAMT_LONG SHAMT
@@ -122,7 +129,7 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
   }
 }
 
-#ifdef CONFIG_USE_ICAHE
+#ifdef CONFIG_USE_ICACHE
 
 #define ICACHE_SIZE (1024*4) //4k
 
@@ -150,7 +157,7 @@ static int decode_exec(Decode *s) {
 
 #define INSTPAT_INST(s) ((s)->isa.inst.val)
 
-#ifndef CONFIG_USE_ICAHE
+#ifndef CONFIG_USE_ICACHE
 #define INSTPAT_MATCH(s, name, type, ... ) { \
    decode_operand(s, &rd, &src1, &src2, &imm, concat(TYPE_, type)); \
    __VA_ARGS__ ; \
@@ -299,7 +306,7 @@ static int decode_exec(Decode *s) {
 
 
 
-#ifdef CONFIG_USE_ICAHE
+#ifdef CONFIG_USE_ICACHE
 #include "../../../tools/gen_icache_label/label_run.c"
 #endif 
 
