@@ -139,7 +139,7 @@ void perf_statistic(){
 
     printf("\n-------------------------------------- Branch --------------------------------------\n");
     PRINT_PERF("Branch CNT", branch_cnt, (double)branch_cnt/inst_cnt*100, "% of inst");
-    PRINT_PERF("Branch Predict Succ CNT", branch_cnt-branch_predict_failed_cnt, (double)(branch_cnt-branch_predict_failed_cnt)/branch_cnt*100, "% of branch");
+    // PRINT_PERF("Branch Predict Succ CNT", branch_cnt-branch_predict_failed_cnt, (double)(branch_cnt-branch_predict_failed_cnt)/branch_cnt*100, "% of branch");
     fclose(fp);
 #endif // CONFIG_PERF_CNT
 }
