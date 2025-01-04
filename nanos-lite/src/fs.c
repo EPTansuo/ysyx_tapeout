@@ -54,15 +54,20 @@ int fs_open(const char *pathname, int flags, int mode) {
 }
 
 size_t fs_read(int fd, void *buf, size_t len) {
+  if(file_table[fd].read !=0){
+    size_t dev_ret = file_table[fd].read(buf, file_table[fd].disk_offset, len);
+    return dev_ret;
+  }
+
+
   size_t offset = file_table[fd].open_offset;
   
   if(offset + len > file_table[fd].size) {
     len = file_table[fd].size - offset; // read to the end of file
   }
 
-  size_t ret = file_table[fd].read == 0 ?
-               ramdisk_read(buf, file_table[fd].disk_offset + offset, len) :
-               file_table[fd].read(buf, file_table[fd].disk_offset + offset, len);
+  size_t ret = ramdisk_read(buf, file_table[fd].disk_offset + offset, len);
+               
   file_table[fd].open_offset += ret;
   return ret;
 }
