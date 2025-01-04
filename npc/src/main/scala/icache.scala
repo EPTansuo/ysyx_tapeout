@@ -198,7 +198,7 @@ class ICache(config: NPCConfig) extends Module{
 
     
     io.ifu.r.bits.last := Mux(bypass,  io.imem.r.bits.last , burst_cnt === (blockSize/4 - 1).U)
-    io.ifu.r.bits.id := Mux(bypass,  io.imem.r.bits.last , 0.U)
+    io.ifu.r.bits.id := Mux(bypass,  io.imem.r.bits.id , 0.U)
     io.ifu.r.bits.resp := Mux(bypass, io.imem.r.bits.resp, 0.U)
 
 
