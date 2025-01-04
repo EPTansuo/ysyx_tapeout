@@ -142,6 +142,28 @@ class ysyx_npc(config: NPCConfig) extends Module {
     idu.io.stall := stall
     stall := isRAW || RegNext(isRAW)
 
+
+    // load-use 
+    def loadMem(ld_sel_ : UInt): Bool = {
+        val ret = ld_sel_ =/= ld_sel.LD_XX
+        ret
+    }
+    def conflictWithLoadUse(rs1: UInt, rs2: UInt, rd: UInt, ID_inst_type: UInt, Other_ld_sel: UInt): Bool = {
+        ((rs1 === rd && useRs1(ID_inst_type)) || (rs2 === rd && useRs2(ID_inst_type) )) && (rd.orR) && loadMem(Other_ld_sel)
+
+    }    
+    val exu_raw_loaduse = conflictWithLoadUse(IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, exu.io.out.bits.lsu.ld_sel)
+    val lsu_raw_loaduse = conflictWithLoadUse(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, lsu.io.ld_sel)
+    val isRAW_loaduse = exu_raw_loaduse || lsu_raw_loaduse
+    val loaduse_cnt = RegInit(0.U(64.W))
+    when(isRAW_loaduse){
+        loaduse_cnt := loaduse_cnt + 1.U
+        printf("load-use conflict: %d\n", loaduse_cnt)
+    }
+    dontTouch(loaduse_cnt)
+
+
+
     // Regfile
     val regfile = Module(new Regfile(config))
     exu.io.reg_read1 <> regfile.io.read1

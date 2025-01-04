@@ -20,6 +20,7 @@ class LSU(config: NPCConfig) extends Module {
         val dmem = new AXI4Bundle(config.axiparams)
         //val forward = Decoupled(SigIO_FORWARD(config.XLEN))
         val rd_addr = Output(UInt(5.W))
+        val ld_sel = Output(UInt(3.W))
     })
 
     val xlen = config.XLEN 
@@ -53,7 +54,8 @@ class LSU(config: NPCConfig) extends Module {
     val store_en = ctrlsig.st_sel =/= ST_XX
     val load_en = ctrlsig.ld_sel =/= LD_XX
     val wb_sel = wbu_data.wb_sel
-
+    
+    io.ld_sel := ctrlsig.ld_sel
 
     
     // Forwarding
