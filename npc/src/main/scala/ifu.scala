@@ -52,7 +52,7 @@ class IFU(config: NPCConfig) extends Module {
   }
 
 
-  io.out.valid := state === s_wait_ready && ~flush
+  io.out.valid := state === s_wait_ready && ~(flush || io.flush)
   // io.in.ready := state === s_idle && ~stall
   io.in.ready := true.B
 
