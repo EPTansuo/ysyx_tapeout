@@ -171,10 +171,7 @@ static int decode_exec(Decode *s) {
   unsigned index = s->pc & (ICACHE_SIZE - 1);
   if (icache[index].pc == s->pc ) {
         if(icache[index].label != NULL){
-#ifdef CONFIG_TRACE
           s->isa.inst.val = icache[index].inst;
-          
-#endif 
           s->snpc = s->pc+4;
           s->dnpc = s->snpc;
           icache_hit++;
