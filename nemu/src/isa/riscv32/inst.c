@@ -149,7 +149,7 @@ ICacheEntry  icache[ICACHE_SIZE] PG_ALIGN =  {0};
 uint64_t icache_hit = 0;
 uint64_t icache_miss = 0;
 
-static inline int decode_exec(Decode *s) {
+static int decode_exec(Decode *s) {
   int rd = 0;
   word_t src1 = 0, src2 = 0, imm = 0;
 
