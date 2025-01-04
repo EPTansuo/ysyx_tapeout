@@ -101,7 +101,7 @@ void etrace_print_info(){
 
 
 void btrace(word_t pc, uint32_t inst, uint8_t taken);
-#define BTRACE(pc, inst,taken) MUXDEF(CONFIG_BTRACE, btrace(pc, inst, taken), 0)
+#define BTRACE(pc, inst,taken) btrace(pc, inst, taken)
 
 
 
