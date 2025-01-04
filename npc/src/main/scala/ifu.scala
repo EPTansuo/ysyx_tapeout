@@ -33,6 +33,8 @@ class IFU(config: NPCConfig) extends Module {
   val in_valid = true.B
   val in_ready = io.in.ready
 
+  val flush = RegInit(false.B)
+ 
 
   val s_idle :: s_read ::s_wait_read :: s_wait_ready :: Nil = Enum(4)
   val state = RegInit(s_idle)         
@@ -43,10 +45,14 @@ class IFU(config: NPCConfig) extends Module {
     s_wait_ready -> Mux(io.out.ready, s_idle, s_wait_ready)
   ))
 
- 
+ when(io.flush){
+    flush := true.B
+  }.elsewhen(state === s_idle){
+    flush := false.B
+  }
 
 
-  io.out.valid := state === s_wait_ready && ~io.flush
+  io.out.valid := state === s_wait_ready && ~flush
   // io.in.ready := state === s_idle && ~stall
   io.in.ready := true.B
 
@@ -71,7 +77,7 @@ class IFU(config: NPCConfig) extends Module {
   }
   
   when(io.flush){
-    state := s_idle
+    //state := s_idle
     pc := io.npc
   }
 
