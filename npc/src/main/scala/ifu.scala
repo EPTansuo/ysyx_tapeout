@@ -13,7 +13,7 @@ class IFU(config: NPCConfig) extends Module {
     val in = Flipped(Decoupled(new SigIO_WBU_IFU(config.XLEN)))
     val out = (Decoupled(new SigIO_IFU_IDU(config.XLEN)))
 
-    val npc = Input(UInt(config.XLEN.W))
+    val exu_npc = Input(UInt(config.XLEN.W))
     val fencei = Output(Bool())
     // val mem_pc = Output(UInt(xlen.W))
     // val mem_inst = Input(UInt(32.W))
@@ -66,7 +66,7 @@ class IFU(config: NPCConfig) extends Module {
   // }
    val bpu = Module(new BPU(config))
    bpu.io.pc := pc 
-   bpu.io.exu_npc := io.in.bits.npc
+   bpu.io.exu_npc := io.exu_npc
    bpu.io.update := flush 
 
   // when(state === s_idle && io.in.valid && io.in.ready){

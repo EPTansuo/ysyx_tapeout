@@ -54,7 +54,7 @@ class ysyx_npc(config: NPCConfig) extends Module {
     controlHazard.io.exu_npc <> exu.io.npc
     ifu.io.flush := controlHazard.io.flush
     idu.io.flush := controlHazard.io.flush
-    ifu.io.npc := exu.io.npc.bits 
+    ifu.io.exu_npc := exu.io.npc.bits 
 
 
     val stage_arch = "pipeline"
