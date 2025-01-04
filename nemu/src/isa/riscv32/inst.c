@@ -21,7 +21,7 @@
 #include <fmt-def.h>
 
 #ifndef CONFIG_BTRACE 
-#define CONFIG_USE_ICACHE //Not Config in Kconfig
+//#define CONFIG_USE_ICACHE //Not Config in Kconfig
 #endif 
 
 
