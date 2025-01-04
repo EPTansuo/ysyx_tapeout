@@ -49,7 +49,7 @@ else{
     case SYS_exit:  halt(0); break;
     case SYS_yield: yield(); c->GPRx = 0; break;
     case SYS_time:  c->GPRx = sys_time((struct timeval *)a[1]);  break;
-    case SYS_brk:   c->GPRx = mm_brk(a[1]);
+    case SYS_brk:   c->GPRx = mm_brk(a[1]); break;
     case SYS_write: c->GPRx = sys_write(a[1], (void *)a[2], a[3]); break;
     case SYS_read:  c->GPRx = sys_read(a[1], (void *)a[2], a[3]); break;
     case SYS_lseek: c->GPRx = sys_lseek(a[1], a[2], a[3]); break;
