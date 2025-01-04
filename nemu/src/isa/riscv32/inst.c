@@ -173,7 +173,7 @@ static int decode_exec(Decode *s) {
         if(icache[index].label != NULL){
           s->dnpc = s->pc+4;
 //#ifdef CONFIG_TRACE
-          s->snpc = s->pc+4;
+          //s->snpc = s->pc+4;
           s->isa.inst.val = icache[index].inst;
           icache_hit++;
 //#endif 
