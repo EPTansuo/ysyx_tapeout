@@ -145,7 +145,7 @@ class IFU(config: NPCConfig) extends Module {
     val ifu_cnt = RegInit(0.U(64.W))
     val flush_cnt = RegInit(0.U(64.W))
     val branch_cnt = RegInit(0.U(64.W))
-    val branch_predict_succ_cnt = RegInit(0.U(64.W))
+    val branch_predict_failed_cnt = RegInit(0.U(64.W))
     when(io.in.valid && io.in.ready){
       ifu_cnt := ifu_cnt + 1.U
     }
@@ -155,12 +155,12 @@ class IFU(config: NPCConfig) extends Module {
     when(io.out.valid && io.out.ready && inst(6,0) === "b1100011".U){
       branch_cnt := branch_cnt + 1.U
     }
-    when(io.flush & ~flush){
-      branch_predict_succ_cnt := branch_predict_succ_cnt + 1.U
+    when(io.flush & ~flush && inst(6,0) === "b1100011".U ){
+      branch_predict_failed_cnt := branch_predict_failed_cnt + 1.U
     }
     dontTouch(ifu_cnt)
     dontTouch(flush_cnt)
     dontTouch(branch_cnt)
-    dontTouch(branch_predict_succ_cnt)
+    dontTouch(branch_predict_failed_cnt)
   }
 }

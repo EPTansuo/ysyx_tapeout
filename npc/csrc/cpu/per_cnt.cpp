@@ -12,7 +12,7 @@
 
 
 #define PERF_IFU_CNT(_) \
-_(ifu_cnt) _(flush_cnt) _(branch_cnt) _(branch_predict_succ_cnt)
+_(ifu_cnt) _(flush_cnt) _(branch_cnt) _(branch_predict_failed_cnt)
 
 #define PERF_IDU_CNT(_) \
 _(inst_compute_cnt) _(inst_branch_cnt) _(inst_jump_cnt) _(inst_ldst_cnt) _(inst_csr_cnt) \
@@ -139,7 +139,7 @@ void perf_statistic(){
 
     printf("\n-------------------------------------- Branch --------------------------------------\n");
     PRINT_PERF("Branch CNT", branch_cnt, (double)branch_cnt/inst_cnt*100, "% of inst");
-    PRINT_PERF("Branch Predict Succ CNT", branch_predict_succ_cnt, (double)branch_predict_succ_cnt/branch_cnt*100, "% of branch");
+    PRINT_PERF("Branch Predict Succ CNT", branch_cnt-branch_predict_failed_cnt, (double)(branch_cnt-branch_predict_failed_cnt)/branch_cnt*100, "% of branch");
     fclose(fp);
 #endif // CONFIG_PERF_CNT
 }
