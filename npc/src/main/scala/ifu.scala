@@ -13,7 +13,7 @@ class IFU(config: NPCConfig) extends Module {
     val in = Flipped(Decoupled(new SigIO_WBU_IFU(config.XLEN)))
     val out = (Decoupled(new SigIO_IFU_IDU(config.XLEN)))
 
-    val npc = Input(UInt(config.XLEN.W))
+    val exu_npc = Input(UInt(config.XLEN.W))
     val fencei = Output(Bool())
     // val mem_pc = Output(UInt(xlen.W))
     // val mem_inst = Input(UInt(32.W))
@@ -32,7 +32,7 @@ class IFU(config: NPCConfig) extends Module {
   //val in_valid = Mux(isFirst, true.B, io.in.valid)
   val in_valid = true.B
   val in_ready = io.in.ready
-
+  val inst = RegInit(0.U(32.W))
   val flush = RegInit(false.B)
  
 
@@ -72,13 +72,23 @@ class IFU(config: NPCConfig) extends Module {
   // when(state === s_idle && io.in.valid && io.in.ready){
   //   pc := io.in.bits.npc
   // }
+
+
+  val immB = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U(1.W)).asSInt
+ val immBExtend = immB.pad(config.XLEN).asUInt
   when(io.out.valid && io.out.ready && ~flush){
-    pc := pc+4.U// bpu.io.npc
+    when(inst(6,0) === "b1100011".U){
+      pc := pc + Mux(inst(31), immBExtend, 4.U);
+      // pc := pc + 4.U
+      //printf("sign: %d; %d, immB: %d, pc: %d\n", inst(31), immBExtend(config.XLEN-1), immBExtend, pc)
+    }.otherwise{
+      pc :=  pc + 4.U//bpu.io.npc
+    }
   }
   
   when(io.flush){
     //state := s_idle
-    pc := io.npc
+    pc := io.exu_npc
   }
 
 
@@ -98,7 +108,7 @@ class IFU(config: NPCConfig) extends Module {
   io.imem.ar.bits.qos := 0.U
 
 
-  val inst = RegInit(0.U(32.W))
+  
   when(io.imem.r.valid && io.imem.r.ready){
     inst := io.imem.r.bits.data
   }
@@ -133,9 +143,14 @@ class IFU(config: NPCConfig) extends Module {
 
   if(config.PERF_CNT){
     val ifu_cnt = RegInit(0.U(32.W))
+    val flush_cnt = RegInit(0.U(64.W))
     when(io.in.valid && io.in.ready){
       ifu_cnt := ifu_cnt + 1.U
     }
+    when(io.flush || flush){
+      flush_cnt := flush_cnt + 1.U
+    }
     dontTouch(ifu_cnt)
+    dontTouch(flush_cnt)
   }
 }

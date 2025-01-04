@@ -96,6 +96,12 @@ class IDU(config: NPCConfig) extends Module {
         val cycle_csr_cnt = RegInit(0.U(64.W))
         val cycle_jump_cnt = RegInit(0.U(64.W))
         val sig = control.io.out
+
+        val stall_cnt = RegInit(0.U(64.W))
+        
+        when(io.stall){
+            stall_cnt := stall_cnt + 1.U
+        }
         import pc_sel._
         import br_sel._
         import ld_sel._
@@ -136,6 +142,7 @@ class IDU(config: NPCConfig) extends Module {
         dontTouch(cycle_ldst_cnt)
         dontTouch(cycle_csr_cnt)
         dontTouch(cycle_jump_cnt)
+        dontTouch(stall_cnt)
     }
 
 }
