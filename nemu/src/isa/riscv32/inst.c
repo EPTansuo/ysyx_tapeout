@@ -319,7 +319,7 @@ static int decode_exec(Decode *s) {
 }
 
 int isa_exec_once(Decode *s) {
-#ifdef CONFIG_USE_ICACHE
+#ifndef CONFIG_USE_ICACHE
   s->isa.inst.val = inst_fetch(&s->snpc, 4);
 #endif 
   return decode_exec(s);
