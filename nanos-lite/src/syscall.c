@@ -51,11 +51,11 @@ void do_syscall(Context *c) {
 
   #ifdef STRACE
 if(a[0] == SYS_write || a[0] == SYS_read || a[0] == SYS_lseek || a[0] == SYS_close){
-  Log("SYSCALL(%s, %s, %d, %d) = %d", syscalls[a[0]], fs_get_file_name(a[1]), a[2], a[3], c->GPRx);
+  Log("SYSCALL(%s, %s, %x, %x) = %d", syscalls[a[0]], fs_get_file_name(a[1]), a[2], a[3], c->GPRx);
   //fs_strace(syscalls[a[0]], a[1], a[2], a[3]);
 }
 else{
-  Log("SYSCALL(%s, %d, %d, %d) = %d", syscalls[a[0]], a[1], a[2], a[3], c->GPRx);
+  Log("SYSCALL(%s, %x, %x, %x) = %d", syscalls[a[0]], a[1], a[2], a[3], c->GPRx);
 }
 #endif 
 
