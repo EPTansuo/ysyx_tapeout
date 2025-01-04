@@ -17,14 +17,14 @@ import org.chipsalliance.cde.config.Parameters
 
 object ModuleConnect {
     def apply[T <: Data](prevOut: DecoupledIO[T], thisIn: DecoupledIO[T], thisOut: DecoupledIO[T],
-                        stall:Bool, arch: String = "multi"): Unit = {
+                   flush: Bool,  arch: String = "multi"): Unit = {
         arch match {
             case "multi"  =>   
                 prevOut <> thisIn
             case "pipeline" =>
                 prevOut.ready := thisIn.ready
-                thisIn.bits := RegEnable(prevOut.bits, prevOut.valid && thisIn.ready || (stall&&thisIn.ready))
-                thisIn.valid := RegEnable(prevOut.valid, thisIn.ready)
+                thisIn.bits := RegEnable(prevOut.bits, prevOut.valid && thisIn.ready)
+                thisIn.valid := RegEnable(prevOut.valid && ~flush, thisIn.ready || flush)
             case _        =>   throw new IllegalArgumentException(s"Unsupported architecture")
         }
     }
@@ -47,15 +47,7 @@ class ysyx_npc(config: NPCConfig) extends Module {
     val lsu = Module(new LSU(config))
     val wbu = Module(new WBU(config))
 
-    val stage_arch = "pipeline"
-    ModuleConnect(wbu.io.out, ifu.io.in, ifu.io.out, false.B, stage_arch)
-    ModuleConnect(ifu.io.out, idu.io.in, idu.io.out, false.B, stage_arch)
-    ModuleConnect(idu.io.out, exu.io.in, exu.io.out, false.B, stage_arch)
-    ModuleConnect(exu.io.out, lsu.io.in, lsu.io.out, false.B, stage_arch)
-    ModuleConnect(lsu.io.out, wbu.io.in, wbu.io.out, false.B, stage_arch)
-
-
-    // Control Hazard
+        // Control Hazard
     val controlHazard = Module(new ControlHazard(config))
     controlHazard.io.ifu_pc <> ifu.io.pc
     controlHazard.io.idu_pc <> idu.io.pc
@@ -63,6 +55,17 @@ class ysyx_npc(config: NPCConfig) extends Module {
     ifu.io.flush := controlHazard.io.flush
     idu.io.flush := controlHazard.io.flush
     ifu.io.npc := exu.io.npc.bits 
+
+
+    val stage_arch = "pipeline"
+    ModuleConnect(wbu.io.out, ifu.io.in, ifu.io.out, false.B, stage_arch)
+    ModuleConnect(ifu.io.out, idu.io.in, idu.io.out, controlHazard.io.flush, stage_arch)
+    ModuleConnect(idu.io.out, exu.io.in, exu.io.out, false.B, stage_arch)
+    ModuleConnect(exu.io.out, lsu.io.in, lsu.io.out, false.B, stage_arch)
+    ModuleConnect(lsu.io.out, wbu.io.in, wbu.io.out, false.B, stage_arch)
+
+
+
 
     
     // Data Hazard
