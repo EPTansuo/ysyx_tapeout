@@ -20,18 +20,21 @@ void free_page(void *p) {
 }
 
 /* The brk() system call handler. */
-
 int mm_brk(uintptr_t brk) {
-
-
-  if(brk < ROUNDUP(heap.start, PGSIZE)){
-    return -1;
+  if (current->max_brk == 0) {
+    current->max_brk = brk;
+    return 0;
   }
-  current->max_brk = brk;
-  //Log("brk set to %p", (void*)brk);
-
+  if (brk > current->max_brk) {
+    intptr_t prevbrk = current->max_brk + PGSIZE ;
+    while (prevbrk < brk) {
+      void *p = new_page(1);
+       map(&current->as, (void *)(prevbrk), p, 0b111);
+      prevbrk += PGSIZE;
+    }
+    current->max_brk = brk;
+  }
   return 0;
-
 }
 
 void init_mm() {
