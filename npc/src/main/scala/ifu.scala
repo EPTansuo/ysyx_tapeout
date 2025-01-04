@@ -73,13 +73,13 @@ class IFU(config: NPCConfig) extends Module {
   //   pc := io.in.bits.npc
   // }
 
+
   val immB = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U(1.W)).asSInt
-  val immBExtend = Wire(UInt(config.XLEN.W))
-  immBExtend := immB.asUInt
+ val immBExtend = immB.pad(config.XLEN).asUInt
   when(io.out.valid && io.out.ready && ~flush){
     when(inst(6,0) === "b1100011".U){
       pc := pc + Mux(inst(31), immBExtend, 4.U);
-      printf("sign: %d, immB: %d, pc: %d\n", inst(31), immBExtend, pc)
+      printf("sign: %d; %d, immB: %d, pc: %d\n", inst(31), immBExtend(config.XLEN-1), immBExtend, pc)
     }.otherwise{
       pc :=  pc + 4.U//bpu.io.npc
     }
