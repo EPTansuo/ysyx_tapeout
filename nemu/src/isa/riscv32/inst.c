@@ -177,7 +177,10 @@ static int decode_exec(Decode *s) {
   }
   icache_miss++;
   s->isa.inst.val = inst_fetch(&s->snpc, 4);
+  s->dnpc = s->snpc;
 #endif //!CONFIG_USE_ICAHE
+
+  
 
   //printf("s->pc: 0x" FMT_WORD_HEX "\n",s->pc);
   INSTPAT_START();
