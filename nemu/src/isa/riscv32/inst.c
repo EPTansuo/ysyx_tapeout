@@ -156,7 +156,7 @@ static int decode_exec(Decode *s) {
 }
 #else 
 #define INSTPAT_MATCH(s, name, t, ...) { \
-  icache[index].inst = INSTPAT_INST(s); \
+  icache[index].inst = ((s)->isa.inst.val); \
   icache[index].pc = s->pc; \
   icache[index].label = &&exe_##name; \
   decode_operand(s, &rd, &src1, &src2, &imm, concat(TYPE_,t)); \
@@ -176,6 +176,7 @@ static int decode_exec(Decode *s) {
         }
   }
   icache_miss++;
+  s->isa.inst.val = inst_fetch(&s->snpc, 4);
 #endif //!CONFIG_USE_ICAHE
 
   //printf("s->pc: 0x" FMT_WORD_HEX "\n",s->pc);
