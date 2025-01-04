@@ -79,7 +79,7 @@ class IFU(config: NPCConfig) extends Module {
   when(io.out.valid && io.out.ready && ~flush){
     when(inst(6,0) === "b1100011".U){
       pc := pc + Mux(inst(31), immBExtend, 4.U);
-      pc := pc + 4.U
+      // pc := pc + 4.U
       //printf("sign: %d; %d, immB: %d, pc: %d\n", inst(31), immBExtend(config.XLEN-1), immBExtend, pc)
     }.otherwise{
       pc :=  pc + 4.U//bpu.io.npc
