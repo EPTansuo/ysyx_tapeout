@@ -78,7 +78,7 @@ void *_sbrk(intptr_t increment) {
   _write(STDERR_FILENO, buffer, len);
   if(ret == 0) {
 	char* ret = endpos;
-	endpos += increment;
+	*endpos += increment;
     return (void*)ret;
   }
   else{
