@@ -21,7 +21,7 @@
 #include <fmt-def.h>
 
 
-#define CONFIG_USE_ICAHE //Not Config in Kconfig
+#define CONFIG_USE_ICACHE //Not Config in Kconfig
 
 extern CPU_state cpu;
 
@@ -67,10 +67,18 @@ enum {
     ((SEXT(BITS(i, 30, 25), 6) << 58) >> 58) << 4 | \
     ((SEXT(BITS(i, 11, 8), 4) << 60) >> 60); *imm = *imm << 1; } while (0)
 
-#define SHAMT (BITS(s->isa.inst.val, 24, 20))
+#ifdef CONFIG_USE_ICACHE
+#define SHAMT (BITS(icache[index].inst, 24, 20))
+#else  
+#define SHAMT (BITS(s->isa.inst.val), 24, 20)
+#endif 
 
 #ifdef CONFIG_RV64
+#ifdef CONFIG_USE_ICACHE
+#define SHAMT_LONG (BITS(icache[index].inst, 25, 20))
+#else 
 #define SHAMT_LONG (BITS(s->isa.inst.val, 25, 20))
+#endif 
 #define SHAMT_LONG_LEN 6
 #else
 #define SHAMT_LONG SHAMT
@@ -121,7 +129,7 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
   }
 }
 
-#ifdef CONFIG_USE_ICAHE
+#ifdef CONFIG_USE_ICACHE
 
 #define ICACHE_SIZE (1024*4) //4k
 
@@ -132,6 +140,7 @@ typedef struct {
   word_t rs2;
   word_t rd;
   uint32_t inst;
+  word_t pc;
 } ICacheEntry;
 
 ICacheEntry  icache[ICACHE_SIZE] PG_ALIGN =  {0};
@@ -148,7 +157,7 @@ static int decode_exec(Decode *s) {
 
 #define INSTPAT_INST(s) ((s)->isa.inst.val)
 
-#ifndef CONFIG_USE_ICAHE
+#ifndef CONFIG_USE_ICACHE
 #define INSTPAT_MATCH(s, name, type, ... ) { \
    decode_operand(s, &rd, &src1, &src2, &imm, concat(TYPE_, type)); \
    __VA_ARGS__ ; \
@@ -156,6 +165,7 @@ static int decode_exec(Decode *s) {
 #else 
 #define INSTPAT_MATCH(s, name, t, ...) { \
   icache[index].inst = INSTPAT_INST(s); \
+  icache[index].pc = s->pc; \
   icache[index].label = &&exe_##name; \
   decode_operand(s, &rd, &src1, &src2, &imm, concat(TYPE_,t)); \
   icache[index].rd = rd; \
@@ -165,15 +175,25 @@ static int decode_exec(Decode *s) {
   __VA_ARGS__ ; \
 }
 
+  // TODO: fencei
   unsigned index = s->pc & (ICACHE_SIZE - 1);
-  if (icache[index].inst == s->isa.inst.val ) {
-        if(icache[index].label != NULL){
+  if (icache[index].pc == s->pc ) {
+          s->dnpc = s->pc+4;
+#ifdef CONFIG_TRACE
+          s->snpc = s->pc+4;
+          s->isa.inst.val = icache[index].inst;
           icache_hit++;
+#endif 
           goto *icache[index].label;
-        }
   }
+#ifdef CONFIG_TRACE
   icache_miss++;
-#endif //!CONFIG_USE_ICAHE
+#endif 
+  s->isa.inst.val = inst_fetch(&s->snpc, 4);
+  s->dnpc = s->snpc;
+#endif //!CONFIG_USE_ICACHE
+
+  
 
   //printf("s->pc: 0x" FMT_WORD_HEX "\n",s->pc);
   INSTPAT_START();
@@ -283,7 +303,7 @@ static int decode_exec(Decode *s) {
 
 
 
-#ifdef CONFIG_USE_ICAHE
+#ifdef CONFIG_USE_ICACHE
 #include "../../../tools/gen_icache_label/label_run.c"
 #endif 
 
@@ -296,8 +316,8 @@ static int decode_exec(Decode *s) {
 }
 
 int isa_exec_once(Decode *s) {
+#ifndef CONFIG_USE_ICACHE
   s->isa.inst.val = inst_fetch(&s->snpc, 4);
-  //printf( "hit rate: %lf\n",(double)icache_hit / (1+icache_hit + icache_miss));
-  //printf("nemu: s->isa.inst.val: 0x%08x\n",s->isa.inst.val);
+#endif 
   return decode_exec(s);
 }
