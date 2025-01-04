@@ -43,7 +43,7 @@ class ICache(config: NPCConfig) extends Module{
     dontTouch(io.fencei)
 
 
-    val raddr_ifu = io.ifu.ar.bits.addr
+    val raddr_ifu = RegEnable(io.ifu.ar.bits.addr, io.ifu.ar.valid)
     val rtag = raddr_ifu(tagBits + indexBits + offsetBits - 1, indexBits + offsetBits)
     val ridx = raddr_ifu(indexBits + offsetBits - 1, offsetBits)
     val roffset = raddr_ifu(offsetBits - 1, 0)
@@ -108,7 +108,7 @@ class ICache(config: NPCConfig) extends Module{
     val bypass = Wire(Bool())
     if(config.USE_SOC){
         // IF the address is not in the range of the SDRAM address, then it is a bypass
-        //bypass := (io.ifu.ar.bits.addr(31,29) =/= "b101".U)
+        bypass := (io.ifu.ar.bits.addr(31,29) =/= "b101".U)
         bypass := true.B
     }else{
         bypass := true.B //NPC的SRAM还不支持突发传输，所以不支持icache  
@@ -146,7 +146,7 @@ class ICache(config: NPCConfig) extends Module{
 
     val alignMask = ~(((1 << log2Ceil(blockSize)) - 1).U(config.axiparams.addrBits.W))
     dontTouch(alignMask)
-    io.imem.ar.bits.addr := Mux(bypass, io.ifu.ar.bits.addr, io.ifu.ar.bits.addr & alignMask)
+    io.imem.ar.bits.addr := Mux(bypass, io.ifu.ar.bits.addr, raddr_ifu & alignMask)
     io.imem.ar.valid := Mux(bypass, io.ifu.ar.valid, (state === s_replace && imem_first_read))
     io.imem.r.ready := Mux(bypass, io.ifu.r.ready ,state === s_refill)
 
@@ -159,9 +159,11 @@ class ICache(config: NPCConfig) extends Module{
     val widx = Wire(UInt(ridx.getWidth.W))
     val woffset = Wire(UInt(roffset.getWidth.W))
     widx := ridx
-    dontTouch(widx)
     woffset := roffset
     wtag := rtag
+    // val wtag = RegEnable(rtag, io.ifu.ar.valid)
+    // val widx = RegEnable(ridx, io.ifu.ar.valid)
+    // val woffset = RegEnable(roffset, io.ifu.ar.valid)
 
     // FIFO Ptr
     val fifoPtr = RegInit(VecInit(Seq.fill(nSets)(0.U(log2Ceil(nWays).W))))
@@ -177,23 +179,19 @@ class ICache(config: NPCConfig) extends Module{
     cache_refill_prev := cache_refill
     if(isPow2(nWays)){
         when(!cache_refill_prev & cache_refill){
-            //cache_data(widx*nWays.U+victimWay)(0) := cache_refill_data.asUInt
-            //assert(blockSize == 4);
             cache_tag(victimWay + widx*nWays.U) := wtag
             cache_valid(victimWay + widx*nWays.U) := 1.U
 
             val nextWay = victimWay + 1.U
-            fifoPtr(ridx) := Mux(nextWay === nWays.U, 0.U, nextWay)   // Can be optimized !!!!!!!!
+            fifoPtr(ridx) := Mux(nextWay === nWays.U, 0.U, nextWay) 
         }
-    }else{
+    }else{ // TODO
         when(!cache_refill_prev & cache_refill){
-            //cache_data(widx*nWays.U+victimWay)(0) := cache_refill_data.asUInt
-            //assert(blockSize == 4);
             cache_tag(victimWay + widx*nWays.U) := wtag
             cache_valid(victimWay + widx*nWays.U) := 1.U
 
             val nextWay = victimWay + 1.U
-            fifoPtr(ridx) := Mux(nextWay === nWays.U, 0.U, nextWay)   // Can be optimized !!!!!!!!
+            fifoPtr(ridx) := Mux(nextWay === nWays.U, 0.U, nextWay) 
         }
     }
 
