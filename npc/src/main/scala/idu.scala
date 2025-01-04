@@ -67,6 +67,7 @@ class IDU(config: NPCConfig) extends Module {
     io.out.bits.wbu.csr_cmd := control.io.out.csr_cmd
     io.out.bits.exu.br_sel := control.io.out.br_sel
     io.out.bits.exu.pc_sel := control.io.out.pc_sel
+    io.out.bits.wbu.inst_type := control.io.out.inst_type
 
     io.inst_type := control.io.out.inst_type
 

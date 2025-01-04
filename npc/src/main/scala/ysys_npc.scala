@@ -68,7 +68,7 @@ class ysyx_npc(config: NPCConfig) extends Module {
     // Data Hazard
 
     val stall = Wire(Bool())
-    def useRs(itype: UInt): Bool = {
+    def useRs1(itype: UInt): Bool = {
         // useRS1 R,I,S,B,FENCE
         val useRs1 = itype === inst_type.R_TYPE || 
                      itype === inst_type.I_TYPE || 
@@ -76,25 +76,41 @@ class ysyx_npc(config: NPCConfig) extends Module {
                      itype === inst_type.B_TYPE || 
                      itype === inst_type.FENCE_TYPE
 
+        useRs1
+    }
+    def useRs2(itype: UInt): Bool = {
         // useRS2 R,S,B
         val useRs2 = itype === inst_type.R_TYPE || 
                      itype === inst_type.S_TYPE || 
                      itype === inst_type.B_TYPE
 
-        (useRs1 || useRs2 )
+        useRs2
     }
 
-    def conflictWithStage(rs1: UInt, rs2: UInt, rd: UInt, ID_inst_type: UInt, valid: Bool): Bool = {
-         valid && ((rs1 === rd) || (rs2 === rd)) && (rd.orR) && useRs(ID_inst_type) // TODO: if wreiteReg
+    def writeReg(itype: UInt): Bool = {
+        // writeReg R,I,S,B,U,J
+        val writeReg = itype === inst_type.R_TYPE || 
+                       itype === inst_type.I_TYPE || 
+                       itype === inst_type.U_TYPE || 
+                       itype === inst_type.J_TYPE ||
+                       itype === inst_type.FENCE_TYPE
+
+        writeReg
+    }
+    def conflictWithStage(rs1: UInt, rs2: UInt, rd: UInt, ID_inst_type: UInt, Other_inst_type: UInt): Bool = {
+        ((rs1 === rd && useRs1(ID_inst_type)) || (rs2 === rd && useRs2(ID_inst_type) )) && (rd.orR) && writeReg(Other_inst_type)
 
     }
     
     val IDU_rs1 = idu.io.in.bits.inst(19, 15)
     val IDU_rs2 = idu.io.in.bits.inst(24, 20)
-    val IDU_inst_type = idu.io.inst_type
+    val IDU_inst_type = idu.io.out.bits.wbu.inst_type
     val EXU_rd = exu.io.rd_addr
     val LSU_rd = lsu.io.rd_addr
     val WBU_rd = wbu.io.rd_addr
+    val EXU_int_type = exu.io.out.bits.wbu.inst_type
+    val LSU_int_type = lsu.io.out.bits.wbu.inst_type
+    val WBU_int_type = wbu.io.inst_type
 
     val exu_raw = Wire(Bool())
     val lsu_raw = Wire(Bool())
@@ -107,9 +123,9 @@ class ysyx_npc(config: NPCConfig) extends Module {
     // lsu_raw := conflictWithStage(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, ~lsu.io.out.ready)
     // wbu_raw := conflictWithStage(IDU_rs1, IDU_rs2, WBU_rd, IDU_inst_type, ~wbu.io.out.ready)
 
-    exu_raw := conflictWithStage(IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, true.B)
-    lsu_raw := conflictWithStage(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, true.B)
-    wbu_raw := conflictWithStage(IDU_rs1, IDU_rs2, WBU_rd, IDU_inst_type, true.B)
+    exu_raw := conflictWithStage(IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, EXU_int_type)
+    lsu_raw := conflictWithStage(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, LSU_int_type)
+    wbu_raw := conflictWithStage(IDU_rs1, IDU_rs2, WBU_rd, IDU_inst_type, WBU_int_type)
     dontTouch(exu_raw)
     dontTouch(lsu_raw)
     dontTouch(wbu_raw)
