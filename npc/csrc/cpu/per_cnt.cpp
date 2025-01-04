@@ -12,12 +12,12 @@
 
 
 #define PERF_IFU_CNT(_) \
-_(ifu_cnt) _(flush_cnt)
+_(ifu_cnt) _(flush_cnt) _(branch_cnt) _(branch_predict_failed_cnt)
 
 #define PERF_IDU_CNT(_) \
 _(inst_compute_cnt) _(inst_branch_cnt) _(inst_jump_cnt) _(inst_ldst_cnt) _(inst_csr_cnt) \
 _(cycle_compute_cnt) _(cycle_branch_cnt) _(cycle_jump_cnt) _(cycle_ldst_cnt) _(cycle_csr_cnt) \
-_(stall_cnt)
+_(stall_cnt) 
 
 #define PERF_EXU_CNT(_) \
 _(alu_arith_cnt) _(alu_logic_cnt) _(alu_shift_cnt) _(alu_cmp_cnt) _(alu_copy_cnt)
@@ -137,6 +137,9 @@ void perf_statistic(){
     PRINT_PERF("Flush Cycles CNT", flush_cnt, (double)flush_cnt/cycle_cnt*100, "% of total cycles");
     PRINT_PERF("Stall Cycles CNT", stall_cnt, (double)stall_cnt/cycle_cnt*100, "% of total cycles");
 
+    printf("\n-------------------------------------- Branch --------------------------------------\n");
+    PRINT_PERF("Branch CNT", branch_cnt, (double)branch_cnt/inst_cnt*100, "% of inst");
+    // PRINT_PERF("Branch Predict Succ CNT", branch_cnt-branch_predict_failed_cnt, (double)(branch_cnt-branch_predict_failed_cnt)/branch_cnt*100, "% of branch");
     fclose(fp);
 #endif // CONFIG_PERF_CNT
 }
