@@ -1,6 +1,7 @@
 #include <common.h>
 #include "syscall.h"
 #include <sys/time.h>
+#include <fs.h>
 
 #ifdef STRACE
 const char *syscalls[] = {"SYS_exit", "SYS_yield", "SYS_open",
@@ -23,7 +24,9 @@ time_t sys_time(struct timeval *t){
   return time;
 };
 int mm_brk(uintptr_t brk);
-void fs_strace(const char* sys_call, int a1, int a2, int a3);
+// void fs_strace(const char* sys_call, int a1, int a2, int a3);
+// const char *fs_get_file_name(int fd);
+
 
 void do_syscall(Context *c) {
   uintptr_t a[4];
@@ -33,7 +36,8 @@ void do_syscall(Context *c) {
   a[3] = c->GPR4;
 #ifdef STRACE
 if(a[0] == SYS_write || a[0] == SYS_read || a[0] == SYS_lseek || a[0] == SYS_close){
-  fs_strace(syscalls[a[0]], a[1], a[2], a[3]);
+  Log("SYSCALL(%s, %s, %d, %d)", syscalls[a[0]], fs_get_file_name(a[1]), a[2], a[3]);
+  //fs_strace(syscalls[a[0]], a[1], a[2], a[3]);
 }
 else{
   Log("SYSCALL(%s, %d, %d, %d)", syscalls[a[0]], a[1], a[2], a[3]);
