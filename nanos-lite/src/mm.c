@@ -20,7 +20,17 @@ void free_page(void *p) {
 }
 
 /* The brk() system call handler. */
+extern char end;
 int mm_brk(uintptr_t brk) {
+
+
+  if(brk < ROUNDUP(heap.start, PGSIZE)){
+    return -1;
+  }
+
+  current->max_brk = brk;
+  Log("brk set to %p", (void*)brk);
+
   // if (current->max_brk == 0) {
   //   current->max_brk = brk;
   //   return 0;
