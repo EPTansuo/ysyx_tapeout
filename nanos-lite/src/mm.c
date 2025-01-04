@@ -28,7 +28,7 @@ int mm_brk(uintptr_t brk) {
     return -1;
   }
   current->max_brk = brk;
-  Log("brk set to %p", (void*)brk);
+  //Log("brk set to %p", (void*)brk);
 
   return 0;
 
