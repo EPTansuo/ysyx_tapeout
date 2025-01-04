@@ -82,9 +82,7 @@ size_t fs_read(int fd, void *buf, size_t len) {
 }
 
 size_t fs_write(int fd, const void *buf, size_t len) {
-  printf("start write\n");
   if(file_table[fd].write != 0) {
-    Log("write to device");
     size_t dev_ret = file_table[fd].write(buf, file_table[fd].disk_offset, len);
     return dev_ret;
   }
@@ -93,7 +91,6 @@ size_t fs_write(int fd, const void *buf, size_t len) {
   if(offset + len > file_table[fd].size) {
     panic("Write failed: Write beyond the end of file!");
   }
-  Log("write to ramdisk");
   size_t ret =  ramdisk_write(buf, file_table[fd].disk_offset + offset, len);
   file_table[fd].open_offset += ret;
   return ret;
