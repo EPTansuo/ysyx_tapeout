@@ -16,6 +16,7 @@ class WBU(config: NPCConfig) extends Module {
         val reg_write = Flipped(new RegfileWriteIO(config.XLEN))
         val wb_valid = Output(Bool())
         val rd_addr = Output(UInt(5.W))
+        val inst_type = Output(UInt(4.W))
     })
 
     // val in_reg = Reg(Output(chiselTypeOf(io.in)))
@@ -78,6 +79,7 @@ class WBU(config: NPCConfig) extends Module {
     io.out.bits.rd_addr := io.in.bits.rd_addr
     io.out.bits.npc := npc
     dontTouch(io.in.bits.pc)
+    io.inst_type := ctrlsig.inst_type
 
     if(config.PERF_CNT){
         val inst_cnt = RegInit(0.U(64.W))

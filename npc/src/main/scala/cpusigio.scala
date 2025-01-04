@@ -27,6 +27,7 @@ class Sig_LSU(xlen:Int) extends  Bundle{
 class Sig_WBU(xlen:Int) extends Bundle{
     val wb_sel = Input(UInt(3.W))
     val csr_cmd = Input(UInt(3.W)) 
+    val inst_type = Input(UInt(4.W))
 }
 
 class Sig_CSR extends Bundle{
@@ -74,6 +75,7 @@ class SigIO_LSU_WBU(xlen: Int) extends Bundle{
 class SigIO_WBU_IFU(xlen: Int) extends Bundle{
     val npc = Input(UInt(xlen.W))
     val rd_addr = Input(UInt(5.W))
+    
 }
 
 
