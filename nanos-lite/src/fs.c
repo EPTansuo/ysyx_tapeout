@@ -42,6 +42,11 @@ void init_fs() {
   // TODO: initialize the size of /dev/fb
 }
 
+void fs_strace(const char* sys_call, int a1, int a2, int a3) {
+  Log("SYSCALL(%s, %s, %d, %d)", sys_call, file_table[a1].name, a2, a3);
+}
+
+
 int fs_open(const char *pathname, int flags, int mode) {
   for (int i = 0; i < sizeof(file_table) / sizeof(Finfo); i++) {
     if (strcmp(pathname, file_table[i].name) == 0) {

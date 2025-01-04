@@ -23,7 +23,7 @@ time_t sys_time(struct timeval *t){
   return time;
 };
 int mm_brk(uintptr_t brk);
-
+void fs_strace(const char* sys_call, int a1, int a2, int a3);
 
 void do_syscall(Context *c) {
   uintptr_t a[4];
@@ -32,7 +32,12 @@ void do_syscall(Context *c) {
   a[2] = c->GPR3;
   a[3] = c->GPR4;
 #ifdef STRACE
-Log("SYSCALL(%s, %d, %d, %d)", syscalls[a[0]], a[1], a[2], a[3]);
+if(a[0] == SYS_write || a[0] == SYS_read || a[0] == SYS_lseek || a[0] == SYS_close){
+  fs_strace(syscalls[a[0]], a[1], a[2], a[3]);
+}
+else{
+  Log("SYSCALL(%s, %d, %d, %d)", syscalls[a[0]], a[1], a[2], a[3]);
+}
 #endif 
 
 
