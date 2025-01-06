@@ -26,7 +26,14 @@ size_t events_read(void *buf, size_t offset, size_t len) {
 }
 
 size_t dispinfo_read(void *buf, size_t offset, size_t len) {
-  return 0;
+  AM_GPU_CONFIG_T config = io_read(AM_GPU_CONFIG);
+  char buffer[64];
+  int str_len = sprintf(buf,"WIDTH : %d\nHEIGHT: %d\n",config.width,config.height);
+  int i = 0;
+  for(; i < len && i< str_len; i++) {
+    ((char *)buf)[i] = buffer[i];
+  }
+  return i;
 }
 
 size_t fb_write(const void *buf, size_t offset, size_t len) {
