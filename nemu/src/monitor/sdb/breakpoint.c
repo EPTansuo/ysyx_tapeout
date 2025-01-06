@@ -24,7 +24,7 @@ bool add_breakpoint(vaddr_t addr) {
     if (!bp_pool[i].valid) {
       bp_pool[i].valid = true;
       bp_pool[i].addr = addr;
-      printf("Breakpoint %d: 0x" FMT_WORD_HEX_WIDTH "\n", i, addr);
+      //printf("Breakpoint %d: 0x" FMT_WORD_HEX_WIDTH "\n", i, addr);
       return true;
     }
   }
@@ -36,7 +36,7 @@ bool del_breakpoint(vaddr_t addr ) {
   for (int i = 0; i < BP_POOL_SIZE; i++) {
     if (bp_pool[i].valid && bp_pool[i].addr == addr) {
       bp_pool[i].valid = false;
-      printf("Delete breakpoint %d: 0x" FMT_WORD_HEX_WIDTH "\n", i, addr);
+      //printf("Delete breakpoint %d: 0x" FMT_WORD_HEX_WIDTH "\n", i, addr);
       return true;
     }
   }
