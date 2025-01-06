@@ -20,7 +20,7 @@ void use_gdbstub(bool enable){
 }
 
 #ifndef CONFIG_SOC_DIFFTEST
-#define GDBSTUB_LOG
+//#define GDBSTUB_LOG
 
 void print_nemu_state(){
 #ifdef GDBSTUB_LOG
