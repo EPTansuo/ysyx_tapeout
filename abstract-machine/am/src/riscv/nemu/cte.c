@@ -16,7 +16,7 @@ Context* __am_irq_handle(Context *c) {
       ev.event = c->gpr[17] == -1 ? EVENT_YIELD: EVENT_SYSCALL;
 #endif 
       break;
-      default: ev.event = EVENT_ERROR;   break;
+      default: ev.event = EVENT_ERROR;  printf("EVENR_ERROR\n"); break;
     }
     // printf("before:\n");
     // printf("ctx->mepc=%x\n",c->mepc);
