@@ -208,7 +208,7 @@ bool init_gdbstub()
 
         arch_info_t arch = {
             .reg_byte = 4,
-            .reg_num = MUXDEF(CONFIG_RVE,16,32) + 1 + 4, // PC and csr
+            .reg_num = MUXDEF(CONFIG_RVE,16,32) + 1 , // PC and csr
             .target_desc = MUXDEF(CONFIG_RV64, TARGET_RV64, MUXDEF(CONFIG_RVE,"riscv:rv32e",TARGET_RV32)),
         };
 
