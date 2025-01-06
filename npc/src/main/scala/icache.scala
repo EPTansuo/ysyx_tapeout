@@ -206,7 +206,7 @@ class ICache(config: NPCConfig) extends Module{
     io.imem.ar.bits.prot := 0.U
     io.imem.ar.bits.id := 0.U
     io.imem.ar.bits.size := 2.U
-    io.imem.ar.bits.burst := 01.U // INCR
+    io.imem.ar.bits.burst := 1.U // INCR
     io.imem.ar.bits.lock := 0.U
     io.imem.ar.bits.cache := 0.U
     io.imem.ar.bits.qos := 0.U
