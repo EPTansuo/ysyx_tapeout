@@ -80,6 +80,18 @@ void NDL_OpenCanvas(int *w, int *h) {
 }
 
 void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
+  int fb = open("/dev/fb", 0, 0);
+  int width, height;
+  get_screen_size(&width, &height);
+
+  int offset = x + y * width;
+  lseek(fb, offset * 4, SEEK_SET);
+
+  for (int i = 0; i < h; i++) {
+    write(fb, pixels + i * w, w * 4);
+    offset += width;
+    lseek(fb, offset * 4, SEEK_SET);
+  }
 }
 
 void NDL_OpenAudio(int freq, int channels, int samples) {
