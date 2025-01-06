@@ -35,19 +35,25 @@ static int nemu_read_reg(void *args, int regno, size_t *value)
 {
         printf(":---read_reg: %d\n", regno);
 
-        if (regno > 32 || regno < 0)
-        {
-                printf(":---ERROR: read_reg: %d\n", regno);
-                return -1;
-        }
-
-        if (regno == 32)
-        {
-                *value = (size_t)cpu.pc;
+        // if (regno > 32 || regno < 0)
+        // {
+        //         printf(":---ERROR: read_reg: %d\n", regno);
+        //         return -1;
+        // }
+        if (regno < 32){
+                *value = (size_t)isa_reg_read(regno);
                 return 0;
         }
+        switch (regno){
+                case 32 : *value = (size_t)cpu.pc; break;
+                case 834: *value = (size_t)cpu.csr.mstatus; break;
+                case 839: *value = (size_t)cpu.csr.mtvec; break;
+                case 899: *value = (size_t)cpu.csr.mepc; break;
+                case 900: *value = (size_t)cpu.csr.mcause; break;
+                default: printf(":---ERROR: read_reg: %d\n", regno); return -1;
+        }
 
-        *value = (size_t)isa_reg_read(regno);
+        
         return 0;
 }
 
