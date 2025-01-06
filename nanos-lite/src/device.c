@@ -38,6 +38,7 @@ size_t dispinfo_read(void *buf, size_t offset, size_t len) {
 }
 
 size_t fb_write(const void *buf, size_t offset, size_t len) {
+  yield();
   AM_GPU_CONFIG_T config = io_read(AM_GPU_CONFIG);
   int x = offset % config.width;
   int y = offset / config.width;
