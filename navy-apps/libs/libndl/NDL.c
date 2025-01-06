@@ -33,6 +33,7 @@ void get_screen_size(int *w, int*h){
   int nread;
   int fd = open("/proc/dispinfo", 0, 0);
   nread = read(fd, buf, sizeof(buf) - 1);
+  printf("buf:%s\n", buf);
    buf[nread] = '\0'; 
   int i = 0;
   while (buf[i++] != '\0') { 
