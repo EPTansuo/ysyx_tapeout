@@ -56,9 +56,17 @@ void get_screen_size(int *w, int*h){
 
 void NDL_OpenCanvas(int *w, int *h) {
 
-
-  get_screen_size(w, h);
-  printf("screen size: %d %d\n", *w, *h);
+  int width, height;
+  get_screen_size(&width, &height);
+  if(*w > width || *h > height){
+    printf("Not enough space for canvas, set to full screen\n");
+    *w = width;
+    *h = height;
+  }
+  if(*w == 0 || *h == 0){
+    *w = width;
+    *h = height;
+  }
   screen_h = *h;
   screen_w = *w;
 
