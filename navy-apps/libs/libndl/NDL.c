@@ -110,9 +110,9 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
   get_screen_size(&width, &height);
 int basex = (width - screen_w)/2;
   int basey = (height - screen_h)/2;
-  x = basex + x;
-  y = basey + y;
-  offset = x + y * width;
+  // x = basex + x;
+  // y = basey + y;
+  // offset = x + y * width;
 
   lseek(fd, offset, SEEK_SET);
   for(i = 0;i < h;i ++){
