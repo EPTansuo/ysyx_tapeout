@@ -19,7 +19,45 @@ int NDL_PollEvent(char *buf, int len) {
   return 0;
 }
 
+int linestr2num(const char *s, int *num) {
+  int i;
+  *num = 0;
+  for (i = 0; s[i] >= '0' && s[i] <= '9'; i++) {
+    *num = (*num) * 10 + (s[i] - '0');
+  }
+  return i;
+}
+
+void get_screen_size(int *w, int*h){
+  char buf [64];
+  int nread;
+  int fd = open("/proc/dispinfo", 0, 0);
+  nread = read(fd, buf, sizeof(buf) - 1);
+   buf[nread] = '\0'; 
+  int i = 0;
+  while (buf[i++] != '\0') { 
+    if (buf[i] >= '0' && buf[i] <= '9') {
+      i += linestr2num(&buf[i], w); 
+      break;
+    }
+  }
+
+  do{
+    if (buf[i] >= '0' && buf[i] <= '9') {
+      linestr2num(&buf[i], h);
+      break;
+    }
+  }while (buf[i++] != '\0');
+
+  close(fd);
+}
+
+
 void NDL_OpenCanvas(int *w, int *h) {
+
+
+
+
   if (getenv("NWM_APP")) {
     int fbctl = 4;
     fbdev = 5;
