@@ -47,7 +47,7 @@ else{
 
 
   switch (a[0]) {
-    case SYS_exit:  halt(0); break;
+    case SYS_exit:  halt(a[1]); break;
     case SYS_yield: yield(); c->GPRx = 0; break;
     case SYS_time:  c->GPRx = sys_time((struct timeval *)a[1]);  break;
     case SYS_brk:   c->GPRx = mm_brk(a[1]); break;
