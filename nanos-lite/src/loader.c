@@ -32,11 +32,10 @@ size_t get_ramdisk_size();
 
 
 static uintptr_t loader(PCB *pcb, const char *filename) {
-  //TODO();
   int fd = fs_open(filename, 0, 0);
   Elf_Ehdr elf;
-  //ramdisk_read(&elf, 0, sizeof(elf));
-  fs_read(fd, &elf, sizeof(elf));
+  //ramdisk_read(&elf, 0, sizeof(Elf_Ehdr));
+  fs_read(fd, &elf, sizeof(Elf_Ehdr));
   assert(*(uint32_t *)(&elf)->e_ident == 0x464c457f);
   assert(elf.e_machine == EXPECT_TYPE);
 

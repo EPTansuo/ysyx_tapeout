@@ -9,14 +9,11 @@ Context* __am_irq_handle(Context *c) {
   if (user_handler) {
     Event ev = {0};
     switch (c->mcause) {
-      case 11: ev.event = EVENT_YIELD; c->mepc+=4;  
-#ifdef __riscv_e
-      ev.event = c->gpr[15] == -1 ? EVENT_YIELD: EVENT_SYSCALL;
-#else 
-      ev.event = c->gpr[17] == -1 ? EVENT_YIELD: EVENT_SYSCALL;
-#endif 
-      break;
-      default: ev.event = EVENT_ERROR;   break;
+      case 11: ev.event = EVENT_YIELD; 
+      ev.event = c->GPR1 == -1 ? EVENT_YIELD: EVENT_SYSCALL;  
+	  c->mepc+=4;
+	  break;
+      default: ev.event = EVENT_ERROR;  printf("EVENR_ERROR\n"); break;
     }
     // printf("before:\n");
     // printf("ctx->mepc=%x\n",c->mepc);
@@ -62,11 +59,9 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
 
 void yield() {
 #ifdef __riscv_e
-  //asm volatile("li a5, -1; ecall");
-  asm volatile("li a5, 11; ecall");  //根据下面的改成了11，下面的根据spike修改
+  asm volatile("li a5, -1; ecall"); 
 #else
-  //asm volatile("li a7, -1; ecall");
-  asm volatile("li a7, 11; ecall"); //Spike 那边是0xb来着
+  asm volatile("li a7, -1; ecall");
 #endif
 }
 
