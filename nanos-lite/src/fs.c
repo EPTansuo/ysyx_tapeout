@@ -59,7 +59,7 @@ int fs_open(const char *pathname, int flags, int mode) {
     }
   }
   panic("Open file failed: No such file!");
-  return -1;
+  return 1;
 }
 
 size_t fs_read(int fd, void *buf, size_t len) {
