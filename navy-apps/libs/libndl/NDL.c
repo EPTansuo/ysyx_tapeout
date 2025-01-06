@@ -56,7 +56,8 @@ void get_screen_size(int *w, int*h){
 void NDL_OpenCanvas(int *w, int *h) {
 
 
-
+  get_screen_size(w, h);
+  printf("screen size: %d %d\n", *w, *h);
 
   if (getenv("NWM_APP")) {
     int fbctl = 4;
