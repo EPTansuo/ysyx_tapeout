@@ -1,41 +1,28 @@
 #include <stdio.h>
-#include <assert.h>
+#include <sys/time.h>
+#include <unistd.h>
 
 int main() {
-  FILE *fp = fopen("/share/files/num", "r+");
-  assert(fp);
+    struct timeval tv, last_tv;
+    long seconds, useconds;
+    int interval = 500000;  // 0.5 秒，以微秒为单位
 
-  fseek(fp, 0, SEEK_END);
-  long size = ftell(fp);
-  assert(size == 5000);
+    gettimeofday(&last_tv, NULL);
 
-  fseek(fp, 500 * 5, SEEK_SET);
-  int i, n;
-  for (i = 500; i < 1000; i ++) {
-    fscanf(fp, "%d", &n);
-    assert(n == i + 1);
-  }
+    while (1) {
+        gettimeofday(&tv, NULL);
+        seconds  = tv.tv_sec  - last_tv.tv_sec;
+        useconds = tv.tv_usec - last_tv.tv_usec;
+        if (useconds < 0) {
+            useconds += 1000000;
+            seconds--;
+        }
+        if ((seconds * 1000000 + useconds) >= interval) {
+            printf("hello\n");
+            last_tv = tv;
+        }
 
-  fseek(fp, 0, SEEK_SET);
-  for (i = 0; i < 500; i ++) {
-    fprintf(fp, "%4d\n", i + 1 + 1000);
-  }
+    }
 
-  for (i = 500; i < 1000; i ++) {
-    fscanf(fp, "%d", &n);
-    assert(n == i + 1);
-  }
-
-  fseek(fp, 0, SEEK_SET);
-  for (i = 0; i < 500; i ++) {
-    fscanf(fp, "%d", &n);
-    assert(n == i + 1 + 1000);
-  }
-
-  fclose(fp);
-
-  printf("PASS!!!\n");
-
-  return 0;
+    return 0;
 }
-
