@@ -42,7 +42,7 @@ size_t fb_write(const void *buf, size_t offset, size_t len) {
   int x = offset % config.width;
   int y = offset / config.width;
   io_write(AM_GPU_FBDRAW, x, y, (uint32_t*)buf, len, 1, true);
-  printf("fb_write: x=%d, y=%d, len=%d\n", x, y, len);
+  // printf("fb_write: x=%d, y=%d, len=%d\n", x, y, len);
   return len;
 }
 
