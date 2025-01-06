@@ -29,7 +29,7 @@ size_t dispinfo_read(void *buf, size_t offset, size_t len) {
   AM_GPU_CONFIG_T config = io_read(AM_GPU_CONFIG);
   char buffer[64];
   int str_len = sprintf(buffer,"WIDTH : %d\nHEIGHT: %d\n",config.width,config.height);
-  Log("dispinfo_read: %s",buf);
+  // Log("dispinfo_read: %s",buf);
   int i = 0;
   for(; i < len && i <= str_len; i++) {
     ((char *)buf)[i] = buffer[i];
