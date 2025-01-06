@@ -9,7 +9,7 @@ Context* __am_irq_handle(Context *c) {
   if (user_handler) {
     Event ev = {0};
     switch (c->mcause) {
-      case 11: ev.event = EVENT_YIELD; c->mepc+=4;  
+      case 11: ev.event = EVENT_YIELD; 
 #ifdef __riscv_e
       ev.event = c->gpr[15] == -1 ? EVENT_YIELD: EVENT_SYSCALL;
 #else 
@@ -23,6 +23,7 @@ Context* __am_irq_handle(Context *c) {
     // printf("ctx->mcause=%x\n",c->mcause);
     // printf("ctx->mstatus=%x\n",c->mstatus);
     // printf("ctx->gpr[10]=%x\n",c->gpr[10]);
+    c->mepc+=4;  
     c = user_handler(ev, c);
     // printf("ctx->mepc=%x\n",c->mepc);
     // printf("ctx->mcause=%x\n",c->mcause);
