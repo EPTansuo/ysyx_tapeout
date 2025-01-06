@@ -11,9 +11,9 @@ Context* __am_irq_handle(Context *c) {
     switch (c->mcause) {
       case 11: ev.event = EVENT_YIELD; 
 #ifdef __riscv_e
-      ev.event = c->gpr[15] == -1 ? EVENT_YIELD: EVENT_SYSCALL;
+      ev.event = c->gpr[15] > 20 ? EVENT_YIELD: EVENT_SYSCALL;
 #else
-      ev.event = c->gpr[17] == -1 ? EVENT_YIELD: EVENT_SYSCALL;
+      ev.event = c->gpr[17] > 20 ? EVENT_YIELD: EVENT_SYSCALL; //目前只有20个系统调用
 #endif
       break;
       default: ev.event = EVENT_ERROR;  printf("EVENR_ERROR\n"); break;
