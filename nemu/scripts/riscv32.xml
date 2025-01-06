@@ -102,12 +102,12 @@
     <reg name="vstval" bitsize="32" type="int" regnum="645"/>
     <reg name="vsip" bitsize="32" type="int" regnum="646"/>
     <reg name="vsatp" bitsize="32" type="int" regnum="706"/>-->
-    <reg name="mstatus" bitsize="32" type="int" regnum="834"/>
+    <reg name="mstatus" bitsize="32" type="int" regnum="33"/>
    <!-- <reg name="misa" bitsize="32" type="int" regnum="835"/>
     <reg name="medeleg" bitsize="32" type="int" regnum="836"/>
     <reg name="mideleg" bitsize="32" type="int" regnum="837"/>
     <reg name="mie" bitsize="32" type="int" regnum="838"/>-->
-    <reg name="mtvec" bitsize="32" type="int" regnum="839"/>
+    <reg name="mtvec" bitsize="32" type="int" regnum="34"/>
   <!--  <reg name="mcounteren" bitsize="32" type="int" regnum="840"/>
     <reg name="menvcfg" bitsize="32" type="int" regnum="844"/>
     <reg name="mstatush" bitsize="32" type="int" regnum="850"/>
@@ -144,8 +144,8 @@
     <reg name="mhpmevent30" bitsize="32" type="int" regnum="896"/>
     <reg name="mhpmevent31" bitsize="32" type="int" regnum="897"/>
     <reg name="mscratch" bitsize="32" type="int" regnum="898"/>-->
-    <reg name="mepc" bitsize="32" type="int" regnum="899"/>
-    <reg name="mcause" bitsize="32" type="int" regnum="900"/>
+    <reg name="mepc" bitsize="32" type="int" regnum="35"/>
+    <reg name="mcause" bitsize="32" type="int" regnum="36"/>
  <!--   <reg name="mtval" bitsize="32" type="int" regnum="901"/>
     <reg name="mip" bitsize="32" type="int" regnum="902"/>
     <reg name="mtinst" bitsize="32" type="int" regnum="908"/>
