@@ -20,8 +20,10 @@ void use_gdbstub(bool enable){
 }
 
 #ifndef CONFIG_SOC_DIFFTEST
+//#define GDBSTUB_LOG
 
 void print_nemu_state(){
+#ifdef GDBSTUB_LOG
         printf(nemu_state.state == NEMU_RUNNING ? ":-- STATE: running" 
                 : nemu_state.state == NEMU_END ? ":-- STATE: end"
                 : nemu_state.state == NEMU_ABORT ? ":-- STATE: abort"
@@ -29,12 +31,14 @@ void print_nemu_state(){
                 : nemu_state.state == NEMU_STOP  ? ":-- STATE: stop"
                                                  : ":-- STATE: other");
         putchar('\n');
+#endif 
 }
 
 static int nemu_read_reg(void *args, int regno, size_t *value)
 {
+#ifdef GDBSTUB_LOG
         printf(":---read_reg: %d\n", regno);
-
+#endif 
         // if (regno > 32 || regno < 0)
         // {
         //         printf(":---ERROR: read_reg: %d\n", regno);
@@ -59,14 +63,18 @@ static int nemu_read_reg(void *args, int regno, size_t *value)
 
 static int nemu_write_reg(void *args, int regno, size_t data)
 {
+#ifdef GDBSTUB_LOG
         printf(":---write_reg: %d %zx\n", regno, data);
+#endif
         isa_reg_write(regno, data);
         return 0;
 }
 
 static int nemu_read_mem(void *args, size_t addr, size_t len, void *val)
 {
+#ifdef GDBSTUB_LOG
         printf(":---read_mem = " FMT_WORD_HEX " %zx\n", (word_t)addr, len);
+#endif
         if (addr + len > CONFIG_MSIZE + CONFIG_MBASE)
         {
                 printf(":---ERROR: read_mem = " FMT_WORD_HEX " %zx\n", (word_t)addr, len);
@@ -87,7 +95,9 @@ static int nemu_read_mem(void *args, size_t addr, size_t len, void *val)
 
 static int nemu_write_mem(void *args, size_t addr, size_t len, void *val)
 {
+#ifdef GDBSTUB_LOG
         printf(":---write_mem = " FMT_WORD_HEX " %zx %x\n", (word_t)addr, len, *(uint32_t *)val);
+#endif 
 
         if (addr + len > CONFIG_MSIZE + CONFIG_MBASE)
         {
@@ -110,13 +120,17 @@ gdb_action_t nemu_cont(void *args)
         nemu_state.state = NEMU_RUNNING;
         cpu_exec(-1);
         print_nemu_state();
+#ifdef GDBSTUB_LOG
         printf(":---continue over\n");
+#endif
         return ACT_RESUME;
 }
 
 static gdb_action_t nemu_stepi(void *args)
 {
+#ifdef GDBSTUB_LOG
         printf(":---stepi\n");
+#endif 
         print_nemu_state();
         if (nemu_state.state == NEMU_RUNNING || nemu_state.state == NEMU_STOP){
                 nemu_state.state = NEMU_RUNNING;
@@ -127,7 +141,9 @@ static gdb_action_t nemu_stepi(void *args)
 
 static bool nemu_set_bp(void *args, size_t addr, bp_type_t type)
 {
+#ifdef GDBSTUB_LOG
         printf(":---set breakpoints = %x %zx %x\n", type, addr, type);
+#endif
         if (type == BP_SOFTWARE)
                 return add_breakpoint(addr);
         else
@@ -136,7 +152,9 @@ static bool nemu_set_bp(void *args, size_t addr, bp_type_t type)
 
 static bool nemu_del_bp(void *args, size_t addr, bp_type_t type)
 {
+#ifdef GDBSTUB_LOG
         printf(":---remove breakpoints = %x %zx %x\n", type, addr, type);
+#endif 
         if (type == BP_SOFTWARE)
                 return del_breakpoint(addr);
         else
@@ -145,7 +163,9 @@ static bool nemu_del_bp(void *args, size_t addr, bp_type_t type)
 
 static void nemu_on_interrupt(void *args)
 {
+#ifdef GDBSTUB_LOG
         printf(":---interrupt\n");
+#endif 
         (void)args;
         nemu_state.state = NEMU_END;
 }
