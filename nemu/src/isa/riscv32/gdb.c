@@ -35,19 +35,25 @@ static int nemu_read_reg(void *args, int regno, size_t *value)
 {
         printf(":---read_reg: %d\n", regno);
 
-        if (regno > 32 || regno < 0)
-        {
-                printf(":---ERROR: read_reg: %d\n", regno);
-                return -1;
-        }
-
-        if (regno == 32)
-        {
-                *value = (size_t)cpu.pc;
+        // if (regno > 32 || regno < 0)
+        // {
+        //         printf(":---ERROR: read_reg: %d\n", regno);
+        //         return -1;
+        // }
+        if (regno < 32){
+                *value = (size_t)isa_reg_read(regno);
                 return 0;
         }
+        switch (regno){
+                case 32 : *value = (size_t)cpu.pc; break;
+                case 33: *value = (size_t)cpu.csr.mstatus; break;
+                case 34: *value = (size_t)cpu.csr.mtvec; break;
+                case 35: *value = (size_t)cpu.csr.mepc; break;
+                case 36: *value = (size_t)cpu.csr.mcause; break;
+                default: printf(":---ERROR: read_reg: %d\n", regno); return -1;
+        }
 
-        *value = (size_t)isa_reg_read(regno);
+        
         return 0;
 }
 
@@ -202,7 +208,7 @@ bool init_gdbstub()
 
         arch_info_t arch = {
             .reg_byte = 4,
-            .reg_num = MUXDEF(CONFIG_RVE,17,33),
+            .reg_num = MUXDEF(CONFIG_RVE,16,32) + 1 , // PC and csr
             .target_desc = MUXDEF(CONFIG_RV64, TARGET_RV64, MUXDEF(CONFIG_RVE,"riscv:rv32e",TARGET_RV32)),
         };
 
