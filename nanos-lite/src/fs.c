@@ -140,3 +140,7 @@ long sys_lseek(int fd, size_t offset, int whence) {
 long sys_close(int fd){
   return (long)fs_close(fd);
 }
+
+long sys_open(const char *pathname, int flags, int mode) {
+  return (long)fs_open(pathname, flags, mode);
+}

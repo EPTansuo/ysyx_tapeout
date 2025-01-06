@@ -16,6 +16,7 @@ long sys_write(int fd, const void *buf, size_t len);
 long sys_read(int fd, void *buf, size_t len);
 long sys_lseek(int fd, size_t offset, int whence);
 long sys_close(int fd);
+long sys_open(const char *pathname, int flags, int mode);
 
 time_t sys_time(struct timeval *t){ 
   time_t time = io_read(AM_TIMER_UPTIME).us;
@@ -46,6 +47,7 @@ void do_syscall(Context *c) {
     case SYS_read:  c->GPRx = sys_read(a[1], (void *)a[2], a[3]); break;
     case SYS_lseek: c->GPRx = sys_lseek(a[1], a[2], a[3]); break;
     case SYS_close: c->GPRx = sys_close(a[1]); break;
+    case SYS_open : c->GPRx = sys_open((const char *)a[1], a[2], a[3]); break;
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
 
