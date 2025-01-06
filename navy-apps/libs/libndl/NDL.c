@@ -100,10 +100,7 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
   uint32_t *p = pixels;
   int offset,width,height,i;
   get_screen_size(&width, &height);
-  int basex = (width - screen_w)/2;
-  int basey = (height - screen_h)/2;
-  x = basex + x;
-  y = basey + y;
+
   offset = x + y * width;
   printf("offset:%d\n", offset);
   lseek(fd, offset, SEEK_SET);
