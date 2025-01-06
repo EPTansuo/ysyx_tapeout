@@ -62,7 +62,7 @@ void NDL_OpenCanvas(int *w, int *h) {
   screen_h = *h;
   screen_w = *w;
 
-  
+
   if (getenv("NWM_APP")) {
     int fbctl = 4;
     fbdev = 5;
@@ -105,6 +105,7 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
   x = basex + x;
   y = basey + y;
   offset = x + y * width;
+  printf("offset:%d\n", offset);
   lseek(fd, offset, SEEK_SET);
   for(i = 0;i < h;i ++){
     write(fd, p, w);
