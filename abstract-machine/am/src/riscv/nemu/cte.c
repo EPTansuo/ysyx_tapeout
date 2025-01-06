@@ -10,12 +10,9 @@ Context* __am_irq_handle(Context *c) {
     Event ev = {0};
     switch (c->mcause) {
       case 11: ev.event = EVENT_YIELD; 
-#ifdef __riscv_e
-      ev.event = c->gpr[15] > 20 ? EVENT_YIELD: EVENT_SYSCALL;
-#else
-//      ev.event = c->gpr[17] > 20 ? EVENT_YIELD: EVENT_SYSCALL; //目前只有20个系统调用
-#endif
-      break;
+      ev.event = c->GPR1 == -1 ? EVENT_YIELD: EVENT_SYSCALL;  
+	  c->mepc+=4;
+	  break;
       default: ev.event = EVENT_ERROR;  printf("EVENR_ERROR\n"); break;
     }
     // printf("before:\n");
@@ -23,7 +20,6 @@ Context* __am_irq_handle(Context *c) {
     // printf("ctx->mcause=%x\n",c->mcause);
     // printf("ctx->mstatus=%x\n",c->mstatus);
     // printf("ctx->gpr[10]=%x\n",c->gpr[10]);
-    c->mepc+=4;  
     c = user_handler(ev, c);
     // printf("ctx->mepc=%x\n",c->mepc);
     // printf("ctx->mcause=%x\n",c->mcause);
@@ -64,10 +60,10 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
 void yield() {
 #ifdef __riscv_e
   //asm volatile("li a5, -1; ecall");
-  asm volatile("li a5, 11; ecall");  //根据下面的改成了11，下面的根据spike修改
+  asm volatile("li a5, -1; ecall");  //根据下面的改成了11，下面的根据spike修改
 #else
   //asm volatile("li a7, -1; ecall");
-  asm volatile("li a7, 11; ecall"); //Spike 那边是0xb来着
+  asm volatile("li a7, -1; ecall"); //Spike 那边是0xb来着
 #endif
 }
 
