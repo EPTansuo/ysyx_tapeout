@@ -18,10 +18,17 @@ int wave_sample_cnt = 0;
 
 #ifdef CONFIG_SAMPLE_WAVE_DUMP
 VerilatedWave* get_wave_sample_fp(){
+	int wave_num;
 	delete tfp;
 	tfp = new VerilatedWave;
 	top->trace(tfp, 0);
-	std::string wave_name = std::string("wave_") + std::to_string(wave_sample_cnt) 
+	
+	if(wave_sample_cnt < CONFIG_SAMPLE_NUM){
+		wave_num = wave_sample_cnt;
+	}else{
+		wave_num = std::rand() % CONFIG_SAMPLE_NUM;
+	}
+	std::string wave_name = std::string("wave_") + std::to_string(wave_num) 
 							+ MUXDEF(CONFIG_WAVE_VCD,".vcd",".fst");
 	wave_name = std::string(getenv("NPC_HOME")) + "/" + wave_name;
 	tfp->open(wave_name.c_str());
