@@ -2,20 +2,29 @@
 #include <verilator.h>
 #include <common.h>
 #include <nvboard.h>
+#include <string>
+
 
 #ifdef CONFIG_USE_NVBOARD
 void nvboard_bind_all_pins(VTOP_NAME* top);
 #endif 
 
-#ifdef CONFIG_WAVE_VCD
-VerilatedVcdC *tfp = NULL;
-#endif
-#ifdef CONFIG_WAVE_FST
-VerilatedFstC *tfp = NULL;
-#endif
+
+VerilatedWave *tfp = NULL;
 
 VerilatedContext *contextp = NULL;
 VTOP_NAME* top = NULL;
+int wave_sample_cnt = 0;
+
+VerilatedWave* get_wave_sample_fp(){
+	std::string wave_name = std::string("wave_") + std::to_string(wave_sample_cnt) 
+							+ MUXDEF(CONFIG_WAVE_VCD,".vcd",".fst");
+	wave_name = std::string(getenv("NPC_HOME")) + "/" + wave_name;
+	tfp->open(wave_name.c_str());
+	wave_sample_cnt++;
+	return tfp;
+}
+
 
 void init_sim(int argc, char** argv){
 	//Verilated::commandArgs(argc, argv);
@@ -29,10 +38,15 @@ void init_sim(int argc, char** argv){
 	Verilated::traceEverOn(true);
 	contextp = new VerilatedContext;
 	tfp = MUXDEF(CONFIG_WAVE_VCD, new VerilatedVcdC, new VerilatedFstC);
-    top->trace(tfp, 0);
+    
+#ifndef CONFIG_SAMPLE_WAVE_DUMP
+	top->trace(tfp, 0);
 	char buf[300];
 	sprintf(buf, "%s/%s", getenv("NPC_HOME"), MUXDEF(CONFIG_WAVE_VCD,"wave.vcd","wave.fst"));
 	tfp->open(buf);
+#else
+	//tfp = get_wave_sample_fp();
+#endif 
 #endif 
 	
 	

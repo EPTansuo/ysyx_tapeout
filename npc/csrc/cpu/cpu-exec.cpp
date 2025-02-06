@@ -8,6 +8,8 @@
 #include <verilator.h>
 #include <memory/paddr.h>
 #include <signal.h>
+#include <cstdlib>
+#include <sim.h>
 
 #define MAX_INST_TO_PRINT 10001
 bool first = true;
@@ -65,8 +67,31 @@ static void inline trace_and_difftest(){
 void inline cpu_eval_dump(){
   top->eval();
 #ifdef CONFIG_WAVE_DUMP
+#ifndef CONFIG_SAMPLE_WAVE_DUMP
   tfp->dump(contextp->time());
   contextp->timeInc(1);
+#else
+  static int cnt = 0;
+  static bool start = false;
+  if(!start){
+    std::srand(std::time(0));
+    if(std::rand() % 1000 == 0){
+      start = true;
+      tfp = get_wave_sample_fp();
+      top->trace(tfp, 0);
+    }
+  }else{
+    if(cnt++ < CONFIG_SAMPLE_CYCLES){
+      tfp->dump(contextp->time());
+      contextp->timeInc(1);
+    }else{
+      tfp->close();
+      cnt = 0;
+      start = false;
+    }
+  }
+
+#endif 
 #endif
 }
 
