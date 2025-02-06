@@ -30,7 +30,7 @@ VerilatedWave* get_wave_sample_fp(){
 	}
 	std::string wave_name = std::string("wave_") + std::to_string(wave_num) 
 							+ MUXDEF(CONFIG_WAVE_VCD,".vcd",".fst");
-	wave_name = std::string(getenv("NPC_HOME")) + "/" + wave_name;
+	wave_name = std::string(getenv("NPC_HOME")) + "/build/" + wave_name;
 	tfp->open(wave_name.c_str());
 	wave_sample_cnt++;
 	return tfp;
