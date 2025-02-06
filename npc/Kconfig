@@ -73,10 +73,12 @@ config SAMPLE_WAVE_DUMP
 	default n
 
 config SAMPLE_NUM
+  depends on SAMPLE_WAVE_DUMP
   int "Number of Sample snapshots"
   default 30
 
 config SAMPLE_CYCLES
+  depends on SAMPLE_WAVE_DUMP
   int "Cycles of each snapshot"
   default 128
 

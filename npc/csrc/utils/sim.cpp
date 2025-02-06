@@ -16,6 +16,7 @@ VerilatedContext *contextp = NULL;
 VTOP_NAME* top = NULL;
 int wave_sample_cnt = 0;
 
+#ifdef CONFIG_SAMPLE_WAVE_DUMP
 VerilatedWave* get_wave_sample_fp(){
 	std::string wave_name = std::string("wave_") + std::to_string(wave_sample_cnt) 
 							+ MUXDEF(CONFIG_WAVE_VCD,".vcd",".fst");
@@ -24,7 +25,7 @@ VerilatedWave* get_wave_sample_fp(){
 	wave_sample_cnt++;
 	return tfp;
 }
-
+#endif 
 
 void init_sim(int argc, char** argv){
 	//Verilated::commandArgs(argc, argv);
