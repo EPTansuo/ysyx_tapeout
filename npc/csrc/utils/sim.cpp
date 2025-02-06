@@ -29,6 +29,7 @@ VerilatedWave* get_wave_sample_fp(){
 
 void init_sim(int argc, char** argv){
 	//Verilated::commandArgs(argc, argv);
+	std::srand(std::time(0));
 	top = new VTOP_NAME;
 #ifdef CONFIG_USE_NVBOARD
 	nvboard_bind_all_pins(top);
