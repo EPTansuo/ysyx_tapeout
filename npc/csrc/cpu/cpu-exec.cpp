@@ -75,6 +75,7 @@ void inline cpu_eval_dump(){
   static bool start = false;
   if(!start){
     std::srand(std::time(0));
+    printf("Random number: %d\n", std::rand() % 100);
     if(std::rand() % 100 == 0){
       start = true;
       tfp = get_wave_sample_fp();
