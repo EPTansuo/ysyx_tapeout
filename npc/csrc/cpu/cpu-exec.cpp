@@ -79,7 +79,6 @@ void inline cpu_eval_dump(){
     if(std::rand() % 100 == 0){
       start = true;
       tfp = get_wave_sample_fp();
-      top->trace(tfp, 0);
       printf("Start sample wave dump\n");
     }
   }else{

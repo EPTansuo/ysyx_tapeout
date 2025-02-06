@@ -18,6 +18,9 @@ int wave_sample_cnt = 0;
 
 #ifdef CONFIG_SAMPLE_WAVE_DUMP
 VerilatedWave* get_wave_sample_fp(){
+	delete tfp;
+	tfp = new VerilatedWave;
+	top->trace(tfp, 0);
 	std::string wave_name = std::string("wave_") + std::to_string(wave_sample_cnt) 
 							+ MUXDEF(CONFIG_WAVE_VCD,".vcd",".fst");
 	wave_name = std::string(getenv("NPC_HOME")) + "/" + wave_name;
@@ -39,9 +42,10 @@ void init_sim(int argc, char** argv){
 #ifdef CONFIG_WAVE_DUMP
 	Verilated::traceEverOn(true);
 	contextp = new VerilatedContext;
-	tfp = MUXDEF(CONFIG_WAVE_VCD, new VerilatedVcdC, new VerilatedFstC);
+	
     
 #ifndef CONFIG_SAMPLE_WAVE_DUMP
+	tfp = MUXDEF(CONFIG_WAVE_VCD, new VerilatedVcdC, new VerilatedFstC);
 	top->trace(tfp, 0);
 	char buf[300];
 	sprintf(buf, "%s/%s", getenv("NPC_HOME"), MUXDEF(CONFIG_WAVE_VCD,"wave.vcd","wave.fst"));
