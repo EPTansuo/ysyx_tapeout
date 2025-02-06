@@ -76,13 +76,13 @@ void inline cpu_eval_dump(){
   if(!start){
     
     printf("Random number: %d\n", std::rand() % 100);
-    if(std::rand() % 1000 == 0){
+    if(std::rand() % 10000 == 0){
       start = true;
       tfp = get_wave_sample_fp();
       printf("Start sample wave dump\n");
     }
   }else{
-    if(cnt++ < CONFIG_SAMPLE_CYCLES){
+    if(cnt++ < CONFIG_SAMPLE_CYCLES*2){
       tfp->dump(contextp->time());
       contextp->timeInc(1);
     }else{
