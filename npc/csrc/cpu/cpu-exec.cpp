@@ -74,12 +74,9 @@ void inline cpu_eval_dump(){
   static int cnt = 0;
   static bool start = false;
   if(!start){
-    
-    printf("Random number: %d\n", std::rand() % 100);
     if(std::rand() % 10000 == 0){
       start = true;
       tfp = get_wave_sample_fp();
-      printf("Start sample wave dump\n");
     }
   }else{
     if(cnt++ < CONFIG_SAMPLE_CYCLES*2){
