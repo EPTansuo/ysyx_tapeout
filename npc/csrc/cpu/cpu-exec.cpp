@@ -107,9 +107,21 @@ void inline cpu_single_cycle(){
 }
 
 void inline cpu_single_inst(){
+#ifdef CONFIG_WAVE_DUMP
+  size_t cycles = 0;
+  do{
+    if(cycles++ > 10000){
+      printf("Single Cycle Time out!\n");
+      npc_state.state = NPC_ABORT;
+      return;
+    }
+    cpu_single_cycle();
+  }while(!WBU_VALID);
+#else
   do{
     cpu_single_cycle();
   }while(!WBU_VALID);
+#endif 
 }
 
 void cpu_reset(int n){
