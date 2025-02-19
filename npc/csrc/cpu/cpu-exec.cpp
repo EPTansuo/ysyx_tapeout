@@ -9,6 +9,7 @@
 #include <memory/paddr.h>
 #include <signal.h>
 #include <cstdlib>
+#include <color.h>
 #include <sim.h>
 
 #define MAX_INST_TO_PRINT 10001
@@ -107,9 +108,23 @@ void inline cpu_single_cycle(){
 }
 
 void inline cpu_single_inst(){
+#ifdef CONFIG_WAVE_DUMP
+  size_t cycles = 0;
+  do{
+    if(cycles++ > 10000){
+      printf("************************************\n");
+      printf(L_RED "Single Cycle Time out!\n" COLOR_NONE);
+      printf( "************************************\n");
+      npc_state.state = NPC_ABORT;
+      return;
+    }
+    cpu_single_cycle();
+  }while(!WBU_VALID);
+#else
   do{
     cpu_single_cycle();
   }while(!WBU_VALID);
+#endif 
 }
 
 void cpu_reset(int n){
