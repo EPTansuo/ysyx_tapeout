@@ -25,7 +25,7 @@ uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
 paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 
 const char* pc = "tb.soc.dut.asic.cpu.cpu.cpu_npc.idu.io_in_bits_pc";
-const char* img_file = "/SM01/home/bs2021/bs202164050062/PROJECT/npc/img/microbench-riscv32e-ysyxsoc.bin";
+const char* img_file = "/SM01/home/bs2021/bs202164050062/PROJECT/npc/img/microbench-riscv32e-ysyxsoc_test.bin";
 
 
 
@@ -162,17 +162,6 @@ int get_inst(int pc){
 
  int pmem_read(int raddr){
 
-  //raddr = raddr - 0x80000000;
-
-#ifdef CONFIG_HAS_TIMER
-  if(raddr == CONFIG_RTC_MMIO) {
-    //获取开机时间
-    return (uint32_t)get_time();
-  }
-  else if (raddr == CONFIG_RTC_MMIO + 4) {
-    return (uint32_t)(get_time() >> 32);
-  }
-#endif
   
   if(raddr < CONFIG_MBASE || raddr > CONFIG_MBASE + CONFIG_MSIZE)
     return 0;
@@ -204,18 +193,6 @@ int get_inst(int pc){
     return;
   }
 
-#ifdef CONFIG_HAS_SERIAL
-    if(waddr == CONFIG_SERIAL_MMIO) {
-        //printf(L_PURPLE "%c" COLOR_NONE "", wdata);
-        putchar(wdata);
-        fflush(stdout);
-        //setbuf(stdout,NULL);
-        //printf("%c",wdata);
-        // putc(wdata,stdout);
-        return;
-    }
-    else
-#endif 
     if (waddr > CONFIG_MBASE + CONFIG_MSIZE){
       return;
     }
