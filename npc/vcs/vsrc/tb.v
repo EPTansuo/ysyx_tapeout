@@ -16,10 +16,10 @@ end
 
 
 initial begin
-//     $fsdbDumpfile("tb.fsdb");
-//     $fsdbDumpvars("+all");
-	$dumpfile("wave.vcd");
-	$dumpvars(0,tb);	
+   $fsdbDumpfile("tb.fsdb");
+   $fsdbDumpvars("+all");
+	// $dumpfile("wave.vcd");
+	// $dumpvars(0,tb);	
 end
 
 // initial begin

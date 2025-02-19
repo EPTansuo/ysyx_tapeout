@@ -175,9 +175,11 @@ rsync:
 
 
 
-vcs_sim:
-	
+vcs_build: rsync
+	ssh -X -C ${GZIC_SERVER_USER}@${GZIC_SERVER_IP} "cd ${GZIC_SERVER_USER_HOME}/PROJECT/npc && make -f vcs/vcs.mk -B"
 
+vcs_sim: rsync
+	ssh -X -C ${GZIC_SERVER_USER}@${GZIC_SERVER_IP} "cd ${GZIC_SERVER_USER_HOME}/PROJECT/npc && make -f vcs/vcs.mk && ./build/simv"
 
 
 # menuconfig and autoconf.h

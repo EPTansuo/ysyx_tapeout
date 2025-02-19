@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <time.h>
 #include <assert.h>
+#include "vpi_user.h"
+#include <stddef.h>
 
 typedef uint32_t word_t;
 typedef uint32_t paddr_t;
@@ -21,6 +23,40 @@ static uint8_t pmem[CONFIG_MSIZE] = {};
 
 uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
 paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
+
+const char* pc = "tb.soc.dut.asic.cpu.cpu.cpu_npc.idu.io_in_bits_pc";
+
+const char* get_pc(){
+  vpiHandle handle;
+  s_vpi_value value_s;
+
+  handle = vpi_handle_by_name(pc, NULL);
+  if (!handle) {
+    printf("Error: Cannot find %s\n", pc);
+    fflush(stdout);
+    return NULL;
+  }
+  value_s.format = vpiHexStrVal;
+  vpi_get_value(handle, &value_s);
+  return value_s.value.str;
+}
+
+const char* get_reg(int i){
+  char buf[100];
+  sprintf(buf, "tb.soc.dut.asic.cpu.cpu.cpu_npc.regfile.regs_ext.Memory[%d]", i);
+  vpiHandle handle;
+  s_vpi_value value_s;
+
+  handle = vpi_handle_by_name(buf, NULL);
+  if (!handle) {
+	  printf("Error: Cannot find %s\n", buf);
+    fflush(stdout);
+    return NULL;
+  }
+  value_s.format = vpiHexStrVal;
+  vpi_get_value(handle, &value_s);
+  return value_s.value.str;
+}
 
 
 const char* img_file = "/SM01/home/bs2021/bs202164050062/PROJECT/npc/build/img.bin";
@@ -70,10 +106,20 @@ static inline void host_write(void *addr, int len, word_t data) {
 
 
 
- void npc_ebreak(){
+
+void npc_ebreak(){
 	//NPCTRAP(PC, REGS[10]);
+	//
+	//
   printf("EBREAK!\n");
+  int isgood = !strcmp("00000000",get_reg(10));
+  if(isgood){
+  	printf("npc: " L_GREEN  "HIT GOOD TRAP" COLOR_NONE " at pc = 0x%s\n" , get_pc());
+  }else{
+  	printf("npc: " L_RED    "HIT BAD TRAP" COLOR_NONE " at pc = 0x%s\n" , get_pc());
+  }
   fflush(stdout);
+  vpi_control(vpiFinish, 1);
   exit(0);
 }
 
