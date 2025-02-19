@@ -22,14 +22,14 @@ initial begin
 	$dumpvars(0,tb);	
 end
 
-initial begin
-	
-	#1100000
-	$finish;
-
-end
-
-
+// initial begin
+//
+// 	#1100000
+// 	$finish;
+//
+// end
+//
+//
 
 initial begin
     clk = 0;
