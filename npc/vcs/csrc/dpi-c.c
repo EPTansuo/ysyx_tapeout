@@ -25,6 +25,10 @@ uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
 paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 
 const char* pc = "tb.soc.dut.asic.cpu.cpu.cpu_npc.idu.io_in_bits_pc";
+const char* img_file = "/SM01/home/bs2021/bs202164050062/PROJECT/npc/img/microbench-riscv32e-ysyxsoc.bin";
+
+
+
 
 const char* get_pc(){
   vpiHandle handle;
@@ -59,7 +63,6 @@ const char* get_reg(int i){
 }
 
 
-const char* img_file = "/SM01/home/bs2021/bs202164050062/PROJECT/npc/build/img.bin";
 
 void load_img(){
   if(!img_init){
