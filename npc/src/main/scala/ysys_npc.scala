@@ -158,6 +158,13 @@ class ysyx_npc(config: NPCConfig) extends Module {
     
 
 
+    // forwarding 
+    /*
+    
+    
+    */
+
+
 
     // Regfile
     val regfile = Module(new Regfile(config))
