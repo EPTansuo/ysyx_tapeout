@@ -117,6 +117,7 @@ static int cmd_x(char *args){
     return 1;
   }
 
+
   for(int i=0; i<size; i++){
     vaddr_t data = vaddr_read(addr + i * 4, 4);
     printf("0x" FMT_WORD_HEX_WIDTH "\t", addr + i * 4);
