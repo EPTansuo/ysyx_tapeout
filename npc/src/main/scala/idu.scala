@@ -76,19 +76,28 @@ class IDU(config: NPCConfig) extends Module {
     io.reg_read1.addr := Mux(control.io.out.csr_cmd === csr_cmd.CSR_P, 15.U,rs1_addr)
     io.reg_read2.addr := rs2_addr
 
+    val forward_A_reg = RegInit(0.U(config.XLEN.W))
 
-    io.out.bits.exu.src1 := MuxLookup(io.forward_A, io.reg_read1.data)( Seq(
-        forward_sel.FWD_XX  -> io.reg_read1.data,
-        forward_sel.FWD_EXU -> io.forward_exu,
-        forward_sel.FWD_LSU -> io.forward_lsu,
-        forward_sel.FWD_WBU -> io.forward_wbu
-    ))
-    io.out.bits.exu.src2 := MuxLookup(io.forward_B, io.reg_read2.data)( Seq(
-        forward_sel.FWD_XX  -> io.reg_read2.data,
-        forward_sel.FWD_EXU -> io.forward_exu,
-        forward_sel.FWD_LSU -> io.forward_lsu,
-        forward_sel.FWD_WBU -> io.forward_wbu
-    ))
+    when(state === s_idle){
+        forward_A_reg := MuxLookup(io.forward_A, io.reg_read1.data)( Seq(
+            forward_sel.FWD_XX  -> io.reg_read1.data,
+            forward_sel.FWD_EXU -> io.forward_exu,
+            forward_sel.FWD_LSU -> io.forward_lsu,
+            forward_sel.FWD_WBU -> io.forward_wbu
+        ))
+    }
+    io.out.bits.exu.src1 := forward_A_reg
+
+    val forward_B_reg = RegInit(0.U(config.XLEN.W))
+    when(state === s_idle){
+    forward_B_reg := MuxLookup(io.forward_B, io.reg_read2.data)( Seq(
+            forward_sel.FWD_XX  -> io.reg_read2.data,
+            forward_sel.FWD_EXU -> io.forward_exu,
+            forward_sel.FWD_LSU -> io.forward_lsu,
+            forward_sel.FWD_WBU -> io.forward_wbu
+        ))
+    }
+    io.out.bits.exu.src2 := forward_B_reg
 
     io.out.bits.exu.alu_op := control.io.out.alu_op
     io.out.bits.exu.imm_sel := control.io.out.imm_sel
