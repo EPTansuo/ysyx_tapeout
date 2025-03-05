@@ -107,9 +107,9 @@ class ysyx_npc(config: NPCConfig) extends Module {
     val IDU_rs1 = idu.io.in.bits.inst(19, 15)
     val IDU_rs2 = idu.io.in.bits.inst(24, 20)
     val IDU_inst_type = idu.io.out.bits.wbu.inst_type
-    val EXU_rd = exu.io.rd_addr
-    val LSU_rd = lsu.io.rd_addr
-    val WBU_rd = wbu.io.rd_addr
+    val EXU_rd = exu.io.out.bits.rd_addr
+    val LSU_rd = lsu.io.out.bits.rd_addr
+    val WBU_rd = wbu.io.rd_addr  // TODO: WARNING
     val EXU_inst_type = exu.io.out.bits.wbu.inst_type
     val LSU_inst_type = lsu.io.out.bits.wbu.inst_type
     val WBU_inst_type = wbu.io.inst_type
