@@ -182,8 +182,8 @@ class ysyx_npc(config: NPCConfig) extends Module {
     forward.io.exu_itype := EXU_inst_type
     forward.io.lsu_itype := LSU_inst_type
     forward.io.wbu_itype := WBU_inst_type
-    idu.io.forward_A := Mux(isRAW_loaduse, forward_sel.FWD_XX, forward.io.forward_A)
-    idu.io.forward_B := Mux(isRAW_loaduse, forward_sel.FWD_XX, forward.io.forward_B)
+    idu.io.forward_A := forward.io.forward_A
+    idu.io.forward_B := forward.io.forward_B
     idu.io.forward_exu := exu.io.out.bits.alu_out
     idu.io.forward_lsu := lsu.io.out.bits.alu_out
     idu.io.forward_wbu := wbu.io.forward_wbu
