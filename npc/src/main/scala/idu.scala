@@ -21,6 +21,12 @@ class IDU(config: NPCConfig) extends Module {
         val reg_read1 = Flipped(new RegfileReadIO(config.XLEN))
         val reg_read2 = Flipped(new RegfileReadIO(config.XLEN))
 
+        // see 18-447 Lecture 8: Data Hazard and Resolution: Forwarding Paths (V1) Page 20
+        val forward_A = Input(UInt(2.W))
+        val forward_B = Input(UInt(2.W))
+        val forward_exu = Input(UInt(config.XLEN.W))
+        val forward_lsu = Input(UInt(config.XLEN.W))
+        val forward_wbu = Input(UInt(config.XLEN.W))
     })
 
     
@@ -67,11 +73,31 @@ class IDU(config: NPCConfig) extends Module {
     io.out.bits.exu.B_sel := control.io.out.B_sel
     val rs1_addr = inst(19, 15)
     val rs2_addr = inst(24, 20)
-    io.reg_read1.addr := Mux(control.io.out.csr_cmd === csr_cmd.CSR_P, 15.U,rs1_addr) //TODO
+    io.reg_read1.addr := Mux(control.io.out.csr_cmd === csr_cmd.CSR_P, 15.U,rs1_addr)
     io.reg_read2.addr := rs2_addr
-    io.out.bits.exu.src1 := io.reg_read1.data
-    io.out.bits.exu.src2 := io.reg_read2.data
 
+    val forward_A_reg = RegInit(0.U(config.XLEN.W))
+
+    when(state === s_idle){
+        forward_A_reg := MuxLookup(io.forward_A, io.reg_read1.data)( Seq(
+            forward_sel.FWD_XX  -> io.reg_read1.data,
+            forward_sel.FWD_EXU -> io.forward_exu,
+            forward_sel.FWD_LSU -> io.forward_lsu,
+            forward_sel.FWD_WBU -> io.forward_wbu
+        ))
+    }
+    io.out.bits.exu.src1 := forward_A_reg
+
+    val forward_B_reg = RegInit(0.U(config.XLEN.W))
+    when(state === s_idle){
+    forward_B_reg := MuxLookup(io.forward_B, io.reg_read2.data)( Seq(
+            forward_sel.FWD_XX  -> io.reg_read2.data,
+            forward_sel.FWD_EXU -> io.forward_exu,
+            forward_sel.FWD_LSU -> io.forward_lsu,
+            forward_sel.FWD_WBU -> io.forward_wbu
+        ))
+    }
+    io.out.bits.exu.src2 := forward_B_reg
 
     io.out.bits.exu.alu_op := control.io.out.alu_op
     io.out.bits.exu.imm_sel := control.io.out.imm_sel

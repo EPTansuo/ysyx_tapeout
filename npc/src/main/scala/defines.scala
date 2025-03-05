@@ -120,3 +120,10 @@ object inst_type {
   val ICSR_TYPE = 7.U(4.W)
   val FENCE_TYPE = 8.U(4.W)
 }
+
+object forward_sel {
+  val FWD_XX = 0.U(2.W)
+  val FWD_EXU = 1.U(2.W)
+  val FWD_LSU = 2.U(2.W)
+  val FWD_WBU = 3.U(2.W)
+}

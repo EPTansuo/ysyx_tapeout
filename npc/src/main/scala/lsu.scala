@@ -55,7 +55,7 @@ class LSU(config: NPCConfig) extends Module {
     val load_en = ctrlsig.ld_sel =/= LD_XX
     val wb_sel = wbu_data.wb_sel
     
-    io.ld_sel := ctrlsig.ld_sel
+
 
     
     // Forwarding
@@ -98,6 +98,12 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
         s_wait_ready   -> Mux(io.out.ready, s_idle, s_wait_ready)
     ))
 
+
+    // var ld_sel_reg = RegInit(0.U(3.W))
+    // when(state === s_wait_ready){
+    //     ld_sel_reg := ctrlsig.ld_sel
+    // }
+    io.ld_sel := ctrlsig.ld_sel//ld_sel_reg
 
     io.out.valid := state === s_wait_ready
     io.in.ready := state === s_idle
