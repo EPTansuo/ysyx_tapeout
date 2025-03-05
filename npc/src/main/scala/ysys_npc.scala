@@ -158,11 +158,15 @@ class ysyx_npc(config: NPCConfig) extends Module {
     
 
 
-    // forwarding 
-    /*
-    
-    
-    */
+    // // forwarding 
+    // def forwardFrom(IDU_rs1: UInt, rd: UInt, itype: UInt): UInt = {
+    //     val ret = IDU_rs1 && (IDU_rs1 === rd) && RegWrite(itype)
+    //     ret
+    // }
+    // val exu_forward = forwardFrom(IDU_rs1, EXU_rd, IDU_inst_type)
+    // val lsu_forward = forwardFrom(IDU_rs1, LSU_rd, IDU_inst_type)
+    // val wbu_forward = forwardFrom(IDU_rs1, WBU_rd, IDU_inst_type)
+
 
 
 
