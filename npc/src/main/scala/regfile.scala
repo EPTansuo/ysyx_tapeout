@@ -33,6 +33,10 @@ class Regfile(config: NPCConfig) extends Module{
     // io.read2.data := Mux(io.write.addr === io.read2.addr && io.write.addr =/= 0.U, 
     //                         io.write.data, regs(io.read2.addr))
     
+
+    io.read1.data := regs(io.read1.addr)
+    io.read2.data := regs(io.read2.addr)
+
     when(io.write.en) {
         regs(io.write.addr) := Mux(io.write.addr === 0.U, 0.U, io.write.data)
     }
