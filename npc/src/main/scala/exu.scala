@@ -18,34 +18,24 @@ class EXU(config: NPCConfig) extends Module{
     var io = IO(new Bundle{
         val in = Flipped(Decoupled(new SigIO_IDU_EXU(config.XLEN)))
         val out = (Decoupled(new SigIO_EXU_LSU(config.XLEN)))
-        val reg_read1 = Flipped(new RegfileReadIO(config.XLEN))
-        val reg_read2 = Flipped(new RegfileReadIO(config.XLEN))
-       // val flush = Input(Bool())
+        // val reg_read1 = Flipped(new RegfileReadIO(config.XLEN))
+        // val reg_read2 = Flipped(new RegfileReadIO(config.XLEN))
+       
         val npc = Decoupled(UInt(config.XLEN.W))
-        // val forward = Decoupled(UInt(config.XLEN.W))
         val rd_addr = Output(UInt(5.W))
     })
     val xlen = config.XLEN
     val alu = Module(new ALU(xlen))
     val immGen = Module(new ImmGen(xlen))
-/*
-    val in_reg = Reg(Output(chiselTypeOf(io.in)))
-    when( io.in.valid && io.in.ready){
-        in_reg := io.in
-    }
 
-    val pc = in_reg.bits.pc
-    val inst = in_reg.bits.inst
-    val ctrlsig = in_reg.bits.exu
-    val sig_csr_cmd = in_reg.bits.wbu.csr_cmd
-*/
+
     val pc = io.in.bits.pc
     val inst = io.in.bits.inst
     val ctrlsig = io.in.bits.exu
     val sig_csr_cmd = io.in.bits.wbu.csr_cmd
     val wb_sel = io.in.bits.wbu.wb_sel
 
-    // val forward = io.forward
+
 
     val s_idle :: s_exe :: s_wait_ready :: Nil = Enum(3)
 
@@ -65,19 +55,21 @@ class EXU(config: NPCConfig) extends Module{
 
     // regfile
     val rd_addr = inst(11, 7)
-    val rs1_addr = inst(19, 15)
-    val rs2_addr = inst(24, 20)
+    // val rs1_addr = inst(19, 15)
+    // val rs2_addr = inst(24, 20)
     io.rd_addr := Mux(state === s_idle, 0.U, rd_addr)
 
     
-    io.reg_read1.addr := Mux(sig_csr_cmd === csr_cmd.CSR_P, 15.U,rs1_addr)
-    io.reg_read2.addr := rs2_addr
+    // io.reg_read1.addr := Mux(sig_csr_cmd === csr_cmd.CSR_P, 15.U,rs1_addr)
+    // io.reg_read2.addr := rs2_addr
 
     val src1_reg = RegInit(0.U(xlen.W))
     val src2_reg = RegInit(0.U(xlen.W))
 
-    val src1 = io.reg_read1.data
-    val src2 = io.reg_read2.data
+    // val src1 = io.reg_read1.data
+    // val src2 = io.reg_read2.data
+    val src1 = ctrlsig.src1
+    val src2 = ctrlsig.src2
     src1_reg := src1
     src2_reg := src2
 

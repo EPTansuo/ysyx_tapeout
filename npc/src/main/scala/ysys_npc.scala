@@ -117,14 +117,6 @@ class ysyx_npc(config: NPCConfig) extends Module {
     val exu_raw = Wire(Bool())
     val lsu_raw = Wire(Bool())
     val wbu_raw = Wire(Bool())
-    // when(idu.io.in.bits.inst === 0x10030313.U){
-    //     printf("IDU_rs1: %d, IDU_rs2: %d, EXU_rd: %d, IDU_inst_type: %d, exu.io.out.ready: %d\n", IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, exu.io.out.ready)
-    //     printf("useRs: %d\n", useRs(IDU_inst_type))
-    // }
-    // exu_raw := conflictWithStage(IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, ~exu.io.out.ready)
-    // lsu_raw := conflictWithStage(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, ~lsu.io.out.ready)
-    // wbu_raw := conflictWithStage(IDU_rs1, IDU_rs2, WBU_rd, IDU_inst_type, ~wbu.io.out.ready)
-
     exu_raw := conflictWithStage(IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, EXU_int_type)
     lsu_raw := conflictWithStage(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, LSU_int_type)
     wbu_raw := conflictWithStage(IDU_rs1, IDU_rs2, WBU_rd, IDU_inst_type, WBU_int_type)
@@ -132,12 +124,7 @@ class ysyx_npc(config: NPCConfig) extends Module {
     dontTouch(lsu_raw)
     dontTouch(wbu_raw)
     val isRAW = exu_raw || lsu_raw || wbu_raw
-    // val isRAW = conflictWithStage(IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, ~exu.io.out.valid) ||
-    //                conflictWithStage(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, ~lsu.io.out.valid) ||
-    //                conflictWithStage(IDU_rs1, IDU_rs2, WBU_rd, IDU_inst_type, ~wbu.io.out.valid)
-    // val isRAW = false.B
 
-    //ifu.io.stall := stall
     idu.io.stall := stall
     stall := isRAW || RegNext(isRAW)
 
@@ -154,18 +141,41 @@ class ysyx_npc(config: NPCConfig) extends Module {
     val exu_raw_loaduse = conflictWithLoadUse(IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, exu.io.out.bits.lsu.ld_sel)
     val lsu_raw_loaduse = conflictWithLoadUse(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, lsu.io.ld_sel)
     val isRAW_loaduse = exu_raw_loaduse || lsu_raw_loaduse
-    val loaduse_cnt = RegInit(0.U(64.W))
-    when(isRAW_loaduse){
-        loaduse_cnt := loaduse_cnt + 1.U
+    
+    dontTouch(exu_raw_loaduse)
+    dontTouch(lsu_raw_loaduse)
+    dontTouch(isRAW_loaduse)
+
+
+
+    if(config.PERF_CNT){
+        val loaduse_cnt = RegInit(0.U(64.W))
+        when(isRAW_loaduse){
+            loaduse_cnt := loaduse_cnt + 1.U
+        }
+        dontTouch(loaduse_cnt)
     }
-    dontTouch(loaduse_cnt)
+    
+
+
+    // // forwarding 
+    // def forwardFrom(IDU_rs1: UInt, rd: UInt, itype: UInt): UInt = {
+    //     val ret = IDU_rs1 && (IDU_rs1 === rd) && RegWrite(itype)
+    //     ret
+    // }
+    // val exu_forward = forwardFrom(IDU_rs1, EXU_rd, IDU_inst_type)
+    // val lsu_forward = forwardFrom(IDU_rs1, LSU_rd, IDU_inst_type)
+    // val wbu_forward = forwardFrom(IDU_rs1, WBU_rd, IDU_inst_type)
+
 
 
 
     // Regfile
     val regfile = Module(new Regfile(config))
-    exu.io.reg_read1 <> regfile.io.read1
-    exu.io.reg_read2 <> regfile.io.read2
+    // exu.io.reg_read1 <> regfile.io.read1
+    // exu.io.reg_read2 <> regfile.io.read2
+    idu.io.reg_read1 <> regfile.io.read1
+    idu.io.reg_read2 <> regfile.io.read2
     wbu.io.reg_write <> regfile.io.write
 
 
