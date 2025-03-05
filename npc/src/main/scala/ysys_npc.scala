@@ -143,8 +143,8 @@ class ysyx_npc(config: NPCConfig) extends Module {
         ((rs1 === rd && useRs1(ID_inst_type)) || (rs2 === rd && useRs2(ID_inst_type) )) && (rd.orR) && loadMem(Other_ld_sel)
 
     }    
-    val exu_raw_loaduse = conflictWithLoadUse(IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, exu.io.out.bits.lsu.ld_sel)
-    val lsu_raw_loaduse = conflictWithLoadUse(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, lsu.io.ld_sel)
+    val exu_raw_loaduse = conflictWithLoadUse(IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, idu.io.out.bits.lsu.ld_sel)
+    val lsu_raw_loaduse = conflictWithLoadUse(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, exu.io.out.bits.lsu.ld_sel)
     val isRAW_loaduse = exu_raw_loaduse || lsu_raw_loaduse
     
     dontTouch(exu_raw_loaduse)
@@ -152,11 +152,8 @@ class ysyx_npc(config: NPCConfig) extends Module {
     dontTouch(isRAW_loaduse)
 
     idu.io.stall := stall
-    val RAW_with_Fwd_delay = RegInit(0.U(1.W))
-    RAW_with_Fwd_delay := RAW_with_Fwd
-    stall := RAW_with_Fwd || RAW_with_Fwd_delay.asBool || isRAW_loaduse
-    dontTouch(RAW_with_Fwd)
-
+    stall := RAW_with_Fwd || RegNext(RAW_with_Fwd) || isRAW_loaduse
+    
     if(config.PERF_CNT){
         val loaduse_cnt = RegInit(0.U(64.W))
         when(isRAW_loaduse){
