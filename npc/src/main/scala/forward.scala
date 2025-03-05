@@ -41,7 +41,9 @@ class Forward(config: NPCConfig) extends Module {
     val exu_forward_a = forwardFrom(io.idu_rs1, io.exu_rd, io.exu_itype)
     val lsu_forward_a = forwardFrom(io.idu_rs1, io.lsu_rd, io.lsu_itype)
     val wbu_forward_a = forwardFrom(io.idu_rs1, io.lsu_rd, io.wbu_itype)
-
+    dontTouch(exu_forward_a)
+    dontTouch(lsu_forward_a)
+    dontTouch(wbu_forward_a)
     io.forward_A := Mux(exu_forward_a, forward_sel.FWD_EXU, 
                     Mux(lsu_forward_a, forward_sel.FWD_LSU, 
                     Mux(wbu_forward_a, forward_sel.FWD_WBU, forward_sel.FWD_XX)))
@@ -49,7 +51,9 @@ class Forward(config: NPCConfig) extends Module {
     val exu_forward_b = forwardFrom(io.idu_rs2, io.exu_rd, io.exu_itype)
     val lsu_forward_b = forwardFrom(io.idu_rs2, io.lsu_rd, io.lsu_itype)
     val wbu_forward_b = forwardFrom(io.idu_rs2, io.lsu_rd, io.wbu_itype)
-
+    dontTouch(exu_forward_b)
+    dontTouch(lsu_forward_a)
+    dontTouch(wbu_forward_b)
     io.forward_B := Mux(exu_forward_b, forward_sel.FWD_EXU, 
                     Mux(lsu_forward_b, forward_sel.FWD_LSU, 
                     Mux(wbu_forward_b, forward_sel.FWD_WBU, forward_sel.FWD_XX)))
