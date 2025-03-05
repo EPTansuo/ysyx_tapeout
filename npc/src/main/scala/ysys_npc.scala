@@ -142,7 +142,8 @@ class ysyx_npc(config: NPCConfig) extends Module {
     val lsu_raw_loaduse = conflictWithLoadUse(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, lsu.io.ld_sel)
     val isRAW_loaduse = exu_raw_loaduse || lsu_raw_loaduse
     
-
+    dontTouch(exu_raw_loaduse)
+    dontTouch(lsu_raw_loaduse)
     dontTouch(isRAW_loaduse)
 
 
