@@ -124,7 +124,7 @@ class EXU(config: NPCConfig) extends Module{
     csr.io.inst := inst
     csr.io.pc := pc
     csr.io.cmd := sig_csr_cmd
-    csr.io.in := src1_reg  //目前还未用到立即数  WARNING
+    // csr.io.in := src1_reg  //目前还未用到立即数  WARNING
     csr.io.in := src1  //目前还未用到立即数  WARNING
     csr.io.update_enable := RegNext(io.out.valid)
     dontTouch(csr.io)  //任何时候都不优化
@@ -153,6 +153,7 @@ class EXU(config: NPCConfig) extends Module{
     // // Forwarding
     // io.forward.bits := alu.io.out // TODO: csrrw
     // io.forward.valid := state === s_exe && ctrlsig.ld_sel =/= LD_XX && ctrlsig.wb_sel =/= WB_XX
+
 
 
     io.out.bits.csr_out  := csr.io.out
