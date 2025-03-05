@@ -17,9 +17,6 @@ class IDU(config: NPCConfig) extends Module {
         val pc = Decoupled(UInt(config.XLEN.W))
         val inst_type = Output(UInt(4.W))
         val stall = Input(Bool())
-
-        // val reg_read1 = Flipped(new RegfileReadIO(config.XLEN))
-        // val reg_read2 = Flipped(new RegfileReadIO(config.XLEN))
     })
 
     

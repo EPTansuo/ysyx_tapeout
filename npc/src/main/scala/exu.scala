@@ -20,32 +20,22 @@ class EXU(config: NPCConfig) extends Module{
         val out = (Decoupled(new SigIO_EXU_LSU(config.XLEN)))
         val reg_read1 = Flipped(new RegfileReadIO(config.XLEN))
         val reg_read2 = Flipped(new RegfileReadIO(config.XLEN))
-       // val flush = Input(Bool())
+       
         val npc = Decoupled(UInt(config.XLEN.W))
-        // val forward = Decoupled(UInt(config.XLEN.W))
         val rd_addr = Output(UInt(5.W))
     })
     val xlen = config.XLEN
     val alu = Module(new ALU(xlen))
     val immGen = Module(new ImmGen(xlen))
-/*
-    val in_reg = Reg(Output(chiselTypeOf(io.in)))
-    when( io.in.valid && io.in.ready){
-        in_reg := io.in
-    }
 
-    val pc = in_reg.bits.pc
-    val inst = in_reg.bits.inst
-    val ctrlsig = in_reg.bits.exu
-    val sig_csr_cmd = in_reg.bits.wbu.csr_cmd
-*/
+
     val pc = io.in.bits.pc
     val inst = io.in.bits.inst
     val ctrlsig = io.in.bits.exu
     val sig_csr_cmd = io.in.bits.wbu.csr_cmd
     val wb_sel = io.in.bits.wbu.wb_sel
 
-    // val forward = io.forward
+
 
     val s_idle :: s_exe :: s_wait_ready :: Nil = Enum(3)
 
