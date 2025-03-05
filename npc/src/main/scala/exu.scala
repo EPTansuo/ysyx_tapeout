@@ -125,13 +125,16 @@ class EXU(config: NPCConfig) extends Module{
     csr.io.pc := pc
     csr.io.cmd := sig_csr_cmd
     csr.io.in := src1_reg  //目前还未用到立即数  WARNING
+    csr.io.in := src1  //目前还未用到立即数  WARNING
     csr.io.update_enable := RegNext(io.out.valid)
     dontTouch(csr.io)  //任何时候都不优化
 
     val branch = Module(new Branch(xlen))
     branch.io.br_sel := ctrlsig.br_sel
-    branch.io.src1 := src1_reg
-    branch.io.src2 := src2_reg
+    // branch.io.src1 := src1_reg
+    // branch.io.src2 := src2_reg
+    branch.io.src1 := src1
+    branch.io.src2 := src2
 
     val npc = MuxCase(
         pc + 4.U,  
@@ -154,8 +157,10 @@ class EXU(config: NPCConfig) extends Module{
 
     io.out.bits.csr_out  := csr.io.out
     io.out.bits.rd_addr := rd_addr
-    io.out.bits.src1 := src1_reg
-    io.out.bits.src2 := src2_reg 
+    // io.out.bits.src1 := src1_reg
+    // io.out.bits.src2 := src2_reg 
+    io.out.bits.src1 := src1
+    io.out.bits.src2 := src2
     io.out.bits.alu_out := alu.io.out
     io.out.bits.pc := pc
     io.out.bits.inst := inst
