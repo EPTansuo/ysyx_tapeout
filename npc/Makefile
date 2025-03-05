@@ -5,7 +5,7 @@ OBJ_DIR = $(BUILD_DIR)/OBJ_DIR
 NXDC_FILES = $(NPC_HOME)/constr/soc.nxdc
 SDC_FILE = $(NPC_HOME)/scripts/top.sdc
 IMG = "$(YSYX_HOME)/am-kernels/tests/cpu-tests/build/sum-riscv32e-ysyxsoc.bin"
-ARGS = -v --diff="$(NEMU_HOME)/build/riscv32-nemu-interpreter-so"
+ARGS = -v --diff="$(NPC_HOME)/difftest/riscv32e-nemu-npc-so"
 
 CLK_FREQ_MHZ?=890
 
@@ -20,7 +20,8 @@ V_INCPATH+=$(shell find $(YSYX_HOME)/ysyxSoC/perip -type f -name '*defines*.v' -
 V_INCFLAGS=$(addprefix -I, $(V_INCPATH))
 VERILATOR_FLAGS = -MMD --build -cc --public \
 				--x-assign fast --x-initial fast --noassert \
-				$(V_INCFLAGS) --threads 1 --autoflush --trace-underscore    --trace-max-array 2048 
+				$(V_INCFLAGS) --threads 1 --autoflush --trace-underscore    --trace-max-array 2048 \
+				 --trace-max-width 128
 
 # timescale set
 VERILATOR_FLAGS += --timescale 1us/1us --no-timing
