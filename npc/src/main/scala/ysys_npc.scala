@@ -143,8 +143,8 @@ class ysyx_npc(config: NPCConfig) extends Module {
         ((rs1 === rd && useRs1(ID_inst_type)) || (rs2 === rd && useRs2(ID_inst_type) )) && (rd.orR) && loadMem(Other_ld_sel)
 
     }    
-    val exu_raw_loaduse = conflictWithLoadUse(IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, idu.io.out.bits.lsu.ld_sel)
-    val lsu_raw_loaduse = conflictWithLoadUse(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, exu.io.out.bits.lsu.ld_sel)
+    val exu_raw_loaduse = conflictWithLoadUse(IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, exu.io.out.bits.lsu.ld_sel)
+    val lsu_raw_loaduse = conflictWithLoadUse(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, lsu.io.ld_sel)
     val isRAW_loaduse = exu_raw_loaduse || lsu_raw_loaduse
     
     dontTouch(exu_raw_loaduse)
