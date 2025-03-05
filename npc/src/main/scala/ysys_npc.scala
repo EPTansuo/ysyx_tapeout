@@ -152,7 +152,7 @@ class ysyx_npc(config: NPCConfig) extends Module {
     dontTouch(isRAW_loaduse)
 
     idu.io.stall := stall
-    stall := RAW_with_Fwd || RegNext(RAW_with_Fwd) || isRAW_loaduse
+    stall := RAW_with_Fwd || RegNext(RAW_with_Fwd) || isRAW_loaduse  || RegNext(isRAW_loaduse)
     
     if(config.PERF_CNT){
         val loaduse_cnt = RegInit(0.U(64.W))
