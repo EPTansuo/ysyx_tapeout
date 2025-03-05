@@ -19,7 +19,7 @@ class LSU(config: NPCConfig) extends Module {
         //val dmem = new AXILiteMasterIF(addrWidthBits = 32, dataWidthBits = xlen)
         val dmem = new AXI4Bundle(config.axiparams)
         //val forward = Decoupled(SigIO_FORWARD(config.XLEN))
-        // val rd_addr = Output(UInt(5.W))
+        val rd_addr = Output(UInt(5.W))
         val ld_sel = Output(UInt(3.W))
     })
 
@@ -48,7 +48,7 @@ class LSU(config: NPCConfig) extends Module {
     val src1 = io.in.bits.src1
     val src2 = io.in.bits.src2 
     val alu_out = io.in.bits.alu_out
-    // val rd_addr = io.in.bits.rd_addr
+    val rd_addr = io.in.bits.rd_addr
     val wbu_data = io.in.bits.wbu
     val npc = io.in.bits.npc
     val store_en = ctrlsig.st_sel =/= ST_XX
