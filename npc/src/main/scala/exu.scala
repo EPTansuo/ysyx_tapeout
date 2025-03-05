@@ -18,8 +18,8 @@ class EXU(config: NPCConfig) extends Module{
     var io = IO(new Bundle{
         val in = Flipped(Decoupled(new SigIO_IDU_EXU(config.XLEN)))
         val out = (Decoupled(new SigIO_EXU_LSU(config.XLEN)))
-        val reg_read1 = Flipped(new RegfileReadIO(config.XLEN))
-        val reg_read2 = Flipped(new RegfileReadIO(config.XLEN))
+        // val reg_read1 = Flipped(new RegfileReadIO(config.XLEN))
+        // val reg_read2 = Flipped(new RegfileReadIO(config.XLEN))
        
         val npc = Decoupled(UInt(config.XLEN.W))
         val rd_addr = Output(UInt(5.W))
@@ -55,19 +55,21 @@ class EXU(config: NPCConfig) extends Module{
 
     // regfile
     val rd_addr = inst(11, 7)
-    val rs1_addr = inst(19, 15)
-    val rs2_addr = inst(24, 20)
+    // val rs1_addr = inst(19, 15)
+    // val rs2_addr = inst(24, 20)
     io.rd_addr := Mux(state === s_idle, 0.U, rd_addr)
 
     
-    io.reg_read1.addr := Mux(sig_csr_cmd === csr_cmd.CSR_P, 15.U,rs1_addr)
-    io.reg_read2.addr := rs2_addr
+    // io.reg_read1.addr := Mux(sig_csr_cmd === csr_cmd.CSR_P, 15.U,rs1_addr)
+    // io.reg_read2.addr := rs2_addr
 
     val src1_reg = RegInit(0.U(xlen.W))
     val src2_reg = RegInit(0.U(xlen.W))
 
-    val src1 = io.reg_read1.data
-    val src2 = io.reg_read2.data
+    // val src1 = io.reg_read1.data
+    // val src2 = io.reg_read2.data
+    val src1 = ctrlsig.src1
+    val src2 = ctrlsig.src2
     src1_reg := src1
     src2_reg := src2
 

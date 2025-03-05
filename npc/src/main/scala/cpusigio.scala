@@ -10,8 +10,8 @@ import chisel3.util._
 class Sig_EXU(xlen:Int) extends Bundle{
     val A_sel = Input(UInt(1.W))
     val B_sel = Input(UInt(1.W))
-    // val alu_A = Input(UInt(xlen.W))
-    // val alu_B = Input(UInt(xlen.W))
+    val src1 = Input(UInt(xlen.W))
+    val src2 = Input(UInt(xlen.W))
     val alu_op = Input(UInt(4.W))
     val imm_sel = Input(UInt(3.W))
    // val csr_cmd = Input(UInt(3.W))
