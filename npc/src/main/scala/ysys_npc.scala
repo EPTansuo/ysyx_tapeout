@@ -69,7 +69,6 @@ class ysyx_npc(config: NPCConfig) extends Module {
 
     
     // Data Hazard
-
     val stall = Wire(Bool())
     def useRs1(itype: UInt): Bool = {
         // useRS1 R,I,S,B,FENCE
@@ -118,14 +117,6 @@ class ysyx_npc(config: NPCConfig) extends Module {
     val exu_raw = Wire(Bool())
     val lsu_raw = Wire(Bool())
     val wbu_raw = Wire(Bool())
-    // when(idu.io.in.bits.inst === 0x10030313.U){
-    //     printf("IDU_rs1: %d, IDU_rs2: %d, EXU_rd: %d, IDU_inst_type: %d, exu.io.out.ready: %d\n", IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, exu.io.out.ready)
-    //     printf("useRs: %d\n", useRs(IDU_inst_type))
-    // }
-    // exu_raw := conflictWithStage(IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, ~exu.io.out.ready)
-    // lsu_raw := conflictWithStage(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, ~lsu.io.out.ready)
-    // wbu_raw := conflictWithStage(IDU_rs1, IDU_rs2, WBU_rd, IDU_inst_type, ~wbu.io.out.ready)
-
     exu_raw := conflictWithStage(IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, EXU_int_type)
     lsu_raw := conflictWithStage(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, LSU_int_type)
     wbu_raw := conflictWithStage(IDU_rs1, IDU_rs2, WBU_rd, IDU_inst_type, WBU_int_type)
@@ -133,16 +124,11 @@ class ysyx_npc(config: NPCConfig) extends Module {
     dontTouch(lsu_raw)
     dontTouch(wbu_raw)
     val isRAW = exu_raw || lsu_raw || wbu_raw
-    // val isRAW = conflictWithStage(IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, ~exu.io.out.valid) ||
-    //                conflictWithStage(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, ~lsu.io.out.valid) ||
-    //                conflictWithStage(IDU_rs1, IDU_rs2, WBU_rd, IDU_inst_type, ~wbu.io.out.valid)
-    // val isRAW = false.B
 
-    //ifu.io.stall := stall
     idu.io.stall := stall
     stall := isRAW || RegNext(isRAW)
 
-
+    
     // load-use 
     def loadMem(ld_sel_ : UInt): Bool = {
         val ret = ld_sel_ =/= ld_sel.LD_XX
@@ -158,10 +144,6 @@ class ysyx_npc(config: NPCConfig) extends Module {
     val loaduse_cnt = RegInit(0.U(64.W))
     when(isRAW_loaduse){
         loaduse_cnt := loaduse_cnt + 1.U
-        // when(loaduse_cnt(9, 0) === 0.U){
-        //     printf("load-use conflict: %d\n", loaduse_cnt)
-        // }
-        //printf("load-use conflict: %d\n", loaduse_cnt)
     }
     dontTouch(loaduse_cnt)
 
