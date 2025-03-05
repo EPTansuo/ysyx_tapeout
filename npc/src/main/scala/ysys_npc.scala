@@ -125,8 +125,7 @@ class ysyx_npc(config: NPCConfig) extends Module {
     dontTouch(wbu_raw)
     val isRAW = exu_raw || lsu_raw || wbu_raw
 
-    idu.io.stall := stall
-    stall := isRAW || RegNext(isRAW)
+    
 
 
     // load-use 
@@ -146,7 +145,9 @@ class ysyx_npc(config: NPCConfig) extends Module {
     dontTouch(lsu_raw_loaduse)
     dontTouch(isRAW_loaduse)
 
-
+    idu.io.stall := stall
+    // stall := isRAW || RegNext(isRAW) 
+    stall := isRAW_loaduse || RegNext(isRAW_loaduse)
 
     if(config.PERF_CNT){
         val loaduse_cnt = RegInit(0.U(64.W))
