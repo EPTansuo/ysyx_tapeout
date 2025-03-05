@@ -132,8 +132,7 @@ class ysyx_npc(config: NPCConfig) extends Module {
                       idu.io.out.bits.lsu.ld_sel =/= ld_sel.LD_XX
     dontTouch(RAW_with_Fwd)
 
-    idu.io.stall := stall
-    stall := RAW_with_Fwd || RegNext(RAW_with_Fwd)  
+
 
     // load-use 
     def loadMem(ld_sel_ : UInt): Bool = {
@@ -152,6 +151,8 @@ class ysyx_npc(config: NPCConfig) extends Module {
     dontTouch(lsu_raw_loaduse)
     dontTouch(isRAW_loaduse)
 
+    idu.io.stall := stall
+    stall := RAW_with_Fwd || RegNext(RAW_with_Fwd) || isRAW_loaduse
 
     if(config.PERF_CNT){
         val loaduse_cnt = RegInit(0.U(64.W))
