@@ -17,6 +17,9 @@ class IDU(config: NPCConfig) extends Module {
         val pc = Decoupled(UInt(config.XLEN.W))
         val inst_type = Output(UInt(4.W))
         val stall = Input(Bool())
+
+        // val reg_read1 = Flipped(new RegfileReadIO(config.XLEN))
+        // val reg_read2 = Flipped(new RegfileReadIO(config.XLEN))
     })
 
     
@@ -59,6 +62,9 @@ class IDU(config: NPCConfig) extends Module {
     io.out.bits.pc := pc
     io.out.bits.exu.A_sel := control.io.out.A_sel
     io.out.bits.exu.B_sel := control.io.out.B_sel
+
+
+
     io.out.bits.exu.alu_op := control.io.out.alu_op
     io.out.bits.exu.imm_sel := control.io.out.imm_sel
     io.out.bits.lsu.ld_sel := control.io.out.ld_sel

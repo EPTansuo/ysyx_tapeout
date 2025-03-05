@@ -7,9 +7,11 @@ import chisel3.util._
 
 
 
-class Sig_EXU extends Bundle{
+class Sig_EXU(xlen:Int) extends Bundle{
     val A_sel = Input(UInt(1.W))
     val B_sel = Input(UInt(1.W))
+    // val A = Input(UInt(xlen.W))
+    // val B = Input(UInt(xlen.W))
     val alu_op = Input(UInt(4.W))
     val imm_sel = Input(UInt(3.W))
    // val csr_cmd = Input(UInt(3.W))
@@ -40,7 +42,7 @@ class SigIO_IFU_IDU(xlen: Int) extends Bundle{
 }
 
 class SigIO_IDU_EXU(xlen: Int) extends Bundle{
-    val exu = new Sig_EXU
+    val exu = new Sig_EXU(xlen)
     val lsu = new Sig_LSU(xlen)
     val wbu = new Sig_WBU(xlen)
     val inst = Input(UInt(32.W))
