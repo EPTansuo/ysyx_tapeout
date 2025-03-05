@@ -57,7 +57,7 @@ class EXU(config: NPCConfig) extends Module{
     val rd_addr = inst(11, 7)
     // val rs1_addr = inst(19, 15)
     // val rs2_addr = inst(24, 20)
-    io.rd_addr := Mux(state === s_idle, 0.U, rd_addr)
+    io.rd_addr := rd_addr
 
     
     // io.reg_read1.addr := Mux(sig_csr_cmd === csr_cmd.CSR_P, 15.U,rs1_addr)
