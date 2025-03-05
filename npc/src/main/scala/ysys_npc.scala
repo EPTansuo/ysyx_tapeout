@@ -116,14 +116,14 @@ class ysyx_npc(config: NPCConfig) extends Module {
 
     val exu_raw = Wire(Bool())
     val lsu_raw = Wire(Bool())
-    val wbu_raw = Wire(Bool())
+    //val wbu_raw = Wire(Bool())
     exu_raw := conflictWithStage(IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, EXU_int_type)
     lsu_raw := conflictWithStage(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, LSU_int_type)
-    wbu_raw := conflictWithStage(IDU_rs1, IDU_rs2, WBU_rd, IDU_inst_type, WBU_int_type)
+    //wbu_raw := conflictWithStage(IDU_rs1, IDU_rs2, WBU_rd, IDU_inst_type, WBU_int_type)
     dontTouch(exu_raw)
     dontTouch(lsu_raw)
-    dontTouch(wbu_raw)
-    val isRAW = exu_raw || lsu_raw || wbu_raw
+   // dontTouch(wbu_raw)
+    val isRAW = exu_raw || lsu_raw// || wbu_raw
 
     idu.io.stall := stall
     stall := isRAW || RegNext(isRAW)
