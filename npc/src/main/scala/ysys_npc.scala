@@ -110,16 +110,16 @@ class ysyx_npc(config: NPCConfig) extends Module {
     val EXU_rd = exu.io.rd_addr
     val LSU_rd = lsu.io.rd_addr
     val WBU_rd = wbu.io.rd_addr
-    val EXU_int_type = exu.io.out.bits.wbu.inst_type
-    val LSU_int_type = lsu.io.out.bits.wbu.inst_type
-    val WBU_int_type = wbu.io.inst_type
+    val EXU_inst_type = exu.io.out.bits.wbu.inst_type
+    val LSU_inst_type = lsu.io.out.bits.wbu.inst_type
+    val WBU_inst_type = wbu.io.inst_type
 
     val exu_raw = Wire(Bool())
     val lsu_raw = Wire(Bool())
     val wbu_raw = Wire(Bool())
-    exu_raw := conflictWithStage(IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, EXU_int_type)
-    lsu_raw := conflictWithStage(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, LSU_int_type)
-    wbu_raw := conflictWithStage(IDU_rs1, IDU_rs2, WBU_rd, IDU_inst_type, WBU_int_type)
+    exu_raw := conflictWithStage(IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, EXU_inst_type)
+    lsu_raw := conflictWithStage(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, LSU_inst_type)
+    wbu_raw := conflictWithStage(IDU_rs1, IDU_rs2, WBU_rd, IDU_inst_type, WBU_inst_type)
     dontTouch(exu_raw)
     dontTouch(lsu_raw)
     dontTouch(wbu_raw)
@@ -166,8 +166,22 @@ class ysyx_npc(config: NPCConfig) extends Module {
     // val exu_forward = forwardFrom(IDU_rs1, EXU_rd, IDU_inst_type)
     // val lsu_forward = forwardFrom(IDU_rs1, LSU_rd, IDU_inst_type)
     // val wbu_forward = forwardFrom(IDU_rs1, WBU_rd, IDU_inst_type)
-
-
+    
+    // Forwarding 
+    val forward = Module(new Forward(config))
+    forward.io.idu_rs1 := IDU_rs1
+    forward.io.idu_rs2 := IDU_rs2
+    forward.io.exu_rd := EXU_rd
+    forward.io.lsu_rd := LSU_rd
+    forward.io.wbu_rd := WBU_rd
+    forward.io.exu_itype := EXU_inst_type
+    forward.io.lsu_itype := LSU_inst_type
+    forward.io.wbu_itype := WBU_inst_type
+    idu.io.forward_A := forward.io.forward_A
+    idu.io.forward_B := forward.io.forward_B
+    idu.io.forward_exu := exu.io.out.bits.alu_out
+    idu.io.forward_lsu := lsu.io.out.bits.alu_out 
+    idu.io.forward_wbu := wbu.io.forward_wbu
 
 
     // Regfile

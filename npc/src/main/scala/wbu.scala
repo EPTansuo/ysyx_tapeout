@@ -17,6 +17,7 @@ class WBU(config: NPCConfig) extends Module {
         val wb_valid = Output(Bool())
         val rd_addr = Output(UInt(5.W))
         val inst_type = Output(UInt(4.W))
+        val forward_wbu = Output(UInt(config.XLEN.W))
     })
 
     // val in_reg = Reg(Output(chiselTypeOf(io.in)))
@@ -75,7 +76,8 @@ class WBU(config: NPCConfig) extends Module {
         )
     )
     io.reg_write.data := wb_data
-
+    io.forward_wbu := wb_data
+    
     io.out.bits.rd_addr := io.in.bits.rd_addr
     io.out.bits.npc := npc
     dontTouch(io.in.bits.pc)
