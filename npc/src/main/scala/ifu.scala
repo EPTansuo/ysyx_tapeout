@@ -70,11 +70,11 @@ class IFU(config: NPCConfig) extends Module {
       pc := bpu.io.npc
     }
   }else{
-    // Always Taken
+    
     val immB = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U(1.W)).asSInt
     val immBExtend = immB.pad(config.XLEN).asUInt
     when(io.out.valid && io.out.ready && ~flush){
-      when(inst(6,0) === "b1100011".U ){
+      when(inst(6,0) === "b1100011".U && inst(31) === 1.U){ //taken if pc decrease
         pc := pc + Mux(inst(31), immBExtend, 4.U);
       }.otherwise{
         pc :=  pc + 4.U
