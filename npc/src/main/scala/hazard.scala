@@ -15,7 +15,8 @@ class ControlHazard(config: NPCConfig) extends Module{
 
     val ifu_flush = io.ifu_pc.valid && (io.exu_npc.bits =/= io.ifu_pc.bits)
     val idu_flush = io.idu_pc.valid && (io.exu_npc.bits =/= io.idu_pc.bits)
-
+    dontTouch(idu_flush)
+    dontTouch(ifu_flush)
     io.flush := (ifu_flush || idu_flush) && io.exu_npc.valid
 
     io.ifu_pc.ready := true.B
