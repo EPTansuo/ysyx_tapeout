@@ -85,7 +85,7 @@ class IFU(config: NPCConfig) extends Module {
   //   }
   // }
   
-  when(flush){
+  when(flush | io.flush){
     pc := io.exu_pc_sig.bits.npc
   }.otherwise{
     pc := bpu.io.npc
