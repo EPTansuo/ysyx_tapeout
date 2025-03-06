@@ -91,6 +91,7 @@ object NPCConfig {
     }
     val SOC_EN = getConfig("CONFIG_SOC_EN") == "\"enable\""
     val USE_ICACHE = getConfig("CONFIG_USE_ICACHE") == "y"
+    val USE_BPU = getConfig("CONFIG_USE_BPU") == "y"
     val PERF_CNT = getConfig("CONFIG_PERF_CNT") == "y"
     val xlen = if (getConfig("CONFIG_ISA") == "\"riscv32\"") 32 else 64
 

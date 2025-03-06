@@ -82,7 +82,9 @@ class IFU(config: NPCConfig) extends Module {
       
     }
   }else{ // Do not use BPU 
-    pc := pc + 4.U
+    when(io.out.valid && io.out.ready && ~flush) {
+      pc := pc + 4.U
+    }
   }
   
 
