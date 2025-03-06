@@ -59,28 +59,30 @@ class IFU(config: NPCConfig) extends Module {
   val pc = RegInit(config.PC_INIT.U)
 
   val bpu_params = config.bpuparameters
-
-  if(bpu_params.useDynamic){
-    val bpu = Module(new BPU(config))
-    bpu.io.pc := pc 
-    bpu.io.exu_npc := io.exu_pc_sig.bits.npc
-    bpu.io.exu_pc  := io.exu_pc_sig.bits.pc
-    bpu.io.update := io.flush
-    when(io.out.valid && io.out.ready && ~flush) {
-      pc := bpu.io.npc
-    }
-  }else{
-    
-    val immB = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U(1.W)).asSInt
-    val immBExtend = immB.pad(config.XLEN).asUInt
-    when(io.out.valid && io.out.ready && ~flush){
-      when(inst(6,0) === "b1100011".U && inst(31) === 1.U){ //taken if pc decrease
-        pc := pc + Mux(inst(31), immBExtend, 4.U);
-      }.otherwise{
-        pc :=  pc + 4.U
+  if(config.USE_BPU){
+    if(bpu_params.useDynamic){ // USE BPU
+      val bpu = Module(new BPU(config))
+      bpu.io.pc := pc 
+      bpu.io.exu_npc := io.exu_pc_sig.bits.npc
+      bpu.io.exu_pc  := io.exu_pc_sig.bits.pc
+      bpu.io.update := io.flush
+      when(io.out.valid && io.out.ready && ~flush) {
+        pc := bpu.io.npc
       }
+    }else{
+      val immB = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U(1.W)).asSInt
+      val immBExtend = immB.pad(config.XLEN).asUInt
+      when(io.out.valid && io.out.ready && ~flush){
+        when(inst(6,0) === "b1100011".U && inst(31) === 1.U){ //taken if pc decrease
+          pc := pc + Mux(inst(31), immBExtend, 4.U);
+        }.otherwise{
+          pc :=  pc + 4.U
+        }
+      }
+      
     }
-    
+  }else{ // Do not use BPU 
+    pc := pc + 4.U
   }
   
 

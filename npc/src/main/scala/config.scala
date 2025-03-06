@@ -21,6 +21,7 @@ case class NPCConfig(
   icacheparams: CacheParameters,
   USE_ICACHE: Boolean,
   bpuparameters: BPUParameters,
+  USE_BPU: Boolean,
 ){
   def asString: String = {
     s"""
@@ -38,6 +39,7 @@ case class NPCConfig(
        |  icacheparams = $icacheparams,
        |  USE_ICACHE = $USE_ICACHE,
        |  bpuparameters = $bpuparameters,
+       |  USE_BPU = $USE_BPU,
        |)
        |""".stripMargin
   }
@@ -106,6 +108,7 @@ object NPCConfig {
       icacheparams = ICacheParameters(),
       USE_ICACHE = USE_ICACHE,
       bpuparameters = BPUParameters(),
+      USE_BPU = true,
     )
   }
 }
