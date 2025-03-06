@@ -1,10 +1,14 @@
 import gzip
 import argparse
 import struct
+from bpu import *
 
 class BranchSimulator:
-    def __init__(self, address_size=4):
+    def __init__(self, bpu, address_size=4):
         self.address_size = address_size  # 每个地址的字节数，4或8
+        self.bpu = bpu
+        self.hit = 0
+        self.miss = 0   
 
     def run(self, trace_file):
         with gzip.open(trace_file, 'rb') as f:
@@ -14,72 +18,57 @@ class BranchSimulator:
                     break
                 # 根据地址大小解码
                 if self.address_size == 4:
-                    address = struct.unpack('<I', address_bytes)[0] 
+                    address = struct.unpack('<I', address_bytes)[0]
                 elif self.address_size == 8:
-                    address = struct.unpack('<Q', address_bytes)[0] 
+                    address = struct.unpack('<Q', address_bytes)[0]
                 else:
                     raise ValueError("Unsupported address size. Use 4 or 8 bytes.")
 
-                inst_bytes = f.read(4) # 4 bytes
+                inst_bytes = f.read(4)  # 4 bytes
                 if not inst_bytes or len(inst_bytes) < 4:
                     break
-
                 inst = struct.unpack('<I', inst_bytes)[0]
 
-                taken_bytes = f.read(1) # 1 Byte
+                taken_bytes = f.read(1)  # 1 Byte
                 if not taken_bytes or len(taken_bytes) < 1:
                     break
                 taken = struct.unpack('B', taken_bytes)[0]
 
+                # 预测分支
+                prediction = self.bpu.predict(address)
+                correct = prediction == taken
+                self.bpu.update(address, taken)
+                if(correct):
+                    self.hit += 1
+                else:
+                    self.miss += 1
+                # 输出预测结果
+                # print(f"Address: {address}, Instruction: {inst}, Predicted: {prediction}, Actual: {taken}, Correct: {correct}")
+            return {"hit": self.hit, "miss": self.miss, "accuracy": self.hit / (self.hit + self.miss)}
 
-                print(f"{address:x}, {inst:x}, {taken}")
+# bpu = BPU(address_size=4, prediction_method='saturating')
+# simulator = BranchSimulator(bpu=bpu, address_size=4)
+# result = simulator.run("btrace_test.bin.gz")
 
-    #             #self.cache.access(address)
-    # def get_stats(self):
-    #     return {
-    #         'hits': self.cache.hits,
-    #         'misses': self.cache.misses,
-    #         'accesses': self.cache.hits + self.cache.misses,
-    #         'hit_rate': self.cache.hits / (self.cache.hits + self.cache.misses),
-    #         'miss_rate': self.cache.misses / (self.cache.hits + self.cache.misses)
-    #     }
-    # def report(self):
-    #     print(self.cache)
-
-
-# if __name__ == "__main__":
-#     parser = argparse.ArgumentParser(
-#         prog='cachesim',
-#         description='cachesim',
-#         epilog='By EPTansuo (Bingjin Han)'
-#     )
-#     parser.add_argument('-f','--file', help="PC Trace file(.bin.gz)")
-
-#     #parser.add_argument('-o','--out',default='out.txt', help="Output results to file")
-#     parser.add_argument('-w','--nways', type=int, help="Number of ways")
-#     parser.add_argument('-s','--nsets', type=int, help="Number of sets")
-#     parser.add_argument('-b','--bs', type=int, help="Size of Cache Block (Unit: Byte)")
-#     parser.add_argument('-r','--replace', default="FIFO", help="Repalce Methology: FIFO, RANDOM, LRU(Only Support FIFO Now)")
-#     parser.add_argument('-a','--access-time',type=float, help="Access time(cycle)")
-#     parser.add_argument('-m','--miss-penalty',type=float, help="Miss Penalty time(cycle)")
-
-#     args = parser.parse_args()
-
-#     if(args.file == None or args.nways==None or args.nsets==None or args.bs==None or
-#         args.access_time == None or args.miss_penalty ==None ):
-#         # print help 
-#         print("Error Usage!")
-#         parser.print_help()
-#         exit()
-
-#     cacheSize = args.nways * args.nsets * args.bs
-
-#     cache = Cache(cacheSize, args.bs, args.nways, replacement_policy=args.replace)
-#     simulator = CacheSimulator(cache, address_size=4)
-#     simulator.run(args.file)
-#     hit_rate = simulator.get_stats()["hit_rate"]
-#     print(f"{hit_rate}, {args.access_time + (1-hit_rate)*args.miss_penalty}")
+# acc = result["accuracy"]
+# print(f"{acc}")
 
 
-simulator = BranchSimulator(address_size=4)
-simulator.run("btrace_test.bin.gz")
+def main():
+    parser = argparse.ArgumentParser(description="Branch Prediction Simulator")
+    parser.add_argument('-f','--file', required=True, help="Branch Trace file(.bin.gz)")
+    parser.add_argument("--address-size", type=int, default=4, help="Size of the address in bytes (4 or 8)")
+    parser.add_argument("--bits", type=int, required=True, help="Bit-width of the prediction counter")
+    parser.add_argument("--table-size", type=int, required=True, help="Size of the branch prediction table")
+    parser.add_argument("--prediction-method", type=str, default='saturating', help="Prediction method (saturating, local_history, global_history, gshare)")
+    args = parser.parse_args()
+
+    bpu = BPU(address_size=args.address_size, prediction_method=args.prediction_method, bits = args.bits, table_size= args.table_size)
+    simulator = BranchSimulator(bpu=bpu, address_size=args.address_size)
+    result = simulator.run(args.file)
+    acc = result["accuracy"]
+    print(f"accuracy: {acc}")
+    # print(result)
+
+if __name__ == "__main__":
+    main()
