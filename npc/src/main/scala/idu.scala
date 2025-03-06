@@ -14,7 +14,7 @@ class IDU(config: NPCConfig) extends Module {
         //val out = Output(new ControlOut(xlen))
         val out = (Decoupled(new SigIO_IDU_EXU(config.XLEN)))
         val flush = Input(Bool())
-        val pc = Decoupled(UInt(config.XLEN.W))
+        val pc = Valid(UInt(config.XLEN.W))
         val inst_type = Output(UInt(4.W))
         val stall = Input(Bool())
 

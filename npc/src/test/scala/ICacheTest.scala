@@ -53,8 +53,8 @@ class ICacheFormalTestBench(config: NPCConfig) extends Module {
     ifu_ref.io.in <> io.in
     ifu_dut.io.flush := io.flush
     ifu_ref.io.flush := io.flush
-    ifu_ref.io.exu_npc := io.npc
-    ifu_dut.io.exu_npc := io.npc
+    // ifu_ref.io.exu_npc := io.npc
+    // ifu_dut.io.exu_npc := io.npc
     ifu_dut.io.pc <> io.pc
     ifu_ref.io.pc <> io.pc
 

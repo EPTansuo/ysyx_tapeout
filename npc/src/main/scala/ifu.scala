@@ -13,13 +13,12 @@ class IFU(config: NPCConfig) extends Module {
     val in = Flipped(Decoupled(new SigIO_WBU_IFU(config.XLEN)))
     val out = (Decoupled(new SigIO_IFU_IDU(config.XLEN)))
 
-    val exu_npc = Input(UInt(config.XLEN.W))
+    val exu_pc_sig = Flipped(Valid(new SigIO_EXU_IFU(config.XLEN)))
+
     val fencei = Output(Bool())
-    // val mem_pc = Output(UInt(xlen.W))
-    // val mem_inst = Input(UInt(32.W))
-    //val imem = new AXILiteMasterIF(addrWidthBits = 32, dataWidthBits = xlen)
+
     val imem = new AXI4Bundle(config.axiparams)
-    val pc = Decoupled((UInt(config.XLEN.W)))
+    val pc = Valid((UInt(config.XLEN.W)))
     val flush = Input(Bool())
     // val stall = Input(Bool())
   })
@@ -58,38 +57,52 @@ class IFU(config: NPCConfig) extends Module {
 
 
   val pc = RegInit(config.PC_INIT.U)
-  // when( io.in.valid && io.in.ready){
-  //     pc := io.in.bits.npc
-  // }
-  // when(io.out.valid){
-  //   pc := pc + 4.U
-  // }
-  // val bpu = Module(new BPU(config))
-  // bpu.io.pc := pc 
-  // bpu.io.wbu_npc := io.in.bits.npc
-  // bpu.io.update := io.in.valid && state === s_idle
+
+  val bpu_params = config.bpuparameters
+  if(config.USE_BPU){
+    if(bpu_params.useDynamic){ // USE BPU
+      val bpu = Module(new BPU(config))
+      bpu.io.pc := pc 
+      bpu.io.exu_npc := io.exu_pc_sig.bits.npc
+      bpu.io.exu_pc  := io.exu_pc_sig.bits.pc
+      bpu.io.update := io.flush
+      when(io.out.valid && io.out.ready && ~flush) {
+        pc := bpu.io.npc
+      }
+    }else{
+      val immB = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U(1.W)).asSInt
+      val immBExtend = immB.pad(config.XLEN).asUInt
+      when(io.out.valid && io.out.ready && ~flush){
+        when(inst(6,0) === "b1100011".U && inst(31) === 1.U){ //taken if pc decrease
+          pc := pc + Mux(inst(31), immBExtend, 4.U);
+        }.otherwise{
+          pc :=  pc + 4.U
+        }
+      }
+      
+    }
+  }else{ // Do not use BPU 
+    when(io.out.valid && io.out.ready && ~flush) {
+      pc := pc + 4.U
+    }
+  }
+  
 
   // when(state === s_idle && io.in.valid && io.in.ready){
   //   pc := io.in.bits.npc
   // }
 
 
-  val immB = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U(1.W)).asSInt
- val immBExtend = immB.pad(config.XLEN).asUInt
-  when(io.out.valid && io.out.ready && ~flush){
-    when(inst(6,0) === "b1100011".U){
-      pc := pc + Mux(inst(31), immBExtend, 4.U);
-      // pc := pc + 4.U
-      //printf("sign: %d; %d, immB: %d, pc: %d\n", inst(31), immBExtend(config.XLEN-1), immBExtend, pc)
-    }.otherwise{
-      pc :=  pc + 4.U//bpu.io.npc
-    }
-  }
-  
-  when(io.flush){
-    //state := s_idle
-    pc := io.exu_npc
-  }
+
+
+
+  when(flush){
+    pc := io.exu_pc_sig.bits.npc
+  }//.otherwise{
+  //   when(state === s_idle){
+  //     pc := bpu.io.npc
+  //   }
+  // }
 
 
   io.pc.valid := true.B 
@@ -145,6 +158,7 @@ class IFU(config: NPCConfig) extends Module {
     val ifu_cnt = RegInit(0.U(64.W))
     val flush_cnt = RegInit(0.U(64.W))
     val branch_cnt = RegInit(0.U(64.W))
+    val jmp_cnt = RegInit(0.U(64.W))
     val branch_predict_failed_cnt = RegInit(0.U(64.W))
     when(io.in.valid && io.in.ready){
       ifu_cnt := ifu_cnt + 1.U
@@ -155,9 +169,10 @@ class IFU(config: NPCConfig) extends Module {
     when(io.out.valid && io.out.ready && inst(6,0) === "b1100011".U){
       branch_cnt := branch_cnt + 1.U
     }
-    // when(io.flush & ~flush && inst(6,0) === "b1100011".U ){ // TODO
-    //   // branch_predict_failed_cnt := branch_predict_failed_cnt + 1.U
-    // }
+    when( io.flush ){
+      // also include jump predict failure
+      branch_predict_failed_cnt := branch_predict_failed_cnt + 1.U
+    }
     dontTouch(ifu_cnt)
     dontTouch(flush_cnt)
     dontTouch(branch_cnt)

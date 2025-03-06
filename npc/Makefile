@@ -4,7 +4,7 @@ BUILD_DIR = $(NPC_HOME)/build
 OBJ_DIR = $(BUILD_DIR)/OBJ_DIR
 NXDC_FILES = $(NPC_HOME)/constr/soc.nxdc
 SDC_FILE = $(NPC_HOME)/scripts/top.sdc
-IMG = "$(YSYX_HOME)/am-kernels/tests/cpu-tests/build/sum-riscv32e-ysyxsoc.bin"
+IMG = "$(YSYX_HOME)/am-kernels/tests/cpu-tests/build/sum-riscv32e-npc.bin"
 ARGS = -v --diff="$(NPC_HOME)/difftest/riscv32e-nemu-npc-so"
 
 CLK_FREQ_MHZ?=890

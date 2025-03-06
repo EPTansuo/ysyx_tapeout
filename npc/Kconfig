@@ -33,6 +33,9 @@ menu "Configuration for NPC"
 config USE_ICACHE
   bool "Use ICache"
   default y
+config USE_BPU
+  bool "Use Branch Prediction"
+  default y
 config PERF_CNT
   bool "Enable Performance Counter"
   default y
