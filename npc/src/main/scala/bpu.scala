@@ -13,35 +13,34 @@ class BPU(config:NPCConfig) extends Module{
 
     })
 
+    val entrySize = 2
+    val tagWidth = log2Ceil(entrySize)
 
     val btb = new Bundle {
-        val pc = RegInit(VecInit(Seq.fill(2)(0.U(config.XLEN.W))))
-        val npc = RegInit(VecInit(Seq.fill(2)(0.U(config.XLEN.W))))
+        val pc = RegInit(VecInit(Seq.fill(entrySize)(0.U(config.XLEN.W))))
+        val npc = RegInit(VecInit(Seq.fill(entrySize)(0.U(config.XLEN.W))))
     }
 
-    val tag = RegInit(0.U(1.W))
+    val tag = RegInit(0.U(tagWidth.W))
 
 
-    val match_result = Wire(UInt(32.W))
-    match_result := io.pc + 4.U
+    val npc = Wire(UInt(32.W))
 
-    for (i <- 0 until 2) {
+    npc := io.pc + 4.U
+    for (i <- 0 until entrySize) {
         when(btb.pc(i) === io.pc) {
-        match_result := btb.npc(i)
-        tag          := (i).U
+            npc := btb.npc(i)
+            tag := (i).U
         }
     }
 
-    io.npc := match_result
-
-    val replace_addr = ~tag
+    val replace_addr = tag + 1.U
 
     when(io.update) {
-        btb.pc(replace_addr)   := io.exu_pc
+        btb.pc(replace_addr) := io.exu_pc
         btb.npc(replace_addr) := io.exu_npc
-        tag                    := replace_addr
+        tag := replace_addr
     }
 
-
-
+    io.npc := npc
 }
