@@ -145,6 +145,7 @@ class IFU(config: NPCConfig) extends Module {
     val ifu_cnt = RegInit(0.U(64.W))
     val flush_cnt = RegInit(0.U(64.W))
     val branch_cnt = RegInit(0.U(64.W))
+    val jmp_cnt = RegInit(0.U(64.W))
     val branch_predict_failed_cnt = RegInit(0.U(64.W))
     when(io.in.valid && io.in.ready){
       ifu_cnt := ifu_cnt + 1.U
