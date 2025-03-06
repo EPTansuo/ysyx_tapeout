@@ -155,9 +155,9 @@ class IFU(config: NPCConfig) extends Module {
     when(io.out.valid && io.out.ready && inst(6,0) === "b1100011".U){
       branch_cnt := branch_cnt + 1.U
     }
-    // when(io.flush & ~flush && inst(6,0) === "b1100011".U ){ // TODO
-    //   // branch_predict_failed_cnt := branch_predict_failed_cnt + 1.U
-    // }
+    when(flush ^ RegNext(flush) && inst(6,0) === "b1100011".U ){
+      branch_predict_failed_cnt := branch_predict_failed_cnt + 1.U
+    }
     dontTouch(ifu_cnt)
     dontTouch(flush_cnt)
     dontTouch(branch_cnt)
