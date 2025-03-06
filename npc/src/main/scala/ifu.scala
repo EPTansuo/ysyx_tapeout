@@ -67,7 +67,7 @@ class IFU(config: NPCConfig) extends Module {
   bpu.io.pc := pc 
   bpu.io.exu_npc := io.exu_pc_sig.bits.npc
   bpu.io.exu_pc  := io.exu_pc_sig.bits.pc
-  bpu.io.update := io.exu_pc_sig.valid
+  bpu.io.update := io.flush
 
   // when(state === s_idle && io.in.valid && io.in.ready){
   //   pc := io.in.bits.npc
