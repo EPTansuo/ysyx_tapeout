@@ -85,7 +85,7 @@ class IFU(config: NPCConfig) extends Module {
     }
   }
   
-  
+
   when(flush){
     pc := io.exu_pc_sig.bits.npc
   }//.otherwise{
@@ -160,6 +160,7 @@ class IFU(config: NPCConfig) extends Module {
       branch_cnt := branch_cnt + 1.U
     }
     when( io.flush ){
+      // also include jump predict failure
       branch_predict_failed_cnt := branch_predict_failed_cnt + 1.U
     }
     dontTouch(ifu_cnt)
