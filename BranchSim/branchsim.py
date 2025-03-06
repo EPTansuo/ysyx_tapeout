@@ -35,7 +35,7 @@ class BranchSimulator:
                 taken = struct.unpack('B', taken_bytes)[0]
 
                 # 预测分支
-                prediction = self.bpu.predict(address)
+                prediction = self.bpu.predict(address, inst)
                 correct = prediction == taken
                 self.bpu.update(address, taken)
                 if(correct):
@@ -60,7 +60,7 @@ def main():
     parser.add_argument("--address-size", type=int, default=4, help="Size of the address in bytes (4 or 8)")
     parser.add_argument("--bits", type=int, required=True, help="Bit-width of the prediction counter")
     parser.add_argument("--table-size", type=int, required=True, help="Size of the branch prediction table")
-    parser.add_argument("--prediction-method", type=str, default='saturating', help="Prediction method (saturating, local_history, global_history, gshare)")
+    parser.add_argument("--prediction-method", type=str, default='saturating', help="Prediction method (static, always_taken, saturating, local_history, global_history, gshare)")
     args = parser.parse_args()
 
     bpu = BPU(address_size=args.address_size, prediction_method=args.prediction_method, bits = args.bits, table_size= args.table_size)

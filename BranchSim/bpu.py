@@ -32,12 +32,18 @@ class BPU:
         """ Gshare = (global_history XOR address)，然后再取模 table_size。 """
         return (self.global_history ^ address) % self.table_size
 
-    def predict(self, address):
+    def predict(self, address, inst):
         """
         根据预测方法对给定地址的分支进行预测。
         返回值: 0=不采取, 1=采取
         """
-        if self.prediction_method == 'saturating':
+        if self.prediction_method == 'always_taken':
+            return 1
+        elif self.prediction_method == 'static':
+            # val immB = Cat(io.inst(31), io.inst(7), io.inst(30, 25), io.inst(11, 8), 0.U(1.W)).asSInt
+            imm = (inst & 0x80000000) | ((inst & 0x00000080) << 24) | ((inst & 0x3e000000) >> 1) | ((inst & 0x00000f00) >> 7)
+            return 1 if imm < address else 0
+        elif self.prediction_method == 'saturating':
             idx = self._index_saturating(address)
             counter = self.history_table[idx]
             return 1 if counter >= (2**self.bits)//2 else 0
@@ -71,7 +77,10 @@ class BPU:
                 self.history_table[idx] = min(counter + 1, 2**self.bits - 1)
             else:
                 self.history_table[idx] = max(counter - 1, 0)
-
+        elif self.prediction_method == 'static':
+            pass 
+        elif self.prediction_method == 'always_taken':
+            pass
         elif self.prediction_method == 'local_history':
             idx = self._index_local_history(address)
             counter = self.history_table[idx]
