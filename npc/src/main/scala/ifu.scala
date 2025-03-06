@@ -67,7 +67,7 @@ class IFU(config: NPCConfig) extends Module {
   bpu.io.pc := pc 
   bpu.io.exu_npc := io.exu_pc_sig.bits.npc
   bpu.io.exu_pc  := io.exu_pc_sig.bits.pc
-  bpu.io.update := io.exu_pc_sig.valid && state === s_idle
+  bpu.io.update := io.exu_pc_sig.valid
 
   // when(state === s_idle && io.in.valid && io.in.ready){
   //   pc := io.in.bits.npc
@@ -88,7 +88,10 @@ class IFU(config: NPCConfig) extends Module {
   when(flush | io.flush){
     pc := io.exu_pc_sig.bits.npc
   }.otherwise{
-    pc := bpu.io.npc
+    when(state === s_idle){
+      pc := bpu.io.npc
+    }
+   
   }
 
 
