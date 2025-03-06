@@ -47,7 +47,7 @@ class ysyx_npc(config: NPCConfig) extends Module {
     val lsu = Module(new LSU(config))
     val wbu = Module(new WBU(config))
 
-        // Control Hazard
+    // Control Hazard
     val controlHazard = Module(new ControlHazard(config))
     controlHazard.io.ifu_pc <> ifu.io.pc
     controlHazard.io.idu_pc <> idu.io.pc
@@ -56,7 +56,7 @@ class ysyx_npc(config: NPCConfig) extends Module {
     idu.io.flush := controlHazard.io.flush
     ifu.io.exu_npc := exu.io.npc.bits 
 
-
+    // pipeline
     val stage_arch = "pipeline"
     ModuleConnect(wbu.io.out, ifu.io.in, ifu.io.out, false.B, stage_arch)
     ModuleConnect(ifu.io.out, idu.io.in, idu.io.out, controlHazard.io.flush, stage_arch)
@@ -114,25 +114,6 @@ class ysyx_npc(config: NPCConfig) extends Module {
     val LSU_inst_type = lsu.io.in.bits.wbu.inst_type
     val WBU_inst_type = wbu.io.inst_type
 
-    // val exu_raw = Wire(Bool())
-    // val lsu_raw = Wire(Bool())
-    // val wbu_raw = Wire(Bool())
-    // exu_raw := conflictWithStage(IDU_rs1, IDU_rs2, EXU_rd, IDU_inst_type, EXU_inst_type)
-    // lsu_raw := conflictWithStage(IDU_rs1, IDU_rs2, LSU_rd, IDU_inst_type, LSU_inst_type)
-    // wbu_raw := conflictWithStage(IDU_rs1, IDU_rs2, WBU_rd, IDU_inst_type, WBU_inst_type)
-    // dontTouch(exu_raw)
-    // dontTouch(lsu_raw)
-    // dontTouch(wbu_raw)
-    // val isRAW = exu_raw || lsu_raw || wbu_raw
-
-
-    val RAW_with_Fwd = Wire(Bool())
-    RAW_with_Fwd := ( ( IDU_rs1 === EXU_rd && useRs1(IDU_inst_type) && IDU_rs1.orR ) ||
-                      ( IDU_rs2 === EXU_rd && useRs2(IDU_inst_type) && IDU_rs2.orR ) ) &&
-                      idu.io.out.bits.lsu.ld_sel =/= ld_sel.LD_XX
-    dontTouch(RAW_with_Fwd)
-
-
 
     // load-use 
     def loadMem(ld_sel_ : UInt): Bool = {
@@ -152,7 +133,6 @@ class ysyx_npc(config: NPCConfig) extends Module {
     dontTouch(isRAW_loaduse)
 
     idu.io.stall := stall
-    //stall := RAW_with_Fwd || RegNext(RAW_with_Fwd) || isRAW_loaduse  || RegNext(isRAW_loaduse)
     stall := isRAW_loaduse  || RegNext(isRAW_loaduse)
     
     if(config.PERF_CNT){
