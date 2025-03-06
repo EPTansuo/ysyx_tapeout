@@ -13,13 +13,12 @@ class IFU(config: NPCConfig) extends Module {
     val in = Flipped(Decoupled(new SigIO_WBU_IFU(config.XLEN)))
     val out = (Decoupled(new SigIO_IFU_IDU(config.XLEN)))
 
-    val exu_npc = Input(UInt(config.XLEN.W))
+    val exu_pc_sig = Flipped(Valid(new SigIO_EXU_IFU(config.XLEN)))
+
     val fencei = Output(Bool())
-    // val mem_pc = Output(UInt(xlen.W))
-    // val mem_inst = Input(UInt(32.W))
-    //val imem = new AXILiteMasterIF(addrWidthBits = 32, dataWidthBits = xlen)
+
     val imem = new AXI4Bundle(config.axiparams)
-    val pc = Decoupled((UInt(config.XLEN.W)))
+    val pc = Valid((UInt(config.XLEN.W)))
     val flush = Input(Bool())
     // val stall = Input(Bool())
   })
@@ -64,10 +63,11 @@ class IFU(config: NPCConfig) extends Module {
   // when(io.out.valid){
   //   pc := pc + 4.U
   // }
-  // val bpu = Module(new BPU(config))
-  // bpu.io.pc := pc 
-  // bpu.io.wbu_npc := io.in.bits.npc
-  // bpu.io.update := io.in.valid && state === s_idle
+  val bpu = Module(new BPU(config))
+  bpu.io.pc := pc 
+  bpu.io.exu_npc := io.exu_pc_sig.bits.npc
+  bpu.io.exu_pc  := io.exu_pc_sig.bits.pc
+  bpu.io.update := io.exu_pc_sig.valid && state === s_idle
 
   // when(state === s_idle && io.in.valid && io.in.ready){
   //   pc := io.in.bits.npc
@@ -75,7 +75,7 @@ class IFU(config: NPCConfig) extends Module {
 
 
   val immB = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U(1.W)).asSInt
- val immBExtend = immB.pad(config.XLEN).asUInt
+  val immBExtend = immB.pad(config.XLEN).asUInt
   when(io.out.valid && io.out.ready && ~flush){
     when(inst(6,0) === "b1100011".U){
       pc := pc + Mux(inst(31), immBExtend, 4.U);
@@ -88,7 +88,7 @@ class IFU(config: NPCConfig) extends Module {
   
   when(io.flush){
     //state := s_idle
-    pc := io.exu_npc
+    pc := io.exu_pc_sig.bits.npc
   }
 
 

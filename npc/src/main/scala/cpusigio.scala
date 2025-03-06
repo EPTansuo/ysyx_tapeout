@@ -88,3 +88,9 @@ class SigIO_FORWARD(xlen: Int) extends Bundle{
     val src1 = Output(UInt(xlen.W))
     val src2 = Output(UInt(xlen.W))
 }
+
+// for bpu 
+class SigIO_EXU_IFU(xlen: Int) extends Bundle{
+    val npc = Input(UInt(xlen.W))
+    val pc = Input(UInt(xlen.W))
+}

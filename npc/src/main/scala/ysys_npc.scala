@@ -51,10 +51,14 @@ class ysyx_npc(config: NPCConfig) extends Module {
     val controlHazard = Module(new ControlHazard(config))
     controlHazard.io.ifu_pc <> ifu.io.pc
     controlHazard.io.idu_pc <> idu.io.pc
-    controlHazard.io.exu_npc <> exu.io.npc
+    controlHazard.io.exu_npc.valid := exu.io.pc_sig.valid 
+    controlHazard.io.exu_npc.bits := exu.io.pc_sig.bits.npc
     ifu.io.flush := controlHazard.io.flush
     idu.io.flush := controlHazard.io.flush
-    ifu.io.exu_npc := exu.io.npc.bits 
+
+    //ifu.io.exu_npc := exu.io.npc.bits 
+    ifu.io.exu_pc_sig <> exu.io.pc_sig
+
 
     // pipeline
     val stage_arch = "pipeline"

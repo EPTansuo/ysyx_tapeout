@@ -18,10 +18,9 @@ class EXU(config: NPCConfig) extends Module{
     var io = IO(new Bundle{
         val in = Flipped(Decoupled(new SigIO_IDU_EXU(config.XLEN)))
         val out = (Decoupled(new SigIO_EXU_LSU(config.XLEN)))
-        // val reg_read1 = Flipped(new RegfileReadIO(config.XLEN))
-        // val reg_read2 = Flipped(new RegfileReadIO(config.XLEN))
-       
-        val npc = Decoupled(UInt(config.XLEN.W))
+
+        val pc_sig = (Valid(new SigIO_EXU_IFU(config.XLEN)))
+
         val rd_addr = Output(UInt(5.W))
     })
     val xlen = config.XLEN
@@ -121,9 +120,11 @@ class EXU(config: NPCConfig) extends Module{
         )
     )
     io.out.bits.npc := npc
-    io.npc.bits := npc 
-    io.npc.valid := state === s_exe
-
+    // io.npc.bits := npc 
+    // io.npc.valid := state === s_exe
+    io.pc_sig.bits.pc := pc
+    io.pc_sig.bits.npc := npc
+    io.pc_sig.valid := state === s_exe
 
 
     // // Forwarding

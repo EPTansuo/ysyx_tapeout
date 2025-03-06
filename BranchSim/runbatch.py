@@ -4,9 +4,9 @@ import threading
 def handle_process(process, pred_method, bits, table_size, process_id):
     try:
         for line in process.stdout:
-            # print(line)
-            if(line.strip()):
-                print(f"{pred_method}, {bits}, {table_size}, {bits*table_size}, {line.strip().split(' ')[1]}")
+            print(line)
+            # if(line.strip()):
+            #     print(f"{pred_method}, {bits}, {table_size}, {bits*table_size}, {line.strip().split(' ')[1]}")
         process.wait()
     except Exception as e:
         print(f"Error in process {process_id}: {e}")
@@ -56,8 +56,8 @@ def main():
     maxJobs = 7
 
     bits_list = [1, 2, 3, 4, 5, 6, 7, 8]
-    table_size_list = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024]
-    pred_methods = ["saturating", "local_history", "global_history", "gshare"]
+    table_size_list = [1, 2, 4, 8, 16, 32, 64, 128, 256]
+    pred_methods = ["always_taken", "static","saturating", "local_history", "global_history", "gshare"]
 
 
     print("predict_method, nbits, table_size, total_bits, accuracy")
@@ -67,7 +67,7 @@ def main():
     for bits in bits_list:
         for pred_method in pred_methods:
             for table_size in table_size_list:
-                    if(bits*table_size > 1024):
+                    if(bits*table_size > 256):
                         continue
                     arg_bits.append(bits)
                     arg_pred_method.append(pred_method)
