@@ -108,7 +108,7 @@ object NPCConfig {
       icacheparams = ICacheParameters(),
       USE_ICACHE = USE_ICACHE,
       bpuparameters = BPUParameters(),
-      USE_BPU = true,
+      USE_BPU = false,
     )
   }
 }
