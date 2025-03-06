@@ -57,38 +57,40 @@ class IFU(config: NPCConfig) extends Module {
 
 
   val pc = RegInit(config.PC_INIT.U)
-  // when( io.in.valid && io.in.ready){
-  //     pc := io.in.bits.npc
-  // }
-  // when(io.out.valid){
-  //   pc := pc + 4.U
-  // }
-  val bpu = Module(new BPU(config))
-  bpu.io.pc := pc 
-  bpu.io.exu_npc := io.exu_pc_sig.bits.npc
-  bpu.io.exu_pc  := io.exu_pc_sig.bits.pc
-  bpu.io.update := io.flush
+
+  val bpu_params = config.bpuparameters
+
+  if(bpu_params.useDynamic){
+    val bpu = Module(new BPU(config))
+    bpu.io.pc := pc 
+    bpu.io.exu_npc := io.exu_pc_sig.bits.npc
+    bpu.io.exu_pc  := io.exu_pc_sig.bits.pc
+    bpu.io.update := io.flush
+    when(io.out.valid && io.out.ready && ~flush) {
+      pc := bpu.io.npc
+    }
+  }else{
+    // Always Taken
+    val immB = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U(1.W)).asSInt
+    val immBExtend = immB.pad(config.XLEN).asUInt
+    when(io.out.valid && io.out.ready && ~flush){
+      when(inst(6,0) === "b1100011".U){
+        pc := pc + Mux(inst(31), immBExtend, 4.U);
+      }.otherwise{
+        pc :=  pc + 4.U
+      }
+    }
+    
+  }
+  
 
   // when(state === s_idle && io.in.valid && io.in.ready){
   //   pc := io.in.bits.npc
   // }
 
-  when(io.out.valid && io.out.ready && ~flush) {
-    pc := bpu.io.npc
-  }
 
 
-//  // Always Taken
-//   val immB = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U(1.W)).asSInt
-//   val immBExtend = immB.pad(config.XLEN).asUInt
-//   when(io.out.valid && io.out.ready && ~flush){
-//     when(inst(6,0) === "b1100011".U){
-//       pc := pc + Mux(inst(31), immBExtend, 4.U);
-//     }.otherwise{
-//       pc :=  pc + 4.U
-//     }
-//   }
-  
+
 
   when(flush){
     pc := io.exu_pc_sig.bits.npc

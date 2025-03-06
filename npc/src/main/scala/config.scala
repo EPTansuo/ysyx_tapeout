@@ -20,6 +20,7 @@ case class NPCConfig(
   axiparams: AXI4BundleParameters,
   icacheparams: CacheParameters,
   USE_ICACHE: Boolean,
+  bpuparameters: BPUParameters,
 ){
   def asString: String = {
     s"""
@@ -36,6 +37,7 @@ case class NPCConfig(
        |  axiparams = $axiparams,
        |  icacheparams = $icacheparams,
        |  USE_ICACHE = $USE_ICACHE,
+       |  bpuparameters = $bpuparameters,
        |)
        |""".stripMargin
   }
@@ -65,6 +67,15 @@ object ICacheParameters{
     )
 }
 
+case class BPUParameters(useDynamic: Boolean, nEntries: Int, pcWidth: Int) {
+  override def toString: String = 
+    if(useDynamic) s"Dynamic Branch Prediction, Number of Entries: $nEntries, PC Width: $pcWidth bits"
+    else s"Static Branch Prediction"
+}
+
+object BPUParameters {
+  def apply(): BPUParameters = BPUParameters(useDynamic = true, nEntries = 2, pcWidth = 8)
+}
 
 object NPCConfig {
 
@@ -94,6 +105,7 @@ object NPCConfig {
       axiparams = CPUAXI4BundleParameters(),
       icacheparams = ICacheParameters(),
       USE_ICACHE = USE_ICACHE,
+      bpuparameters = BPUParameters(),
     )
   }
 }
