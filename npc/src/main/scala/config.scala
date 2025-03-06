@@ -74,7 +74,7 @@ case class BPUParameters(useDynamic: Boolean, nEntries: Int, pcWidth: Int) {
 }
 
 object BPUParameters {
-  def apply(): BPUParameters = BPUParameters(useDynamic = true, nEntries = 2, pcWidth = 8)
+  def apply(): BPUParameters = BPUParameters(useDynamic = false, nEntries = 2, pcWidth = 8)
 }
 
 object NPCConfig {
