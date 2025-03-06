@@ -75,24 +75,23 @@ class IFU(config: NPCConfig) extends Module {
 
 
  // Always Taken
-  // val immB = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U(1.W)).asSInt
-  // val immBExtend = immB.pad(config.XLEN).asUInt
-  // when(io.out.valid && io.out.ready && ~flush){
-  //   when(inst(6,0) === "b1100011".U){
-  //     pc := pc + Mux(inst(31), immBExtend, 4.U);
-  //   }.otherwise{
-  //     pc :=  pc + 4.U
+  val immB = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U(1.W)).asSInt
+  val immBExtend = immB.pad(config.XLEN).asUInt
+  when(io.out.valid && io.out.ready && ~flush){
+    when(inst(6,0) === "b1100011".U){
+      pc := pc + Mux(inst(31), immBExtend, 4.U);
+    }.otherwise{
+      pc :=  pc + 4.U
+    }
+  }
+  
+  when(flush){
+    pc := io.exu_pc_sig.bits.npc
+  }//.otherwise{
+  //   when(state === s_idle){
+  //     pc := bpu.io.npc
   //   }
   // }
-  
-  when(flush | io.flush){
-    pc := io.exu_pc_sig.bits.npc
-  }.otherwise{
-    when(state === s_idle){
-      pc := bpu.io.npc
-    }
-   
-  }
 
 
   io.pc.valid := true.B 
