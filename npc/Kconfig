@@ -118,7 +118,7 @@ config SOC_EN #For Chisel
 
 config USE_NVBOARD
   depends on USE_SOC
-  default y
+  default n
   bool "USE NVBoard for SOC Simulation"
 
 endmenu
