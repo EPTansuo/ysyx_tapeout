@@ -67,17 +67,19 @@ class BPU(config:NPCConfig) extends Module{
         }
     }
 
-    val branch_taken = io.exu_npc.bits === io.idu_pc 
+    val branch_taken = io.exu_npc.bits(pcWidth-1,0) === io.idu_pc(pcWidth-1,0)
     dontTouch(branch_taken)
-    val isBranch = (io.exu_pc + 4.U) =/= io.exu_npc.bits 
+    val isBranch = (io.exu_pc(pcWidth-1,0) + 4.U) =/= io.exu_npc.bits(pcWidth-1,0) 
     dontTouch(isBranch)
+
+    val counterMaxValue = ((1 << (cntWidth - 1)) - 1).U(cntWidth.W)
     when(io.exu_npc.valid && isBranch){
         when(branch_taken) {
             btb.counter(tag) := Mux(btb.counter(tag) === 0.U, 0.U, 
                                 btb.counter(tag) - 1.U)
 
         }.otherwise {
-            btb.counter(tag) := Mux(btb.counter(tag) === 3.U, 3.U, 
+            btb.counter(tag) := Mux(btb.counter(tag) === counterMaxValue, counterMaxValue, 
                                 btb.counter(tag) + 1.U)
         }
     }
