@@ -4,8 +4,8 @@ BUILD_DIR = $(NPC_HOME)/build
 OBJ_DIR = $(BUILD_DIR)/OBJ_DIR
 NXDC_FILES = $(NPC_HOME)/constr/soc.nxdc
 SDC_FILE = $(NPC_HOME)/scripts/top.sdc
-IMG = "$(YSYX_HOME)/am-kernels/tests/cpu-tests/build/sum-riscv32e-npc.bin"
-ARGS = -v --diff="$(NPC_HOME)/difftest/riscv32e-nemu-npc-so"
+IMG = "$(YSYX_HOME)/am-kernels/tests/cpu-tests/build/add-riscv32e-npc.bin"
+ARGS = -v --diff="$(NEMU_HOME)/build/riscv32-nemu-interpreter-so"
 
 CLK_FREQ_MHZ?=890
 
@@ -20,8 +20,7 @@ V_INCPATH+=$(shell find $(YSYX_HOME)/ysyxSoC/perip -type f -name '*defines*.v' -
 V_INCFLAGS=$(addprefix -I, $(V_INCPATH))
 VERILATOR_FLAGS = -MMD --build -cc --public \
 				--x-assign fast --x-initial fast --noassert \
-				$(V_INCFLAGS) --threads 1 --autoflush --trace-underscore    --trace-max-array 2048 \
-				 --trace-max-width 128
+				$(V_INCFLAGS) --threads 1 --autoflush --trace-underscore    #--trace-max-array 2048 
 
 # timescale set
 VERILATOR_FLAGS += --timescale 1us/1us --no-timing
@@ -164,24 +163,6 @@ perf: verilog syn
 	@git rev-parse HEAD > $(PERF_PATH)/commit_hash.txt
 	@echo $(DESP) > $(PERF_PATH)/description.txt
 	@git add -f $(PERF_PATH)/*
-
-
-rsync: 
-	rsync -av ./* ${GZIC_SERVER_USER}@${GZIC_SERVER_IP}:${GZIC_SERVER_USER_HOME}/PROJECT/npc\
-		--exclude='build' --exclude='wave*' --exclude='target' --exclude='rocket-chip' \
-		--exclude='test_run_dir' --exclude='out'
-	scp ./build/verilog/*.sv ${GZIC_SERVER_USER}@${GZIC_SERVER_IP}:/${GZIC_SERVER_USER_HOME}/PROJECT/npc/build/verilog
-	scp ../ysyxSoC/build/*.v ${GZIC_SERVER_USER}@${GZIC_SERVER_IP}:/${GZIC_SERVER_USER_HOME}/PROJECT/npc/build/verilog
-	rsync -av ../ysyxSoC/perip  ${GZIC_SERVER_USER}@${GZIC_SERVER_IP}:${GZIC_SERVER_USER_HOME}/PROJECT/npc/build/perip
-
-
-
-vcs_build: rsync
-	ssh -X -C ${GZIC_SERVER_USER}@${GZIC_SERVER_IP} "cd ${GZIC_SERVER_USER_HOME}/PROJECT/npc && make -f vcs/vcs.mk -B"
-
-vcs_sim: rsync
-	ssh -X -C ${GZIC_SERVER_USER}@${GZIC_SERVER_IP} "cd ${GZIC_SERVER_USER_HOME}/PROJECT/npc && make -f vcs/vcs.mk && ./build/simv"
-
 
 # menuconfig and autoconf.h
 include $(NPC_HOME)/scripts/config.mk

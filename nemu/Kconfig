@@ -145,13 +145,6 @@ config PC_TRACE
   depends on TRACE
   bool "Enable PC tracer"
   default n
-
-config BTRACE
-  depends on TRACE
-  bool "Enable Branch tracer"
-  default n
-
-
 config PC_TRACE_BINARY
   depends on PC_TRACE
   bool "PC Tracer Use Binary Format"

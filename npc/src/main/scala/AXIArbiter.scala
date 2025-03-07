@@ -44,7 +44,7 @@ val readArbitrationFinalIdx = RegInit(0.U)
 val readArbitrationStarted = RegInit(false.B) 
 
 // 写操作的状态可以更新
-when (io.out.r.ready && io.out.r.valid && io.out.r.bits.last) {
+when (io.out.r.ready && io.out.r.valid) {
   readArbitrationStarted := false.B
   readArbitrationFinalIdx := Mux(readArbitrationValid, readArbitrationIdx, 0.U) 
 } .elsewhen (!readArbitrationStarted && readArbitrationValid) {
@@ -72,7 +72,7 @@ val writeArbitrationFinalIdx = RegInit(0.U) // 初始化为 0（或者根据需�
 val writeArbitrationStarted = RegInit(false.B) // 用来标记是否开始了写操作
 
 // 写操作的状态更新
-when (io.out.b.ready && io.out.b.valid && io.out.w.bits.last) {
+when (io.out.b.ready) {
   // 当 b.ready 为 true 时，表示写操作已经完成，可以允许更新仲裁索引
   writeArbitrationStarted := false.B
   writeArbitrationFinalIdx := Mux(writeArbitrationValid, writeArbitrationIdx, 0.U) // 如果有有效请求，更新索引

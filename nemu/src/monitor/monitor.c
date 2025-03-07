@@ -29,7 +29,6 @@ void init_disasm(const char *triple);
 bool init_gdbstub();
 void use_gdbstub(bool);
 void init_pc_trace();
-void btrace_init();
 
 static void welcome() {
   Log("Trace: %s", MUXDEF(CONFIG_TRACE, ANSI_FMT("ON", ANSI_FG_GREEN), ANSI_FMT("OFF", ANSI_FG_RED)));
@@ -140,8 +139,6 @@ void init_monitor(int argc, char *argv[]) {
 
   /* Initialize pc_trace. */
   IFDEF(CONFIG_PC_TRACE, init_pc_trace());
-
-  IFDEF(CONFIG_BTRACE, btrace_init());
 
   /* Initialize devices. */
   IFDEF(CONFIG_DEVICE, init_device());

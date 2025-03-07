@@ -24,7 +24,7 @@ extern const char* regs[];
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   bool succ = true;
 
-  //ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
+  ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
 
   if (cpu.pc != ref_r->pc) {   //check pc
     succ = false;
@@ -83,7 +83,7 @@ print_error_info:
         if((i+1)%4 == 0)
           putchar('\n');
   }
-  printf("ref: $pc = 0x" FMT_WORD_HEX_WIDTH "\n", ref_r->pc);
+  printf("ref: $pc = 0x" FMT_WORD_HEX_WIDTH "\n", cpu.pc);
 
   isa_csr_display();
 

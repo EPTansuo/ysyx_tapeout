@@ -108,22 +108,3 @@ object valid {
   val INST_VALID   = 0.U(1.W)
   val INST_INVALID = 1.U(1.W)
 }
-
-object inst_type {
-  val N_TYPE = 0.U(4.W)
-  val R_TYPE = 1.U(4.W)
-  val I_TYPE = 2.U(4.W)
-  val S_TYPE = 3.U(4.W)
-  val B_TYPE = 4.U(4.W)
-  val U_TYPE = 5.U(4.W)
-  val J_TYPE = 6.U(4.W)
-  val ICSR_TYPE = 7.U(4.W)
-  val FENCE_TYPE = 8.U(4.W)
-}
-
-object forward_sel {
-  val FWD_XX = 0.U(2.W)
-  val FWD_EXU = 1.U(2.W)
-  val FWD_LSU = 2.U(2.W)
-  val FWD_WBU = 3.U(2.W)
-}

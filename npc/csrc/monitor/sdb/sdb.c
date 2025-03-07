@@ -111,12 +111,7 @@ static int cmd_x(char *args){
   //sscanf(expr_str, "" FMT_WORD_HEX "", &addr);
   bool success = false;
   addr = expr(expr_str, &success);
-  // assert(success == true);
-  if (success != true){
-    printf("Invalid expression!\n");
-    return 1;
-  }
-
+  assert(success == true);
 
   for(int i=0; i<size; i++){
     vaddr_t data = vaddr_read(addr + i * 4, 4);

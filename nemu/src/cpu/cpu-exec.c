@@ -52,7 +52,6 @@ void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
 void print_iringbuf();
 void pc_trace(word_t pc);
 void pc_trace_close();
-void btrace_close();
 
 #ifdef CONFIG_ITRACE
 void print_iringbuf(){
@@ -198,6 +197,6 @@ void cpu_exec(uint64_t n) {
 #endif // CONFIG_ITRACE
     
       // fall through
-    case NEMU_QUIT:  pc_trace_close(); btrace_close(); statistic();
+    case NEMU_QUIT:  pc_trace_close(); statistic();
   }
 }
