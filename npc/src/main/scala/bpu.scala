@@ -17,8 +17,7 @@ class BPU(config:NPCConfig) extends Module{
     val tagWidth = log2Ceil(entrySize)
     val pcWidth = params.pcWidth
     val npcWidth = params.npcWidth
-
-    val cntWidth = 2
+    val cntWidth = params.cntWidth
 
     val btb = new Bundle {
         val pc = RegInit(VecInit(Seq.fill(entrySize)(0.U(pcWidth.W))))
