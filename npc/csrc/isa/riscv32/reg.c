@@ -25,7 +25,7 @@ void isa_reg_display(){
                 if ((i + 1) % 4 == 0)
                         putchar('\n');
         }
-        printf("$pc = 0x" FMT_WORD_HEX_WIDTH "\n", PC);
+        printf("$pc = 0x" FMT_WORD_HEX_WIDTH "\n", NPC);
 }
 
 void print_regs_info(){

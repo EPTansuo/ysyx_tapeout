@@ -40,7 +40,9 @@ _(_Dpi) IFDEF(CONFIG_USE_SOC, _(ysyxSoCFull)) IFNDEF(CONFIG_USE_SOC, _(ysyxSoCAS
 #include "VysyxSoCFull_IDU.h"
 #include "VysyxSoCFull_IFU.h"
 #include "VysyxSoCFull_CPU.h"
+#ifdef CONFIG_USE_ICACHE
 #include "VysyxSoCFull_ICache.h"
+#endif 
 #else
 #include "Vysyx_23060246.h"
 #include "Vysyx_23060246__Dpi.h"
@@ -58,7 +60,9 @@ _(_Dpi) IFDEF(CONFIG_USE_SOC, _(ysyxSoCFull)) IFNDEF(CONFIG_USE_SOC, _(ysyxSoCAS
 #include "Vysyx_23060246_LSU.h"
 #include "Vysyx_23060246_IDU.h"
 #include "Vysyx_23060246_IFU.h"
+#ifdef CONFIG_USE_ICACHE
 #include "Vysyx_23060246_ICache.h"
+#endif 
 //#include "Vysyx_23060246_CPU.h"
 #endif 
 
@@ -82,11 +86,12 @@ extern VTOP_NAME* top ;
                         (top->ysyx_23060246->cpu_npc))
 
 #define REGS (NPC_CPU->regfile->regs_ext->Memory)
-#define PC (NPC_CPU->ifu->pc)
+#define PC (NPC_CPU->wbu->io_in_bits_pc)
+#define NPC (NPC_CPU->wbu->io_in_bits_npc)
 #define CSR (NPC_CPU->exu->csr)
 #define WBU_VALID (NPC_CPU->wbu->wbu_valid)
-#define INST (NPC_CPU->ifu->io_out_bits_inst)
-
+// #define INST (NPC_CPU->ifu->io_out_bits_inst)
+#define INST (NPC_CPU->wbu->io_in_bits_inst)
 #endif // !_VERILATOR_H_
 
 

@@ -2,13 +2,13 @@
 #define CONFIG_ISA "riscv32"
 #define CONFIG_RVE 1
 #define CONFIG_USE_ICACHE 1
+#define CONFIG_USE_BPU 1
 #define CONFIG_PERF_CNT 1
 #define CONFIG_CC_O2 1
 #define CONFIG_CC_OPT "-O2"
 #define CONFIG_WAVE_FILE_TYPE "none"
-#define CONFIG_USE_SOC 1
-#define CONFIG_SOC_EN "enable"
-#define CONFIG_RESET_VECTOR 0x30000000
+#define CONFIG_SOC_EN "disable"
+#define CONFIG_RESET_VECTOR 0x80000000
 #define CONFIG_DIFFTEST_REF_PATH "none"
 #define CONFIG_DIFFTEST_REF_NAME "none"
 #define CONFIG_MBASE 0x80000000

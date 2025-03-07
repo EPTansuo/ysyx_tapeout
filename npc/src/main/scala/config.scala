@@ -20,6 +20,8 @@ case class NPCConfig(
   axiparams: AXI4BundleParameters,
   icacheparams: CacheParameters,
   USE_ICACHE: Boolean,
+  bpuparameters: BPUParameters,
+  USE_BPU: Boolean,
 ){
   def asString: String = {
     s"""
@@ -36,6 +38,8 @@ case class NPCConfig(
        |  axiparams = $axiparams,
        |  icacheparams = $icacheparams,
        |  USE_ICACHE = $USE_ICACHE,
+       |  bpuparameters = $bpuparameters,
+       |  USE_BPU = $USE_BPU,
        |)
        |""".stripMargin
   }
@@ -65,6 +69,15 @@ object ICacheParameters{
     )
 }
 
+case class BPUParameters(useDynamic: Boolean, nEntries: Int, pcWidth: Int, npcWidth: Int, cntWidth: Int) {
+  override def toString: String = 
+    if(useDynamic) s"Number of Entries: $nEntries, PC Width: $pcWidth bits, NPC Width: $npcWidth bits, Counter Width: $cntWidth bits"
+    else s"Static Branch Prediction"
+}
+
+object BPUParameters {
+  def apply(): BPUParameters = BPUParameters(useDynamic = true, nEntries = 2, pcWidth = 9, npcWidth = 9, cntWidth = 2)
+}
 
 object NPCConfig {
 
@@ -78,6 +91,7 @@ object NPCConfig {
     }
     val SOC_EN = getConfig("CONFIG_SOC_EN") == "\"enable\""
     val USE_ICACHE = getConfig("CONFIG_USE_ICACHE") == "y"
+    val USE_BPU = getConfig("CONFIG_USE_BPU") == "y"
     val PERF_CNT = getConfig("CONFIG_PERF_CNT") == "y"
     val xlen = if (getConfig("CONFIG_ISA") == "\"riscv32\"") 32 else 64
 
@@ -94,6 +108,8 @@ object NPCConfig {
       axiparams = CPUAXI4BundleParameters(),
       icacheparams = ICacheParameters(),
       USE_ICACHE = USE_ICACHE,
+      bpuparameters = BPUParameters(),
+      USE_BPU = USE_BPU,
     )
   }
 }
