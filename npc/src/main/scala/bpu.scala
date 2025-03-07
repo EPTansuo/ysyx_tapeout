@@ -75,12 +75,11 @@ class BPU(config:NPCConfig) extends Module{
     val counterMaxValue = ((1 << cntWidth) - 1).U(cntWidth.W)
     when(io.exu_npc.valid && isBranch){
         when(branch_taken) {
-            btb.counter(tag) := Mux(btb.counter(tag) === 0.U, 0.U, 
-                                btb.counter(tag) - 1.U)
-
-        }.otherwise {
             btb.counter(tag) := Mux(btb.counter(tag) === counterMaxValue, counterMaxValue, 
                                 btb.counter(tag) + 1.U)
+        }.otherwise {
+            btb.counter(tag) := Mux(btb.counter(tag) === 0.U, 0.U, 
+                                btb.counter(tag) - 1.U)
         }
     }
 
