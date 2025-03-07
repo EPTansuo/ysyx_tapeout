@@ -76,15 +76,15 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
         succ = false;
         printf(L_RED "npc: pc = 0x" FMT_WORD_HEX_WIDTH "\tnemu: pc = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.pc,ref_r->pc);
     }
-    if(cpu_state_buf_ptr->csr.mepc != npc_cpu.csr.mepc){
+    if(cpu_state_buf_ptr->csr.mepc != ref_r->csr.mepc){
       printf(L_RED "npc: mepc   = 0x" FMT_WORD_HEX_WIDTH "\tnemu: mepc   = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.csr.mepc,ref_r->csr.mepc);
       succ = false;
     }
-    if(cpu_state_buf_ptr->csr.mcause != npc_cpu.csr.mcause){
+    if(cpu_state_buf_ptr->csr.mcause != ref_r->csr.mcause){
       printf(L_RED "npc: mcause = 0x" FMT_WORD_HEX_WIDTH "\tnemu: mcause = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.csr.mcause,ref_r->csr.mcause);
       succ = false;
     }
-    if(cpu_state_buf_ptr->csr.mstatus != npc_cpu.csr.mstatus){
+    if(cpu_state_buf_ptr->csr.mstatus != ref_r->csr.mstatus){
       printf(L_RED "npc: mstatus= 0x" FMT_WORD_HEX_WIDTH "\tnemu: mstatus= 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.csr.mstatus,ref_r->csr.mstatus);
       succ = false;
     }
