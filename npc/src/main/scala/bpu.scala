@@ -81,8 +81,9 @@ class BPU(config:NPCConfig) extends Module{
             update_cnt_idx := i.U
         }
     }
-
+    dontTouch(update_cnt_idx)
     val branch_taken = Mux(update_cnt_idx < entrySize.U, btb.npc(update_cnt_idx) === io.exu_npc.bits(npcWidth-1, 0), false.B)
+    dontTouch(branch_taken)
     val counterMaxValue = ((1 << cntWidth) - 1).U(cntWidth.W)
 
     when(io.exu_npc.valid){
