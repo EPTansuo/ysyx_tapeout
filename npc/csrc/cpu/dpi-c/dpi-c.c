@@ -20,7 +20,7 @@ void print_memread(paddr_t addr,int len);
 void print_memwrite_wmask(paddr_t addr, word_t data, char wmask);
 
 typedef VlUnpacked<word_t, MUXDEF(CONFIG_RVE,
-#ifdef DONT_USE_REG0
+#ifdef DONT_USE_REG0  // I Dont Know Why MUXDEF Here can not work
 15
 #else 
 16
