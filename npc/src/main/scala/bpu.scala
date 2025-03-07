@@ -67,19 +67,31 @@ class BPU(config:NPCConfig) extends Module{
         }
     }
 
-    val branch_taken = io.exu_npc.bits(pcWidth-1,0) === io.idu_pc(pcWidth-1,0)
-    dontTouch(branch_taken)
-    val isBranch = (io.exu_pc(pcWidth-1,0) + 4.U) =/= io.exu_npc.bits(pcWidth-1,0) 
-    dontTouch(isBranch)
+    // val branch_taken = io.exu_npc.bits(pcWidth-1,0) === io.idu_pc(pcWidth-1,0)
+    // dontTouch(branch_taken)
+    // val isBranch = (io.exu_pc(pcWidth-1,0) + 4.U) =/= io.exu_npc.bits(pcWidth-1,0) 
+    // dontTouch(isBranch)
 
+
+
+
+    val update_cnt_idx = WireDefault(entrySize.U)
+    for (i <- 0 until entrySize) {
+        when(btb.pc(i) === io.exu_pc(pcWidth-1,0)) {
+            update_cnt_idx := i.U
+        }
+    }
+
+    val branch_taken = Mux(update_cnt_idx < entrySize.U, btb.npc(update_cnt_idx) === io.exu_npc.bits(npcWidth-1, 0), false.B)
     val counterMaxValue = ((1 << cntWidth) - 1).U(cntWidth.W)
-    when(io.exu_npc.valid && isBranch){
+    
+    when(io.exu_npc.valid){
         when(branch_taken) {
-            btb.counter(tag) := Mux(btb.counter(tag) === counterMaxValue, counterMaxValue, 
-                                btb.counter(tag) + 1.U)
+            btb.counter(update_cnt_idx) := Mux(btb.counter(update_cnt_idx) === counterMaxValue, counterMaxValue, 
+                                btb.counter(update_cnt_idx) + 1.U)
         }.otherwise {
-            btb.counter(tag) := Mux(btb.counter(tag) === 0.U, 0.U, 
-                                btb.counter(tag) - 1.U)
+            btb.counter(update_cnt_idx) := Mux(btb.counter(update_cnt_idx) === 0.U, 0.U, 
+                                btb.counter(update_cnt_idx) - 1.U)
         }
     }
 
