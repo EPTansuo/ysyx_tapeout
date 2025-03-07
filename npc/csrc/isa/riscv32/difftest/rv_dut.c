@@ -88,7 +88,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
       printf(L_RED "npc: mstatus= 0x" FMT_WORD_HEX_WIDTH "\tnemu: mstatus= 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.csr.mstatus,ref_r->csr.mstatus);
       succ = false;
     }
-    if(cpu_state_buf_ptr->csr.mtvec != npc_cpu.csr.mtvec){
+    if(cpu_state_buf_ptr->csr.mtvec != ref_r->csr.mtvec){
       printf(L_RED "npc: mtvec  = 0x" FMT_WORD_HEX_WIDTH "\tnemu: mtvec  = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.csr.mtvec,ref_r->csr.mtvec);
       succ = false;
     }
