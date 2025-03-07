@@ -6,7 +6,7 @@
 #include <common.h>
 
 
-//#define DONT_USE_REG0
+#define DONT_USE_REG0
 
 
 
