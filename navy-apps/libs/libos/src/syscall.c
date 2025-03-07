@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <time.h>
 #include "syscall.h"
-
+#include <errno.h>
 // helper macros
 #define _concat(x, y) x ## y
 #define concat(x, y) _concat(x, y)
@@ -61,8 +61,9 @@ void _exit(int status) {
 }
 
 int _open(const char *path, int flags, mode_t mode) {
-  _exit(SYS_open);
-  return 0;
+  //_exit(SYS_open);
+  return _syscall_(SYS_open, (intptr_t)path, flags, mode);
+
 }
 
 int _write(int fd, void *buf, size_t count) {
@@ -70,12 +71,21 @@ int _write(int fd, void *buf, size_t count) {
 }
 
 extern char end;
+intptr_t endpos = (intptr_t)&end;
 void *_sbrk(intptr_t increment) {
-  int ret = _syscall_(SYS_brk, (intptr_t)(&end+increment), 0, 0);
-  if(ret == 0) 
-    return (&end + increment);
-  else
+  int ret = _syscall_(SYS_brk, endpos+increment, 0, 0);
+  //char buffer[128];
+  //int len = sprintf(buffer, "_sbrk called with increment: %d, end: %x, ret=%d\n", increment, endpos, ret);
+  //_write(STDERR_FILENO, buffer, len);
+  if(ret == 0) {
+	uintptr_t ret = endpos;
+	endpos += increment;
+    return (void*)ret;
+  }
+  else{
+	errno = ENOMEM;
     return (void *)-1;
+  }
 }
 
 int _read(int fd, void *buf, size_t count) {
@@ -95,7 +105,7 @@ int _gettimeofday(struct timeval *tv, struct timezone *tz) {
 }
 
 int _execve(const char *fname, char * const argv[], char *const envp[]) {
-  int retval = _syscall_(SYS_execve,(intptr_t)fname, (intptr_t)argv, (intptr_t)envp);
+  int ret = _syscall_(SYS_execve,(intptr_t)fname, (intptr_t)argv, (intptr_t)envp);
   if(ret < 0) {
     errno = -ret;
     return -1;

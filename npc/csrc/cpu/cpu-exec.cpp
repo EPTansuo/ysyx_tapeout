@@ -8,6 +8,9 @@
 #include <verilator.h>
 #include <memory/paddr.h>
 #include <signal.h>
+#include <cstdlib>
+#include <color.h>
+#include <sim.h>
 
 #define MAX_INST_TO_PRINT 10001
 bool first = true;
@@ -65,8 +68,29 @@ static void inline trace_and_difftest(){
 void inline cpu_eval_dump(){
   top->eval();
 #ifdef CONFIG_WAVE_DUMP
+#ifndef CONFIG_SAMPLE_WAVE_DUMP
   tfp->dump(contextp->time());
   contextp->timeInc(1);
+#else
+  static int cnt = 0;
+  static bool start = false;
+  if(!start){
+    if(std::rand() % 10000 == 0){
+      start = true;
+      tfp = get_wave_sample_fp();
+    }
+  }else{
+    if(cnt++ < CONFIG_SAMPLE_CYCLES*2){
+      tfp->dump(contextp->time());
+      contextp->timeInc(1);
+    }else{
+      tfp->close();
+      cnt = 0;
+      start = false;
+    }
+  }
+
+#endif 
 #endif
 }
 
@@ -84,9 +108,23 @@ void inline cpu_single_cycle(){
 }
 
 void inline cpu_single_inst(){
+#ifdef CONFIG_WAVE_DUMP
+  size_t cycles = 0;
+  do{
+    if(cycles++ > 10000){
+      printf("************************************\n");
+      printf(L_RED "Single Cycle Time out!\n" COLOR_NONE);
+      printf( "************************************\n");
+      npc_state.state = NPC_ABORT;
+      return;
+    }
+    cpu_single_cycle();
+  }while(!WBU_VALID);
+#else
   do{
     cpu_single_cycle();
   }while(!WBU_VALID);
+#endif 
 }
 
 void cpu_reset(int n){
@@ -124,7 +162,7 @@ static void exec_once(){
   for(int i=0; i<MUXDEF(CONFIG_RVE,16,32); i++){
     npc_cpu.gpr[i] = gpr(i);
   }
-  npc_cpu.pc = PC;
+  npc_cpu.pc = NPC;
 
   npc_cpu.csr.mepc = CSR->mepc;
   npc_cpu.csr.mcause = CSR->mcause;

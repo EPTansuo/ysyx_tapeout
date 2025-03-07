@@ -2,8 +2,10 @@
 #define __REG_H_
 #include <stdint.h>
 #include <common.h>
-#include <string.h>
+// #include <string.h>
 #include <verilator.h>
+
+extern word_t reg0;
 
 
 void isa_reg_display();
@@ -18,8 +20,11 @@ static inline int check_reg_idx(int idx){
         }
         return idx;
 }
-
-#define gpr(idx) (REGS[check_reg_idx(idx)])
+#ifdef DONT_USE_REG0
+#define gpr(idx) (idx == 0 ? reg0 : REGS[check_reg_idx(idx) - 1])
+#else
+#define gpr(idx) REGS[check_reg_idx(idx)]
+#endif
 
 static inline const char* reg_name(int idx) {
   extern const char* regs[];

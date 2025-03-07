@@ -24,13 +24,39 @@ class RegfileIO(xlen: Int) extends Bundle{
 
 class Regfile(config: NPCConfig) extends Module{
     val io = IO(new RegfileIO(config.XLEN))
-
+/*
     var regs = Mem(config.REG_NUM, UInt(config.XLEN.W))
 
-    io.read1.data := regs(io.read1.addr)
-    io.read2.data := regs(io.read2.addr)
+    // read data with internal forwarding 
+    io.read1.data := Mux(io.write.addr === io.read1.addr && io.write.addr =/= 0.U && io.write.en, 
+                            io.write.data, regs(io.read1.addr))
+    io.read2.data := Mux(io.write.addr === io.read2.addr && io.write.addr =/= 0.U && io.write.en, 
+                            io.write.data, regs(io.read2.addr))
+    
+
+    // io.read1.data := regs(io.read1.addr)
+    // io.read2.data := regs(io.read2.addr)
 
     when(io.write.en) {
         regs(io.write.addr) := Mux(io.write.addr === 0.U, 0.U, io.write.data)
+    }
+*/
+
+    var regs = Mem(config.REG_NUM - 1, UInt(config.XLEN.W))
+
+    // read data with internal forwarding 
+    def readLogic(addr: UInt): UInt = {
+        val rawData = Mux(addr.orR, regs(addr - 1.U), 0.U)
+        Mux(io.write.en && (io.write.addr === addr) && addr.orR, 
+            io.write.data, 
+            rawData)
+    }
+
+    io.read1.data := readLogic(io.read1.addr)
+    io.read2.data := readLogic(io.read2.addr)
+    
+
+    when(io.write.en && io.write.addr.orR) {
+        regs(io.write.addr - 1.U) := io.write.data
     }
 }

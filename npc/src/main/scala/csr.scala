@@ -66,10 +66,10 @@ class CSR(config: NPCConfig) extends Module{
     //CSR_C -> (io.in & ~Lookup(addr, 0.U, csr_regs)),
     CSR_C -> (io.in & ~io.out),
     //CSR_S -> (io.in | Lookup(addr, 0.U, csr_regs)),
-    CSR_S -> (io.in | io.out),
+    CSR_S -> (io.in | io.out),  
   ))
-
-  when(we){
+  dontTouch(wdata)
+  when(RegNext(we)){
   when(addr === CSR_MEPC) { mepc := wdata }
   .elsewhen(addr === CSR_MCAUSE) { mcause := wdata }
   .elsewhen(addr === CSR_MTVEC) { mtvec := wdata }
@@ -86,7 +86,7 @@ class CSR(config: NPCConfig) extends Module{
     mepc := io.pc >> 2 << 2
     //mcause := 0x8000000000000000.U
     mstatus := 0x1800.U
-    mcause := io.in
+    mcause := 0xb.U // ECall from M-mode
     io.target_pc := mtvec
   }.elsewhen(is_mret){
       mstatus_tmp := Cat(mstatus(31, 13), 

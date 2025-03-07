@@ -20,8 +20,10 @@
 #include <ftrace.h>
 #include <fmt-def.h>
 
+#ifndef CONFIG_BTRACE 
+//#define CONFIG_USE_ICACHE //Not Config in Kconfig
+#endif 
 
-#define CONFIG_USE_ICAHE //Not Config in Kconfig
 
 extern CPU_state cpu;
 
@@ -67,10 +69,18 @@ enum {
     ((SEXT(BITS(i, 30, 25), 6) << 58) >> 58) << 4 | \
     ((SEXT(BITS(i, 11, 8), 4) << 60) >> 60); *imm = *imm << 1; } while (0)
 
+#ifdef CONFIG_USE_ICACHE
+#define SHAMT (BITS(icache[index].inst, 24, 20))
+#else  
 #define SHAMT (BITS(s->isa.inst.val, 24, 20))
+#endif 
 
 #ifdef CONFIG_RV64
+#ifdef CONFIG_USE_ICACHE
+#define SHAMT_LONG (BITS(icache[index].inst, 25, 20))
+#else 
 #define SHAMT_LONG (BITS(s->isa.inst.val, 25, 20))
+#endif 
 #define SHAMT_LONG_LEN 6
 #else
 #define SHAMT_LONG SHAMT
@@ -84,6 +94,19 @@ void etrace_print_info(){
   cpu.pc, cpu.csr.mepc, cpu.csr.mstatus, cpu.csr.mcause, cpu.csr.mtvec);
 #endif
 }
+
+#if defined(CONFIG_USE_ICACHE) && defined(CONFIG_BTRACE)
+#error "CONFIG_USE_ICACHE and CONFIG_BTRACE can not be defined at the same time"
+#endif 
+
+
+void btrace(word_t pc, uint32_t inst, uint8_t taken);
+#ifdef CONFIG_BTRACE
+#define BTRACE(pc, inst,taken) btrace(pc, inst, taken),
+#else 
+#define BTRACE(pc, inst,taken) 
+#endif 
+
 
 #define XLEN (MUXDEF(CONFIG_RV64, 64, 32)) 
 
@@ -121,7 +144,7 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
   }
 }
 
-#ifdef CONFIG_USE_ICAHE
+#ifdef CONFIG_USE_ICACHE
 
 #define ICACHE_SIZE (1024*4) //4k
 
@@ -132,6 +155,7 @@ typedef struct {
   word_t rs2;
   word_t rd;
   uint32_t inst;
+  word_t pc;
 } ICacheEntry;
 
 ICacheEntry  icache[ICACHE_SIZE] PG_ALIGN =  {0};
@@ -148,7 +172,7 @@ static int decode_exec(Decode *s) {
 
 #define INSTPAT_INST(s) ((s)->isa.inst.val)
 
-#ifndef CONFIG_USE_ICAHE
+#ifndef CONFIG_USE_ICACHE
 #define INSTPAT_MATCH(s, name, type, ... ) { \
    decode_operand(s, &rd, &src1, &src2, &imm, concat(TYPE_, type)); \
    __VA_ARGS__ ; \
@@ -156,6 +180,7 @@ static int decode_exec(Decode *s) {
 #else 
 #define INSTPAT_MATCH(s, name, t, ...) { \
   icache[index].inst = INSTPAT_INST(s); \
+  icache[index].pc = s->pc; \
   icache[index].label = &&exe_##name; \
   decode_operand(s, &rd, &src1, &src2, &imm, concat(TYPE_,t)); \
   icache[index].rd = rd; \
@@ -165,15 +190,25 @@ static int decode_exec(Decode *s) {
   __VA_ARGS__ ; \
 }
 
+  // TODO: fencei
   unsigned index = s->pc & (ICACHE_SIZE - 1);
-  if (icache[index].inst == s->isa.inst.val ) {
-        if(icache[index].label != NULL){
+  if (icache[index].pc == s->pc ) {
+          s->dnpc = s->pc+4;
+#ifdef CONFIG_TRACE
+          s->snpc = s->pc+4;
+          s->isa.inst.val = icache[index].inst;
           icache_hit++;
+#endif 
           goto *icache[index].label;
-        }
   }
+#ifdef CONFIG_TRACE
   icache_miss++;
-#endif //!CONFIG_USE_ICAHE
+#endif 
+  s->isa.inst.val = inst_fetch(&s->snpc, 4);
+  s->dnpc = s->snpc;
+#endif //!CONFIG_USE_ICACHE
+
+  
 
   //printf("s->pc: 0x" FMT_WORD_HEX "\n",s->pc);
   INSTPAT_START();
@@ -182,12 +217,12 @@ static int decode_exec(Decode *s) {
   //printf("nemu: cpu.grp[2]=%08x\n", cpu.gpr[2]);
    INSTPAT("??????? ????? ????? 000 ????? 00100 11", addi   , I, R(rd) = src1 + imm); //addi(li,mv)
    INSTPAT("??????? ????? ????? 010 ????? 01000 11", sw     , S, Mw(src1 + imm, 4, src2));
-   INSTPAT("??????? ????? ????? 001 ????? 11000 11", bne    , B, s->dnpc = (src1 != src2 ? s->pc + imm : s->dnpc));
+   INSTPAT("??????? ????? ????? 001 ????? 11000 11", bne    , B, BTRACE(s->pc,INSTPAT_INST(s), src1 != src2) s->dnpc = (src1 != src2 ? s->pc + imm : s->dnpc));
    INSTPAT("??????? ????? ????? 010 ????? 00000 11", lw     , I, R(rd) = SEXT(Mr(src1 + imm, 4), 32));
    INSTPAT("0000000 ????? ????? 000 ????? 01100 11", add    , R, R(rd) = src1 + src2);
    INSTPAT("000000? ????? ????? 001 ????? 00100 11", slli   , I, R(rd) = src1 << SHAMT_LONG);
-   INSTPAT("??????? ????? ????? 000 ????? 11000 11", beq    , B, s->dnpc = (src1 == src2 ? s->pc + imm : s->dnpc));
-   INSTPAT("??????? ????? ????? 110 ????? 11000 11", bltu   , B, s->dnpc = ((word_t)src1 < (word_t)src2 ? s->pc + imm : s->dnpc));
+   INSTPAT("??????? ????? ????? 000 ????? 11000 11", beq    , B, BTRACE(s->pc,INSTPAT_INST(s),src1 == src2) s->dnpc = (src1 == src2 ? s->pc + imm : s->dnpc));
+   INSTPAT("??????? ????? ????? 110 ????? 11000 11", bltu   , B, BTRACE(s->pc,INSTPAT_INST(s), (word_t)src1 < (word_t)src2) s->dnpc = ((word_t)src1 < (word_t)src2 ? s->pc + imm : s->dnpc));
    INSTPAT("??????? ????? ????? 000 ????? 11001 11", jalr   , I, R(rd) = s->pc + 4; s->dnpc = (src1 + imm) & (~1)); //jalr(ret)
    INSTPAT("??????? ????? ????? 101 ????? 00000 11", lhu    , I, R(rd) = Mr(src1 + imm, 2));
    INSTPAT("0000000 ????? ????? 110 ????? 01100 11", or     , R, R(rd) = src1 | src2);
@@ -231,10 +266,10 @@ static int decode_exec(Decode *s) {
   
    
    
-   INSTPAT("??????? ????? ????? 100 ????? 11000 11", blt    , B, s->dnpc = ((sword_t)src1 < (sword_t)src2 ? s->pc + imm : s->dnpc));
-   INSTPAT("??????? ????? ????? 101 ????? 11000 11", bge    , B, s->dnpc = ((sword_t)src1 >= (sword_t)src2 ? s->pc + imm : s->dnpc));
+   INSTPAT("??????? ????? ????? 100 ????? 11000 11", blt    , B, BTRACE(s->pc,INSTPAT_INST(s),(sword_t)src1 < (sword_t)src2)  s->dnpc = ((sword_t)src1 < (sword_t)src2 ? s->pc + imm : s->dnpc));
+   INSTPAT("??????? ????? ????? 101 ????? 11000 11", bge    , B, BTRACE(s->pc,INSTPAT_INST(s),((sword_t)src1 >= (sword_t)src2))  s->dnpc = (((sword_t)src1 >= (sword_t)src2 ? s->pc + imm : s->dnpc)));
    
-   INSTPAT("??????? ????? ????? 111 ????? 11000 11", bgeu   , B, s->dnpc = ((word_t)src1 >= (word_t)src2 ? s->pc + imm : s->dnpc));
+   INSTPAT("??????? ????? ????? 111 ????? 11000 11", bgeu   , B, BTRACE(s->pc,INSTPAT_INST(s),((word_t)src1 >= (word_t)src2))  s->dnpc = ((word_t)src1 >= (word_t)src2 ? s->pc + imm : s->dnpc));
 
 
    INSTPAT("0000000 ????? ????? 000 ????? 01110 11", addw   , R, R(rd) = SEXT(BITS((uint32_t)src1 + (uint32_t)src2, 31, 0),32));
@@ -283,7 +318,7 @@ static int decode_exec(Decode *s) {
 
 
 
-#ifdef CONFIG_USE_ICAHE
+#ifdef CONFIG_USE_ICACHE
 #include "../../../tools/gen_icache_label/label_run.c"
 #endif 
 
@@ -296,8 +331,8 @@ static int decode_exec(Decode *s) {
 }
 
 int isa_exec_once(Decode *s) {
+#ifndef CONFIG_USE_ICACHE
   s->isa.inst.val = inst_fetch(&s->snpc, 4);
-  //printf( "hit rate: %lf\n",(double)icache_hit / (1+icache_hit + icache_miss));
-  //printf("nemu: s->isa.inst.val: 0x%08x\n",s->isa.inst.val);
+#endif 
   return decode_exec(s);
 }

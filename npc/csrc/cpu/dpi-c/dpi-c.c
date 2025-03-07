@@ -1,3 +1,4 @@
+#include "macro.h"
 #include <cpu/cpu.h>
 #include <utils/utils.h>
 #include <color.h>
@@ -5,7 +6,8 @@
 #include <fmt-def.h>
 #include <memory/host.h>
 #include <time.h>
-#include <iostream>
+#include <reg.h>
+// #include <iostream>
 
 #include <verilator.h>
 
@@ -18,13 +20,21 @@ paddr_t host_to_guest(uint8_t *haddr);
 void print_memread(paddr_t addr,int len);
 void print_memwrite_wmask(paddr_t addr, word_t data, char wmask);
 
+typedef VlUnpacked<word_t, MUXDEF(CONFIG_RVE,
+#ifdef DONT_USE_REG0  // I Dont Know Why MUXDEF Here can not work
+15
+#else 
+16
+#endif 
+,MUXDEF(DONT_USE_REG0, 31, 32))> reg_t;
+
 
 typedef  struct{
   paddr_t addr;
   char wmask;
   word_t data;
   word_t pc;
-  VlUnpacked<word_t, MUXDEF(CONFIG_RVE,16,32)> regs;
+  reg_t regs;
 }memwrite_info;
 
 
@@ -37,7 +47,7 @@ uint64_t npc_uptime;
 
 
 extern "C" void npc_ebreak(){
-	NPCTRAP(PC, REGS[10]);
+	NPCTRAP(PC, gpr(10));
 }
 
 
@@ -105,10 +115,9 @@ extern "C" int pmem_read(int raddr){
 
 
 
-
 // return true is equ
-bool regs_equ(const VlUnpacked<word_t, MUXDEF(CONFIG_RVE,16,32)>&reg1, const VlUnpacked<word_t, MUXDEF(CONFIG_RVE,16,32)>&reg2){
-  for(int i = 0; i < MUXDEF(CONFIG_RVE,16,32); i++){
+bool regs_equ(const reg_t& reg1, const reg_t& reg2){
+  for(int i = 0; i < MUXDEF(CONFIG_RVE,16,32) - MUXDEF(DONT_USE_REG0, 1, 0); i++){
     if(reg1[i] != reg2[i])
       return false;
   }

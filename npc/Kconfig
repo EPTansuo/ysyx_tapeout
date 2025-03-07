@@ -33,6 +33,9 @@ menu "Configuration for NPC"
 config USE_ICACHE
   bool "Use ICache"
   default y
+config USE_BPU
+  bool "Use Branch Prediction"
+  default y
 config PERF_CNT
   bool "Enable Performance Counter"
   default y
@@ -67,23 +70,41 @@ config WAVE_DUMP
 	bool "Enable wave dump"
 	default n
 
+config SAMPLE_WAVE_DUMP
+	bool "Sampe wave snapshot"
+	depends on WAVE_DUMP
+	default n
+
+config SAMPLE_NUM
+  depends on SAMPLE_WAVE_DUMP
+  int "Number of Sample snapshots"
+  default 30
+
+config SAMPLE_CYCLES
+  depends on SAMPLE_WAVE_DUMP
+  int "Cycles of each snapshot"
+  default 128
 
 choice
-	prompt "Wave file type"
-	default WAVE_FST
-	depends on WAVE_DUMP
+    prompt "Wave file type"
+    default WAVE_FST if !SAMPLE_WAVE_DUMP
+    depends on WAVE_DUMP
+    help
+      Select the type of wave file to use.
+
 config WAVE_VCD
-	bool "vcd"
+    bool "vcd"
+
 config WAVE_FST
-	bool "fst"
+    bool "fst"
+
 endchoice
 
 config WAVE_FILE_TYPE
-	string 
-	default "vcd" if WAVE_VCD
-	default "fst" if WAVE_FST
-	default "none"
-
+    string
+    default "vcd" if SAMPLE_WAVE_DUMP
+    default "fst" if WAVE_FST
+    default "none"
 
 config USE_SOC
   default y
@@ -97,7 +118,7 @@ config SOC_EN #For Chisel
 
 config USE_NVBOARD
   depends on USE_SOC
-  default y
+  default n
   bool "USE NVBoard for SOC Simulation"
 
 endmenu
