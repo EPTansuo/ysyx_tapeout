@@ -38,8 +38,8 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   int i =0;
   bool succ = true;
   // static word_t ref_pc_last = 0;
+  CPU_state* cpu_state_buf_ptr = &cpu_state_buf;
 
-memcpy(&cpu_state_buf, ref_r, DIFFTEST_REG_SIZE);
 
   if(!first){
     
@@ -76,19 +76,19 @@ memcpy(&cpu_state_buf, ref_r, DIFFTEST_REG_SIZE);
         succ = false;
         printf(L_RED "npc: pc = 0x" FMT_WORD_HEX_WIDTH "\tnemu: pc = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.pc,ref_r->pc);
     }
-    if(ref_r->csr.mepc != npc_cpu.csr.mepc){
+    if(cpu_state_buf_ptr->csr.mepc != npc_cpu.csr.mepc){
       printf(L_RED "npc: mepc   = 0x" FMT_WORD_HEX_WIDTH "\tnemu: mepc   = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.csr.mepc,ref_r->csr.mepc);
       succ = false;
     }
-    if(ref_r->csr.mcause != npc_cpu.csr.mcause){
+    if(cpu_state_buf_ptr->csr.mcause != npc_cpu.csr.mcause){
       printf(L_RED "npc: mcause = 0x" FMT_WORD_HEX_WIDTH "\tnemu: mcause = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.csr.mcause,ref_r->csr.mcause);
       succ = false;
     }
-    if(ref_r->csr.mstatus != npc_cpu.csr.mstatus){
+    if(cpu_state_buf_ptr->csr.mstatus != npc_cpu.csr.mstatus){
       printf(L_RED "npc: mstatus= 0x" FMT_WORD_HEX_WIDTH "\tnemu: mstatus= 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.csr.mstatus,ref_r->csr.mstatus);
       succ = false;
     }
-    if(ref_r->csr.mtvec != npc_cpu.csr.mtvec){
+    if(cpu_state_buf_ptr->csr.mtvec != npc_cpu.csr.mtvec){
       printf(L_RED "npc: mtvec  = 0x" FMT_WORD_HEX_WIDTH "\tnemu: mtvec  = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.csr.mtvec,ref_r->csr.mtvec);
       succ = false;
     }
@@ -100,6 +100,7 @@ memcpy(&cpu_state_buf, ref_r, DIFFTEST_REG_SIZE);
       // printf("IF GPR DIFF TEST ERROR: DO NOT SEE CURRENT INSTRATION, SEE PREVIOUS ONE!\n");
   }
   first = false;
+  memcpy(&cpu_state_buf, ref_r, DIFFTEST_REG_SIZE);
   // ref_pc_last = ref_r->pc;
  // printf("npc:nemu:ref_r->pc==0x%x\n",ref_r->pc);
   return succ;
