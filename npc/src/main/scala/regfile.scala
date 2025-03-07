@@ -45,11 +45,15 @@ class Regfile(config: NPCConfig) extends Module{
     var regs = Mem(config.REG_NUM - 1, UInt(config.XLEN.W))
 
     // read data with internal forwarding 
+    def readLogic(addr: UInt): UInt = {
+        val rawData = Mux(addr.orR, regs(addr - 1.U), 0.U)
+        Mux(io.write.en && (io.write.addr === addr) && addr.orR, 
+            io.write.data, 
+            rawData)
+    }
 
-    io.read1.data := Mux(io.read1.addr.orR, Mux(io.write.addr === io.read1.addr && io.write.en, 
-                            io.write.data, regs(io.read1.addr - 1.U )), 0.U)
-    io.read2.data := Mux(io.read2.addr.orR, Mux(io.write.addr === io.read2.addr && io.write.en, 
-                            io.write.data, regs(io.read2.addr - 1.U )), 0.U)
+    io.read1.data := readLogic(io.read1.addr)
+    io.read2.data := readLogic(io.read2.addr)
     
 
     when(io.write.en && io.write.addr.orR) {
