@@ -51,7 +51,7 @@ class BPU(config:NPCConfig) extends Module{
     val tag_plus_1 = tag + 1.U
     val replace_idx = WireDefault(entrySize.U)
     for (i <- 0 until entrySize) {
-        when(btb.pc(i) === io.pc(pcWidth-1,0)) {
+        when(btb.pc(i) === io.exu_pc(pcWidth-1,0)) {
             replace_idx := i.U
         }
     }
@@ -84,7 +84,7 @@ class BPU(config:NPCConfig) extends Module{
 
     val branch_taken = Mux(update_cnt_idx < entrySize.U, btb.npc(update_cnt_idx) === io.exu_npc.bits(npcWidth-1, 0), false.B)
     val counterMaxValue = ((1 << cntWidth) - 1).U(cntWidth.W)
-    
+
     when(io.exu_npc.valid){
         when(branch_taken) {
             btb.counter(update_cnt_idx) := Mux(btb.counter(update_cnt_idx) === counterMaxValue, counterMaxValue, 
