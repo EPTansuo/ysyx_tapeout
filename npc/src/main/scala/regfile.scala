@@ -24,7 +24,7 @@ class RegfileIO(xlen: Int) extends Bundle{
 
 class Regfile(config: NPCConfig) extends Module{
     val io = IO(new RegfileIO(config.XLEN))
-/*
+
     var regs = Mem(config.REG_NUM, UInt(config.XLEN.W))
 
     // read data with internal forwarding 
@@ -40,8 +40,8 @@ class Regfile(config: NPCConfig) extends Module{
     when(io.write.en) {
         regs(io.write.addr) := Mux(io.write.addr === 0.U, 0.U, io.write.data)
     }
-*/
 
+/*
     var regs = Mem(config.REG_NUM - 1, UInt(config.XLEN.W))
 
     // read data with internal forwarding 
@@ -54,5 +54,5 @@ class Regfile(config: NPCConfig) extends Module{
 
     when(io.write.en && io.write.addr.orR) {
         regs(io.write.addr - 1.U) := io.write.data
-    }
+    }*/
 }
