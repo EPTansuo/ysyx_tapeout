@@ -26,7 +26,7 @@ LDFLAGS   += --gc-sections -e _start #--print-map
 CFLAGS += -DMAINARGS=\"$(mainargs)\"
 
 #NPCFLAGS =--diff=$(NEMU_HOME)/build/riscv32-nemu-interpreter-so 
-NPCFLAGS = --diff=$(NPC_HOME)/difftest/riscv32-nemu-soc-so 
+NPCFLAGS = --diff=$(NPC_HOME)/difftest/riscv32e-nemu-soc-so 
 
 BATCH ?= 0
 ifeq ($(BATCH), 1)
