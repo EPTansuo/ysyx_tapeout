@@ -68,7 +68,7 @@ class CSR(config: NPCConfig) extends Module{
     //CSR_S -> (io.in | Lookup(addr, 0.U, csr_regs)),
     CSR_S -> (io.in | io.out),
   ))
-
+  dontTouch(wdata)
   when(we){
   when(addr === CSR_MEPC) { mepc := wdata }
   .elsewhen(addr === CSR_MCAUSE) { mcause := wdata }
