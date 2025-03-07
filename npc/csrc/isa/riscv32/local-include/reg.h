@@ -2,7 +2,7 @@
 #define __REG_H_
 #include <stdint.h>
 #include <common.h>
-#include <string.h>
+// #include <string.h>
 #include <verilator.h>
 
 extern word_t reg0;
