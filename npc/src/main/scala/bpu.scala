@@ -19,11 +19,13 @@ class BPU(config:NPCConfig) extends Module{
     val pcWidth = params.pcWidth
     val npcWidth = params.npcWidth
     val cntWidth = params.cntWidth
+    
+    val initCounterValue = (1 << (cntWidth - 1)).U(cntWidth.W)
 
     val btb = new Bundle {
         val pc = RegInit(VecInit(Seq.fill(entrySize)(0.U(pcWidth.W))))
         val npc = RegInit(VecInit(Seq.fill(entrySize)(0.U(npcWidth.W))))
-        val counter = RegInit(VecInit(Seq.fill(entrySize)(0.U(cntWidth.W)))) // 2-bit saturating counter
+        val counter = RegInit(VecInit(Seq.fill(entrySize)(initCounterValue))) // 2-bit saturating counter
     }
     
 
