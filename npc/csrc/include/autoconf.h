@@ -6,10 +6,11 @@
 #define CONFIG_PERF_CNT 1
 #define CONFIG_CC_O2 1
 #define CONFIG_CC_OPT "-O2"
+#define CONFIG_WAVE_DUMP 1
+#define CONFIG_WAVE_VCD 1
 #define CONFIG_WAVE_FILE_TYPE "none"
 #define CONFIG_USE_SOC 1
 #define CONFIG_SOC_EN "enable"
-#define CONFIG_USE_NVBOARD 1
 #define CONFIG_RESET_VECTOR 0x30000000
 #define CONFIG_DIFFTEST_REF_PATH "none"
 #define CONFIG_DIFFTEST_REF_NAME "none"
