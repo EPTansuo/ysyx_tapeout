@@ -86,7 +86,7 @@ class CSR(config: NPCConfig) extends Module{
     mepc := io.pc >> 2 << 2
     //mcause := 0x8000000000000000.U
     mstatus := 0x1800.U
-    mcause := io.in
+    mcause := 0xb.U // ECall from M-mode
     io.target_pc := mtvec
   }.elsewhen(is_mret){
       mstatus_tmp := Cat(mstatus(31, 13), 
