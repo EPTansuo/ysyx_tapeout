@@ -1,37 +1,36 @@
 from collections import defaultdict
 
+class BTBEntry:
+    def __init__(self, pc, npc, cnt):
+        self.pc = pc 
+        self.npc = npc 
+        self.cnt = cnt 
+    def __str__(self):
+        return f"BTBEntry: " + "{" + f"PC: {self.pc}, NPC: {self.npc}, Counter: {self.cnt}" + "}"
+    def __repr__(self):
+        return self.__str__()
+
 class BPU:
-    def __init__(self, address_size=4, prediction_method='saturating', bits=2, table_size=1024):
+    def __init__(self, address_size=4, prediction_method='saturating', bits=2, table_size=2):
         self.address_size = address_size
         self.prediction_method = prediction_method
-        self.bits = bits  # bit-width of the prediction counter
-        self.table_size = table_size  # 分支预测表的大小
-        self.btrace = []
-
-        # 创建一个大小固定的列表来存储计数器，每个元素都是 (2^bits)//2
-        # 表示计数器的初始值为“中间值”
-        self.history_table = [(2**self.bits) // 2 for _ in range(self.table_size)]
-
-        # 对于 global_history 和 gshare，还需要全局历史寄存器
-        if self.prediction_method in ('global_history', 'gshare'):
-            self.global_history = 0
+        self.BTB = [BTBEntry(0, 0, 2**bits // 2) for _ in range(table_size)]
+        self.tag_index = 0
+        self.table_size = table_size
+        self.cnt_bits = bits
 
     def _index_saturating(self, address):
-        """ 对地址进行映射，以获取在 history_table 中的索引 """
-        return address % self.table_size
+        for i in range(len(self.BTB)):
+            if self.BTB[i].pc == address:
+                self.tag_index = i
+                return self.tag_index
+        else:
+            tmp = self.tag_index
+            self.tag_index+=1 
+            self.tag_index %= self.table_size
+            return tmp
 
-    def _index_local_history(self, address):
-        """ Local History 也可以用地址做索引。 """
-        return address % self.table_size
-
-    def _index_global_history(self):
-        """ Global History 的表索引，就直接用 self.global_history 或其掩码。 """
-        return self.global_history % self.table_size
-
-    def _index_gshare(self, address):
-        """ Gshare = (global_history XOR address)，然后再取模 table_size。 """
-        return (self.global_history ^ address) % self.table_size
-
+    
     def predict(self, address, inst):
         """
         根据预测方法对给定地址的分支进行预测。
@@ -41,78 +40,34 @@ class BPU:
             return 1
         elif self.prediction_method == 'static':
             # val immB = Cat(io.inst(31), io.inst(7), io.inst(30, 25), io.inst(11, 8), 0.U(1.W)).asSInt
-            imm = (inst & 0x80000000) | ((inst & 0x00000080) << 24) | ((inst & 0x3e000000) >> 1) | ((inst & 0x00000f00) >> 7)
-            return 1 if imm < address else 0
+
+            # 静态预测策略：后向分支（imm < 0）预测 Taken
+            return 1 if (inst >> 31 & 0x1) else 0
         elif self.prediction_method == 'saturating':
             idx = self._index_saturating(address)
-            counter = self.history_table[idx]
-            return 1 if counter >= (2**self.bits)//2 else 0
-
-        elif self.prediction_method == 'local_history':
-            idx = self._index_local_history(address)
-            counter = self.history_table[idx]
-            return 1 if counter >= (2**self.bits)//2 else 0
-
-        elif self.prediction_method == 'global_history':
-            idx = self._index_global_history()
-            counter = self.history_table[idx]
-            return 1 if counter >= (2**self.bits)//2 else 0
-
-        elif self.prediction_method == 'gshare':
-            idx = self._index_gshare(address)
-            counter = self.history_table[idx]
-            return 1 if counter >= (2**self.bits)//2 else 0
-
+            # print(f"pred: {idx=}")
+            counter = self.BTB[idx].cnt
+            return 1 if counter >= (2**self.cnt_bits)//2 else 0
         else:
             raise ValueError("Unsupported prediction method.")
 
-    def update(self, address, taken):
+    def update(self, address, taken, correct):
         """
         根据分支的实际结果更新历史表。
         """
         if self.prediction_method == 'saturating':
             idx = self._index_saturating(address)
-            counter = self.history_table[idx]
+            # print(f"{idx=}")
+            self.BTB[idx].pc = address
+            counter = self.BTB[idx].cnt
             if taken:
-                self.history_table[idx] = min(counter + 1, 2**self.bits - 1)
+                self.BTB[idx].cnt = min(counter + 1, 2**self.cnt_bits - 1)
             else:
-                self.history_table[idx] = max(counter - 1, 0)
+                self.BTB[idx].cnt = max(counter - 1, 0)
         elif self.prediction_method == 'static':
             pass 
         elif self.prediction_method == 'always_taken':
             pass
-        elif self.prediction_method == 'local_history':
-            idx = self._index_local_history(address)
-            counter = self.history_table[idx]
-            if taken:
-                self.history_table[idx] = min(counter + 1, 2**self.bits - 1)
-            else:
-                self.history_table[idx] = max(counter - 1, 0)
-
-        elif self.prediction_method == 'global_history':
-            # 先更新表
-            idx = self._index_global_history()
-            counter = self.history_table[idx]
-            if taken:
-                self.history_table[idx] = min(counter + 1, 2**self.bits - 1)
-            else:
-                self.history_table[idx] = max(counter - 1, 0)
-
-            # 再更新全局历史寄存器
-            # 如果你想让global_history也支持任意位，可以做一个掩码
-            self.global_history = ((self.global_history << 1) | taken) & ((1 << self.bits) - 1)
-
-        elif self.prediction_method == 'gshare':
-            # 先更新表
-            idx = self._index_gshare(address)
-            counter = self.history_table[idx]
-            if taken:
-                self.history_table[idx] = min(counter + 1, 2**self.bits - 1)
-            else:
-                self.history_table[idx] = max(counter - 1, 0)
-
-            # 再更新全局历史寄存器
-            self.global_history = ((self.global_history << 1) | taken) & ((1 << self.bits) - 1)
-
         else:
             raise ValueError("Unsupported prediction method.")
+        # print(self.BTB)
