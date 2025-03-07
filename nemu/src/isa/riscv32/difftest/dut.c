@@ -18,7 +18,6 @@
 #include "../local-include/reg.h"
 #include <cpu/cpu.h>
 #include <fmt-def.h>
-#include <stdio.h>
 
 extern const char* regs[];
 
@@ -26,7 +25,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   bool succ = true;
 
   //ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
-  printf("hello");
+
   if (cpu.pc != ref_r->pc) {   //check pc
     succ = false;
     printf("\e[1;31mPC DIFFTESET ERROR!\e[0m\n");
