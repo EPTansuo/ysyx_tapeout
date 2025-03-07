@@ -67,8 +67,9 @@ class BPU(config:NPCConfig) extends Module{
 
     val branch_taken = io.exu_npc.bits === io.idu_pc 
     dontTouch(branch_taken)
-
-    when(io.exu_npc.valid && io.exu_npc.bits =/= io.exu_pc){
+    val isBranch = io.exu_pc =/= io.exu_npc.bits
+    dontTouch(isBranch)
+    when(io.exu_npc.valid && isBranch){
         when(branch_taken) {
             btb.counter(tag) := Mux(btb.counter(tag) === 3.U, 3.U, 
                                             btb.counter(tag) + 1.U)
