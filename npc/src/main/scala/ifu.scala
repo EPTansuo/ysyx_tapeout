@@ -63,7 +63,8 @@ class IFU(config: NPCConfig) extends Module {
     if(bpu_params.useDynamic){ // USE BPU
       val bpu = Module(new BPU(config))
       bpu.io.pc := pc 
-      bpu.io.exu_npc := io.exu_pc_sig.bits.npc
+      bpu.io.exu_npc.bits := io.exu_pc_sig.bits.npc
+      bpu.io.exu_npc.valid := io.exu_pc_sig.valid
       bpu.io.exu_pc  := io.exu_pc_sig.bits.pc
       bpu.io.update := io.flush
       when(io.out.valid && io.out.ready && ~flush) {

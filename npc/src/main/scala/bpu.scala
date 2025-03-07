@@ -7,7 +7,7 @@ class BPU(config:NPCConfig) extends Module{
     val io = IO(new Bundle{
         val pc = Input(UInt(config.XLEN.W))
         val update = Input(Bool())
-        val exu_npc = Input(UInt(config.XLEN.W))
+        val exu_npc = Flipped(Valid(UInt(config.XLEN.W)))
         val exu_pc = Input(UInt(config.XLEN.W))
         val npc = Output(UInt(config.XLEN.W))
 
@@ -31,7 +31,7 @@ class BPU(config:NPCConfig) extends Module{
 
     val npc = Wire(UInt(config.XLEN.W))
 
-    val branch_taken = io.exu_npc =/= io.exu_pc + 4.U
+    val branch_taken = io.exu_npc.bits === io.pc
 
     npc := io.pc + 4.U
     for (i <- 0 until entrySize) {
@@ -47,35 +47,21 @@ class BPU(config:NPCConfig) extends Module{
 
     val replace_addr = tag + 1.U
 
-    // when(io.update) {
-    //     btb.pc(replace_addr) := io.exu_pc
-    //     btb.npc(replace_addr) := io.exu_npc
-    //     tag := replace_addr
-    // }
-
-
-    val update_idx = WireDefault(entrySize.U) 
-    for (i <- 0 until entrySize) {
-        when(btb.pc(i) === io.exu_pc(pcWidth-1, 0)) {
-            update_idx := i.U 
-        }
-    }
-
     when(io.update) {
-        when(update_idx < entrySize.U) {
-            when(branch_taken) {
-                btb.counter(update_idx) := Mux(btb.counter(update_idx) === 3.U, 3.U, btb.counter(update_idx) + 1.U)
-            }.otherwise {
-                btb.counter(update_idx) := Mux(btb.counter(update_idx) === 0.U, 0.U, btb.counter(update_idx) - 1.U)
-            }
-        }.otherwise {
-            btb.pc(replace_addr)    := io.exu_pc(pcWidth-1, 0)
-            btb.npc(replace_addr)   := io.exu_npc(npcWidth-1, 0)
-            btb.counter(replace_addr) := Mux(branch_taken, 3.U, 1.U) // 强采取或弱不采取
-            tag := replace_addr
-        }
+        btb.pc(replace_addr) := io.exu_pc
+        btb.npc(replace_addr) := io.exu_npc.bits
+        tag := replace_addr
     }
 
+    when(io.exu_npc.valid){
+        when(branch_taken) {
+            btb.counter(tag) := Mux(btb.counter(tag) === 3.U, 3.U, 
+                                            btb.counter(tag) + 1.U)
+        }.otherwise {
+            btb.counter(tag) := Mux(btb.counter(tag) === 0.U, 0.U, 
+                                            btb.counter(tag) - 1.U)
+        }
+    }
 
     io.npc := npc
 }
