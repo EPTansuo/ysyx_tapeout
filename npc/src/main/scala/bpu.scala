@@ -32,6 +32,7 @@ class BPU(config:NPCConfig) extends Module{
     val npc = Wire(UInt(config.XLEN.W))
 
     val branch_taken = io.exu_npc.bits === io.pc
+    dontTouch(branch_taken)
 
     npc := io.pc + 4.U
     for (i <- 0 until entrySize) {
