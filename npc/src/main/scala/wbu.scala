@@ -82,6 +82,16 @@ class WBU(config: NPCConfig) extends Module {
     io.out.bits.npc := npc
     dontTouch(io.in.bits.pc)
     io.inst_type := ctrlsig.inst_type
+    
+    val ebreak_ = Module(new Ebreak)
+    val isebreak = RegInit(false.B)
+    when(io.in.bits.inst === insts.ebreak){
+        isebreak := true.B
+    }.otherwise{
+        isebreak := false.B
+    }
+    ebreak_.io.isebreak := isebreak
+
 
     if(config.PERF_CNT){
         val inst_cnt = RegInit(0.U(64.W))

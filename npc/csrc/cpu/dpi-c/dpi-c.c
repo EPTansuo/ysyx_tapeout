@@ -6,6 +6,7 @@
 #include <fmt-def.h>
 #include <memory/host.h>
 #include <time.h>
+#include <reg.h>
 // #include <iostream>
 
 #include <verilator.h>
@@ -46,7 +47,7 @@ uint64_t npc_uptime;
 
 
 extern "C" void npc_ebreak(){
-	NPCTRAP(PC, REGS[10]);
+	NPCTRAP(PC, gpr(10));
 }
 
 
