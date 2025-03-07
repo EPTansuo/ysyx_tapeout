@@ -33,18 +33,19 @@ extern const char *regs[];
 
 // 为了匹配，所以让ref_r使用cpu_state_buf推迟了一个周期
 // 改了，现在不推迟了
+// 现在又要推迟了!! 不过是让npc_cpu推迟一个周期
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   int i =0;
   bool succ = true;
   // static word_t ref_pc_last = 0;
+  CPU_state* cpu_state_buf_ptr = &cpu_state_buf;
 
-memcpy(&cpu_state_buf, ref_r, DIFFTEST_REG_SIZE);
 
   if(!first){
     
     //if(ref_r->pc != npc_cpu.pc){
     for(i = 0; i <  MUXDEF(CONFIG_RVE,16,32); i++){
-      if(cpu_state_buf.gpr[i] != npc_cpu.gpr[i]){
+      if(ref_r->gpr[i] != npc_cpu.gpr[i]){
         succ = false;
         break;
       }
@@ -55,14 +56,14 @@ memcpy(&cpu_state_buf, ref_r, DIFFTEST_REG_SIZE);
       printf("ref reg info:\n");
       for (int j = 0; j < MUXDEF(CONFIG_RVE,16,32); j++)
       {
-              if(cpu_state_buf.gpr[j] != npc_cpu.gpr[j])
-                printf("$%s = 0x" L_RED  FMT_WORD_HEX_WIDTH COLOR_NONE "\t", regs[j], cpu_state_buf.gpr[j]);
+              if(ref_r->gpr[j] != npc_cpu.gpr[j])
+                printf("$%s = 0x" L_RED  FMT_WORD_HEX_WIDTH COLOR_NONE "\t", regs[j], ref_r->gpr[j]);
               else
-                printf("$%s = 0x" FMT_WORD_HEX_WIDTH "\t", regs[j], cpu_state_buf.gpr[j]);
+                printf("$%s = 0x" FMT_WORD_HEX_WIDTH "\t", regs[j], ref_r->gpr[j]);
               if ((j + 1) % 4 == 0)
                       putchar('\n');
       }
-      printf("$pc = 0x" FMT_WORD_HEX_WIDTH "\n", cpu_state_buf.pc);
+      printf("$pc = 0x" FMT_WORD_HEX_WIDTH "\n", ref_r->pc);
     }
 
 
@@ -75,19 +76,19 @@ memcpy(&cpu_state_buf, ref_r, DIFFTEST_REG_SIZE);
         succ = false;
         printf(L_RED "npc: pc = 0x" FMT_WORD_HEX_WIDTH "\tnemu: pc = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.pc,ref_r->pc);
     }
-    if(ref_r->csr.mepc != npc_cpu.csr.mepc){
+    if(cpu_state_buf_ptr->csr.mepc != ref_r->csr.mepc && npc_cpu.csr.mepc != ref_r->csr.mepc){
       printf(L_RED "npc: mepc   = 0x" FMT_WORD_HEX_WIDTH "\tnemu: mepc   = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.csr.mepc,ref_r->csr.mepc);
       succ = false;
     }
-    if(ref_r->csr.mcause != npc_cpu.csr.mcause){
+    if(cpu_state_buf_ptr->csr.mcause != ref_r->csr.mcause && npc_cpu.csr.mcause != ref_r->csr.mcause){
       printf(L_RED "npc: mcause = 0x" FMT_WORD_HEX_WIDTH "\tnemu: mcause = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.csr.mcause,ref_r->csr.mcause);
       succ = false;
     }
-    if(ref_r->csr.mstatus != npc_cpu.csr.mstatus){
+    if(cpu_state_buf_ptr->csr.mstatus != ref_r->csr.mstatus && npc_cpu.csr.mstatus != ref_r->csr.mstatus){
       printf(L_RED "npc: mstatus= 0x" FMT_WORD_HEX_WIDTH "\tnemu: mstatus= 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.csr.mstatus,ref_r->csr.mstatus);
       succ = false;
     }
-    if(ref_r->csr.mtvec != npc_cpu.csr.mtvec){
+    if(cpu_state_buf_ptr->csr.mtvec != ref_r->csr.mtvec && npc_cpu.csr.mtvec != ref_r->csr.mtvec){
       printf(L_RED "npc: mtvec  = 0x" FMT_WORD_HEX_WIDTH "\tnemu: mtvec  = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.csr.mtvec,ref_r->csr.mtvec);
       succ = false;
     }
@@ -99,6 +100,7 @@ memcpy(&cpu_state_buf, ref_r, DIFFTEST_REG_SIZE);
       // printf("IF GPR DIFF TEST ERROR: DO NOT SEE CURRENT INSTRATION, SEE PREVIOUS ONE!\n");
   }
   first = false;
+  memcpy(&cpu_state_buf, &npc_cpu, DIFFTEST_REG_SIZE);
   // ref_pc_last = ref_r->pc;
  // printf("npc:nemu:ref_r->pc==0x%x\n",ref_r->pc);
   return succ;
