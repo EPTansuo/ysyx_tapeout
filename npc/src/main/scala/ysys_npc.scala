@@ -48,9 +48,12 @@ class ysyx_npc(config: NPCConfig) extends Module {
     val wbu = Module(new WBU(config))
 
     // Control Hazard
+    // Control Hazard
     val controlHazard = Module(new ControlHazard(config))
     controlHazard.io.ifu_pc <> ifu.io.pc
     controlHazard.io.idu_pc <> idu.io.pc
+    controlHazard.io.exu_npc.valid := exu.io.pc_sig.valid 
+    controlHazard.io.exu_npc.bits := exu.io.pc_sig.bits.npc
     controlHazard.io.exu_npc.valid := exu.io.pc_sig.valid 
     controlHazard.io.exu_npc.bits := exu.io.pc_sig.bits.npc
     ifu.io.flush := controlHazard.io.flush
@@ -59,7 +62,11 @@ class ysyx_npc(config: NPCConfig) extends Module {
     //ifu.io.exu_npc := exu.io.npc.bits 
     ifu.io.exu_pc_sig <> exu.io.pc_sig
     ifu.io.idu_pc_sig := idu.io.out.bits.pc
+    //ifu.io.exu_npc := exu.io.npc.bits 
+    ifu.io.exu_pc_sig <> exu.io.pc_sig
+    ifu.io.idu_pc_sig := idu.io.out.bits.pc
 
+    // pipeline
     // pipeline
     val stage_arch = "pipeline"
     ModuleConnect(wbu.io.out, ifu.io.in, ifu.io.out, false.B, stage_arch)

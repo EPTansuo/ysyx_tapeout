@@ -1,3 +1,4 @@
+#include "macro.h"
 #include <cpu/cpu.h>
 #include <utils/utils.h>
 #include <color.h>
@@ -18,11 +19,13 @@ paddr_t host_to_guest(uint8_t *haddr);
 void print_memread(paddr_t addr,int len);
 void print_memwrite_wmask(paddr_t addr, word_t data, char wmask);
 
-#define DONT_USE_REG0
-
 typedef VlUnpacked<word_t, MUXDEF(CONFIG_RVE,
-      15,
-      MUXDEF(DONT_USE_REG0, 31, 32))> reg_t;
+#ifdef DONT_USE_REG0
+15
+#else 
+16
+#endif 
+,MUXDEF(DONT_USE_REG0, 31, 32))> reg_t;
 
 
 typedef  struct{
