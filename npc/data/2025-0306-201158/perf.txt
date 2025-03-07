@@ -36,6 +36,7 @@
         Predict Succ CNT:     34,263,434         #    65.4835 % of branch
 
  Area Report: 
+Chip area for module '\ysyx_23060246': 32570.636000
 
  Timing Report(Max Freq):  
 +-----------+-------------+------------+------------+---------------+-------+--------+-----------+
