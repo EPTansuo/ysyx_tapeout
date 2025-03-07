@@ -20,10 +20,6 @@ module sdramblock(
           end
     end
     always @(posedge clock) begin
-`ifdef VERILATOR
            rdata <= sdram_read({6'b0,bank}, {19'b0,row}, {23'b0,col}, {6'b0,block_num})[15:0];
-`else
-           rdata <= sdram_read({6'b0,bank}, {19'b0,row}, {23'b0,col}, {6'b0,block_num});
-`endif 
     end
 endmodule

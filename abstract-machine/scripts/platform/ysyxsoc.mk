@@ -13,14 +13,8 @@ AM_SRCS := riscv/ysyxsoc/start.S \
 
 
 CFLAGS    += -fdata-sections -ffunction-sections
-
-ifeq ($(NAME), rtthread)
-LDFLAGS += -T $(AM_HOME)/scripts/linker_ysyxsoc_rtt.ld
-else 
-LDFLAGS += -T $(AM_HOME)/scripts/linker_ysyxsoc_fast.ld	
-endif 
-
-LDFLAGS += --defsym=_pmem_start=0x80000000 --defsym=_entry_offset=0x0
+LDFLAGS   += -T $(AM_HOME)/scripts/linker_ysyxsoc_fast.ld  \
+						 --defsym=_pmem_start=0x80000000 --defsym=_entry_offset=0x0
 
 LDFLAGS   += --gc-sections -e _start #--print-map
 CFLAGS += -DMAINARGS=\"$(mainargs)\"

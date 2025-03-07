@@ -20,7 +20,6 @@ class ControlOut(xlen: Int) extends Bundle{
   val br_sel =  Output(UInt(3.W))
   val csr_cmd = Output(UInt(3.W))
   val inst_valid = Output(UInt(1.W))
-  val inst_type = Output(UInt(4.W))
 }
 
 class ControlIn(xlen: Int) extends Bundle{
@@ -46,7 +45,7 @@ class Control(config: NPCConfig) extends Module{
   io.out.br_sel := ctrlsig(9)
   io.out.csr_cmd := ctrlsig(10)
   io.out.inst_valid := ctrlsig(11)
-  io.out.inst_type := ctrlsig(12)
+
 
 }
 

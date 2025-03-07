@@ -14,7 +14,6 @@
 ***************************************************************************************/
 
 #include <isa.h>
-#include <fmt-def.h>
 
 word_t isa_raise_intr(word_t NO, vaddr_t epc) {
   /* TODO: Trigger an interrupt/exception with ``NO''.
@@ -45,11 +44,6 @@ cpu.csr.mstatus = (cpu.csr.mstatus & ~MSTATUS_MPIE) | (mie << 7); // 设置 MPIE
 
 cpu.csr.mstatus = (cpu.csr.mstatus & ~MSTATUS_MPP) | (0x3 << 11); // 设置 MPP = 11 (Machine Mode)
 
-#ifdef CONFIG_ETRACE 
-  printf("ETRACE: pc: 0x"FMT_WORD_HEX", mepc = " FMT_WORD_HEX ", mstatus = " FMT_WORD_HEX 
-  ", mtvec = " FMT_WORD_HEX ", mcause = " FMT_WORD_HEX "\n",
-  cpu.pc, cpu.csr.mepc, cpu.csr.mstatus, cpu.csr.mtvec, cpu.csr.mcause);
-#endif 
 
   return cpu.csr.mtvec;
 }

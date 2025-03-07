@@ -13,92 +13,39 @@ class IDU(config: NPCConfig) extends Module {
         val in = Flipped(Decoupled(new SigIO_IFU_IDU(config.XLEN)))
         //val out = Output(new ControlOut(xlen))
         val out = (Decoupled(new SigIO_IDU_EXU(config.XLEN)))
-        val flush = Input(Bool())
-        val pc = Valid(UInt(config.XLEN.W))
-        val inst_type = Output(UInt(4.W))
-        val stall = Input(Bool())
-
-        val reg_read1 = Flipped(new RegfileReadIO(config.XLEN))
-        val reg_read2 = Flipped(new RegfileReadIO(config.XLEN))
-
-        // see 18-447 Lecture 8: Data Hazard and Resolution: Forwarding Paths (V1) Page 20
-        val forward_A = Input(UInt(2.W))
-        val forward_B = Input(UInt(2.W))
-        val forward_exu = Input(UInt(config.XLEN.W))
-        val forward_lsu = Input(UInt(config.XLEN.W))
-        val forward_wbu = Input(UInt(config.XLEN.W))
     })
 
-    
+
     val control = Module(new Control(config))
-    val inst = io.in.bits.inst 
-    val pc = io.in.bits.pc
-    val stall = io.stall
-    // val inst = RegInit(0.U(32.W))
-    // val pc = RegInit(0.U(32.W))
+    //val inst = io.in.bits.inst 
+    //val pc = io.in.bits.pc
+    val inst = RegInit(0.U(32.W))
+    val pc = RegInit(0.U(32.W))
 
     val s_idle :: s_wait_ready :: Nil = Enum(2)
 
     val state = RegInit(s_idle)         
     state := MuxLookup(state, s_idle)(Seq(
-        s_idle -> Mux(io.in.valid && ~stall, s_wait_ready, s_idle),
-        s_wait_ready -> Mux(io.out.ready && io.out.valid, s_idle, s_wait_ready)
+        s_idle -> Mux(io.in.valid, s_wait_ready, s_idle),
+        s_wait_ready -> Mux(io.out.ready, s_idle, s_wait_ready)
     ))
 
 
-    io.out.valid := ((state === s_wait_ready) && (~stall))
-    io.in.ready := state === s_idle && ~stall 
+    io.out.valid := state === s_wait_ready
+    io.in.ready := state === s_idle
 
-    when(io.flush){
-        state := s_idle
+    when( io.in.valid && io.in.ready){
+        inst := io.in.bits.inst
+        pc := io.in.bits.pc
     }
-
-    io.pc.bits := pc
-    io.pc.valid := state =/= s_idle  && ~stall
-    // when( io.in.valid && io.in.ready){
-    //     inst := io.in.bits.inst
-    //     pc := io.in.bits.pc
-    // }
-
-
 
     control.io.in.inst := inst 
     control.io.in.pc := pc 
 
     io.out.bits.inst := inst
     io.out.bits.pc := pc
-
-
     io.out.bits.exu.A_sel := control.io.out.A_sel
     io.out.bits.exu.B_sel := control.io.out.B_sel
-    val rs1_addr = inst(19, 15)
-    val rs2_addr = inst(24, 20)
-    io.reg_read1.addr := Mux(control.io.out.csr_cmd === csr_cmd.CSR_P, 15.U,rs1_addr)
-    io.reg_read2.addr := rs2_addr
-
-    val forward_A_reg = RegInit(0.U(config.XLEN.W))
-
-    when(state === s_idle){
-        forward_A_reg := MuxLookup(io.forward_A, io.reg_read1.data)( Seq(
-            forward_sel.FWD_XX  -> io.reg_read1.data,
-            forward_sel.FWD_EXU -> io.forward_exu,
-            forward_sel.FWD_LSU -> io.forward_lsu,
-            forward_sel.FWD_WBU -> io.forward_wbu
-        ))
-    }
-    io.out.bits.exu.src1 := forward_A_reg
-
-    val forward_B_reg = RegInit(0.U(config.XLEN.W))
-    when(state === s_idle){
-    forward_B_reg := MuxLookup(io.forward_B, io.reg_read2.data)( Seq(
-            forward_sel.FWD_XX  -> io.reg_read2.data,
-            forward_sel.FWD_EXU -> io.forward_exu,
-            forward_sel.FWD_LSU -> io.forward_lsu,
-            forward_sel.FWD_WBU -> io.forward_wbu
-        ))
-    }
-    io.out.bits.exu.src2 := forward_B_reg
-
     io.out.bits.exu.alu_op := control.io.out.alu_op
     io.out.bits.exu.imm_sel := control.io.out.imm_sel
     io.out.bits.lsu.ld_sel := control.io.out.ld_sel
@@ -107,18 +54,10 @@ class IDU(config: NPCConfig) extends Module {
     io.out.bits.wbu.csr_cmd := control.io.out.csr_cmd
     io.out.bits.exu.br_sel := control.io.out.br_sel
     io.out.bits.exu.pc_sel := control.io.out.pc_sel
-    io.out.bits.wbu.inst_type := control.io.out.inst_type
-
-    io.inst_type := control.io.out.inst_type
 
       //Ebreak
     val ebreak_ = Module(new Ebreak)
-    val isebreak = RegInit(false.B)
-    when(inst === insts.ebreak){
-        isebreak := true.B
-    }.otherwise{
-        isebreak := false.B
-    }
+    val isebreak = inst === insts.ebreak
     ebreak_.io.isebreak := isebreak
     //invaild instruction
     val instInvalid = Module(new InstInvalid)
@@ -138,12 +77,6 @@ class IDU(config: NPCConfig) extends Module {
         val cycle_csr_cnt = RegInit(0.U(64.W))
         val cycle_jump_cnt = RegInit(0.U(64.W))
         val sig = control.io.out
-
-        val stall_cnt = RegInit(0.U(64.W))
-        
-        when(io.stall){
-            stall_cnt := stall_cnt + 1.U
-        }
         import pc_sel._
         import br_sel._
         import ld_sel._
@@ -184,7 +117,6 @@ class IDU(config: NPCConfig) extends Module {
         dontTouch(cycle_ldst_cnt)
         dontTouch(cycle_csr_cnt)
         dontTouch(cycle_jump_cnt)
-        dontTouch(stall_cnt)
     }
 
 }
