@@ -72,6 +72,7 @@ val map = Array(
 	ecall   ->  List(PC_CSR, A_RS1, B_IMM, ALU_ADD   , IMM_I, WB_CSR, LD_XX , ST_XX, MASK_XX, BR_XX , CSR_P , INST_VALID  , N_TYPE),
 	mret    ->  List(PC_CSR, A_RS1, B_IMM, ALU_ADD   , IMM_I, WB_CSR, LD_XX , ST_XX, MASK_XX, BR_XX , CSR_P , INST_VALID  , N_TYPE),
 	fencei  ->  List(PC_4  , A_RS1, B_IMM, ALU_ADD   , IMM_I, WB_XX , LD_XX , ST_XX, MASK_XX, BR_XX , CSR_XX, INST_VALID  , I_TYPE),
+	ebreak  ->  List(PC_4  , A_RS1, B_IMM, ALU_ADD   , IMM_I, WB_XX , LD_XX , ST_XX, MASK_XX, BR_XX , CSR_XX, INST_INVALID, R_TYPE),
 )
 val 
 	default  =  List(PC_4  , A_RS1, B_IMM, ALU_ADD   , IMM_I, WB_XX , LD_XX , ST_XX, MASK_XX, BR_XX , CSR_XX, INST_INVALID, R_TYPE)
