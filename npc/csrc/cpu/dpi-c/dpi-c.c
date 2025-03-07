@@ -18,13 +18,19 @@ paddr_t host_to_guest(uint8_t *haddr);
 void print_memread(paddr_t addr,int len);
 void print_memwrite_wmask(paddr_t addr, word_t data, char wmask);
 
+#define DONT_USE_REG0
+
+typedef VlUnpacked<word_t, MUXDEF(CONFIG_RVE,
+      15,
+      MUXDEF(DONT_USE_REG0, 31, 32))> reg_t;
+
 
 typedef  struct{
   paddr_t addr;
   char wmask;
   word_t data;
   word_t pc;
-  VlUnpacked<word_t, MUXDEF(CONFIG_RVE,16,32)> regs;
+  reg_t regs;
 }memwrite_info;
 
 
@@ -105,10 +111,9 @@ extern "C" int pmem_read(int raddr){
 
 
 
-
 // return true is equ
-bool regs_equ(const VlUnpacked<word_t, MUXDEF(CONFIG_RVE,16,32)>&reg1, const VlUnpacked<word_t, MUXDEF(CONFIG_RVE,16,32)>&reg2){
-  for(int i = 0; i < MUXDEF(CONFIG_RVE,16,32); i++){
+bool regs_equ(const reg_t& reg1, const reg_t& reg2){
+  for(int i = 0; i < MUXDEF(CONFIG_RVE,16,32) - MUXDEF(DONT_USE_REG0, 1, 0); i++){
     if(reg1[i] != reg2[i])
       return false;
   }
