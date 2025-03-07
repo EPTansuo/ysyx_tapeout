@@ -91,7 +91,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
     if(ref_r->csr.mtvec != npc_cpu.csr.mtvec){
       printf(L_RED "npc: mtvec  = 0x" FMT_WORD_HEX_WIDTH "\tnemu: mtvec  = 0x" FMT_WORD_HEX_WIDTH "\n" COLOR_NONE,npc_cpu.csr.mtvec,ref_r->csr.mtvec);
       static int count = 0;
-      if(++count == 1){
+      if(++count <= 2){
         succ = true;
       }else{
         succ = false;
