@@ -59,14 +59,11 @@ class EXU(config: NPCConfig) extends Module{
     io.rd_addr := Mux(state === s_idle && RegNext(state) === s_idle, 0.U, rd_addr)
 
     
-    // io.reg_read1.addr := Mux(sig_csr_cmd === csr_cmd.CSR_P, 15.U,rs1_addr)
-    // io.reg_read2.addr := rs2_addr
 
     val src1_reg = RegInit(0.U(xlen.W))
     val src2_reg = RegInit(0.U(xlen.W))
 
-    // val src1 = io.reg_read1.data
-    // val src2 = io.reg_read2.data
+    
     val src1 = ctrlsig.src1
     val src2 = ctrlsig.src2
     src1_reg := src1
