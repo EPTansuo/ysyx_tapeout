@@ -6,7 +6,7 @@
 #include <fmt-def.h>
 #include <memory/host.h>
 #include <time.h>
-#include <iostream>
+// #include <iostream>
 
 #include <verilator.h>
 
