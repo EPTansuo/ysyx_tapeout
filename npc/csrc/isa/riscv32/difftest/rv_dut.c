@@ -100,7 +100,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
       // printf("IF GPR DIFF TEST ERROR: DO NOT SEE CURRENT INSTRATION, SEE PREVIOUS ONE!\n");
   }
   first = false;
-  memcpy(&cpu_state_buf, ref_r, DIFFTEST_REG_SIZE);
+  memcpy(&cpu_state_buf, &npc_cpu, DIFFTEST_REG_SIZE);
   // ref_pc_last = ref_r->pc;
  // printf("npc:nemu:ref_r->pc==0x%x\n",ref_r->pc);
   return succ;
