@@ -48,12 +48,9 @@ class ysyx_npc(config: NPCConfig) extends Module {
     val wbu = Module(new WBU(config))
 
     // Control Hazard
-    // Control Hazard
     val controlHazard = Module(new ControlHazard(config))
     controlHazard.io.ifu_pc <> ifu.io.pc
     controlHazard.io.idu_pc <> idu.io.pc
-    controlHazard.io.exu_npc.valid := exu.io.pc_sig.valid 
-    controlHazard.io.exu_npc.bits := exu.io.pc_sig.bits.npc
     controlHazard.io.exu_npc.valid := exu.io.pc_sig.valid 
     controlHazard.io.exu_npc.bits := exu.io.pc_sig.bits.npc
     ifu.io.flush := controlHazard.io.flush
@@ -62,11 +59,7 @@ class ysyx_npc(config: NPCConfig) extends Module {
     //ifu.io.exu_npc := exu.io.npc.bits 
     ifu.io.exu_pc_sig <> exu.io.pc_sig
     ifu.io.idu_pc_sig := idu.io.out.bits.pc
-    //ifu.io.exu_npc := exu.io.npc.bits 
-    ifu.io.exu_pc_sig <> exu.io.pc_sig
-    ifu.io.idu_pc_sig := idu.io.out.bits.pc
 
-    // pipeline
     // pipeline
     val stage_arch = "pipeline"
     ModuleConnect(wbu.io.out, ifu.io.in, ifu.io.out, false.B, stage_arch)
@@ -76,13 +69,7 @@ class ysyx_npc(config: NPCConfig) extends Module {
     ModuleConnect(lsu.io.out, wbu.io.in, wbu.io.out, false.B, stage_arch)
 
 
-        // Regfile
-    val regfile = Module(new Regfile(config))
-    // exu.io.reg_read1 <> regfile.io.read1
-    // exu.io.reg_read2 <> regfile.io.read2
-    idu.io.reg_read1 <> regfile.io.read1
-    idu.io.reg_read2 <> regfile.io.read2
-    wbu.io.reg_write <> regfile.io.write
+
 
     
     // Data Hazard
@@ -121,11 +108,8 @@ class ysyx_npc(config: NPCConfig) extends Module {
 
     }
     
-    //val IDU_rs1 = idu.io.in.bits.inst(19, 15)
-    //val IDU_rs2 = idu.io.in.bits.inst(24, 20)
-    val IDU_rs1 = idu.io.reg_read1.addr
-    val IDU_rs2 = idu.io.reg_read2.addr
-
+    val IDU_rs1 = idu.io.in.bits.inst(19, 15)
+    val IDU_rs2 = idu.io.in.bits.inst(24, 20)
     val IDU_inst_type = idu.io.out.bits.wbu.inst_type
     val EXU_rd = exu.io.rd_addr
     val LSU_rd = lsu.io.rd_addr
@@ -181,7 +165,13 @@ class ysyx_npc(config: NPCConfig) extends Module {
     idu.io.forward_wbu := wbu.io.forward_wbu
 
 
-
+    // Regfile
+    val regfile = Module(new Regfile(config))
+    // exu.io.reg_read1 <> regfile.io.read1
+    // exu.io.reg_read2 <> regfile.io.read2
+    idu.io.reg_read1 <> regfile.io.read1
+    idu.io.reg_read2 <> regfile.io.read2
+    wbu.io.reg_write <> regfile.io.write
 
 
     // ICache

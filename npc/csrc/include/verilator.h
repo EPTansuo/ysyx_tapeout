@@ -20,10 +20,6 @@ _(_Dpi) IFDEF(CONFIG_USE_SOC, _(ysyxSoCFull)) IFNDEF(CONFIG_USE_SOC, _(ysyxSoCAS
 
 */
 
-#define DONT_USE_REG0
-
-
-
 #ifdef CONFIG_USE_SOC
 #include "VysyxSoCFull.h"
 #include "VysyxSoCFull__Dpi.h"
@@ -31,18 +27,10 @@ _(_Dpi) IFDEF(CONFIG_USE_SOC, _(ysyxSoCFull)) IFNDEF(CONFIG_USE_SOC, _(ysyxSoCAS
 #include "VysyxSoCFull_EXU.h"
 #include "VysyxSoCFull_Regfile.h"
 #ifdef CONFIG_RVE
-#ifdef DONT_USE_REG0
-#include "VysyxSoCFull_regs_15x32.h"
-#else 
 #include "VysyxSoCFull_regs_16x32.h"
-#endif // !DONT_USE_REG0
-#else 
-#ifdef DONT_USE_REG0
-#include "VysyxSoCFull_regs_31x32.h"
-#else 
+#else  
 #include "VysyxSoCFull_regs_32x32.h"
-#endif // !DONT_USE_REG0
-#endif // !CONFIG_RVE
+#endif 
 #include "VysyxSoCFull_ysyx_23060246.h"
 #include "VysyxSoCFull_ysyx_npc.h"
 #include "VysyxSoCFull_ysyxSoCFull.h"
@@ -62,18 +50,10 @@ _(_Dpi) IFDEF(CONFIG_USE_SOC, _(ysyxSoCFull)) IFNDEF(CONFIG_USE_SOC, _(ysyxSoCAS
 #include "Vysyx_23060246_EXU.h"
 #include "Vysyx_23060246_Regfile.h"
 #ifdef CONFIG_RVE
-#ifdef DONT_USE_REG0
-#include "Vysyx_23060246_regs_15x32.h"
-#else 
 #include "Vysyx_23060246_regs_16x32.h"
-#endif  // ! DONT_USE_REG0
 #else 
-#ifdef DONT_USE_REG0
-#include "Vysyx_23060246_regs_31x32.h"
-#else
 #include "Vysyx_23060246_regs_32x32.h"
-#endif // ! DONT_USE_REG0
-#endif // ! CONFIG_RVE
+#endif 
 #include "Vysyx_23060246_ysyx_23060246.h"
 #include "Vysyx_23060246_ysyx_npc.h"
 #include "Vysyx_23060246_WBU.h"

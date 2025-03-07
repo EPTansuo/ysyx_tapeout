@@ -81,9 +81,7 @@ void init_mem() {
 #endif
 #ifndef CONFIG_TARGET_SHARE
   IFDEF(CONFIG_MEM_RANDOM, memset(pmem, rand(), CONFIG_MSIZE));
-#else 
-  IFDEF(CONFIG_MEM_RANDOM, memset(pmem, 0, CONFIG_MSIZE));
-#endif 
+#endif
   Log("physical memory area [" FMT_PADDR ", " FMT_PADDR "]", PMEM_LEFT, PMEM_RIGHT);
 }
 

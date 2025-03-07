@@ -6,7 +6,7 @@
 
 
 extern bool verbose;
-word_t reg0;
+
 
 const char *regs[] = {
     "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
