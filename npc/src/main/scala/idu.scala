@@ -111,18 +111,18 @@ class IDU(config: NPCConfig) extends Module {
 
     io.inst_type := control.io.out.inst_type
 
-      //Ebreak
-    val ebreak_ = Module(new Ebreak)
-    val isebreak = RegInit(false.B)
-    when(inst === insts.ebreak){
-        isebreak := true.B
-    }.otherwise{
-        isebreak := false.B
-    }
-    ebreak_.io.isebreak := isebreak
+    //Ebreak, Move to wb stage
+    // val ebreak_ = Module(new Ebreak)
+    // val isebreak = RegInit(false.B)
+    // when(inst === insts.ebreak){
+    //     isebreak := true.B
+    // }.otherwise{
+    //     isebreak := false.B
+    // }
+    // ebreak_.io.isebreak := isebreak
     //invaild instruction
     val instInvalid = Module(new InstInvalid)
-    instInvalid.io.isvalid := Mux(io.out.valid, control.io.out.inst_valid === valid.INST_VALID || isebreak, true.B)
+    instInvalid.io.isvalid := Mux(io.out.valid, control.io.out.inst_valid === valid.INST_VALID, true.B)
 
 
 
