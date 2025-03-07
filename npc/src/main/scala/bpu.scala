@@ -16,10 +16,11 @@ class BPU(config:NPCConfig) extends Module{
     val entrySize = params.nEntries
     val tagWidth = log2Ceil(entrySize)
     val pcWidth = params.pcWidth
+    val npcWidth = params.npcWidth
 
     val btb = new Bundle {
         val pc = RegInit(VecInit(Seq.fill(entrySize)(0.U(pcWidth.W)))) // use the lowest 8-bit
-        val npc = RegInit(VecInit(Seq.fill(entrySize)(0.U(config.XLEN.W))))
+        val npc = RegInit(VecInit(Seq.fill(entrySize)(0.U(npcWidth.W))))
     }
 
     val tag = RegInit(0.U(tagWidth.W))
@@ -30,7 +31,7 @@ class BPU(config:NPCConfig) extends Module{
     npc := io.pc + 4.U
     for (i <- 0 until entrySize) {
         when(btb.pc(i) === io.pc(pcWidth-1,0)) {
-            npc := btb.npc(i)
+            npc := Cat(io.pc(config.XLEN-1, npcWidth), btb.npc(i))
             tag := (i).U
         }
     }

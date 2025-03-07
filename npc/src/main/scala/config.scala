@@ -69,14 +69,14 @@ object ICacheParameters{
     )
 }
 
-case class BPUParameters(useDynamic: Boolean, nEntries: Int, pcWidth: Int) {
+case class BPUParameters(useDynamic: Boolean, nEntries: Int, pcWidth: Int, npcWidth: Int) {
   override def toString: String = 
-    if(useDynamic) s"Dynamic Branch Prediction, Number of Entries: $nEntries, PC Width: $pcWidth bits"
+    if(useDynamic) s"Dynamic Branch Prediction, Number of Entries: $nEntries, PC Width: $pcWidth bits, NPC Width: $npcWidth bits"
     else s"Static Branch Prediction"
 }
 
 object BPUParameters {
-  def apply(): BPUParameters = BPUParameters(useDynamic = false, nEntries = 2, pcWidth = 8)
+  def apply(): BPUParameters = BPUParameters(useDynamic = false, nEntries = 2, pcWidth = 8, npcWidth = 8)
 }
 
 object NPCConfig {
