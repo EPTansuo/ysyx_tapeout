@@ -14,6 +14,7 @@ class IFU(config: NPCConfig) extends Module {
     val out = (Decoupled(new SigIO_IFU_IDU(config.XLEN)))
 
     val exu_pc_sig = Flipped(Valid(new SigIO_EXU_IFU(config.XLEN)))
+    val idu_pc_sig = Input(UInt(config.XLEN.W))
 
     val fencei = Output(Bool())
 
@@ -63,9 +64,11 @@ class IFU(config: NPCConfig) extends Module {
     if(bpu_params.useDynamic){ // USE BPU
       val bpu = Module(new BPU(config))
       bpu.io.pc := pc 
-      bpu.io.exu_npc := io.exu_pc_sig.bits.npc
+      bpu.io.exu_npc.bits := io.exu_pc_sig.bits.npc
+      bpu.io.exu_npc.valid := io.exu_pc_sig.valid
       bpu.io.exu_pc  := io.exu_pc_sig.bits.pc
       bpu.io.update := io.flush
+      bpu.io.idu_pc := io.idu_pc_sig
       when(io.out.valid && io.out.ready && ~flush) {
         pc := bpu.io.npc
       }
@@ -88,22 +91,10 @@ class IFU(config: NPCConfig) extends Module {
   }
   
 
-  // when(state === s_idle && io.in.valid && io.in.ready){
-  //   pc := io.in.bits.npc
-  // }
-
-
-
-
 
   when(flush){
     pc := io.exu_pc_sig.bits.npc
-  }//.otherwise{
-  //   when(state === s_idle){
-  //     pc := bpu.io.npc
-  //   }
-  // }
-
+  }
 
   io.pc.valid := true.B 
   io.pc.bits := pc 
