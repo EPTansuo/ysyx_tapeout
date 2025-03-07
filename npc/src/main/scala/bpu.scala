@@ -33,7 +33,7 @@ class BPU(config:NPCConfig) extends Module{
 
     val branch_taken = io.exu_npc =/= io.exu_pc + 4.U
 
-    // npc := io.pc + 4.U
+    npc := io.pc + 4.U
     for (i <- 0 until entrySize) {
         when(btb.pc(i) === io.pc(pcWidth-1,0)) {
             when(btb.counter(i)(cntWidth-1)){
