@@ -67,7 +67,7 @@ class BPU(config:NPCConfig) extends Module{
 
     val branch_taken = io.exu_npc.bits === io.idu_pc 
     dontTouch(branch_taken)
-    val isBranch = io.exu_pc =/= io.exu_npc.bits + 4.U
+    val isBranch = (io.exu_pc + 4.U) =/= io.exu_npc.bits 
     dontTouch(isBranch)
     when(io.exu_npc.valid && isBranch){
         when(branch_taken) {
