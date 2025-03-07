@@ -121,10 +121,10 @@ class ysyx_npc(config: NPCConfig) extends Module {
 
     }
     
-    //val IDU_rs1 = idu.io.in.bits.inst(19, 15)
-    //val IDU_rs2 = idu.io.in.bits.inst(24, 20)
-    val IDU_rs1 = idu.io.reg_read1.addr
-    val IDU_rs2 = idu.io.reg_read2.addr
+    val IDU_rs1 = idu.io.in.bits.inst(19, 15)
+    val IDU_rs2 = idu.io.in.bits.inst(24, 20)
+    // val IDU_rs1 = idu.io.reg_read1.addr
+    // val IDU_rs2 = idu.io.reg_read2.addr
 
     val IDU_inst_type = idu.io.out.bits.wbu.inst_type
     val EXU_rd = exu.io.rd_addr

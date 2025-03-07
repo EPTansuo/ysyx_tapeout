@@ -5,20 +5,6 @@
 #include <verilated.h>
 #include <common.h>
 
-/*
-#define MODULES(_) \
-_(ysyx_npc) _(ysyx_23060246) _(WBU) _(LSU) _(IDU) _(IFU) \
-_(ICache) _(CPU) _(Regfile) _(EXU) _(CSR) MUXDEF(CONFIG_RVE, _(regs_16x32), _(regs32x32)) \
-_(_Dpi) IFDEF(CONFIG_USE_SOC, _(ysyxSoCFull)) IFNDEF(CONFIG_USE_SOC, _(ysyxSoCASIC)) 
-
-
-#ifdef CONFIG_USE_SOC
-    #define INCLUDE_MODULE(module) #include "VysyxSoCFull_" #module ".h"
-#else
-    #define INCLUDE_MODULE(module) #include "Vysyx_23060246_" #module ".h"
-#endif
-
-*/
 
 #define DONT_USE_REG0
 
