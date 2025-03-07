@@ -16,7 +16,7 @@ LDFLAGS   += -T $(AM_HOME)/scripts/linker.ld \
 LDFLAGS   += --gc-sections -e _start
 CFLAGS += -DMAINARGS=\"$(mainargs)\"
 
-NPCFLAGS =--diff=$(NEMU_HOME)/build/riscv32-nemu-interpreter-so 
+NPCFLAGS =--diff=$(NPC_HOME)/difftest/riscv32e-nemu-npc-so
 
 BATCH ?= 0
 ifeq ($(BATCH), 1)

@@ -27,8 +27,15 @@ class Regfile(config: NPCConfig) extends Module{
 
     var regs = Mem(config.REG_NUM, UInt(config.XLEN.W))
 
-    io.read1.data := regs(io.read1.addr)
-    io.read2.data := regs(io.read2.addr)
+    // read data with internal forwarding 
+    io.read1.data := Mux(io.write.addr === io.read1.addr && io.write.addr =/= 0.U && io.write.en, 
+                            io.write.data, regs(io.read1.addr))
+    io.read2.data := Mux(io.write.addr === io.read2.addr && io.write.addr =/= 0.U && io.write.en, 
+                            io.write.data, regs(io.read2.addr))
+    
+
+    // io.read1.data := regs(io.read1.addr)
+    // io.read2.data := regs(io.read2.addr)
 
     when(io.write.en) {
         regs(io.write.addr) := Mux(io.write.addr === 0.U, 0.U, io.write.data)
