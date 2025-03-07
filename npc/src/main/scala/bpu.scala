@@ -9,6 +9,7 @@ class BPU(config:NPCConfig) extends Module{
         val update = Input(Bool())
         val exu_npc = Flipped(Valid(UInt(config.XLEN.W)))
         val exu_pc = Input(UInt(config.XLEN.W))
+        val idu_pc = Input(UInt(config.XLEN.W))
         val npc = Output(UInt(config.XLEN.W))
 
     })
@@ -31,8 +32,7 @@ class BPU(config:NPCConfig) extends Module{
 
     val npc = Wire(UInt(config.XLEN.W))
 
-    val branch_taken = io.exu_npc.bits === io.pc
-    dontTouch(branch_taken)
+
 
     npc := io.pc + 4.U
     for (i <- 0 until entrySize) {
@@ -46,15 +46,29 @@ class BPU(config:NPCConfig) extends Module{
         }
     }
 
-    val replace_addr = tag + 1.U
-
+    val tag_plus_1 = tag + 1.U
+    val replace_idx = WireDefault(entrySize.U)
+    for (i <- 0 until entrySize) {
+        when(btb.pc(i) === io.pc(pcWidth-1,0)) {
+            replace_idx := i.U
+        }
+    }
     when(io.update) {
-        btb.pc(replace_addr) := io.exu_pc
-        btb.npc(replace_addr) := io.exu_npc.bits
-        tag := replace_addr
+        when(replace_idx === entrySize.U) {
+            btb.pc(tag_plus_1) := io.exu_pc
+            btb.npc(tag_plus_1) := io.exu_npc.bits
+            tag := tag_plus_1
+        }.otherwise {
+            btb.pc(replace_idx) := io.exu_pc
+            btb.npc(replace_idx) := io.exu_npc.bits
+            tag := replace_idx
+        }
     }
 
-    when(io.exu_npc.valid){
+    val branch_taken = io.exu_npc.bits === io.idu_pc 
+    dontTouch(branch_taken)
+
+    when(io.exu_npc.valid && io.exu_npc.bits =/= io.exu_pc){
         when(branch_taken) {
             btb.counter(tag) := Mux(btb.counter(tag) === 3.U, 3.U, 
                                             btb.counter(tag) + 1.U)

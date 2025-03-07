@@ -58,7 +58,7 @@ class ysyx_npc(config: NPCConfig) extends Module {
 
     //ifu.io.exu_npc := exu.io.npc.bits 
     ifu.io.exu_pc_sig <> exu.io.pc_sig
-
+    ifu.io.idu_pc_sig := idu.io.out.bits.pc
 
     // pipeline
     val stage_arch = "pipeline"
