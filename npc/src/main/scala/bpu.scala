@@ -47,19 +47,35 @@ class BPU(config:NPCConfig) extends Module{
 
     val replace_addr = tag + 1.U
 
-    when(io.update) {
-        btb.pc(replace_addr) := io.exu_pc
-        btb.npc(replace_addr) := io.exu_npc
-        tag := replace_addr
+    // when(io.update) {
+    //     btb.pc(replace_addr) := io.exu_pc
+    //     btb.npc(replace_addr) := io.exu_npc
+    //     tag := replace_addr
+    // }
 
-        when(branch_taken) {
-            btb.counter(replace_addr) := Mux(btb.counter(replace_addr) === 3.U, 3.U, 
-                                            btb.counter(replace_addr) + 1.U)
-        }.otherwise {
-            btb.counter(replace_addr) := Mux(btb.counter(replace_addr) === 0.U, 0.U, 
-                                            btb.counter(replace_addr) - 1.U)
+
+    val update_idx = WireDefault(entrySize.U) 
+    for (i <- 0 until entrySize) {
+        when(btb.pc(i) === io.exu_pc(pcWidth-1, 0)) {
+            update_idx := i.U 
         }
     }
+
+    when(io.update) {
+        when(update_idx < entrySize.U) {
+            when(branch_taken) {
+                btb.counter(update_idx) := Mux(btb.counter(update_idx) === 3.U, 3.U, btb.counter(update_idx) + 1.U)
+            }.otherwise {
+                btb.counter(update_idx) := Mux(btb.counter(update_idx) === 0.U, 0.U, btb.counter(update_idx) - 1.U)
+            }
+        }.otherwise {
+            btb.pc(replace_addr)    := io.exu_pc(pcWidth-1, 0)
+            btb.npc(replace_addr)   := io.exu_npc(npcWidth-1, 0)
+            btb.counter(replace_addr) := Mux(branch_taken, 3.U, 1.U) // 强采取或弱不采取
+            tag := replace_addr
+        }
+    }
+
 
     io.npc := npc
 }
