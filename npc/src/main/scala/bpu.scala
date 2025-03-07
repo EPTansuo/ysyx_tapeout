@@ -59,6 +59,7 @@ class BPU(config:NPCConfig) extends Module{
         when(replace_idx === entrySize.U) {
             btb.pc(tag_plus_1) := io.exu_pc
             btb.npc(tag_plus_1) := io.exu_npc.bits
+            btb.counter(tag_plus_1) := initCounterValue
             tag := tag_plus_1
         }.otherwise {
             btb.pc(replace_idx) := io.exu_pc
