@@ -17,6 +17,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
+#include "utils/utils.h"
 #include <memory/vaddr.h>
 #include <stdbool.h>
 #include <watchpoint.h>
@@ -49,6 +50,11 @@ static char* rl_gets() {
 }
 
 static int cmd_c(char *args) {
+  if(npc_state.state == NPC_ABORT || npc_state.state == NPC_END){
+    printf("Program execution has ended. To restart the program, exit NPC Simulation and run again.\n");
+  }else {
+    npc_state.state = NPC_RUNNING;
+  }
   cpu_exec(-1);
   return 0;
 }
@@ -144,6 +150,11 @@ static int cmd_si(char * args){
     step = 1;
   else
     step = atoi(args);
+  if(npc_state.state == NPC_ABORT || npc_state.state == NPC_END){
+    printf("Program execution has ended. To restart the program, exit NPC Simulation and run again.\n");
+  }else {
+    npc_state.state = NPC_RUNNING;
+  }
   cpu_exec(step);
   //cmd_info("r");
   return 0;
