@@ -115,9 +115,9 @@ class ICache(config: NPCConfig) extends Module{
         to_bypass := true.B //NPC的SRAM还不支持突发传输，所以不支持icache  
     }
     
-    when(to_bypass && io.ifu.r.ready){
+    when(to_bypass && io.ifu.r.valid){
         bypass := true.B
-    }.elsewhen(io.ifu.r.ready){
+    }.elsewhen(io.ifu.r.valid){
         bypass := false.B
     }
 
