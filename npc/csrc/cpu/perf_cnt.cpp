@@ -138,7 +138,7 @@ void perf_statistic(){
     PRINT_PERF("Stall Cycles CNT", stall_cnt, (double)stall_cnt/cycle_cnt*100, "% of total cycles");
 
     printf("\n--------------------------------------- BPU --------------------------------------\n");
-    // PRINT_PERF("Branch CNT", inst_branch_cnt, (double)inst_branch_cnt/inst_cnt*100, "% of inst");
+    PRINT_PERF("Branch CNT", branch_cnt, (double)branch_cnt/ifu_cnt*100, "% of ifetch");
     //PRINT_PERF("  Jump CNT", inst_jump_cnt, (double)inst_jump_cnt/inst_cnt*100, "% of inst");
     PRINT_PERF("Predict Faild CNT", branch_predict_failed_cnt, 0.0, "")
     PRINT_PERF("Predict Succ CNT", branch_predict_failed_cnt,
