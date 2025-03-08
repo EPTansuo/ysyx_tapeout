@@ -147,25 +147,31 @@ class IFU(config: NPCConfig) extends Module {
 
   if(config.PERF_CNT){
     val ifu_cnt = RegInit(0.U(64.W))
+    val flush_cycle_cnt = RegInit(0.U(64.W))
     val flush_cnt = RegInit(0.U(64.W))
     val branch_cnt = RegInit(0.U(64.W))
     val jmp_cnt = RegInit(0.U(64.W))
     val branch_predict_failed_cnt = RegInit(0.U(64.W))
-    when(io.in.valid && io.in.ready){
+    when(io.imem.r.valid && io.imem.r.ready){
       ifu_cnt := ifu_cnt + 1.U
     }
     when(io.flush || flush){
-      flush_cnt := flush_cnt + 1.U
+      flush_cycle_cnt := flush_cycle_cnt + 1.U
     }
-    when(io.out.valid && io.out.ready && inst(6,0) === "b1100011".U){
+    when(io.imem.r.valid && io.imem.r.ready && inst(6,0) === "b1100011".U){
       branch_cnt := branch_cnt + 1.U
     }
-    when( io.flush ){
-      // also include jump predict failure
-      branch_predict_failed_cnt := branch_predict_failed_cnt + 1.U
+    when(io.imem.r.valid && io.imem.r.ready && (inst(6,0) === "b1101111".U || inst(6,0) === "b1100111".U)){
+      jmp_cnt := jmp_cnt + 1.U
     }
+    when( io.flush ){
+      flush_cnt := flush_cnt + 1.U
+    }
+    branch_predict_failed_cnt := flush_cnt - jmp_cnt
     dontTouch(ifu_cnt)
     dontTouch(flush_cnt)
+    dontTouch(flush_cycle_cnt)
+    dontTouch(jmp_cnt)
     dontTouch(branch_cnt)
     dontTouch(branch_predict_failed_cnt)
   }

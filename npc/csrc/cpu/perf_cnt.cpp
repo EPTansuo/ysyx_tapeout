@@ -12,7 +12,7 @@
 
 
 #define PERF_IFU_CNT(_) \
-_(ifu_cnt) _(flush_cnt) _(branch_cnt) _(branch_predict_failed_cnt)
+_(ifu_cnt) _(flush_cnt) _(branch_predict_failed_cnt) _(flush_cycle_cnt) _(jmp_cnt) _(branch_cnt)
 
 #define PERF_IDU_CNT(_) \
 _(inst_compute_cnt) _(inst_branch_cnt) _(inst_jump_cnt) _(inst_ldst_cnt) _(inst_csr_cnt) \
@@ -121,7 +121,7 @@ void perf_statistic(){
     PRINT_PERF("ICache IFetch CNT", icache_access_cnt+icache_bypass_cnt, 0.0, ""); 
     uint64_t icache_miss_cnt = icache_access_cnt-icache_hit_cnt;
     PRINT_PERF("ICache Access CNT", icache_access_cnt, 
-        (icache_hit_access_time_cnt/icache_access_cnt + (1-hit_rate)*icache_miss_penalty_cnt/icache_miss_cnt), "AMAT");
+        ((double)icache_hit_access_time_cnt/icache_access_cnt + (1-hit_rate)*icache_miss_penalty_cnt/icache_miss_cnt), "AMAT");
     PRINT_PERF("ICache hit CNT", icache_hit_cnt, hit_rate*100, "% hit rate");
     PRINT_PERF("ICache Bypass CNT", icache_bypass_cnt, (double)icache_bypass_cnt/
                                             (icache_access_cnt+icache_bypass_cnt)*100, "% of ifetch");
@@ -134,15 +134,15 @@ void perf_statistic(){
     }
 #endif 
     printf("\n------------------------------------- Pipeline -------------------------------------\n");
-    PRINT_PERF("Flush Cycles CNT", flush_cnt, (double)flush_cnt/cycle_cnt*100, "% of total cycles");
+    PRINT_PERF("Flush Cycles CNT", flush_cycle_cnt, (double)flush_cycle_cnt/cycle_cnt*100, "% of total cycles");
     PRINT_PERF("Stall Cycles CNT", stall_cnt, (double)stall_cnt/cycle_cnt*100, "% of total cycles");
 
     printf("\n--------------------------------------- BPU --------------------------------------\n");
-    PRINT_PERF("Branch CNT", branch_cnt, (double)branch_cnt/inst_cnt*100, "% of inst");
+    PRINT_PERF("Branch CNT", branch_cnt, (double)branch_cnt/ifu_cnt*100, "% of ifetch");
     //PRINT_PERF("  Jump CNT", inst_jump_cnt, (double)inst_jump_cnt/inst_cnt*100, "% of inst");
-    PRINT_PERF("Predict Succ CNT", branch_cnt - (branch_predict_failed_cnt-inst_jump_cnt),
-                 (double)(branch_cnt - (branch_predict_failed_cnt - inst_jump_cnt))/
-                 ( branch_cnt)*100, "% of branch");
+    PRINT_PERF("Predict Faild CNT", branch_predict_failed_cnt, 0.0, "")
+    PRINT_PERF("Predict Succ CNT", branch_cnt - branch_predict_failed_cnt,
+                 (double)(branch_cnt - branch_predict_failed_cnt)/( branch_cnt )*100, "% of branch");
 
     fclose(fp);
 #endif // CONFIG_PERF_CNT
