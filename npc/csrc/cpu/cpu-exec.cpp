@@ -113,7 +113,7 @@ void inline cpu_single_inst(){
   do{
     if(cycles++ > 10000){
       printf("************************************\n");
-      printf(L_RED "Single Cycle Time out!\n" COLOR_NONE);
+      printf(L_RED "Single Inst Time out!\n" COLOR_NONE);
       printf( "************************************\n");
       npc_state.state = NPC_ABORT;
       return;
