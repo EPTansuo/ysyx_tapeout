@@ -52,6 +52,7 @@ static char* rl_gets() {
 static int cmd_c(char *args) {
   if(npc_state.state == NPC_ABORT || npc_state.state == NPC_END){
     printf("Program execution has ended. To restart the program, exit NPC Simulation and run again.\n");
+    return  0;
   }else {
     npc_state.state = NPC_RUNNING;
   }
@@ -152,6 +153,7 @@ static int cmd_si(char * args){
     step = atoi(args);
   if(npc_state.state == NPC_ABORT || npc_state.state == NPC_END){
     printf("Program execution has ended. To restart the program, exit NPC Simulation and run again.\n");
+    return 0;
   }else {
     npc_state.state = NPC_RUNNING;
   }
@@ -215,7 +217,9 @@ static int cmd_d(char *args){
 
 static int cmd_help(char *args);
 
-
+static int cmd_state(char* args){
+  npc_state.state = NPC_STOP;
+}
 
 
 
@@ -235,6 +239,7 @@ static struct {
   {"p", "Get the value of an expression",cmd_p},
   {"w", "Set up monitoring point", cmd_w},
   {"d", "Deleting monitoring point", cmd_d},
+  {"state", "Set the State to Stop", cmd_state},
 };
 
 #define NR_CMD ARRLEN(cmd_table)
