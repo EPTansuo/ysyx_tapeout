@@ -249,6 +249,7 @@ static struct {
   {"d", "Deleting monitoring point", cmd_d},
   {"state", "Set the state to Stop", cmd_state},
   {"wave", "Start or stop the wave dump", cmd_wave},
+  {"stat", "Print the statstics", cmd_wave},
 };
 
 #define NR_CMD ARRLEN(cmd_table)

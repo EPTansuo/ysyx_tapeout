@@ -157,9 +157,9 @@ class IFU(config: NPCConfig) extends Module {
     when(io.flush || flush){
       flush_cnt := flush_cnt + 1.U
     }
-    when(io.out.valid && io.out.ready && inst(6,0) === "b1100011".U){
-      branch_cnt := branch_cnt + 1.U
-    }
+    // when(io.out.valid && io.out.ready && inst(6,0) === "b1100011".U){
+    //   branch_cnt := branch_cnt + 1.U
+    // }
     when( io.flush ){
       // also include jump predict failure
       branch_predict_failed_cnt := branch_predict_failed_cnt + 1.U
