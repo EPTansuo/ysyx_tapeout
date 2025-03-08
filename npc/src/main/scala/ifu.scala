@@ -93,6 +93,7 @@ class IFU(config: NPCConfig) extends Module {
 
 
   when(flush){
+    state := s_idle
     pc := io.exu_pc_sig.bits.npc
   }
 
