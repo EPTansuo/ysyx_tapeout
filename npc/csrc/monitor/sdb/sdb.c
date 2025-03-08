@@ -14,6 +14,7 @@
 ***************************************************************************************/
 
 #include <cpu/cpu.h>
+#include <cstdio>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
@@ -219,6 +220,13 @@ static int cmd_help(char *args);
 
 static int cmd_state(char* args){
   npc_state.state = NPC_STOP;
+  printf("The state has been set to NPC_STOP.\n");
+  return 0;
+}
+
+static int cmd_wave(char* args){
+  printf("Warning: The wave dump function is not implemented yet.\n");
+  return 0;
 }
 
 
@@ -239,7 +247,8 @@ static struct {
   {"p", "Get the value of an expression",cmd_p},
   {"w", "Set up monitoring point", cmd_w},
   {"d", "Deleting monitoring point", cmd_d},
-  {"state", "Set the State to Stop", cmd_state},
+  {"state", "Set the state to Stop", cmd_state},
+  {"wave", "Start or stop the wave dump", cmd_wave},
 };
 
 #define NR_CMD ARRLEN(cmd_table)
