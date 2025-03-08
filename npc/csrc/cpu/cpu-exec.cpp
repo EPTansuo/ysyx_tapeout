@@ -1,3 +1,4 @@
+#include "utils/utils.h"
 #include <cpu/cpu.h>
 #include <isa.h>
 #include <fmt-def.h>
@@ -197,7 +198,7 @@ static void execute(uint64_t n) {
     trace_and_difftest();
 
     if (stop_signal){
-      npc_state.state = NPC_QUIT;
+      npc_state.state = NPC_STOP;
       break;
     }
     if(printinfo_signal){
