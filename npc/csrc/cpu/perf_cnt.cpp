@@ -141,8 +141,8 @@ void perf_statistic(){
     PRINT_PERF("Branch CNT", branch_cnt, (double)branch_cnt/ifu_cnt*100, "% of ifetch");
     //PRINT_PERF("  Jump CNT", inst_jump_cnt, (double)inst_jump_cnt/inst_cnt*100, "% of inst");
     PRINT_PERF("Predict Faild CNT", branch_predict_failed_cnt, 0.0, "")
-    PRINT_PERF("Predict Succ CNT", branch_predict_failed_cnt,
-                 (double)(branch_predict_failed_cnt)/( branch_cnt )*100, "% of branch");
+    PRINT_PERF("Predict Succ CNT", branch_cnt - branch_predict_failed_cnt,
+                 (double)(branch_cnt - branch_predict_failed_cnt)/( branch_cnt )*100, "% of branch");
 
     fclose(fp);
 #endif // CONFIG_PERF_CNT
