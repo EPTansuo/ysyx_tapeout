@@ -199,6 +199,7 @@ static void execute(uint64_t n) {
 
     if (stop_signal){
       npc_state.state = NPC_STOP;
+      stop_signal = 0;
       break;
     }
     if(printinfo_signal){
