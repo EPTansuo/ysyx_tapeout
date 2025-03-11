@@ -40,6 +40,10 @@ config PERF_CNT
   bool "Enable Performance Counter"
   default y
 
+config USE_REG0
+  bool "Enable Register 0"
+  default y
+
 endmenu
 
 choice

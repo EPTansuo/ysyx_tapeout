@@ -4,8 +4,20 @@ BUILD_DIR = $(NPC_HOME)/build
 OBJ_DIR = $(BUILD_DIR)/OBJ_DIR
 NXDC_FILES = $(NPC_HOME)/constr/soc.nxdc
 SDC_FILE = $(NPC_HOME)/scripts/top.sdc
+
+-include .config
+ifeq ($(CONFIG_USE_SOC),y)
+IMG = "$(YSYX_HOME)/am-kernels/tests/cpu-tests/build/sum-riscv32e-ysyxsoc.bin"
+else
 IMG = "$(YSYX_HOME)/am-kernels/tests/cpu-tests/build/sum-riscv32e-npc.bin"
-ARGS = -v --diff="$(NPC_HOME)/difftest/riscv32e-nemu-npc-so"
+endif
+
+ifeq ($(CONFIG_USE_SOC),y)
+DIFF_REF="$(NPC_HOME)/difftest/riscv32e-nemu-soc-so"
+else
+DIFF_REF="$(NPC_HOME)/difftest/riscv32e-nemu-npc-so"
+endif
+ARGS = -v --diff=$(DIFF_REF)
 
 CLK_FREQ_MHZ?=890
 
@@ -28,7 +40,6 @@ VERILATOR_FLAGS += --timescale 1us/1us --no-timing
 VERILATOR_CONFIG = ./scripts/verilator.vlt
 
 
--include .config
 
 ifeq ($(CONFIG_WAVE_FST),y)
 	VERILATOR_FLAGS += --trace-fst
