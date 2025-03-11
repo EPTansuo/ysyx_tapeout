@@ -4,6 +4,8 @@ BUILD_DIR = $(NPC_HOME)/build
 OBJ_DIR = $(BUILD_DIR)/OBJ_DIR
 NXDC_FILES = $(NPC_HOME)/constr/soc.nxdc
 SDC_FILE = $(NPC_HOME)/scripts/top.sdc
+
+-include .config
 ifeq ($(CONFIG_USE_SOC),y)
 IMG = "$(YSYX_HOME)/am-kernels/tests/cpu-tests/build/sum-riscv32e-ysyxsoc.bin"
 else
@@ -32,7 +34,6 @@ VERILATOR_FLAGS += --timescale 1us/1us --no-timing
 VERILATOR_CONFIG = ./scripts/verilator.vlt
 
 
--include .config
 
 ifeq ($(CONFIG_WAVE_FST),y)
 	VERILATOR_FLAGS += --trace-fst
