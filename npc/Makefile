@@ -11,7 +11,13 @@ IMG = "$(YSYX_HOME)/am-kernels/tests/cpu-tests/build/sum-riscv32e-ysyxsoc.bin"
 else
 IMG = "$(YSYX_HOME)/am-kernels/tests/cpu-tests/build/sum-riscv32e-npc.bin"
 endif
-ARGS = -v --diff="$(NPC_HOME)/difftest/riscv32e-nemu-npc-so"
+
+ifeq ($(CONFIG_USE_SOC),y)
+DIFF_REF="$(NPC_HOME)/difftest/riscv32e-nemu-npc-so"
+else
+DIFF_REF="$(NPC_HOME)/difftest/riscv32e-nemu-soc-so"
+endif
+ARGS = -v --diff=$(DIFF_REF)
 
 CLK_FREQ_MHZ?=890
 
