@@ -22,6 +22,7 @@ case class NPCConfig(
   USE_ICACHE: Boolean,
   bpuparameters: BPUParameters,
   USE_BPU: Boolean,
+  USE_REG0: Boolean
 ){
   def asString: String = {
     s"""
@@ -40,6 +41,7 @@ case class NPCConfig(
        |  USE_ICACHE = $USE_ICACHE,
        |  bpuparameters = $bpuparameters,
        |  USE_BPU = $USE_BPU,
+       |  USE_REG0 = $USE_REG0,
        |)
        |""".stripMargin
   }
@@ -93,6 +95,7 @@ object NPCConfig {
     val USE_ICACHE = getConfig("CONFIG_USE_ICACHE") == "y"
     val USE_BPU = getConfig("CONFIG_USE_BPU") == "y"
     val PERF_CNT = getConfig("CONFIG_PERF_CNT") == "y"
+    val USE_REG0 = getConfig("CONFIG_USE_REG0") == "y"
     val xlen = if (getConfig("CONFIG_ISA") == "\"riscv32\"") 32 else 64
 
     NPCConfig(
@@ -110,6 +113,7 @@ object NPCConfig {
       USE_ICACHE = USE_ICACHE,
       bpuparameters = BPUParameters(),
       USE_BPU = USE_BPU,
+      USE_REG0 = USE_REG0
     )
   }
 }

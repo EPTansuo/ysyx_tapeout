@@ -5,9 +5,9 @@
 #include <verilated.h>
 #include <common.h>
 
-
+#ifndef CONFIG_USE_REG0
 #define DONT_USE_REG0
-
+#endif // !CONFIG_USE_REG0
 
 
 #ifdef CONFIG_USE_SOC
