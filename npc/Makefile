@@ -178,20 +178,21 @@ perf: verilog syn
 
 
 rsync: 
-	rsync -av ./* ${GZIC_SERVER_USER}@${GZIC_SERVER_IP}:${GZIC_SERVER_USER_HOME}/PROJECT/npc\
-		--exclude='build' --exclude='wave*' --exclude='target' --exclude='rocket-chip' \
-		--exclude='test_run_dir' --exclude='out'
-	scp ./build/verilog/*.sv ${GZIC_SERVER_USER}@${GZIC_SERVER_IP}:/${GZIC_SERVER_USER_HOME}/PROJECT/npc/build/verilog
-	scp ../ysyxSoC/build/*.v ${GZIC_SERVER_USER}@${GZIC_SERVER_IP}:/${GZIC_SERVER_USER_HOME}/PROJECT/npc/build/verilog
-	rsync -av ../ysyxSoC/perip  ${GZIC_SERVER_USER}@${GZIC_SERVER_IP}:${GZIC_SERVER_USER_HOME}/PROJECT/npc/build/perip
+	bash ./scripts/rsync.sh $(NPC_TOPNAME) $(CLK_FREQ_MHZ)
 
 
-
+# It needs `-B`, because the time on the server is not accurate
 vcs_build: rsync
 	ssh -X -C ${GZIC_SERVER_USER}@${GZIC_SERVER_IP} "cd ${GZIC_SERVER_USER_HOME}/PROJECT/npc && make -f vcs/vcs.mk -B"
 
 vcs_sim: rsync
-	ssh -X -C ${GZIC_SERVER_USER}@${GZIC_SERVER_IP} "cd ${GZIC_SERVER_USER_HOME}/PROJECT/npc && make -f vcs/vcs.mk && ./build/simv"
+	ssh -X -C ${GZIC_SERVER_USER}@${GZIC_SERVER_IP} "cd ${GZIC_SERVER_USER_HOME}/PROJECT/npc && make -f vcs/vcs.mk -B && ./build/simv"
+
+vcs_build_netlist: rsync
+	ssh -X -C ${GZIC_SERVER_USER}@${GZIC_SERVER_IP} "cd ${GZIC_SERVER_USER_HOME}/PROJECT/npc && make -f vcs/vcs.mk -B NETLIST=1"
+
+vcs_sim_netlist: rsync
+	ssh -X -C ${GZIC_SERVER_USER}@${GZIC_SERVER_IP} "cd ${GZIC_SERVER_USER_HOME}/PROJECT/npc && make -f vcs/vcs.mk -B NETLIST=1 && ./build/simv"
 
 
 # menuconfig and autoconf.h

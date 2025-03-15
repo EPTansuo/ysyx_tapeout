@@ -1,5 +1,6 @@
 #include "color.h"
 #include "fmt-def.h"
+#include "stdlib.h"
 #include <stdint.h>
 #include <svdpi.h>
 #include <stdbool.h>

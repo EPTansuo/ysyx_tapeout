@@ -64,9 +64,9 @@ case class CacheParameters(nSets: Int, nWays: Int, blockSize: Int, addrBits: Int
 
 object ICacheParameters{
     def apply() = CacheParameters(
-        nSets = 32,   // should be 2^n
+        nSets = 8,   // should be 2^n
         nWays = 1,   
-        blockSize = 8, // should be 4*n  unit: bytes
+        blockSize = 8, // should be 4*n  // only support 4 now 
         addrBits = 32,
     )
 }
