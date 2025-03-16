@@ -13,13 +13,23 @@ SIM_LOG=./build/sim.log
 FILE_LIST_F=./build/file.list.f
 VCS_CSRC_DIR=./build/vcs/csrc
 BIN=./build/simv
-
+CFLAGS = 
 VCS_FLAGS = -full64 -notice -kdb -lca -debug_acc+all \
 		+dmptf +warn=all +libext+.v+v2k+acc -sverilog -timescale=1ns/1ns
 #-R +fsdb+autoflush
 
+ifeq ($(NETLIST),1)
+CFLAGS += -DNETLIST
+endif
 
-VCS_VSRCS = $(shell find $(abspath ./build/verilog) -name "*.v"  -or -name "*.sv")
+
+ifeq ($(NETLIST),1)
+VCS_VSRCS = $(shell find $(abspath ./build/netlist) -name "*.netlist.syn.v") # ysyx_23060246.netlist.v
+VCS_VSRCS += $(shell find $(abspath ./build/nangate45) -name "*.v") # cells.v
+else
+VCS_VSRCS = $(shell find $(abspath ./build/verilog) -name "*.sv") # ysyx_23060246
+endif
+VCS_VSRCS += $(shell find $(abspath ./build/verilog) -name "*.v") # YsyxSoCFull.v
 VCS_VSRCS += $(shell find $(abspath ./build/perip) -name "*.v"  -or -name "*.sv")
 VCS_VSRCS += $(shell find $(abspath ./vsrc) -name "*.v")
 VCS_VSRCS += $(shell find $(abspath ./vcs/vsrc) -name "*.v")
@@ -43,7 +53,8 @@ $(BIN): $(FILE_LIST_F)
 	vcs	$(INC_FLAGS) -l $(VCS_LOG) $(VCS_FLAGS)\
 		-P $(VERDI_HOME)/share/PLI/VCS/$(PLATFORM)/novas.tab\
 		$(VERDI_HOME)/share/PLI/VCS/$(PLATFORM)/pli.a\
-		 -f $(FILE_LIST_F) $(VCS_CSRCS)\
+		-f $(FILE_LIST_F) $(VCS_CSRCS)\
+		-cflags "$(CFLAGS)" \
 		-Mdir=$(OBJ_DIR) -o $(BIN) -top $(TOP)
 
 sim: $(BIN)

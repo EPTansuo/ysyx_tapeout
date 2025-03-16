@@ -5,7 +5,8 @@ import "DPI-C" function void inst_invalid();
 import "DPI-C" function void axi_error(input byte unsigned errno, input byte unsigned isRead);//读错误还是写错误
 //`endif
 `endif
-
+(* keep_hierarchy = 1 *)
+(* keep = 1 *)
 module InstInvalid(
     input isvalid
 );
@@ -23,6 +24,8 @@ end
 endmodule
 
 
+(* keep_hierarchy = 1 *)
+(* keep = 1 *)
 module Ebreak(
     input isebreak
 );
@@ -39,6 +42,8 @@ end
 
 endmodule
 
+(* keep_hierarchy = 1 *)
+(* keep = 1 *)
 module AXIError(
     input [1:0] bresp,
     input [1:0] rresp,

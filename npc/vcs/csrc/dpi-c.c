@@ -1,5 +1,6 @@
 #include "color.h"
 #include "fmt-def.h"
+#include "stdlib.h"
 #include <stdint.h>
 #include <svdpi.h>
 #include <stdbool.h>
@@ -24,9 +25,13 @@ static uint8_t pmem[CONFIG_MSIZE] = {};
 uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
 paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 
+#ifndef NETLIST
 const char* pc = "tb.soc.dut.asic.cpu.cpu.cpu_npc.idu.io_in_bits_pc";
-const char* img_file = "/SM01/home/bs2021/bs202164050062/PROJECT/npc/img/microbench-riscv32e-ysyxsoc_test.bin";
-
+#else
+const char* pc = NULL;
+#endif 
+// const char* img_file = "./img/sum-riscv32e-ysyxsoc.bin";
+const char* img_file = "./img/microbench-riscv32e-ysyxsoc_test.bin";
 
 
 
@@ -115,12 +120,14 @@ void npc_ebreak(){
 	//
 	//
   printf("EBREAK!\n");
+#ifndef NETLIST
   int isgood = !strcmp("00000000",get_reg(10));
   if(isgood){
   	printf("npc: " L_GREEN  "HIT GOOD TRAP" COLOR_NONE " at pc = 0x%s\n" , get_pc());
   }else{
   	printf("npc: " L_RED    "HIT BAD TRAP" COLOR_NONE " at pc = 0x%s\n" , get_pc());
   }
+#endif
   fflush(stdout);
   vpi_control(vpiFinish, 1);
   exit(0);
