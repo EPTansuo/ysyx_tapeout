@@ -105,8 +105,11 @@ class EXU(config: NPCConfig) extends Module{
 
     val branch = Module(new Branch(xlen))
     branch.io.br_sel := ctrlsig.br_sel
-    branch.io.src1 := src1_reg
-    branch.io.src2 := src2_reg
+    branch.io.src1 := src1
+    branch.io.src2 := src2
+
+    val branch_taken = RegInit(false.B)
+    branch_taken := branch.io.taken
 
     val npc = MuxCase(
         pc + 4.U,  
