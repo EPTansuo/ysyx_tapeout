@@ -64,7 +64,7 @@ case class CacheParameters(nSets: Int, nWays: Int, blockSize: Int, addrBits: Int
 
 object ICacheParameters{
     def apply() = CacheParameters(
-        nSets = 8,   // should be 2^n
+        nSets = 4,   // should be 2^n
         nWays = 1,   
         blockSize = 8, // should be 4*n  // only support 4 now 
         addrBits = 32,
@@ -78,7 +78,7 @@ case class BPUParameters(useDynamic: Boolean, nEntries: Int, pcWidth: Int, npcWi
 }
 
 object BPUParameters {
-  def apply(): BPUParameters = BPUParameters(useDynamic = true, nEntries = 2, pcWidth = 9, npcWidth = 9, cntWidth = 2)
+  def apply(): BPUParameters = BPUParameters(useDynamic = false, nEntries = 2, pcWidth = 9, npcWidth = 9, cntWidth = 2)
 }
 
 object NPCConfig {
