@@ -114,7 +114,7 @@ class EXU(config: NPCConfig) extends Module{
     val npc = MuxCase(
         pc + 4.U,  
         IndexedSeq(
-        ((ctrlsig.pc_sel === PC_ALU) || (branch.io.taken)) -> (alu.io.out >> 1.U << 1.U),  //对齐
+        ((ctrlsig.pc_sel === PC_ALU) || (branch_taken)) -> (alu.io.out >> 1.U << 1.U),  //对齐
         (ctrlsig.pc_sel === PC_0) -> pc, 
         (ctrlsig.pc_sel === PC_CSR) -> csr.io.target_pc
         )
@@ -122,9 +122,16 @@ class EXU(config: NPCConfig) extends Module{
     io.out.bits.npc := npc
     // io.npc.bits := npc 
     // io.npc.valid := state === s_exe
+
+
     io.pc_sig.bits.pc := pc
-    io.pc_sig.bits.npc := npc
-    io.pc_sig.valid := state === s_exe
+    // io.pc_sig.bits.npc := npc
+    // io.pc_sig.valid := state === s_exe
+    val npc_reg = RegInit(0.U(xlen.W))
+    npc_reg := npc
+    
+    io.pc_sig.bits.npc := npc_reg
+    io.pc_sig.valid := RegNext(state === s_exe)
 
 
     // // Forwarding
