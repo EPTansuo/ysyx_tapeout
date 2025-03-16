@@ -19,7 +19,7 @@ DIFF_REF="$(NPC_HOME)/difftest/riscv32e-nemu-npc-so"
 endif
 ARGS = -v --diff=$(DIFF_REF)
 
-CLK_FREQ_MHZ?=714
+CLK_FREQ_MHZ?=890
 
 SCALA_DIR := $(NPC_HOME)/src/main/scala
 VERILOG_DIR := $(BUILD_DIR)/verilog
