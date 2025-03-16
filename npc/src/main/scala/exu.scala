@@ -105,13 +105,16 @@ class EXU(config: NPCConfig) extends Module{
 
     val branch = Module(new Branch(xlen))
     branch.io.br_sel := ctrlsig.br_sel
-    branch.io.src1 := src1_reg
-    branch.io.src2 := src2_reg
+    branch.io.src1 := src1
+    branch.io.src2 := src2
+
+    val branch_taken = RegInit(false.B)
+    branch_taken := branch.io.taken
 
     val npc = MuxCase(
         pc + 4.U,  
         IndexedSeq(
-        ((ctrlsig.pc_sel === PC_ALU) || (branch.io.taken)) -> (alu.io.out >> 1.U << 1.U),  //对齐
+        ((ctrlsig.pc_sel === PC_ALU) || (branch_taken)) -> (alu.io.out >> 1.U << 1.U),  //对齐
         (ctrlsig.pc_sel === PC_0) -> pc, 
         (ctrlsig.pc_sel === PC_CSR) -> csr.io.target_pc
         )
