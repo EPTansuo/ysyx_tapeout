@@ -163,6 +163,12 @@ syn: verilog $(SYN_ADDITION_FILES)
 clean_syn:
 	make -C $(YOSYSSTA_PATH) clean
 
+syn_new: verilog $(SYN_ADDITION_FILES)
+	source /opt/oss-cad-suite/environment && \
+	make -C $(YOSYSSTA_NEW_PATH) sta DESIGN=$(NPC_TOPNAME) SDC_FILE=$(SDC_FILE) \
+	RTL_FILES="$(BUILD_DIR)/verilog/$(NPC_TOPNAME).sv $(SYN_ADDITION_FILES)" CLK_FREQ_MHZ=$(CLK_FREQ_MHZ)
+
+
 PERF_DATE=$(shell date +%Y-%m%d-%H%M%S)
 PERF_PATH=$(NPC_HOME)/data/$(PERF_DATE)
 
