@@ -142,7 +142,7 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask){
     printf(L_RED "WARNING: %s waddr = 0x%x < CONFIG_MBASE" COLOR_NONE "\n", __func__, waddr);
     return;
   }
-  printf("waddr=%x, wmask=%x\n",waddr,wmask);
+  // printf("waddr=%x, wmask=%x\n",waddr,wmask);
   if(mwinfo.pc != PC || mwinfo.addr != waddr
       || mwinfo.wmask != wmask || mwinfo.data != wdata 
       || (!regs_equ(REGS,mwinfo.regs))){
@@ -175,7 +175,7 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask){
       if(wmask & (1 << i)){
         
         mmio_write(waddr + i, 1, (wdata >> (i * 8)) & 0xff);
-        printf("write FB\n");
+        // printf("write FB\n");
       }
     }
   }
