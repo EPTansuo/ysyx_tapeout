@@ -42,7 +42,7 @@ static SDL_Renderer *renderer = NULL;
 static SDL_Texture *texture = NULL;
 
 uint8_t* vga_get_vmem(){
-  return (uint8_t *)vmem;
+  return vmem;
 }
 
 uint8_t *vga_get_vgactl_port_base(){
