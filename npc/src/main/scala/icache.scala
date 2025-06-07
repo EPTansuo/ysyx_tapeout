@@ -119,7 +119,7 @@ class ICache(config: NPCConfig) extends Module{
     }else{
         to_bypass := true.B //NPC的SRAM还不支持突发传输，所以不支持icache  
     }
-    
+    dontTouch(bypass)
     
 
     val burst_cnt = RegInit(0.U(log2Ceil(blockSize/4).W))
