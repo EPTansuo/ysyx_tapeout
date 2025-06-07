@@ -175,7 +175,7 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask){
       if(wmask & (1 << i)){
         
         mmio_write(waddr + i, 1, (wdata >> (i * 8)) & 0xff);
-        // printf("write FB\n");
+        printf("write FB\n");
       }
     }
   }
