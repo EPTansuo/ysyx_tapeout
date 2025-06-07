@@ -118,6 +118,7 @@ class ICache(config: NPCConfig) extends Module{
         }
     }else{
         to_bypass := true.B //NPC的SRAM还不支持突发传输，所以不支持icache  
+        bypass := true.B
     }
     dontTouch(bypass)
     
