@@ -30,7 +30,7 @@ void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
   };
   // w = io_read(AM_GPU_CONFIG).width ;
   // h = io_read(AM_GPU_CONFIG).height ;
-   printf("%s: h: %d, w: %d \n",__func__, h , w);
+  // printf("%s: h: %d, w: %d \n",__func__, h , w);
 }
 
 void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
