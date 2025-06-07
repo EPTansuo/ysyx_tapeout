@@ -164,13 +164,13 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask){
 #define SCREEN_W (MUXDEF(CONFIG_VGA_SIZE_800x600, 800, 400))
 #define SCREEN_H (MUXDEF(CONFIG_VGA_SIZE_800x600, 600, 300))
 #endif 
-  if( waddr >= CONFIG_VGA_CTL_MMIO && waddr <= CONFIG_VGA_CTL_MMIO + 4){
+  if( (uint32_t)waddr >= CONFIG_VGA_CTL_MMIO && (uint32_t)waddr <= CONFIG_VGA_CTL_MMIO + 4){
     for(int i = 0; i < 4; i++){
       if(wmask & (1 << i)){
         mmio_write(waddr + i, 1, (wdata >> (i * 8)) & 0xff);
       }
     }
-  } else if(waddr >= CONFIG_FB_ADDR && waddr <= CONFIG_FB_ADDR + SCREEN_W * SCREEN_H * sizeof(uint32_t)) {
+  } else if((uint32_t)waddr >= CONFIG_FB_ADDR && (uint32_t)waddr <= CONFIG_FB_ADDR + SCREEN_W * SCREEN_H * sizeof(uint32_t)) {
     for(int i = 0; i < 4; i++){
       if(wmask & (1 << i)){
         
