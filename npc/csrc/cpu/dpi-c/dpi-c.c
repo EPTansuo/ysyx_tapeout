@@ -173,7 +173,9 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask){
   } else if(waddr >= CONFIG_FB_ADDR && waddr <= CONFIG_FB_ADDR + SCREEN_W * SCREEN_H * sizeof(uint32_t)) {
     for(int i = 0; i < 4; i++){
       if(wmask & (1 << i)){
+        
         mmio_write(waddr + i, 1, (wdata >> (i * 8)) & 0xff);
+        printf("write FB\n");
       }
     }
   }
