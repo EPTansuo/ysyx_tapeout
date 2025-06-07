@@ -7,7 +7,9 @@
 #define CONFIG_USE_REG0 1
 #define CONFIG_CC_O2 1
 #define CONFIG_CC_OPT "-O2"
-#define CONFIG_WAVE_FILE_TYPE "none"
+#define CONFIG_WAVE_DUMP 1
+#define CONFIG_WAVE_FST 1
+#define CONFIG_WAVE_FILE_TYPE "fst"
 #define CONFIG_SOC_EN "disable"
 #define CONFIG_RESET_VECTOR 0x80000000
 #define CONFIG_DIFFTEST_REF_PATH "none"
