@@ -36,6 +36,7 @@ class ysyx_23060246(config: NPCConfig) extends Module {
     axi4_conv.io.out <> io.master
   } else {
     val sram = Module(new SRAM( config.axiparams))
+    dontTouch(sram.axi)
     val uart = Module(new UART_AXI( config.axiparams))
     val xbar_2 = Module(new AXIXbar(2, 
                         Array((0L,0xFFFFFFFFL),(0xa00003f0L,0xa00003ffL)) ,
@@ -72,7 +73,7 @@ object npcMain extends App {
         // make yosys happy
         // see https://github.com/llvm/circt/blob/main/docs/VerilogGeneration.md
         "disallowLocalVariables",
-        "disallowPackedArrays",
+        //"disallowPackedArrays",
         "locationInfoStyle=wrapInAtSquareBracket"
     ).reduce(_ + "," + _),
     "--disable-annotation-unknown")

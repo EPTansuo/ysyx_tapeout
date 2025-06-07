@@ -69,7 +69,7 @@ class SRAM(params: AXI4BundleParameters) extends Module {
     s_read_idle -> Mux(axi.ar.valid, s_read, s_read_idle),
     //s_read -> s_read_delay,
     s_read -> s_wait_read_ready, //不使用随机延迟
-    s_read_delay -> Mux(random_r >= 10.U , s_wait_read_ready, s_read_delay),
+    // s_read_delay -> Mux(random_r >= 10.U , s_wait_read_ready, s_read_delay),
     s_wait_read_ready -> Mux(axi.r.ready, s_read_idle, s_wait_read_ready)
   ))
 
@@ -95,7 +95,7 @@ class SRAM(params: AXI4BundleParameters) extends Module {
     s_wait_addr -> Mux(axi.aw.valid, s_write, s_wait_addr),
     //s_write -> s_write_delay,
     s_write -> s_wait_write_ready, //不使用随机延迟
-    s_write_delay -> Mux(random_w >= 10.U, s_wait_write_ready, s_write_delay),
+    // s_write_delay -> Mux(random_w >= 10.U, s_wait_write_ready, s_write_delay),
     s_wait_write_ready -> Mux(axi.b.ready, s_write_idle, s_wait_write_ready)
   ))
 
