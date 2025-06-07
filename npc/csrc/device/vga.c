@@ -42,7 +42,7 @@ static SDL_Renderer *renderer = NULL;
 static SDL_Texture *texture = NULL;
 
 uint8_t* vga_get_vmem(){
-  return vmem;
+  return (uint8_t *)vmem;
 }
 
 uint8_t *vga_get_vgactl_port_base(){
@@ -85,6 +85,7 @@ void vga_update_screen() {
   // then zero out the sync register
   uint32_t sync_reg = vgactl_port_base[1];
   if (sync_reg) {
+    printf("update_screen\n");
     update_screen();
     vgactl_port_base[1] = 0;
   }

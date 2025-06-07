@@ -7,6 +7,7 @@
 #include <memory/host.h>
 #include <time.h>
 #include <reg.h>
+#include <device/mmio.h>
 // #include <iostream>
 
 #include <verilator.h>
@@ -94,7 +95,16 @@ extern "C" int pmem_read(int raddr){
     return (uint32_t)(get_time() >> 32);
   }
 #endif
-  
+#ifdef CONFIG_HAS_VGA
+#define SCREEN_W (MUXDEF(CONFIG_VGA_SIZE_800x600, 800, 400))
+#define SCREEN_H (MUXDEF(CONFIG_VGA_SIZE_800x600, 600, 300))
+  if( raddr >= CONFIG_VGA_CTL_MMIO && raddr <= CONFIG_VGA_CTL_MMIO + 4){
+    return mmio_read(raddr, 4);
+  } else if(raddr >= CONFIG_FB_ADDR && raddr <= CONFIG_FB_ADDR + SCREEN_W * SCREEN_H * sizeof(uint32_t)) {
+    //printf("read vga addr = %x\n", raddr);
+    return mmio_read(raddr, 4);
+  }
+#endif 
   if(raddr < CONFIG_MBASE || raddr > CONFIG_MBASE + CONFIG_MSIZE)
     return 0;
   
@@ -132,7 +142,7 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask){
     printf(L_RED "WARNING: %s waddr = 0x%x < CONFIG_MBASE" COLOR_NONE "\n", __func__, waddr);
     return;
   }
-
+  // printf("waddr=%x, wmask=%x\n",waddr,wmask);
   if(mwinfo.pc != PC || mwinfo.addr != waddr
       || mwinfo.wmask != wmask || mwinfo.data != wdata 
       || (!regs_equ(REGS,mwinfo.regs))){
@@ -148,6 +158,27 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask){
           goto end_pmem_write;
       }
       else 
+#endif 
+#ifdef CONFIG_HAS_VGA
+#ifndef SCREEN_W
+#define SCREEN_W (MUXDEF(CONFIG_VGA_SIZE_800x600, 800, 400))
+#define SCREEN_H (MUXDEF(CONFIG_VGA_SIZE_800x600, 600, 300))
+#endif 
+  if( (uint32_t)waddr >= CONFIG_VGA_CTL_MMIO && (uint32_t)waddr <= CONFIG_VGA_CTL_MMIO + 4){
+    for(int i = 0; i < 4; i++){
+      if(wmask & (1 << i)){
+        mmio_write(waddr + i, 1, (wdata >> (i * 8)) & 0xff);
+      }
+    }
+  } else if((uint32_t)waddr >= CONFIG_FB_ADDR && (uint32_t)waddr <= CONFIG_FB_ADDR + SCREEN_W * SCREEN_H * sizeof(uint32_t)) {
+    for(int i = 0; i < 4; i++){
+      if(wmask & (1 << i)){
+        
+        mmio_write(waddr + i, 1, (wdata >> (i * 8)) & 0xff);
+        // printf("write FB\n");
+      }
+    }
+  }
 #endif 
 	  if (waddr > CONFIG_MBASE + CONFIG_MSIZE){
         goto end_pmem_write;
