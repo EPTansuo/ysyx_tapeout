@@ -51,7 +51,7 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
   stack_top -= sizeof(Context);// 为Context结构体留出空间
   Context* ctx = (Context *)stack_top;
   ctx->mepc=(uintptr_t)entry;
-  ctx->mstatus=0x1800;
+ // ctx->mstatus=0x1800;
   ctx->gpr[10]=(uintptr_t)arg;  //a0
   ctx->gpr[2]=stack_top; //sp
   return ctx;
