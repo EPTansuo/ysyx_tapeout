@@ -218,3 +218,5 @@ clean_all: clean clean_mill
 include $(NVBOARD_HOME)/scripts/nvboard.mk
 
 include ../Makefile
+
+include ./iverilog/iverilog.mk
