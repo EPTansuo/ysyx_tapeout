@@ -1,0 +1,117 @@
+From ebe4440e506be6a65f1c081fc57d99190d72f929 Mon Sep 17 00:00:00 2001
+From: EPTansuo <eptansuo@163.com>
+Date: Fri, 22 Nov 2024 08:57:48 +0800
+Subject: [PATCH 68/90] compile ysyxSOC
+
+---
+ .mill_version |  1 +
+ Makefile      |  2 +-
+ mill          | 67 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ rocket-chip   |  2 +-
+ 4 files changed, 70 insertions(+), 2 deletions(-)
+ create mode 100644 .mill_version
+ create mode 100755 mill
+
+diff --git a/.mill_version b/.mill_version
+new file mode 100644
+index 000000000..0521cad14
+--- /dev/null
++++ b/.mill_version
+@@ -0,0 +1 @@
++0.11.10
+diff --git a/Makefile b/Makefile
+index 6d76a223f..e29dab724 100644
+--- a/Makefile
++++ b/Makefile
+@@ -3,7 +3,7 @@ V_FILE_FINAL = build/ysyxSoCFull.v
+ SCALA_FILES = $(shell find src/ -name "*.scala")
+ 
+ $(V_FILE_FINAL): $(SCALA_FILES)
+-	mill -i ysyxsoc.runMain ysyx.Elaborate --target-dir $(@D)
++	./mill -i ysyxsoc.runMain ysyx.Elaborate --target-dir $(@D)
+ 	mv $(V_FILE_GEN) $@
+ 	sed -i -e 's/_\(aw\|ar\|w\|r\|b\)_\(\|bits_\)/_\1/g' $@
+ 	sed -i '/firrtl_black_box_resource_files.f/, $$d' $@
+diff --git a/mill b/mill
+new file mode 100755
+index 000000000..d15e8027a
+--- /dev/null
++++ b/mill
+@@ -0,0 +1,67 @@
++#!/usr/bin/env sh
++
++# This is a wrapper script, that automatically download mill from GitHub release pages
++# You can give the required mill version with MILL_VERSION env variable
++# If no version is given, it falls back to the value of DEFAULT_MILL_VERSION
++
++set -e
++
++if [ -z "${DEFAULT_MILL_VERSION}" ] ; then
++  DEFAULT_MILL_VERSION=0.11.10
++fi
++
++if [ -z "$MILL_VERSION" ] ; then
++  if [ -f ".mill-version" ] ; then
++    MILL_VERSION="$(head -n 1 .mill-version 2> /dev/null)"
++  elif [ -f ".config/mill-version" ] ; then
++    MILL_VERSION="$(head -n 1 .config/mill-version 2> /dev/null)"
++  elif [ -f "mill" ] && [ "$0" != "mill" ] ; then
++    MILL_VERSION=$(grep -F "DEFAULT_MILL_VERSION=" "mill" | head -n 1 | cut -d= -f2)
++  else
++    MILL_VERSION=$DEFAULT_MILL_VERSION
++  fi
++fi
++
++if [ "x${XDG_CACHE_HOME}" != "x" ] ; then
++  MILL_DOWNLOAD_PATH="${XDG_CACHE_HOME}/mill/download"
++else
++  MILL_DOWNLOAD_PATH="${HOME}/.cache/mill/download"
++fi
++MILL_EXEC_PATH="${MILL_DOWNLOAD_PATH}/${MILL_VERSION}"
++
++version_remainder="$MILL_VERSION"
++MILL_MAJOR_VERSION="${version_remainder%%.*}"; version_remainder="${version_remainder#*.}"
++MILL_MINOR_VERSION="${version_remainder%%.*}"; version_remainder="${version_remainder#*.}"
++
++if [ ! -s "$MILL_EXEC_PATH" ] ; then
++  mkdir -p "$MILL_DOWNLOAD_PATH"
++  if [ "$MILL_MAJOR_VERSION" -gt 0 ] || [ "$MILL_MINOR_VERSION" -ge 5 ] ; then
++    ASSEMBLY="-assembly"
++  fi
++  DOWNLOAD_FILE=$MILL_EXEC_PATH-tmp-download
++  MILL_VERSION_TAG=$(echo $MILL_VERSION | sed -E 's/([^-]+)(-M[0-9]+)?(-.*)?/\1\2/')
++  MILL_DOWNLOAD_URL="https://repo1.maven.org/maven2/com/lihaoyi/mill-dist/$MILL_VERSION/mill-dist-$MILL_VERSION.jar"
++  curl --fail -L -o "$DOWNLOAD_FILE" "$MILL_DOWNLOAD_URL"
++  chmod +x "$DOWNLOAD_FILE"
++  mv "$DOWNLOAD_FILE" "$MILL_EXEC_PATH"
++  unset DOWNLOAD_FILE
++  unset MILL_DOWNLOAD_URL
++fi
++
++if [ -z "$MILL_MAIN_CLI" ] ; then
++  MILL_MAIN_CLI="${0}"
++fi
++
++MILL_FIRST_ARG=""
++
++ # first arg is a long flag for "--interactive" or starts with "-i"
++if [ "$1" = "--bsp" ] || [ "${1#"-i"}" != "$1" ] || [ "$1" = "--interactive" ] || [ "$1" = "--no-server" ] || [ "$1" = "--repl" ] || [ "$1" = "--help" ] ; then
++  # Need to preserve the first position of those listed options
++  MILL_FIRST_ARG=$1
++  shift
++fi
++
++unset MILL_DOWNLOAD_PATH
++unset MILL_VERSION
++
++exec $MILL_EXEC_PATH $MILL_FIRST_ARG -D "mill.main.cli=${MILL_MAIN_CLI}" "$@"
+diff --git a/rocket-chip b/rocket-chip
+index d0c6b50fd..ac5f66b5e 160000
+--- a/rocket-chip
++++ b/rocket-chip
+@@ -1 +1 @@
+-Subproject commit d0c6b50fdefcdbe121e9788433ea51f7efaf1d32
++Subproject commit ac5f66b5e311ba32a124fa193dbd1704bde4a02b
+-- 
+2.50.1
+

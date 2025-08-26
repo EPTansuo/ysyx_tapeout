@@ -29,3 +29,5 @@ am-kernels
 !*.cc
 !/npc/rocket-chip
 !/perf-data/*
+!/patch/rt-thread-am/*
+!/patch/ysyxSoC/*
