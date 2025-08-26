@@ -132,8 +132,6 @@ VERILOG_TIME := $(if $(VERILOG_TIME),$(VERILOG_TIME),0)
 RC_DIR     := $(NPC_HOME)/rocket-chip
 RC_URL     := https://github.com/chipsalliance/rocket-chip.git
 RC_MARKER  := $(RC_DIR)/common.sc
-# 可选：固定版本，保证可复现（留空则用默认分支）
-# RC_COMMIT := 3f2b1c8...
 
 $(RC_MARKER):
 	@echo "[init] ensuring rocket-chip exists (submodule or fresh clone)"
@@ -164,7 +162,8 @@ verilog: $(SCALA_FILE) sigmap .config.json $(RC_MARKER)
 	else \
 		echo "No changes detected in Scala directory, skipping Verilog generation."; \
 	fi
-
+	# CI needs SV file in the build/
+	cp $(NPC_HOME)/build/verilog/$(NPC_TOPNAME).sv $(NPC_HOME)/build/$(NPC_TOPNAME).sv
 
 
 SIGMAP_TIME = $(shell find $(SCALA_DIR) -name sigmap.scala -exec stat --format '%Y' {} \; | sort -n | tail -n 1)
