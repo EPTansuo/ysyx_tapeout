@@ -18,8 +18,8 @@ class IDU(config: NPCConfig) extends Module {
         val inst_type = Output(UInt(4.W))
         val stall = Input(Bool())
 
-        val reg_read1 = Flipped(new RegfileReadIO(config.XLEN))
-        val reg_read2 = Flipped(new RegfileReadIO(config.XLEN))
+        val reg_read1 = Flipped(new RegfileReadIO(config))
+        val reg_read2 = Flipped(new RegfileReadIO(config))
 
         // see 18-447 Lecture 8: Data Hazard and Resolution: Forwarding Paths (V1) Page 20
         val forward_A = Input(UInt(2.W))
@@ -29,7 +29,8 @@ class IDU(config: NPCConfig) extends Module {
         val forward_wbu = Input(UInt(config.XLEN.W))
     })
 
-    
+    io.out.bits := 0.U.asTypeOf(io.out.bits)
+
     val control = Module(new Control(config))
     val inst = io.in.bits.inst 
     val pc = io.in.bits.pc
@@ -44,7 +45,6 @@ class IDU(config: NPCConfig) extends Module {
         s_idle -> Mux(io.in.valid && ~stall, s_wait_ready, s_idle),
         s_wait_ready -> Mux(io.out.ready && io.out.valid, s_idle, s_wait_ready)
     ))
-
 
     io.out.valid := ((state === s_wait_ready) && (~stall))
     io.in.ready := state === s_idle && ~stall 
@@ -71,33 +71,29 @@ class IDU(config: NPCConfig) extends Module {
 
     io.out.bits.exu.A_sel := control.io.out.A_sel
     io.out.bits.exu.B_sel := control.io.out.B_sel
+
     val rs1_addr = inst(19, 15)
     val rs2_addr = inst(24, 20)
-    io.reg_read1.addr := Mux(control.io.out.csr_cmd === csr_cmd.CSR_P, 15.U,rs1_addr)
-    io.reg_read2.addr := rs2_addr
+    io.reg_read1.addr := Mux(control.io.out.csr_cmd === csr_cmd.CSR_P, 15.U,
+                            Mux(control.io.out.A_sel === A_sel.A_RS1, rs1_addr, 0.U))
+    io.reg_read2.addr := Mux(control.io.out.B_sel === B_sel.B_RS2, rs2_addr === B_sel.B_RS2, 0.U)
 
-    val forward_A_reg = RegInit(0.U(config.XLEN.W))
 
-    when(state === s_idle){
-        forward_A_reg := MuxLookup(io.forward_A, io.reg_read1.data)( Seq(
-            forward_sel.FWD_XX  -> io.reg_read1.data,
-            forward_sel.FWD_EXU -> io.forward_exu,
-            forward_sel.FWD_LSU -> io.forward_lsu,
-            forward_sel.FWD_WBU -> io.forward_wbu
-        ))
-    }
-    io.out.bits.exu.src1 := forward_A_reg
 
-    val forward_B_reg = RegInit(0.U(config.XLEN.W))
-    when(state === s_idle){
-    forward_B_reg := MuxLookup(io.forward_B, io.reg_read2.data)( Seq(
-            forward_sel.FWD_XX  -> io.reg_read2.data,
-            forward_sel.FWD_EXU -> io.forward_exu,
-            forward_sel.FWD_LSU -> io.forward_lsu,
-            forward_sel.FWD_WBU -> io.forward_wbu
-        ))
-    }
-    io.out.bits.exu.src2 := forward_B_reg
+    def fwdSel(sel: UInt, base: UInt): UInt = MuxLookup(sel, base)(Seq(
+        forward_sel.FWD_EXU.asUInt -> io.forward_exu,
+        forward_sel.FWD_LSU.asUInt -> io.forward_lsu,
+        forward_sel.FWD_WBU.asUInt -> io.forward_wbu
+    ))
+
+    val next_src1 = fwdSel(io.forward_A, io.reg_read1.data)
+    val next_src2 = fwdSel(io.forward_B, io.reg_read2.data)
+
+    val src1_reg = RegEnable(next_src1, 0.U(config.XLEN.W), io.in.valid && io.in.ready)
+    val src2_reg = RegEnable(next_src2, 0.U(config.XLEN.W), io.in.valid && io.in.ready)
+
+    io.out.bits.exu.src1 := src1_reg
+    io.out.bits.exu.src2 := src2_reg
 
     io.out.bits.exu.alu_op := control.io.out.alu_op
     io.out.bits.exu.imm_sel := control.io.out.imm_sel

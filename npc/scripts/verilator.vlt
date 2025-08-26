@@ -1,5 +1,5 @@
 `verilator_config
-// public -module "Regfile" -var "regs"
+public -module "Regfile" -var "regs"
 public -module "regs_32x32" -var "Memory"
 public -module "regs_31x32" -var "Memory"
 public -module "regs_16x32" -var "Memory"

@@ -13,7 +13,7 @@ class WBU(config: NPCConfig) extends Module {
     val io = IO(new Bundle {
         val in = Flipped(Decoupled(new SigIO_LSU_WBU(config.XLEN)))
         val out = Decoupled(new SigIO_WBU_IFU(config.XLEN))
-        val reg_write = Flipped(new RegfileWriteIO(config.XLEN))
+        val reg_write = Flipped(new RegfileWriteIO(config))
         val wb_valid = Output(Bool())
         val rd_addr = Output(UInt(5.W))
         val inst_type = Output(UInt(4.W))

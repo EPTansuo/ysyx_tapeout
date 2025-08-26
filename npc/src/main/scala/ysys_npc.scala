@@ -6,28 +6,53 @@ import chisel3.util._
 //import defines._ 
 import freechips.rocketchip.amba.axi4._
 import org.chipsalliance.cde.config.Parameters
-// object ModuleConnect {
-//   def apply(left: Module, right: Module, isPipe: Boolean = false): Unit = {
-//     isPipe match {
-//       case false  =>   right.io.in <> left.io.out
-//       case _        =>   throw new IllegalArgumentException(s"Unsupported architecture")
-//     }
+//object ModuleConnect {
+//  def apply(left: Module, right: Module, isPipe: Boolean = false): Unit = {
+//    isPipe match {
+//      case false  =>   right.io.in <> left.io.out
+//      case _        =>   throw new IllegalArgumentException(s"Unsupported architecture")
+//    }
+//  }
+//}
+
+//object ModuleConnect {
+//   def apply[T <: Data](prevOut: DecoupledIO[T], thisIn: DecoupledIO[T], thisOut: DecoupledIO[T],
+//                  flush: Bool,  arch: String = "multi"): Unit = {
+//       arch match {
+//           case "multi"  =>
+//               prevOut <> thisIn
+//           case "pipeline" =>
+//               prevOut.ready := thisIn.ready
+//               thisIn.bits := RegEnable(prevOut.bits, prevOut.valid && thisIn.ready)
+//               thisIn.valid := RegEnable(prevOut.valid && ~flush, thisIn.ready || flush)
+//           case _        =>   throw new IllegalArgumentException(s"Unsupported architecture")
+//       }
 //   }
-// }
+//}
+
 
 object ModuleConnect {
-    def apply[T <: Data](prevOut: DecoupledIO[T], thisIn: DecoupledIO[T], thisOut: DecoupledIO[T],
-                   flush: Bool,  arch: String = "multi"): Unit = {
-        arch match {
-            case "multi"  =>   
-                prevOut <> thisIn
-            case "pipeline" =>
-                prevOut.ready := thisIn.ready
-                thisIn.bits := RegEnable(prevOut.bits, prevOut.valid && thisIn.ready)
-                thisIn.valid := RegEnable(prevOut.valid && ~flush, thisIn.ready || flush)
-            case _        =>   throw new IllegalArgumentException(s"Unsupported architecture")
-        }
+  def apply[T <: Data](prevOut: DecoupledIO[T], thisIn: DecoupledIO[T], thisOut: DecoupledIO[T],flush: Bool,
+    arch: String = "multi"): Unit = {
+    arch match {
+      case "multi" =>
+        prevOut <> thisIn
+      case "pipeline" =>
+        prevOut.ready := thisIn.ready
+
+        val zeroBits = 0.U.asTypeOf(prevOut.bits)
+
+        // RegEnable(next, init, enable)
+        val regBits  = RegEnable(prevOut.bits, zeroBits, prevOut.valid && thisIn.ready)
+        val regValid = RegEnable(prevOut.valid && ~flush, false.B, thisIn.ready || flush)
+
+        thisIn.bits  := regBits
+        thisIn.valid := regValid
+
+      case _ =>
+        throw new IllegalArgumentException(s"Unsupported architecture")
     }
+  }
 }
 
 
