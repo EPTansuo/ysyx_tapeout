@@ -128,17 +128,33 @@ $(shell mkdir -p $(BUILD_DIR)/verilog)
 VERILOG_TIME = $(shell find $(VERILOG_DIR) -type f -exec stat --format '%Y' {} \; | sort -n | tail -n 1)
 VERILOG_TIME := $(if $(VERILOG_TIME),$(VERILOG_TIME),0)
 
-RC_DIR      := $(NPC_HOME)/rocket-chip
-RC_MARKER   := $(RC_DIR)/common.sc
+
+RC_DIR     := $(NPC_HOME)/rocket-chip
+RC_URL     := https://github.com/chipsalliance/rocket-chip.git
+RC_MARKER  := $(RC_DIR)/common.sc
+# 可选：固定版本，保证可复现（留空则用默认分支）
+# RC_COMMIT := 3f2b1c8...
+
 $(RC_MARKER):
-	@echo "[init] initializing rocket-chip submodule (recursive, depth=1)"
-	
-	# git@github.com --->  https://github.com
+	@echo "[init] ensuring rocket-chip exists (submodule or fresh clone)"
 	@git -C $(NPC_HOME) config url."https://github.com/".insteadOf "git@github.com:"
-	@git -C $(NPC_HOME) submodule set-url -- rocket-chip https://github.com/chipsalliance/rocket-chip.git
-	@git -C $(NPC_HOME) submodule update --init --recursive --depth 1 rocket-chip
-	@git -C $(RC_DIR) config url."https://github.com/".insteadOf "git@github.com:"
-	@git -C $(RC_DIR)   submodule update --init --recursive --depth 1
+	@if git -C $(NPC_HOME) config -f .gitmodules --get-regexp '^submodule\.rocket-chip\.url' >/dev/null 2>&1; then \
+	  echo "[init] detected submodule entry for rocket-chip -> using submodule update"; \
+	  git -C $(NPC_HOME) submodule set-url -- rocket-chip "$(RC_URL)"; \
+	  git -C $(NPC_HOME) submodule update --init --recursive --depth 1 rocket-chip; \
+	else \
+	  echo "[init] no submodule mapping; cloning rocket-chip via HTTPS"; \
+	  rm -rf "$(RC_DIR)"; \
+	  git clone --depth 1 "$(RC_URL)" "$(RC_DIR)"; \
+	fi
+	@if [ -n "$(RC_COMMIT)" ]; then \
+	  git -C "$(RC_DIR)" fetch --depth 1 origin "$(RC_COMMIT)"; \
+	  git -C "$(RC_DIR)" checkout --detach "$(RC_COMMIT)"; \
+	fi
+	@git -C "$(RC_DIR)" config url."https://github.com/".insteadOf "git@github.com:"
+	@git -C "$(RC_DIR)" submodule update --init --recursive --depth 1
+	@test -f "$(RC_MARKER)" || (echo "FATAL: $(RC_MARKER) not found after init"; exit 1)
+
 
 verilog: $(SCALA_FILE) sigmap .config.json $(RC_MARKER)
 
