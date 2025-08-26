@@ -132,9 +132,13 @@ RC_DIR      := $(NPC_HOME)/rocket-chip
 RC_MARKER   := $(RC_DIR)/common.sc
 $(RC_MARKER):
 	@echo "[init] initializing rocket-chip submodule (recursive, depth=1)"
+	
+	# git@github.com --->  https://github.com
+	@git -C $(NPC_HOME) config url."https://github.com/".insteadOf "git@github.com:"
+	@git -C $(NPC_HOME) submodule set-url -- rocket-chip https://github.com/chipsalliance/rocket-chip.git
 	@git -C $(NPC_HOME) submodule update --init --recursive --depth 1 rocket-chip
+	@git -C $(RC_DIR) config url."https://github.com/".insteadOf "git@github.com:"
 	@git -C $(RC_DIR)   submodule update --init --recursive --depth 1
-
 
 verilog: $(SCALA_FILE) sigmap .config.json $(RC_MARKER)
 
