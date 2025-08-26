@@ -128,7 +128,15 @@ $(shell mkdir -p $(BUILD_DIR)/verilog)
 VERILOG_TIME = $(shell find $(VERILOG_DIR) -type f -exec stat --format '%Y' {} \; | sort -n | tail -n 1)
 VERILOG_TIME := $(if $(VERILOG_TIME),$(VERILOG_TIME),0)
 
-verilog: $(SCALA_FILE) sigmap .config.json
+RC_DIR      := $(NPC_HOME)/rocket-chip
+RC_MARKER   := $(RC_DIR)/common.sc
+$(RC_MARKER):
+	@echo "[init] initializing rocket-chip submodule (recursive, depth=1)"
+	@git -C $(NPC_HOME) submodule update --init --recursive --depth 1 rocket-chip
+	@git -C $(RC_DIR)   submodule update --init --recursive --depth 1
+
+
+verilog: $(SCALA_FILE) sigmap .config.json $(RC_MARKER)
 
 	@if [ "$(SCALA_TIME)" -gt "$(VERILOG_TIME)" ]; then \
 		echo "Scala directory changed or Verilog directory missing, generating Verilog..."; \
