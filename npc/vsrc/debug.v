@@ -42,27 +42,27 @@ end
 
 endmodule
 
-(* keep_hierarchy = 1 *)
-(* keep = 1 *)
-module AXIError(
-    input [1:0] bresp,
-    input [1:0] rresp,
-    input wen,
-    input ren
-);
-
-`ifndef SYNTHESIS
-//`ifdef VERILATOR
-always @(*) begin
-    if(wen & bresp[1]) begin
-        axi_error({6'b0,bresp}, 8'b0);
-    end
-
-    if(ren & rresp[1]) begin
-        axi_error({6'b0,rresp}, 8'b1);
-    end
-end
+//(* keep_hierarchy = 1 *)
+//(* keep = 1 *)
+//module AXIError(
+//    input [1:0] bresp,
+//    input [1:0] rresp,
+//    input wen,
+//    input ren
+//);
+//
+//`ifndef SYNTHESIS
+////`ifdef VERILATOR
+//always @(*) begin
+//    if(wen & bresp[1]) begin
+//        axi_error({6'b0,bresp}, 8'b0);
+//    end
+//
+//    if(ren & rresp[1]) begin
+//        axi_error({6'b0,rresp}, 8'b1);
+//    end
+//end
+////`endif
 //`endif
-`endif
-
-endmodule
+//
+//endmodule
