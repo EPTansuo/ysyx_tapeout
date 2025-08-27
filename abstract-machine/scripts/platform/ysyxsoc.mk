@@ -29,6 +29,12 @@ CFLAGS += -DMAINARGS=\"$(mainargs)\"
 NPCFLAGS = --diff=$(NPC_HOME)/difftest/riscv32e-nemu-soc-so 
 
 BATCH ?= 0
+
+# use batch mode in CI
+ifneq ($(USER),han)
+  BATCH := 1
+endif
+
 ifeq ($(BATCH), 1)
     NPCFLAGS += -b
 endif
