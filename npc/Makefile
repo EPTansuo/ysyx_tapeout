@@ -113,7 +113,10 @@ $(OBJ_DIR)/disasm.o: $(abspath csrc/utils/disasm.cc)
 	@mkdir -p $(OBJ_DIR)
 	$(CXX)  $(shell llvm-config --cxxflags) \
 		-fPIE -c $< -o $@ 
-	
+
+# rules for NVBoard
+include $(NVBOARD_HOME)/scripts/nvboard.mk
+
 
 $(BIN): $(CSRCS) verilog $(NVBOARD_ARCHIVE) $(OBJ_DIR)/disasm.o
 	$(VERILATOR) $(VERILATOR_CONFIG) $(VERILATOR_FLAGS) -top $(TOPNAME) $(CSRCS) $(VSRCS) $(OBJ_DIR)/disasm.o $(NVBOARD_ARCHIVE)\
@@ -250,9 +253,6 @@ clean_mill:
 clean_all: clean clean_mill
 
 .PHONY: clean clean_all clean_mill srun run sim verilog
-
-# rules for NVBoard
-include $(NVBOARD_HOME)/scripts/nvboard.mk
 
 include ../Makefile
 

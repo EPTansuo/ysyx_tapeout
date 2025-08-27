@@ -118,7 +118,7 @@ inline const char* get_section_type_name(ElfN_Word sh_type) {
 		case SHT_HIPROC: return "HIPROC";
 		case SHT_LOUSER: return "LOUSER";
 		case SHT_HIUSER: return "HIUSER";
-		case PT_RISCV_ATTRIBUTES: return "RISCV_ATTRIBUTE";
+		//case PT_RISCV_ATTRIBUTES: return "RISCV_ATTRIBUTE";
 		default: return "UNKNOWN";
 	}
 }
