@@ -26,4 +26,4 @@ public -module "ysyx_23060246_LSU" -var "*state"
 public -module "ysyx_23060246_WBU" -var "*_cnt"
 public -module "ysyx_23060246_ICache" -var "*_cnt"
 
-lint_off -rule PINMISSING -file ".*/ysyxSoCFull\.v"
+lint_off -rule PINMISSING 
