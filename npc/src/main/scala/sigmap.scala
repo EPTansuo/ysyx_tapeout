@@ -59,7 +59,7 @@ val map = Array(
 	slli    ->  List(PC_4  , A_RS1, B_IMM, ALU_SLL   , IMM_I, WB_ALU, LD_XX , ST_XX, MASK_XX, BR_XX , CSR_XX, INST_VALID  , I_TYPE),
 	slt     ->  List(PC_4  , A_RS1, B_RS2, ALU_SLT   , IMM_I, WB_ALU, LD_XX , ST_XX, MASK_XX, BR_XX , CSR_XX, INST_VALID  , R_TYPE),
 	sltu    ->  List(PC_4  , A_RS1, B_RS2, ALU_SLTU  , IMM_I, WB_ALU, LD_XX , ST_XX, MASK_XX, BR_XX , CSR_XX, INST_VALID  , R_TYPE),
-	slti    ->  List(PC_4  , A_RS1, B_IMM, ALU_SLTU  , IMM_I, WB_ALU, LD_XX , ST_XX, MASK_XX, BR_XX , CSR_XX, INST_VALID  , I_TYPE),
+	slti    ->  List(PC_4  , A_RS1, B_IMM, ALU_SLT   , IMM_I, WB_ALU, LD_XX , ST_XX, MASK_XX, BR_XX , CSR_XX, INST_VALID  , I_TYPE),
 	sltiu   ->  List(PC_4  , A_RS1, B_IMM, ALU_SLTU  , IMM_I, WB_ALU, LD_XX , ST_XX, MASK_XX, BR_XX , CSR_XX, INST_VALID  , I_TYPE),
 	sll     ->  List(PC_4  , A_RS1, B_RS2, ALU_SLL   , IMM_I, WB_ALU, LD_XX , ST_XX, MASK_XX, BR_XX , CSR_XX, INST_VALID  , R_TYPE),
 	add     ->  List(PC_4  , A_RS1, B_RS2, ALU_ADD   , IMM_I, WB_ALU, LD_XX , ST_XX, MASK_XX, BR_XX , CSR_XX, INST_VALID  , R_TYPE),
