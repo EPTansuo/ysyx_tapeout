@@ -19,7 +19,7 @@
 #include <cpu/cpu.h>
 #include <memory/paddr.h>
 #include <memory/socmem.h>
-#include <utils/utils.h>
+#include <utils.h>
 #include <difftest-def.h>
 
 void (*ref_difftest_memcpy)(paddr_t addr, void *buf, size_t n, bool direction) = NULL;
