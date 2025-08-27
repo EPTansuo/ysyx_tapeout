@@ -46,15 +46,15 @@ wire [1:0]  rresp;
 wire        rlast;
 
 
-initial begin
-    $dumpfile("mem.vcd");
-    $dumpvars(0, top);
-end
+// initial begin
+//     $dumpfile("wave.vcd");
+//     $dumpvars(0, top);
+// end
 
 initial begin
     clock = 1'b0;
     reset = 1'b1;
-    #30 reset = 1'b0;
+    #100 reset = 1'b0;
 end
 
 always begin
@@ -399,7 +399,7 @@ module SoCMem(
   logic [31:0] sdram_mem [0:SDRAM_WORDS-1];
 
   // ---- 镜像路径：载入 ROM（覆盖 MROM/FLASH）----
-  `define IMG_PATH "/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/npc/iverilog/add-ysyxsoc.mem"
+  //`define IMG_PATH "/home/han/Disk/Document/PROJECT/ysyx/ysyx-workbench/npc/iverilog/add-ysyxsoc.mem"
   integer i;
   initial begin
     // 可选清零
@@ -521,15 +521,5 @@ module SoCMem(
       // 其它区域：忽略或断言
     end
   end
-
-  // ---- 断言：强制字对齐（仿真期可开）----
-`ifdef ASSERT_ALIGN
-  always_ff @(posedge clock) if (!reset && we) begin
-    if (|waddr[1:0]) $fatal(1, "Unaligned write @%08x", waddr);
-  end
-  always @(*) begin
-    if (|raddr[1:0]) $fatal(1, "Unaligned read  @%08x", raddr);
-  end
-`endif
 
 endmodule

@@ -27,8 +27,8 @@ module Ebreak(
 `ifndef SYNTHESIS
 always @(*) begin
     if(isebreak)begin
-						$display("EBreak!");
-						$finish;
+	  	  $display("EBreak!");
+		    $finish;
     end
 end
 `endif

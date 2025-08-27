@@ -128,7 +128,33 @@ $(shell mkdir -p $(BUILD_DIR)/verilog)
 VERILOG_TIME = $(shell find $(VERILOG_DIR) -type f -exec stat --format '%Y' {} \; | sort -n | tail -n 1)
 VERILOG_TIME := $(if $(VERILOG_TIME),$(VERILOG_TIME),0)
 
-verilog: $(SCALA_FILE) sigmap .config.json
+
+RC_DIR     := $(NPC_HOME)/rocket-chip
+RC_URL     := https://github.com/chipsalliance/rocket-chip.git
+RC_MARKER  := $(RC_DIR)/common.sc
+
+$(RC_MARKER):
+	@echo "[init] ensuring rocket-chip exists (submodule or fresh clone)"
+	@git -C $(NPC_HOME) config url."https://github.com/".insteadOf "git@github.com:"
+	@if git -C $(NPC_HOME) config -f .gitmodules --get-regexp '^submodule\.rocket-chip\.url' >/dev/null 2>&1; then \
+	  echo "[init] detected submodule entry for rocket-chip -> using submodule update"; \
+	  git -C $(NPC_HOME) submodule set-url -- rocket-chip "$(RC_URL)"; \
+	  git -C $(NPC_HOME) submodule update --init --recursive --depth 1 rocket-chip; \
+	else \
+	  echo "[init] no submodule mapping; cloning rocket-chip via HTTPS"; \
+	  rm -rf "$(RC_DIR)"; \
+	  git clone --depth 1 "$(RC_URL)" "$(RC_DIR)"; \
+	fi
+	@if [ -n "$(RC_COMMIT)" ]; then \
+	  git -C "$(RC_DIR)" fetch --depth 1 origin "$(RC_COMMIT)"; \
+	  git -C "$(RC_DIR)" checkout --detach "$(RC_COMMIT)"; \
+	fi
+	@git -C "$(RC_DIR)" config url."https://github.com/".insteadOf "git@github.com:"
+	@git -C "$(RC_DIR)" submodule update --init --recursive --depth 1
+	@test -f "$(RC_MARKER)" || (echo "FATAL: $(RC_MARKER) not found after init"; exit 1)
+
+
+verilog: $(SCALA_FILE) sigmap .config.json $(RC_MARKER)
 
 	@if [ "$(SCALA_TIME)" -gt "$(VERILOG_TIME)" ]; then \
 		echo "Scala directory changed or Verilog directory missing, generating Verilog..."; \
@@ -136,7 +162,32 @@ verilog: $(SCALA_FILE) sigmap .config.json
 	else \
 		echo "No changes detected in Scala directory, skipping Verilog generation."; \
 	fi
-
+	# CI needs SV file in the build/
+	cp $(NPC_HOME)/build/verilog/$(NPC_TOPNAME).sv $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	cat $(NPC_HOME)/vsrc/debug.v >> $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	
+	# add prefix 
+	sed -i 's/\<IFU\>/ysyx_23060246_IFU/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	sed -i 's/\<IDU\>/ysyx_23060246_IDU/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	sed -i 's/\<Control\>/ysyx_23060246_Control/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	sed -i 's/\<ALU\>/ysyx_23060246_ALU/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	sed -i 's/\<ImmGen\>/ysyx_23060246_ImmGen/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	sed -i 's/\<CSR\>/ysyx_23060246_CSR/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	sed -i 's/\<Branch\>/ysyx_23060246_Branch/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	sed -i 's/\<EXU\>/ysyx_23060246_EXU/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	sed -i 's/\<LSU\>/ysyx_23060246_LSU/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	sed -i 's/\<WBU\>/ysyx_23060246_WBU/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	sed -i 's/\<ControlHazard\>/ysyx_23060246_ControlHazard/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	sed -i 's/\<Regfile\>/ysyx_23060246_Regfile/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	sed -i 's/\<regs_16x32\>/ysyx_23060246_regs_16x32/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	sed -i 's/\<Forward\>/ysyx_23060246_Forward/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	sed -i 's/\<AXIArbiter\>/ysyx_23060246_AXIArbiter/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	sed -i 's/\<AXIXbar\>/ysyx_23060246_AXIXbar/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	sed -i 's/\<AXI4BundleIFConv\>/ysyx_23060246_AXI4BundleIFConv/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	sed -i 's/\<CLINT\>/ysyx_23060246_CLINT/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	sed -i 's/\<ysyx_npc\>/ysyx_23060246_ysyx_npc/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	sed -i 's/\<Ebreak\>/ysyx_23060246_Ebreak/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	sed -i 's/\<InstInvalid\>/ysyx_23060246_InstInvalid/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
 
 
 SIGMAP_TIME = $(shell find $(SCALA_DIR) -name sigmap.scala -exec stat --format '%Y' {} \; | sort -n | tail -n 1)

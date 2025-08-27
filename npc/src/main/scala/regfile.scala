@@ -4,41 +4,47 @@ import chisel3._
 import chisel3.util._
 import chisel3.stage._
 
-class RegfileReadIO(xlen:Int) extends Bundle{
-    var addr = Input(UInt(5.W))
-    var data = Output(UInt(xlen.W))
+class RegfileReadIO(config:NPCConfig) extends Bundle{
+    var addr = Input(UInt(log2Ceil(config.REG_NUM).W))
+    var data = Output(UInt(config.XLEN.W))
 }
 
-class RegfileWriteIO(xlen:Int) extends Bundle{
+class RegfileWriteIO(config: NPCConfig) extends Bundle{
     var en = Input(Bool())
-    var addr = Input(UInt(5.W))
-    var data = Input(UInt(xlen.W))
+    var addr = Input(UInt(log2Ceil(config.REG_NUM).W))
+    var data = Input(UInt(config.XLEN.W))
 }
 
-class RegfileIO(xlen: Int) extends Bundle{
-    val read1 = new RegfileReadIO(xlen)
-    val read2 = new RegfileReadIO(xlen)
-    val write = new RegfileWriteIO(xlen)
+class RegfileIO(config: NPCConfig) extends Bundle{
+    val read1 = new RegfileReadIO(config)
+    val read2 = new RegfileReadIO(config)
+    val write = new RegfileWriteIO(config)
 }
 
 
 class Regfile(config: NPCConfig) extends Module{
-    val io = IO(new RegfileIO(config.XLEN))
+    val io = IO(new RegfileIO(config))
+    
+    val N = config.USE_REG0 match {
+        case true => config.REG_NUM
+        case false => config.REG_NUM - 1
+    }
+    val regs = Mem(N, UInt(config.XLEN.W))
+    //val regs = RegInit(VecInit(Seq.fill(N)(0.U(config.XLEN.W))))
+
     if(config.USE_REG0){
-    var regs = Mem(config.REG_NUM, UInt(config.XLEN.W))
 
         // read data with internal forwarding 
         io.read1.data := Mux(io.write.addr === io.read1.addr && io.write.addr =/= 0.U && io.write.en, 
-                                io.write.data, regs(io.read1.addr))
+                                io.write.data, Mux(io.read1.addr.orR, regs(io.read1.addr), 0.U))
         io.read2.data := Mux(io.write.addr === io.read2.addr && io.write.addr =/= 0.U && io.write.en, 
-                                io.write.data, regs(io.read2.addr))
+                                io.write.data, Mux(io.read2.addr.orR, regs(io.read2.addr), 0.U))
         
         when(io.write.en) {
             regs(io.write.addr) := Mux(io.write.addr === 0.U, 0.U, io.write.data)
         }
     }
     else {
-        var regs = Mem(config.REG_NUM - 1, UInt(config.XLEN.W))
 
         // read data with internal forwarding 
         def readLogic(addr: UInt): UInt = {
