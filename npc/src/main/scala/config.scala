@@ -98,24 +98,11 @@ object NPCConfig {
     val USE_REG0 = getConfig("CONFIG_USE_REG0") == "y"
     val xlen = if (getConfig("CONFIG_ISA") == "\"riscv32\"") 32 else 64
 
-
-    // 把 "\"0x30000000\"" / "0x30000000" / "30000000" 等转成 BigInt
-    def parseHexLike(str: String): Option[BigInt] = {
-      if (str == null) return None
-      val t0 = str.trim
-      if (t0.isEmpty) return None
-      val t1 = t0.stripPrefix("\"").stripSuffix("\"").replace("_", "")
-      val t2 = if (t1.startsWith("0x") || t1.startsWith("0X")) t1.drop(2) else t1
-      try Some(BigInt(t2, 16)) catch { case _: Throwable => None }
-    }
-
     NPCConfig(
       USE_SOC = SOC_EN,
       XLEN = xlen,
       REG_NUM = if (getConfig("CONFIG_RVE") == "y") 16 else 32,
-      //PC_INIT = if (SOC_EN) 0x30000000L else 0x80000000L,
-      PC_INIT = parseHexLike(getConfig("CONFIG_RESET_VECTOR")).getOrElse(
-                              if (SOC_EN) 0x30000000L else 0x80000000L),
+      PC_INIT = if (SOC_EN) 0x30000000L else 0x80000000L,
       MSTATUS_INIT = if (xlen == 32) 0x1800 else 0xa00001800L,
       MTVEC_INIT = if (xlen == 32) 0x100 else 0x80000000L,
       CLINT_BASE = if(SOC_EN) 0x02000000L else 0xa0000040L,

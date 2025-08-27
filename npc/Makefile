@@ -6,16 +6,6 @@ NXDC_FILES = $(NPC_HOME)/constr/soc.nxdc
 SDC_FILE = $(NPC_HOME)/scripts/top.sdc
 
 -include .config
-
-CONFIG_USE_SOC ?= n
-
-ifeq ($(USENPC),1)
-	override CONFIG_USE_SOC:=n
-
-endif
-
-
-
 ifeq ($(CONFIG_USE_SOC),y)
 IMG = "$(YSYX_HOME)/am-kernels/tests/cpu-tests/build/sum-riscv32e-ysyxsoc.bin"
 else
@@ -168,6 +158,7 @@ $(RC_MARKER):
 
 
 verilog: $(SCALA_FILE) sigmap .config.json $(RC_MARKER)
+
 	@if [ "$(SCALA_TIME)" -gt "$(VERILOG_TIME)" ]; then \
 		echo "Scala directory changed or Verilog directory missing, generating Verilog..."; \
 		./mill -i $(NPC_TOPNAME).runMain $(MAIN) -td $(VERILOG_DIR) ; \

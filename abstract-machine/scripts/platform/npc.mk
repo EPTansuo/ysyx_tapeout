@@ -32,6 +32,11 @@ ifeq ($(BATCH),1)
 	NPCFLAGS += -b
 endif
 
+# use batch mode in CI
+ifneq ($(USER),han)
+  BATCH := 1
+endif
+
 ifeq ($(BATCH), 1)
   NPCFLAGS += -b
 endif
@@ -51,12 +56,7 @@ image: $(IMAGE).elf
 	@echo + OBJCOPY "->" $(IMAGE_REL).bin
 	@$(OBJCOPY) -S --set-section-flags .bss=alloc,contents -O binary $(IMAGE).elf $(IMAGE).bin
 
-run:  insert-arg 
-	@echo "CI='$(CI)'"
-	#cp -f $(NPC_HOME)/npc_config $(NPC_HOME)/.config
-	@[ -n "$(CI)" ] && cp -f "$(NPC_HOME)/npc_config" "$(NPC_HOME)/.config" || true
-	@python3 $(NPC_HOME)/scripts/config2json.py $(NPC_HOME)/.config $(NPC_HOME)/.config.json
-	@[ -n "$(CI)" ] && cp -f "$(NPC_HOME)/npc_autoconf.h" "$(NPC_HOME)/csrc/include/autoconf.h" || true
-	$(MAKE) -C $(NPC_HOME) run  ARGS="$(NPCFLAGS)" IMG=$(IMAGE).bin USENPC=1
+run:  insert-arg
+	$(MAKE) -C $(NPC_HOME) run  ARGS="$(NPCFLAGS)" IMG=$(IMAGE).bin
 
 .PHONY: insert-arg
