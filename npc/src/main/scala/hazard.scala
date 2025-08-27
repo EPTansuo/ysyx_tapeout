@@ -5,7 +5,7 @@ import chisel3.util._
 
 
 // 控制相关  冲刷IFU、IDU 
-class ControlHazard(config: NPCConfig) extends Module{
+class ysyx_23060246_ControlHazard(config: NPCConfig) extends Module{
     val io = IO(new Bundle{
         val ifu_pc = Flipped(Valid(UInt(config.XLEN.W)))
         val idu_pc = Flipped(Valid(UInt(config.XLEN.W)))

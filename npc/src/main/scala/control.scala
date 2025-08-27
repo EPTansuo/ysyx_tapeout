@@ -28,7 +28,7 @@ class ControlIn(xlen: Int) extends Bundle{
     val pc = Input(UInt(xlen.W))
 }
 
-class Control(config: NPCConfig) extends Module{
+class ysyx_23060246_Control(config: NPCConfig) extends Module{
   val io = IO(new Bundle{
     val out = Output(new ControlOut(config.XLEN))
     val in = Input(new ControlIn(config.XLEN))

@@ -13,59 +13,60 @@
 #ifdef CONFIG_USE_SOC
 #include "VysyxSoCFull.h"
 #include "VysyxSoCFull__Dpi.h"
-#include "VysyxSoCFull_CSR.h"
-#include "VysyxSoCFull_EXU.h"
-#include "VysyxSoCFull_Regfile.h"
+#include "VysyxSoCFull_ysyx_23060246_CSR.h"
+#include "VysyxSoCFull_ysyx_23060246_EXU.h"
+#include "VysyxSoCFull_ysyx_23060246_Regfile.h"
 #ifdef CONFIG_RVE
 #ifdef DONT_USE_REG0
-#include "VysyxSoCFull_regs_15x32.h"
+#include "VysyxSoCFull_ysyx_23060246_regs_15x32.h"
 #else 
-#include "VysyxSoCFull_regs_16x32.h"
+#include "VysyxSoCFull_ysyx_23060246_regs_16x32.h"
 #endif // !DONT_USE_REG0
 #else 
 #ifdef DONT_USE_REG0
-#include "VysyxSoCFull_regs_31x32.h"
+#include "VysyxSoCFull_ysyx_23060246_regs_31x32.h"
 #else 
-#include "VysyxSoCFull_regs_32x32.h"
+#include "VysyxSoCFull_ysyx_23060246_regs_32x32.h"
 #endif // !DONT_USE_REG0
 #endif // !CONFIG_RVE
 #include "VysyxSoCFull_ysyx_23060246.h"
-#include "VysyxSoCFull_ysyx_npc.h"
+#include "VysyxSoCFull_ysyx_23060246_npc.h"
 #include "VysyxSoCFull_ysyxSoCFull.h"
 #include "VysyxSoCFull_ysyxSoCASIC.h"
-#include "VysyxSoCFull_WBU.h"
-#include "VysyxSoCFull_LSU.h"
-#include "VysyxSoCFull_IDU.h"
-#include "VysyxSoCFull_IFU.h"
+#include "VysyxSoCFull_ysyx_23060246_WBU.h"
+#include "VysyxSoCFull_ysyx_23060246_LSU.h"
+#include "VysyxSoCFull_ysyx_23060246_IDU.h"
+#include "VysyxSoCFull_ysyx_23060246_IFU.h"
 #include "VysyxSoCFull_CPU.h"
 #ifdef CONFIG_USE_ICACHE
+#error "You need to solve prefix problem first!"
 #include "VysyxSoCFull_ICache.h"
 #endif 
 #else
 #include "Vysyx_23060246.h"
 #include "Vysyx_23060246__Dpi.h"
-#include "Vysyx_23060246_CSR.h"
-#include "Vysyx_23060246_EXU.h"
-#include "Vysyx_23060246_Regfile.h"
+#include "Vysyx_23060246_ysyx_23060246_CSR.h"
+#include "Vysyx_23060246_ysyx_23060246_EXU.h"
+#include "Vysyx_23060246_ysyx_23060246_Regfile.h"
 #ifdef CONFIG_RVE
 #ifdef DONT_USE_REG0
-#include "Vysyx_23060246_regs_15x32.h"
+#include "Vysyx_23060246_ysyx_23060246_regs_15x32.h"
 #else 
-#include "Vysyx_23060246_regs_16x32.h"
+#include "Vysyx_23060246_ysyx_23060246_regs_16x32.h"
 #endif  // ! DONT_USE_REG0
 #else 
 #ifdef DONT_USE_REG0
-#include "Vysyx_23060246_regs_31x32.h"
+#include "Vysyx_23060246_ysyx_23060246_regs_31x32.h"
 #else
-#include "Vysyx_23060246_regs_32x32.h"
+#include "Vysyx_23060246_ysyx_23060246_regs_32x32.h"
 #endif // ! DONT_USE_REG0
 #endif // ! CONFIG_RVE
 #include "Vysyx_23060246_ysyx_23060246.h"
-#include "Vysyx_23060246_ysyx_npc.h"
-#include "Vysyx_23060246_WBU.h"
-#include "Vysyx_23060246_LSU.h"
-#include "Vysyx_23060246_IDU.h"
-#include "Vysyx_23060246_IFU.h"
+#include "Vysyx_23060246_ysyx_23060246_npc.h"
+#include "Vysyx_23060246_ysyx_23060246_WBU.h"
+#include "Vysyx_23060246_ysyx_23060246_LSU.h"
+#include "Vysyx_23060246_ysyx_23060246_IDU.h"
+#include "Vysyx_23060246_ysyx_23060246_IFU.h"
 #ifdef CONFIG_USE_ICACHE
 #include "Vysyx_23060246_ICache.h"
 #endif 

@@ -5,7 +5,7 @@ import chisel3.util._
 
 import freechips.rocketchip.amba.axi4._
 
-class AXIXbar(val OutNum: Int, val AddressMap: Array[(Long, Long)], param : AXI4BundleParameters ) extends Module {
+class ysyx_23060246_AXIXbar(val OutNum: Int, val AddressMap: Array[(Long, Long)], param : AXI4BundleParameters ) extends Module {
   val io = IO(new Bundle {
     // single input 
     val in = Flipped(new AXI4Bundle(param))

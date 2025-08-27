@@ -5,7 +5,7 @@ import chisel3.util._
 import freechips.rocketchip.amba.axi4._
 import AXI4._
 
-class CLINT(params: AXI4BundleParameters) extends Module {
+class ysyx_23060246_CLINT(params: AXI4BundleParameters) extends Module {
     val io = IO(new Bundle {
         //val axi = new AXILiteSlaveIF(32,32)
         val axi = Flipped(new AXI4Bundle(params))

@@ -11,7 +11,7 @@ class BranchIO(xlen: Int) extends Bundle{
   val taken = Output(Bool())
 }
 
-class  Branch(xlen:Int) extends Module{
+class  ysyx_23060246_Branch(xlen:Int) extends Module{
   val io = IO(new BranchIO(xlen))
 
   val eq = io.src1 === io.src2

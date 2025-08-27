@@ -14,7 +14,7 @@ class ImmGenIO(xlen: Int) extends Bundle {
 }
 
 
-class ImmGen(xlen: Int) extends Module{
+class ysyx_23060246_ImmGen(xlen: Int) extends Module{
     val io = IO(new ImmGenIO(xlen))
 
 

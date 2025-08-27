@@ -8,7 +8,7 @@ import AXI4._
 import freechips.rocketchip.amba.axi4._
 
 
-class IFU(config: NPCConfig) extends Module {
+class ysyx_23060246_IFU(config: NPCConfig) extends Module {
   val io = IO(new Bundle { 
     val in = Flipped(Decoupled(new SigIO_WBU_IFU(config.XLEN)))
     val out = (Decoupled(new SigIO_IFU_IDU(config.XLEN)))

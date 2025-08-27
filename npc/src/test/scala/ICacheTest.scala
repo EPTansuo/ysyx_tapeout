@@ -44,8 +44,8 @@ class ICacheFormalTestBench(config: NPCConfig) extends Module {
 
     val icache = Module(new ICache(config))
 
-    val ifu_dut = Module(new IFU(config))
-    val ifu_ref = Module(new IFU(config))
+    val ifu_dut = Module(new ysyx_23060246_IFU(config))
+    val ifu_ref = Module(new ysyx_23060246_IFU(config))
     val mem_dut = Module(new MEMforTest(config.axiparams))
     val mem_ref = Module(new MEMforTest(config.axiparams))
 

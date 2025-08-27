@@ -66,12 +66,7 @@ CXXFLAGS += $(CFLAGS)
 CXXFLAGS += -fmacro-prefix-map=$(NPC_HOME)=npc
 CXXFLAGS += -Wall $(INCFLAGS) -g -DTOP_NAME="\"V$(TOPNAME)\"" -fpermissive
 #CXXFLAGS += $(shell llvm-config --cxxflags)
-
-# Do not use diasam in CI, because there are no llvm libaries
-ifeq ($(USER),han)
 LDFLAGS += $(shell  llvm-config --ldflags --libs --system-libs) -fPIE
-endif
-
 LDFLAGS += -lreadline
 LDFLAGS += -lz
 
@@ -114,25 +109,13 @@ NPC_EXEC := $(BIN)
 default: all 
 all: $(BIN)
 
-
-# Do not use diasam in CI, because there are no llvm libaries
-CURUSER := $(or $(USER),$(shell whoami))
-DISASM_OBJ := $(if $(filter han,$(CURUSER)),$(OBJ_DIR)/disasm.o,)
-
-ifneq ($(USER),han)
-DISASM_OBJ :=
-endif
-
-$(BIN): $(CSRCS) verilog $(NVBOARD_ARCHIVE) $(DISASM_OBJ)
-
-ifneq ($(DISASM_OBJ),)
 $(OBJ_DIR)/disasm.o: $(abspath csrc/utils/disasm.cc)
 	@mkdir -p $(OBJ_DIR)
 	$(CXX)  $(shell llvm-config --cxxflags) \
 		-fPIE -c $< -o $@ 
-endif
+	
 
-$(BIN):
+$(BIN): $(CSRCS) verilog $(NVBOARD_ARCHIVE) $(OBJ_DIR)/disasm.o
 	$(VERILATOR) $(VERILATOR_CONFIG) $(VERILATOR_FLAGS) -top $(TOPNAME) $(CSRCS) $(VSRCS) $(OBJ_DIR)/disasm.o $(NVBOARD_ARCHIVE)\
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) --top-module $(TOPNAME)
@@ -179,32 +162,18 @@ verilog: $(SCALA_FILE) sigmap .config.json $(RC_MARKER)
 	else \
 		echo "No changes detected in Scala directory, skipping Verilog generation."; \
 	fi
+	# add prefix 
+	sed -i 's/\<regs_16x32\>/ysyx_23060246_regs_16x32/g' $(NPC_HOME)/build/verilog/$(NPC_TOPNAME).sv
+	sed -i 's/\<regs_15x32\>/ysyx_23060246_regs_15x32/g' $(NPC_HOME)/build/verilog/$(NPC_TOPNAME).sv
+	sed -i 's/\<regs_31x32\>/ysyx_23060246_regs_31x32/g' $(NPC_HOME)/build/verilog/$(NPC_TOPNAME).sv
+	sed -i 's/\<regs_32x32\>/ysyx_23060246_regs_32x32/g' $(NPC_HOME)/build/verilog/$(NPC_TOPNAME).sv
+
 	# CI needs SV file in the build/
 	cp $(NPC_HOME)/build/verilog/$(NPC_TOPNAME).sv $(NPC_HOME)/build/$(NPC_TOPNAME).sv
 	cat $(NPC_HOME)/vsrc/debug.v >> $(NPC_HOME)/build/$(NPC_TOPNAME).sv
 	
-	# add prefix 
-	sed -i 's/\<IFU\>/ysyx_23060246_IFU/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<IDU\>/ysyx_23060246_IDU/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<Control\>/ysyx_23060246_Control/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<ALU\>/ysyx_23060246_ALU/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<ImmGen\>/ysyx_23060246_ImmGen/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<CSR\>/ysyx_23060246_CSR/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<Branch\>/ysyx_23060246_Branch/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<EXU\>/ysyx_23060246_EXU/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<LSU\>/ysyx_23060246_LSU/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<WBU\>/ysyx_23060246_WBU/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<ControlHazard\>/ysyx_23060246_ControlHazard/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<Regfile\>/ysyx_23060246_Regfile/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<regs_16x32\>/ysyx_23060246_regs_16x32/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<Forward\>/ysyx_23060246_Forward/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<AXIArbiter\>/ysyx_23060246_AXIArbiter/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<AXIXbar\>/ysyx_23060246_AXIXbar/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<AXI4BundleIFConv\>/ysyx_23060246_AXI4BundleIFConv/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<CLINT\>/ysyx_23060246_CLINT/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<ysyx_npc\>/ysyx_23060246_ysyx_npc/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<Ebreak\>/ysyx_23060246_Ebreak/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<InstInvalid\>/ysyx_23060246_InstInvalid/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	
+
 
 
 SIGMAP_TIME = $(shell find $(SCALA_DIR) -name sigmap.scala -exec stat --format '%Y' {} \; | sort -n | tail -n 1)

@@ -21,7 +21,7 @@ class CSRIO(xlen:Int) extends Bundle{
   val update_enable = Input(Bool()) 
 }
 
-class CSR(config: NPCConfig) extends Module{
+class ysyx_23060246_CSR(config: NPCConfig) extends Module{
   val io = IO(new CSRIO(config.XLEN))
 
   val xlen = config.XLEN 

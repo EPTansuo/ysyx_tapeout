@@ -56,7 +56,7 @@ object ModuleConnect {
 }
 
 
-class ysyx_npc(config: NPCConfig) extends Module {
+class ysyx_23060246_npc(config: NPCConfig) extends Module {
     val io = IO(new Bundle {
         // val imem = Flipped(new IMemIO(xlen))
         // val dmem = Flipped(new DMemIO())
@@ -66,14 +66,14 @@ class ysyx_npc(config: NPCConfig) extends Module {
 
     
     
-    val ifu = Module(new IFU(config))
-    val idu = Module(new IDU(config))
-    val exu = Module(new EXU(config))
-    val lsu = Module(new LSU(config))
-    val wbu = Module(new WBU(config))
+    val ifu = Module(new ysyx_23060246_IFU(config))
+    val idu = Module(new ysyx_23060246_IDU(config))
+    val exu = Module(new ysyx_23060246_EXU(config))
+    val lsu = Module(new ysyx_23060246_LSU(config))
+    val wbu = Module(new ysyx_23060246_WBU(config))
 
     // Control Hazard
-    val controlHazard = Module(new ControlHazard(config))
+    val controlHazard = Module(new ysyx_23060246_ControlHazard(config))
     controlHazard.io.ifu_pc <> ifu.io.pc
     controlHazard.io.idu_pc <> idu.io.pc
     controlHazard.io.exu_npc.valid := exu.io.pc_sig.valid 
@@ -95,7 +95,7 @@ class ysyx_npc(config: NPCConfig) extends Module {
 
 
         // Regfile
-    val regfile = Module(new Regfile(config))
+    val regfile = Module(new ysyx_23060246_Regfile(config))
     // exu.io.reg_read1 <> regfile.io.read1
     // exu.io.reg_read2 <> regfile.io.read2
     idu.io.reg_read1 <> regfile.io.read1
@@ -183,7 +183,7 @@ class ysyx_npc(config: NPCConfig) extends Module {
     
     
     // Forwarding 
-    val forward = Module(new Forward(config))
+    val forward = Module(new ysyx_23060246_Forward(config))
     forward.io.idu_rs1 := IDU_rs1
     forward.io.idu_rs2 := IDU_rs2
     forward.io.exu_rd := EXU_rd
@@ -207,7 +207,7 @@ class ysyx_npc(config: NPCConfig) extends Module {
     }
 
     // AXI Abriter
-    val axi_arbiter = Module( new AXIArbiter(2, config.axiparams))
+    val axi_arbiter = Module( new ysyx_23060246_AXIArbiter(2, config.axiparams))
     axi_arbiter.io.in(0) <> icache.map(_.io.imem).getOrElse(ifu.io.imem)
     axi_arbiter.io.in(1) <> lsu.io.dmem
     axi_arbiter.io.out <> io.axi
