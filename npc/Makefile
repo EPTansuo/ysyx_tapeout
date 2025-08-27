@@ -66,7 +66,12 @@ CXXFLAGS += $(CFLAGS)
 CXXFLAGS += -fmacro-prefix-map=$(NPC_HOME)=npc
 CXXFLAGS += -Wall $(INCFLAGS) -g -DTOP_NAME="\"V$(TOPNAME)\"" -fpermissive
 #CXXFLAGS += $(shell llvm-config --cxxflags)
+
+# Do not use diasam in CI, because there are no llvm libaries
+ifeq ($(USER),han)
 LDFLAGS += $(shell  llvm-config --ldflags --libs --system-libs) -fPIE
+endif
+
 LDFLAGS += -lreadline
 LDFLAGS += -lz
 
@@ -109,13 +114,25 @@ NPC_EXEC := $(BIN)
 default: all 
 all: $(BIN)
 
+
+# Do not use diasam in CI, because there are no llvm libaries
+CURUSER := $(or $(USER),$(shell whoami))
+DISASM_OBJ := $(if $(filter han,$(CURUSER)),$(OBJ_DIR)/disasm.o,)
+
+ifneq ($(USER),han)
+DISASM_OBJ :=
+endif
+
+$(BIN): $(CSRCS) verilog $(NVBOARD_ARCHIVE) $(DISASM_OBJ)
+
+ifneq ($(DISASM_OBJ),)
 $(OBJ_DIR)/disasm.o: $(abspath csrc/utils/disasm.cc)
 	@mkdir -p $(OBJ_DIR)
 	$(CXX)  $(shell llvm-config --cxxflags) \
 		-fPIE -c $< -o $@ 
-	
+endif
 
-$(BIN): $(CSRCS) verilog $(NVBOARD_ARCHIVE) $(OBJ_DIR)/disasm.o
+$(BIN):
 	$(VERILATOR) $(VERILATOR_CONFIG) $(VERILATOR_FLAGS) -top $(TOPNAME) $(CSRCS) $(VSRCS) $(OBJ_DIR)/disasm.o $(NVBOARD_ARCHIVE)\
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) --top-module $(TOPNAME)
