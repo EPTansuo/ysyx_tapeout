@@ -164,7 +164,7 @@ verilog: $(SCALA_FILE) sigmap .config.json $(RC_MARKER)
 	fi
 	# CI needs SV file in the build/
 	cp $(NPC_HOME)/build/verilog/$(NPC_TOPNAME).sv $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	cat $(SYN_ADDITION_FILES) >> $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	cat $(NPC_HOME)/vsrc/debug.v >> $(NPC_HOME)/build/$(NPC_TOPNAME).sv
 
 
 SIGMAP_TIME = $(shell find $(SCALA_DIR) -name sigmap.scala -exec stat --format '%Y' {} \; | sort -n | tail -n 1)
