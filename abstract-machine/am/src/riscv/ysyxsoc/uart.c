@@ -48,7 +48,7 @@ void __am_uart_config(AM_INPUT_CONFIG_T *cfg) {
     cfg->present = true;
 }
 
-inline bool __uart_tx_ready() {
+bool __uart_tx_ready() {
     return UART_LS & (1 << 5);
 }
 
@@ -58,7 +58,7 @@ void __am_uart_tx(AM_UART_TX_T *tx) {
     UART_TX = tx->data;
 }
 
-inline bool __uart_rx_ready() {
+bool __uart_rx_ready() {
     return UART_LS & (1 << 0);
 }
 
