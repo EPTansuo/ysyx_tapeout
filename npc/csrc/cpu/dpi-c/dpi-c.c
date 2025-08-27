@@ -254,7 +254,7 @@ uint16_t sdram [4][4][8192][512];
 int sdram_read(input byte bank, input int row, input int col, 
                input byte block_num);
 void sdram_write(input byte bank, input int row, input int col, 
-                 input int wdata, input byte wmask, input byte block_num);
+                 input int wdata, input byte wmask, input byte block_num);~/Disk/Document/PROJECT/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests
 */
 
 extern "C" int sdram_read(char bank, int row, int col, char block_num) { 
