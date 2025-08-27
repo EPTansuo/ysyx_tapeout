@@ -97,12 +97,13 @@ object NPCConfig {
     val PERF_CNT = getConfig("CONFIG_PERF_CNT") == "y"
     val USE_REG0 = getConfig("CONFIG_USE_REG0") == "y"
     val xlen = if (getConfig("CONFIG_ISA") == "\"riscv32\"") 32 else 64
+    val CI_USE_NPC = getConfig("CONFIG_CI_USE_NPC") == "y"
 
     NPCConfig(
       USE_SOC = SOC_EN,
       XLEN = xlen,
       REG_NUM = if (getConfig("CONFIG_RVE") == "y") 16 else 32,
-      PC_INIT = if (SOC_EN) 0x30000000L else 0x80000000L,
+      PC_INIT = if (SOC_EN && (!CI_USE_NPC)) 0x30000000L else 0x80000000L,
       MSTATUS_INIT = if (xlen == 32) 0x1800 else 0xa00001800L,
       MTVEC_INIT = if (xlen == 32) 0x100 else 0x80000000L,
       CLINT_BASE = if(SOC_EN) 0x02000000L else 0xa0000040L,
