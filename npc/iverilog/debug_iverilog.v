@@ -2,7 +2,7 @@
 //`ifdef VERILATOR
 //`endif
 `endif
-module InstInvalid(
+module ysyx_23060246_InstInvalid(
     input isvalid
 );
 
@@ -20,7 +20,7 @@ end
 endmodule
 
 
-module Ebreak(
+module ysyx_23060246_Ebreak(
     input isebreak
 );
 

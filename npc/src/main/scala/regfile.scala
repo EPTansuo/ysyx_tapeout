@@ -22,7 +22,7 @@ class RegfileIO(config: NPCConfig) extends Bundle{
 }
 
 
-class Regfile(config: NPCConfig) extends Module{
+class ysyx_23060246_Regfile(config: NPCConfig) extends Module{
     val io = IO(new RegfileIO(config))
     
     val N = config.USE_REG0 match {

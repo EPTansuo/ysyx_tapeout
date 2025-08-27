@@ -14,7 +14,7 @@ import csr_cmd._
 
 
 
-class EXU(config: NPCConfig) extends Module{
+class ysyx_23060246_EXU(config: NPCConfig) extends Module{
     var io = IO(new Bundle{
         val in = Flipped(Decoupled(new SigIO_IDU_EXU(config.XLEN)))
         val out = (Decoupled(new SigIO_EXU_LSU(config.XLEN)))
@@ -24,8 +24,8 @@ class EXU(config: NPCConfig) extends Module{
         val rd_addr = Output(UInt(5.W))
     })
     val xlen = config.XLEN
-    val alu = Module(new ALU(xlen))
-    val immGen = Module(new ImmGen(xlen))
+    val alu = Module(new ysyx_23060246_ALU(xlen))
+    val immGen = Module(new ysyx_23060246_ImmGen(xlen))
 
 
     val pc = io.in.bits.pc
@@ -95,7 +95,7 @@ class EXU(config: NPCConfig) extends Module{
 
 
 
-    val csr = Module(new CSR(config))
+    val csr = Module(new ysyx_23060246_CSR(config))
     csr.io.inst := inst
     csr.io.pc := pc
     csr.io.cmd := sig_csr_cmd
@@ -103,7 +103,7 @@ class EXU(config: NPCConfig) extends Module{
     csr.io.update_enable := RegNext(io.out.valid)
     dontTouch(csr.io)  //任何时候都不优化
 
-    val branch = Module(new Branch(xlen))
+    val branch = Module(new ysyx_23060246_Branch(xlen))
     branch.io.br_sel := ctrlsig.br_sel
     branch.io.src1 := src1
     branch.io.src2 := src2

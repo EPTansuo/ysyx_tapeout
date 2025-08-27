@@ -7,7 +7,7 @@ import "DPI-C" function void axi_error(input byte unsigned errno, input byte uns
 `endif
 (* keep_hierarchy = 1 *)
 (* keep = 1 *)
-module InstInvalid(
+module ysyx_23060246_InstInvalid(
     input isvalid
 );
 
@@ -26,7 +26,7 @@ endmodule
 
 (* keep_hierarchy = 1 *)
 (* keep = 1 *)
-module Ebreak(
+module ysyx_23060246_Ebreak(
     input isebreak
 );
 

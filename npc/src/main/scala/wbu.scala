@@ -9,7 +9,7 @@ import wb_sel._
 
 
 
-class WBU(config: NPCConfig) extends Module {
+class ysyx_23060246_WBU(config: NPCConfig) extends Module {
     val io = IO(new Bundle {
         val in = Flipped(Decoupled(new SigIO_LSU_WBU(config.XLEN)))
         val out = Decoupled(new SigIO_WBU_IFU(config.XLEN))
@@ -83,7 +83,7 @@ class WBU(config: NPCConfig) extends Module {
     dontTouch(io.in.bits.pc)
     io.inst_type := ctrlsig.inst_type
     
-    val ebreak_ = Module(new Ebreak)
+    val ebreak_ = Module(new ysyx_23060246_Ebreak)
     val isebreak = RegInit(false.B)
     when(io.in.bits.inst === insts.ebreak){
         isebreak := true.B

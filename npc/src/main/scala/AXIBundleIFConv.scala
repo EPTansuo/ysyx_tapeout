@@ -5,7 +5,7 @@ import chisel3._
 import freechips.rocketchip.amba.axi4._
 
 // RocketChip  AXI4Bundle to AXIBundle (My AXI4Bundle)
-class AXI4BundleIFConv(addrWidthBits:Int, dataWidthBits:Int) extends Module{
+class ysyx_23060246_AXI4BundleIFConv(addrWidthBits:Int, dataWidthBits:Int) extends Module{
     val io = IO( new Bundle{
             val in =  Flipped(new AXI4Bundle( AXI4BundleParameters(
                                   addrBits = addrWidthBits, 

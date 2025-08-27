@@ -21,24 +21,24 @@ class npcIO extends Bundle {
 
 class ysyx_23060246(config: NPCConfig) extends Module {
   val io = IO(new npcIO)
-  val cpu_npc = Module(new ysyx_npc(config))
-  val clint = Module(new CLINT(config.axiparams))
+  val cpu_npc = Module(new ysyx_23060246_npc(config))
+  val clint = Module(new ysyx_23060246_CLINT(config.axiparams))
 
 
-  val xbar = Module(new AXIXbar(2, 
+  val xbar = Module(new ysyx_23060246_AXIXbar(2, 
                         Array((0L,0xFFFFFFFFL),(config.CLINT_BASE,config.CLINT_END)) ,
                         config.axiparams))
   xbar.io.in <> cpu_npc.io.axi
 
   if(config.USE_SOC){
-    val axi4_conv = Module(new AXI4BundleIFConv(32,32))
+    val axi4_conv = Module(new ysyx_23060246_AXI4BundleIFConv(32,32))
     xbar.io.out(0) <> axi4_conv.io.in
     axi4_conv.io.out <> io.master
   } else {
     val sram = Module(new SRAM( config.axiparams))
     dontTouch(sram.axi)
     val uart = Module(new UART_AXI( config.axiparams))
-    val xbar_2 = Module(new AXIXbar(2, 
+    val xbar_2 = Module(new ysyx_23060246_AXIXbar(2, 
                         Array((0L,0xFFFFFFFFL),(0xa00003f0L,0xa00003ffL)) ,
                          config.axiparams))
     xbar.io.out(0) <> xbar_2.io.in 

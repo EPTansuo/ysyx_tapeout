@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.util._
 
 
-class Forward(config: NPCConfig) extends Module {
+class ysyx_23060246_Forward(config: NPCConfig) extends Module {
     val io = IO(new Bundle {
         val idu_rs1 = Input(UInt(5.W))
         val idu_rs2 = Input(UInt(5.W))

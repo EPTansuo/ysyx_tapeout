@@ -8,7 +8,7 @@ import chisel3.util._
 
 //import defines._
 
-class IDU(config: NPCConfig) extends Module {
+class ysyx_23060246_IDU(config: NPCConfig) extends Module {
     val io = IO(new Bundle {
         val in = Flipped(Decoupled(new SigIO_IFU_IDU(config.XLEN)))
         //val out = Output(new ControlOut(xlen))
@@ -31,7 +31,7 @@ class IDU(config: NPCConfig) extends Module {
 
     io.out.bits := 0.U.asTypeOf(io.out.bits)
 
-    val control = Module(new Control(config))
+    val control = Module(new ysyx_23060246_Control(config))
     val inst = io.in.bits.inst 
     val pc = io.in.bits.pc
     val stall = io.stall
@@ -120,7 +120,7 @@ class IDU(config: NPCConfig) extends Module {
     // }
     // ebreak_.io.isebreak := isebreak
     //invaild instruction
-    val instInvalid = Module(new InstInvalid)
+    val instInvalid = Module(new ysyx_23060246_InstInvalid)
     instInvalid.io.isvalid := Mux(io.out.valid, control.io.out.inst_valid === valid.INST_VALID, true.B)
 
 

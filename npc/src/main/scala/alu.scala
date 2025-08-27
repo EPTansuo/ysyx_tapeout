@@ -26,7 +26,7 @@ class ALUIO(width:Int) extends Bundle {
 }
 
 
-class ALU(val width: Int) extends Module{
+class ysyx_23060246_ALU(val width: Int) extends Module{
     val io = IO(new ALUIO(width))
 
     // Support 32bit and 64bit

@@ -11,7 +11,7 @@ import AXI4._
 import freechips.rocketchip.amba.axi4._
 
 
-class LSU(config: NPCConfig) extends Module {
+class ysyx_23060246_LSU(config: NPCConfig) extends Module {
     val io = IO(new Bundle {
         val in = Flipped(Decoupled(new SigIO_EXU_LSU(config.XLEN)))
         val out = (Decoupled(new SigIO_LSU_WBU(config.XLEN)))

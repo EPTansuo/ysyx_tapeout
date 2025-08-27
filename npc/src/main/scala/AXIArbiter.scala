@@ -6,7 +6,7 @@ import chisel3.util._
 import freechips.rocketchip.amba.axi4._
 
 
-class AXIArbiter(nMasters: Int, param : AXI4BundleParameters) extends Module {
+class ysyx_23060246_AXIArbiter(nMasters: Int, param : AXI4BundleParameters) extends Module {
   val io = IO(new Bundle {
     // multiple input 
     val in = Vec(nMasters, Flipped(new AXI4Bundle(param)))
