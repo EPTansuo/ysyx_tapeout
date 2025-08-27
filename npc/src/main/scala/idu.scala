@@ -74,10 +74,13 @@ class IDU(config: NPCConfig) extends Module {
 
     val rs1_addr = inst(19, 15)
     val rs2_addr = inst(24, 20)
-    io.reg_read1.addr := Mux(control.io.out.csr_cmd === csr_cmd.CSR_P, 15.U,
-                            Mux(control.io.out.A_sel === A_sel.A_RS1, rs1_addr, 0.U))
-    io.reg_read2.addr := Mux(control.io.out.B_sel === B_sel.B_RS2, rs2_addr === B_sel.B_RS2, 0.U)
-
+    
+    // TODO: x-state propagate....
+    //io.reg_read1.addr := Mux(control.io.out.csr_cmd === csr_cmd.CSR_P, 15.U,
+    //                        Mux(control.io.out.A_sel === A_sel.A_RS1, rs1_addr, 0.U))
+    //io.reg_read2.addr := Mux(control.io.out.B_sel === B_sel.B_RS2, rs2_addr === B_sel.B_RS2, 0.U)
+    io.reg_read1.addr := Mux(control.io.out.csr_cmd === csr_cmd.CSR_P, 15.U,rs1_addr)
+    io.reg_read2.addr := rs2_addr
 
 
     def fwdSel(sel: UInt, base: UInt): UInt = MuxLookup(sel, base)(Seq(
