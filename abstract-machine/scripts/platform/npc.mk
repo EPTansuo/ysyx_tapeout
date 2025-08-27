@@ -18,7 +18,19 @@ LDFLAGS   += --gc-sections -e _start
 
 NPCFLAGS =--diff=$(NPC_HOME)/difftest/riscv32e-nemu-npc-so
 
+FLAGS := $(filter-out -b,$(NPCFLAGS))
+
+# 1) CI 环境无条件开启 batch（忽略命令行传入）
+ifneq ($(strip $(CI)),)
+	override NPCFLAGS += -b
+	override BATCH := 1
+endif
+
+# 2) 本地仍可通过 BATCH=1 开启
 BATCH ?= 0
+ifeq ($(BATCH),1)
+	NPCFLAGS += -b
+endif
 
 # use batch mode in CI
 ifneq ($(USER),han)
@@ -26,7 +38,7 @@ ifneq ($(USER),han)
 endif
 
 ifeq ($(BATCH), 1)
-    NPCFLAGS += -b
+  NPCFLAGS += -b
 endif
 
 
