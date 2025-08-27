@@ -32,6 +32,8 @@ NPCFLAGS = --diff=$(NPC_HOME)/difftest/riscv32e-nemu-soc-so
 ifneq ($(strip $(CI)),)
 	override NPCFLAGS += -b
 	override BATCH := 1
+	rm $(NPC_HOME)/.config
+	cp $(NPC_HOME)/npc_config $(NPC_HOME)/.config
 endif
 
 # 2) 本地仍可通过 BATCH=1 开启
