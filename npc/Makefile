@@ -167,27 +167,27 @@ verilog: $(SCALA_FILE) sigmap .config.json $(RC_MARKER)
 	cat $(NPC_HOME)/vsrc/debug.v >> $(NPC_HOME)/build/$(NPC_TOPNAME).sv
 	
 	# add prefix 
-	sed -i 's/\<IFU\>/ysyx_23060246_IFU/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<IDU\>/ysyx_23060246_IDU/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<Control\>/ysyx_23060246_Control/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<ALU\>/ysyx_23060246_ALU/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<ImmGen\>/ysyx_23060246_ImmGen/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<CSR\>/ysyx_23060246_CSR/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<Branch\>/ysyx_23060246_Branch/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<EXU\>/ysyx_23060246_EXU/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<LSU\>/ysyx_23060246_LSU/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<WBU\>/ysyx_23060246_WBU/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<ControlHazard\>/ysyx_23060246_ControlHazard/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<Regfile\>/ysyx_23060246_Regfile/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<regs_16x32\>/ysyx_23060246_regs_16x32/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<Forward\>/ysyx_23060246_Forward/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<AXIArbiter\>/ysyx_23060246_AXIArbiter/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<AXIXbar\>/ysyx_23060246_AXIXbar/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<AXI4BundleIFConv\>/ysyx_23060246_AXI4BundleIFConv/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<CLINT\>/ysyx_23060246_CLINT/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<ysyx_npc\>/ysyx_23060246_ysyx_npc/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<Ebreak\>/ysyx_23060246_Ebreak/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	sed -i 's/\<InstInvalid\>/ysyx_23060246_InstInvalid/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	#sed -i 's/\<IFU\>/ysyx_23060246_IFU/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	#sed -i 's/\<IDU\>/ysyx_23060246_IDU/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	#sed -i 's/\<Control\>/ysyx_23060246_Control/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	#sed -i 's/\<ALU\>/ysyx_23060246_ALU/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	#sed -i 's/\<ImmGen\>/ysyx_23060246_ImmGen/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	#sed -i 's/\<CSR\>/ysyx_23060246_CSR/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	#sed -i 's/\<Branch\>/ysyx_23060246_Branch/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	#sed -i 's/\<EXU\>/ysyx_23060246_EXU/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	#sed -i 's/\<LSU\>/ysyx_23060246_LSU/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	#sed -i 's/\<WBU\>/ysyx_23060246_WBU/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	#sed -i 's/\<ControlHazard\>/ysyx_23060246_ControlHazard/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	#sed -i 's/\<Regfile\>/ysyx_23060246_Regfile/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	#sed -i 's/\<regs_16x32\>/ysyx_23060246_regs_16x32/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	#sed -i 's/\<Forward\>/ysyx_23060246_Forward/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	#sed -i 's/\<AXIArbiter\>/ysyx_23060246_AXIArbiter/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	#sed -i 's/\<AXIXbar\>/ysyx_23060246_AXIXbar/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	#sed -i 's/\<AXI4BundleIFConv\>/ysyx_23060246_AXI4BundleIFConv/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	#sed -i 's/\<CLINT\>/ysyx_23060246_CLINT/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	#sed -i 's/\<ysyx_npc\>/ysyx_23060246_ysyx_npc/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	#sed -i 's/\<Ebreak\>/ysyx_23060246_Ebreak/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	#sed -i 's/\<InstInvalid\>/ysyx_23060246_InstInvalid/g' $(NPC_HOME)/build/$(NPC_TOPNAME).sv
 
 
 SIGMAP_TIME = $(shell find $(SCALA_DIR) -name sigmap.scala -exec stat --format '%Y' {} \; | sort -n | tail -n 1)
