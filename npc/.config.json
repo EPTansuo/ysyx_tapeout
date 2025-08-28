@@ -7,8 +7,6 @@
     "CONFIG_USE_REG0": "y",
     "CONFIG_CC_O2": "y",
     "CONFIG_CC_OPT": "\"-O2\"",
-    "CONFIG_WAVE_DUMP": "y",
-    "CONFIG_WAVE_VCD": "y",
     "CONFIG_WAVE_FILE_TYPE": "\"none\"",
     "CONFIG_USE_SOC": "y",
     "CONFIG_SOC_EN": "\"enable\"",
