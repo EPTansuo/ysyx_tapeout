@@ -7,7 +7,8 @@
 #define CONFIG_CC_O2 1
 #define CONFIG_CC_OPT "-O2"
 #define CONFIG_WAVE_FILE_TYPE "none"
-#define CONFIG_SOC_EN "disable"
+#define CONFIG_USE_SOC 1
+#define CONFIG_SOC_EN "enable"
 #define CONFIG_TRACE 1
 #define CONFIG_TRACE_START 0
 #define CONFIG_TRACE_END 10000
