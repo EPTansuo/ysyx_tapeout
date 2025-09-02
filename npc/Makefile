@@ -6,13 +6,19 @@ NXDC_FILES = $(NPC_HOME)/constr/soc.nxdc
 SDC_FILE = $(NPC_HOME)/scripts/top.sdc
 
 -include .config
-ifeq ($(CONFIG_USE_SOC),y)
+
+USE_SOC ?= n
+ifeq ($(ARCH),rv32e-ysyxsoc)
+USE_SOC = y
+endif
+
+ifeq ($(USE_SOC),y)
 IMG = "$(YSYX_HOME)/am-kernels/tests/cpu-tests/build/sum-riscv32e-ysyxsoc.bin"
 else
 IMG = "$(YSYX_HOME)/am-kernels/tests/cpu-tests/build/sum-riscv32e-npc.bin"
 endif
 
-ifeq ($(CONFIG_USE_SOC),y)
+ifeq ($(USE_SOC),y)
 DIFF_REF="$(NPC_HOME)/difftest/riscv32e-nemu-soc-so"
 else
 DIFF_REF="$(NPC_HOME)/difftest/riscv32e-nemu-npc-so"
@@ -48,10 +54,10 @@ ifeq ($(CONFIG_WAVE_VCD),y)
 	VERILATOR_FLAGS += --trace
 endif 
 
-ifeq ($(CONFIG_USE_SOC),y)
+ifeq ($(USE_SOC),y)
 	TOPNAME = ysyxSoCFull
 else
-	TOPNAME = $(NPC_TOPNAME)
+	TOPNAME = npcSimTop
 endif
 
 
@@ -65,6 +71,9 @@ CXXFLAGS += $(INCFLAGS)
 CXXFLAGS += $(CFLAGS)
 CXXFLAGS += -fmacro-prefix-map=$(NPC_HOME)=npc
 CXXFLAGS += -Wall $(INCFLAGS) -g -DTOP_NAME="\"V$(TOPNAME)\"" -fpermissive
+ifeq ($(USE_SOC),y)
+	CXXFLAGS += $(-DUSE_SOC=1)
+endif
 #CXXFLAGS += $(shell llvm-config --cxxflags)
 LDFLAGS += $(shell  llvm-config --ldflags --libs --system-libs) -fPIE
 LDFLAGS += -lreadline
@@ -75,7 +84,7 @@ LDFLAGS += -lz
 VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
 VSRCS += $(shell find $(abspath $(VERILOG_DIR)) -name "*.v" -or -name "*.sv")
 
-ifeq ($(CONFIG_USE_SOC),y)
+ifeq ($(USE_SOC),y)
 VSRCS += $(shell find $(YSYX_HOME)/ysyxSoC/perip -name "*.v")
 VSRCS += $(shell find $(YSYX_HOME)/ysyxSoC/build -name "*.v")
 endif
@@ -87,7 +96,7 @@ CSRCS = $(shell find $(abspath ./csrc) \( -path $(abspath ./csrc/device) \-prune
 		-o \( -name "*.c" -or -name "*.cc" -or -name "*.cpp" \) -print)
 
 SYN_ADDITION_FILES = $(NPC_HOME)/vsrc/debug.v
-ifeq ($(CONFIG_USE_SOC),y)
+ifeq ($(USE_SOC),y)
 SYN_ADDITION_FILES += $(NPC_HOME)/vsrc/mem.v
 endif
 

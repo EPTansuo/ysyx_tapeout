@@ -22,7 +22,7 @@ endif
 ifeq ($(CONFIG_DIFFTEST),y)
 #CFLAGS += -I$(CONFIG_LIBRARY_PATH)
 ifeq ($(CONFIG_DIFFTEST_REF_NEMU),y)
-ifeq ($(CONFIG_USE_SOC),y)
+ifeq ($(USE_SOC),y)
 	LDFLAGS += -L$(NPC_HOME)/difftest/riscv32e-nemu-ysyxsoc-so
 else
 	LDFLAGS += -L$(NPC_HOME)/difftest/riscv32e-nemu-npc-so
