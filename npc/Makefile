@@ -8,10 +8,13 @@ SDC_FILE = $(NPC_HOME)/scripts/top.sdc
 -include .config
 
 USE_SOC ?= n
-ifeq ($(ARCH),rv32e-ysyxsoc)
-	USE_SOC = y
+ifeq ($(ARCH),riscv32e-ysyxsoc)
+USE_SOC = y
+$(info ***************************)
+$(info * Use SoC for Simulation! *)
+$(info ***************************)
 else
-	USE_SOC = n
+USE_SOC = n
 endif 
 
 ifeq ($(USE_SOC),y)
@@ -34,7 +37,7 @@ VERILOG_DIR := $(BUILD_DIR)/verilog
 MILLFLAGS ?= 
 
 ifeq ($(USE_SOC),y)
-MILLFLAGS += -DSOC_EN=y
+MILLFLAGS += J-D SOC_EN=y
 endif 
 
 VERILATOR = verilator
@@ -79,7 +82,7 @@ CXXFLAGS += $(CFLAGS)
 CXXFLAGS += -fmacro-prefix-map=$(NPC_HOME)=npc
 CXXFLAGS += -Wall $(INCFLAGS) -g -DTOP_NAME="\"V$(TOPNAME)\"" -fpermissive
 ifeq ($(USE_SOC),y)
-	CXXFLAGS += $(-DUSE_SOC=1)
+	CXXFLAGS += -DUSE_SOC=1
 endif
 #CXXFLAGS += $(shell llvm-config --cxxflags)
 LDFLAGS += $(shell  llvm-config --ldflags --libs --system-libs) -fPIE
