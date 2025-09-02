@@ -31,6 +31,11 @@ CLK_FREQ_MHZ?=890
 
 SCALA_DIR := $(NPC_HOME)/src/main/scala
 VERILOG_DIR := $(BUILD_DIR)/verilog
+MILLFLAGS ?= 
+
+ifeq ($(USE_SOC),y)
+MILLFLAGS += -DSOC_EN=y
+endif 
 
 VERILATOR = verilator
 VERILATOR_COVERAGE = verilator_coverage
@@ -172,7 +177,7 @@ verilog: $(SCALA_FILE) sigmap .config.json $(RC_MARKER)
 
 	@if [ "$(SCALA_TIME)" -gt "$(VERILOG_TIME)" ]; then \
 		echo "Scala directory changed or Verilog directory missing, generating Verilog..."; \
-		./mill -i $(NPC_TOPNAME).runMain $(MAIN) -td $(VERILOG_DIR) ; \
+		./mill -i $(NPC_TOPNAME).runMain $(MAIN) -td $(VERILOG_DIR) $(MILLFLAGS); \
 	else \
 		echo "No changes detected in Scala directory, skipping Verilog generation."; \
 	fi
