@@ -30,23 +30,27 @@ class ysyx_23060246(config: NPCConfig) extends Module {
                         config.axiparams))
   xbar.io.in <> cpu_npc.io.axi
 
-  if(config.USE_SOC){
-    val axi4_conv = Module(new ysyx_23060246_AXI4BundleIFConv(32,32))
-    xbar.io.out(0) <> axi4_conv.io.in
-    axi4_conv.io.out <> io.master
-  } else {
-    val sram = Module(new SRAM( config.axiparams))
-    dontTouch(sram.axi)
-    val uart = Module(new UART_AXI( config.axiparams))
-    val xbar_2 = Module(new ysyx_23060246_AXIXbar(2, 
-                        Array((0L,0xFFFFFFFFL),(0xa00003f0L,0xa00003ffL)) ,
-                         config.axiparams))
-    xbar.io.out(0) <> xbar_2.io.in 
-    xbar_2.io.out(0) <> sram.io.axi 
-    xbar_2.io.out(1) <> uart.io.axi
-    io.master <> DontCare 
-  }
-
+  // if(config.USE_SOC){
+  //   val axi4_conv = Module(new ysyx_23060246_AXI4BundleIFConv(32,32))
+  //   xbar.io.out(0) <> axi4_conv.io.in
+  //   axi4_conv.io.out <> io.master
+  // } else {
+  //   val sram = Module(new SRAM( config.axiparams))
+  //   dontTouch(sram.axi)
+  //   val uart = Module(new UART_AXI( config.axiparams))
+  //   val xbar_2 = Module(new ysyx_23060246_AXIXbar(2, 
+  //                       Array((0L,0xFFFFFFFFL),(0xa00003f0L,0xa00003ffL)) ,
+  //                        config.axiparams))
+  //   xbar.io.out(0) <> xbar_2.io.in 
+  //   xbar_2.io.out(0) <> sram.io.axi 
+  //   xbar_2.io.out(1) <> uart.io.axi
+  //   io.master <> DontCare 
+  // }
+  
+  val axi4_conv = Module(new ysyx_23060246_AXI4BundleIFConv(32,32))
+  xbar.io.out(0) <> axi4_conv.io.in
+  axi4_conv.io.out <> io.master
+  
   xbar.io.out(1) <> clint.io.axi 
 
 

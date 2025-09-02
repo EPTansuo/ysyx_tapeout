@@ -1,18 +1,37 @@
 NPC_TOPNAME = ysyx_23060246
 MAIN = $(NPC_TOPNAME).npcMain
 BUILD_DIR = $(NPC_HOME)/build
-OBJ_DIR = $(BUILD_DIR)/OBJ_DIR
+
 NXDC_FILES = $(NPC_HOME)/constr/soc.nxdc
 SDC_FILE = $(NPC_HOME)/scripts/top.sdc
 
 -include .config
-ifeq ($(CONFIG_USE_SOC),y)
+
+USE_SOC ?= n
+ifeq ($(ARCH),riscv32e-ysyxsoc)
+USE_SOC = y
+$(info ***************************)
+$(info * Use SoC for Simulation! *)
+$(info ***************************)
+else
+USE_SOC = n
+endif 
+
+OBJ_DIR := $(BUILD_DIR)/OBJ_DIR
+ifeq ($(USE_SOC),y)
+OBJ_DIR := $(BUILD_DIR)/OBJ_DIR_SOC
+else 
+OBJ_DIR := $(BUILD_DIR)/OBJ_DIR_NPC
+endif
+
+
+ifeq ($(USE_SOC),y)
 IMG = "$(YSYX_HOME)/am-kernels/tests/cpu-tests/build/sum-riscv32e-ysyxsoc.bin"
 else
 IMG = "$(YSYX_HOME)/am-kernels/tests/cpu-tests/build/sum-riscv32e-npc.bin"
 endif
 
-ifeq ($(CONFIG_USE_SOC),y)
+ifeq ($(USE_SOC),y)
 DIFF_REF="$(NPC_HOME)/difftest/riscv32e-nemu-soc-so"
 else
 DIFF_REF="$(NPC_HOME)/difftest/riscv32e-nemu-npc-so"
@@ -23,6 +42,11 @@ CLK_FREQ_MHZ?=890
 
 SCALA_DIR := $(NPC_HOME)/src/main/scala
 VERILOG_DIR := $(BUILD_DIR)/verilog
+MILLFLAGS ?= 
+
+ifeq ($(USE_SOC),y)
+MILLENV += USE_SOC=y
+endif 
 
 VERILATOR = verilator
 VERILATOR_COVERAGE = verilator_coverage
@@ -48,10 +72,10 @@ ifeq ($(CONFIG_WAVE_VCD),y)
 	VERILATOR_FLAGS += --trace
 endif 
 
-ifeq ($(CONFIG_USE_SOC),y)
+ifeq ($(USE_SOC),y)
 	TOPNAME = ysyxSoCFull
 else
-	TOPNAME = $(NPC_TOPNAME)
+	TOPNAME = npcSimTop
 endif
 
 
@@ -65,6 +89,9 @@ CXXFLAGS += $(INCFLAGS)
 CXXFLAGS += $(CFLAGS)
 CXXFLAGS += -fmacro-prefix-map=$(NPC_HOME)=npc
 CXXFLAGS += -Wall $(INCFLAGS) -g -DTOP_NAME="\"V$(TOPNAME)\"" -fpermissive
+ifeq ($(USE_SOC),y)
+	CXXFLAGS += -DUSE_SOC=1
+endif
 #CXXFLAGS += $(shell llvm-config --cxxflags)
 LDFLAGS += $(shell  llvm-config --ldflags --libs --system-libs) -fPIE
 LDFLAGS += -lreadline
@@ -75,7 +102,7 @@ LDFLAGS += -lz
 VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
 VSRCS += $(shell find $(abspath $(VERILOG_DIR)) -name "*.v" -or -name "*.sv")
 
-ifeq ($(CONFIG_USE_SOC),y)
+ifeq ($(USE_SOC),y)
 VSRCS += $(shell find $(YSYX_HOME)/ysyxSoC/perip -name "*.v")
 VSRCS += $(shell find $(YSYX_HOME)/ysyxSoC/build -name "*.v")
 endif
@@ -87,7 +114,7 @@ CSRCS = $(shell find $(abspath ./csrc) \( -path $(abspath ./csrc/device) \-prune
 		-o \( -name "*.c" -or -name "*.cc" -or -name "*.cpp" \) -print)
 
 SYN_ADDITION_FILES = $(NPC_HOME)/vsrc/debug.v
-ifeq ($(CONFIG_USE_SOC),y)
+ifeq ($(USE_SOC),y)
 SYN_ADDITION_FILES += $(NPC_HOME)/vsrc/mem.v
 endif
 
@@ -159,12 +186,13 @@ $(RC_MARKER):
 
 verilog: $(SCALA_FILE) sigmap .config.json $(RC_MARKER)
 
-	@if [ "$(SCALA_TIME)" -gt "$(VERILOG_TIME)" ]; then \
-		echo "Scala directory changed or Verilog directory missing, generating Verilog..."; \
-		./mill -i $(NPC_TOPNAME).runMain $(MAIN) -td $(VERILOG_DIR) ; \
-	else \
-		echo "No changes detected in Scala directory, skipping Verilog generation."; \
-	fi
+	#@if [ "$(SCALA_TIME)" -gt "$(VERILOG_TIME)" ]; then \
+	#	echo "Scala directory changed or Verilog directory missing, generating Verilog..."; \
+	#	($(MILLENV) ./mill -i $(NPC_TOPNAME).runMain $(MAIN) -td $(VERILOG_DIR) $(MILLFLAGS)); \
+	#else \
+	#	echo "No changes detected in Scala directory, skipping Verilog generation."; \
+	#fi
+	($(MILLENV) ./mill -i $(NPC_TOPNAME).runMain $(MAIN) -td $(VERILOG_DIR) $(MILLFLAGS)); \
 	# add prefix 
 	sed -i 's/\<regs_16x32\>/ysyx_23060246_regs_16x32/g' $(NPC_HOME)/build/verilog/$(NPC_TOPNAME).sv
 	sed -i 's/\<regs_15x32\>/ysyx_23060246_regs_15x32/g' $(NPC_HOME)/build/verilog/$(NPC_TOPNAME).sv

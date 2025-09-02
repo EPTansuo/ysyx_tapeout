@@ -110,14 +110,14 @@ config WAVE_FILE_TYPE
     default "fst" if WAVE_FST
     default "none"
 
-config USE_SOC
-  default y
-  bool "Use SOC for Simulation"
-
-config SOC_EN #For Chisel
-  string 
-  default "enable" if USE_SOC
-  default "disable" if !USE_SOC 
+#config USE_SOC
+#  default y
+#  bool "Use SOC for Simulation"
+#
+#config SOC_EN #For Chisel
+#  string 
+#  default "enable" if USE_SOC
+#  default "disable" if !USE_SOC 
 
 
 config USE_NVBOARD
@@ -191,10 +191,10 @@ config DIFFTEST
   default n
   help
     Enable differential testing with a reference design.
-config RESET_VECTOR
-  hex "Reset PC Vector"
-  default 0x80000000 if !USE_SOC
-  default 0x30000000 if USE_SOC
+#config RESET_VECTOR
+#  hex "Reset PC Vector"
+#  default 0x80000000 if !USE_SOC
+#  default 0x30000000 if USE_SOC
 choice
   prompt "Reference design"
   default DIFFTEST_REF_NEMU if ISA_riscv

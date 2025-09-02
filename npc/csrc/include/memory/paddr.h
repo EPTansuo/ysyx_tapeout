@@ -21,11 +21,12 @@
 
 #define PMEM_LEFT  ((paddr_t)CONFIG_MBASE)
 #define PMEM_RIGHT ((paddr_t)CONFIG_MBASE + CONFIG_MSIZE - 1)
-#ifdef CONFIG_RESET_VECTOR
-#define RESET_VECTOR CONFIG_RESET_VECTOR
-#else  
-#define RESET_VECTOR (PMEM_LEFT + CONFIG_PC_RESET_OFFSET)
-#endif 
+
+#ifdef USE_SOC
+#define RESET_VECTOR 0x30000000
+#else
+#define RESET_VECTOR 0x80000000
+#endif
 
 /* convert the guest physical address in the guest program to host virtual address in NEMU */
 uint8_t* guest_to_host(paddr_t paddr);

@@ -91,22 +91,25 @@ object NPCConfig {
     def getConfig(key: String): String = {
         decodedConfig(key).flatMap(_.asString).getOrElse("")
     }
-    val SOC_EN = getConfig("CONFIG_SOC_EN") == "\"enable\""
+    //val SOC_EN = getConfig("CONFIG_SOC_EN") == "\"enable\""
     val USE_ICACHE = getConfig("CONFIG_USE_ICACHE") == "y"
     val USE_BPU = getConfig("CONFIG_USE_BPU") == "y"
     val PERF_CNT = getConfig("CONFIG_PERF_CNT") == "y"
     val USE_REG0 = getConfig("CONFIG_USE_REG0") == "y"
     val xlen = if (getConfig("CONFIG_ISA") == "\"riscv32\"") 32 else 64
-
+    val USE_SOC: Boolean = Option(System.getProperty("USE_SOC"))
+                            .orElse(sys.env.get("USE_SOC"))
+                            .exists(_.equalsIgnoreCase("y"))
+    
     NPCConfig(
-      USE_SOC = SOC_EN,
+      USE_SOC = USE_SOC,
       XLEN = xlen,
       REG_NUM = if (getConfig("CONFIG_RVE") == "y") 16 else 32,
-      PC_INIT = if (SOC_EN) 0x30000000L else 0x80000000L,
+      PC_INIT = if (USE_SOC) 0x30000000L else 0x80000000L,
       MSTATUS_INIT = if (xlen == 32) 0x1800 else 0xa00001800L,
       MTVEC_INIT = if (xlen == 32) 0x100 else 0x80000000L,
-      CLINT_BASE = if(SOC_EN) 0x02000000L else 0xa0000040L,
-      CLINT_END = if(SOC_EN) 0x0200ffffL else 0xa0000050L,
+      CLINT_BASE = if(USE_SOC) 0x02000000L else 0xa0000040L,
+      CLINT_END = if(USE_SOC) 0x0200ffffL else 0xa0000050L,
       PERF_CNT = PERF_CNT,
       axiparams = CPUAXI4BundleParameters(),
       icacheparams = ICacheParameters(),
