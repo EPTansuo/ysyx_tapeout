@@ -1,7 +1,7 @@
 NPC_TOPNAME = ysyx_23060246
 MAIN = $(NPC_TOPNAME).npcMain
 BUILD_DIR = $(NPC_HOME)/build
-OBJ_DIR = $(BUILD_DIR)/OBJ_DIR
+
 NXDC_FILES = $(NPC_HOME)/constr/soc.nxdc
 SDC_FILE = $(NPC_HOME)/scripts/top.sdc
 
@@ -16,6 +16,14 @@ $(info ***************************)
 else
 USE_SOC = n
 endif 
+
+OBJ_DIR := $(BUILD_DIR)/OBJ_DIR
+ifdef ($(USE_SOC),y)
+OBJ_DIR := $(BUILD_DIR)/OBJ_DIR_SOC
+else 
+OBJ_DIR := $(BUILD_DIR)/OBJ_DIR_NPC
+endif
+
 
 ifeq ($(USE_SOC),y)
 IMG = "$(YSYX_HOME)/am-kernels/tests/cpu-tests/build/sum-riscv32e-ysyxsoc.bin"
