@@ -18,7 +18,7 @@ USE_SOC = n
 endif 
 
 OBJ_DIR := $(BUILD_DIR)/OBJ_DIR
-ifdef ($(USE_SOC),y)
+ifeq ($(USE_SOC),y)
 OBJ_DIR := $(BUILD_DIR)/OBJ_DIR_SOC
 else 
 OBJ_DIR := $(BUILD_DIR)/OBJ_DIR_NPC
