@@ -9,8 +9,10 @@ SDC_FILE = $(NPC_HOME)/scripts/top.sdc
 
 USE_SOC ?= n
 ifeq ($(ARCH),rv32e-ysyxsoc)
-USE_SOC = y
-endif
+	USE_SOC = y
+else
+	USE_SOC = n
+endif 
 
 ifeq ($(USE_SOC),y)
 IMG = "$(YSYX_HOME)/am-kernels/tests/cpu-tests/build/sum-riscv32e-ysyxsoc.bin"
