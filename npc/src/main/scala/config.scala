@@ -97,7 +97,9 @@ object NPCConfig {
     val PERF_CNT = getConfig("CONFIG_PERF_CNT") == "y"
     val USE_REG0 = getConfig("CONFIG_USE_REG0") == "y"
     val xlen = if (getConfig("CONFIG_ISA") == "\"riscv32\"") 32 else 64
-    val USE_SOC: Boolean = Option(System.getProperty("USE_SOC")).contains("y")
+    val USE_SOC: Boolean = Option(System.getProperty("USE_SOC"))
+                            .orElse(sys.env.get("USE_SOC"))
+                            .exists(_.equalsIgnoreCase("y"))
     
     NPCConfig(
       USE_SOC = USE_SOC,

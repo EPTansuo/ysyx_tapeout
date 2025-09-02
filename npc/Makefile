@@ -37,7 +37,7 @@ VERILOG_DIR := $(BUILD_DIR)/verilog
 MILLFLAGS ?= 
 
 ifeq ($(USE_SOC),y)
-MILLFLAGS += J-D USE_SOC=y
+MILLENV += USE_SOC=y
 endif 
 
 VERILATOR = verilator
@@ -180,8 +180,7 @@ verilog: $(SCALA_FILE) sigmap .config.json $(RC_MARKER)
 
 	@if [ "$(SCALA_TIME)" -gt "$(VERILOG_TIME)" ]; then \
 		echo "Scala directory changed or Verilog directory missing, generating Verilog..."; \
-		echo ./mill -i $(NPC_TOPNAME).runMain $(MAIN) -td $(VERILOG_DIR) $(MILLFLAGS); \
-		./mill -i $(NPC_TOPNAME).runMain $(MAIN) -td $(VERILOG_DIR) $(MILLFLAGS); \
+		($(MILLENV) ./mill -i $(NPC_TOPNAME).runMain $(MAIN) -td $(VERILOG_DIR) $(MILLFLAGS)); \
 	else \
 		echo "No changes detected in Scala directory, skipping Verilog generation."; \
 	fi
