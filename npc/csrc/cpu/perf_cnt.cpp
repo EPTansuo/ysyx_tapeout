@@ -76,7 +76,7 @@ FILE *fp;
 void perf_statistic(){
 #ifdef CONFIG_PERF_CNT
     perf_get_data();
-    char buf[100];
+    char buf[300];
     sprintf(buf, "%s/build/perf_statistic.txt", getenv("NPC_HOME"));
     fp = fopen(buf,"w");
     fprintf(fp, "\n================================= PERF STATISTIC =================================\n");
