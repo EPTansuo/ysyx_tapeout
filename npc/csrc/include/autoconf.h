@@ -2,6 +2,7 @@
 #define CONFIG_ISA "riscv32"
 #define CONFIG_RVE 1
 #define CONFIG_USE_BPU 1
+#define CONFIG_PERF_CNT 1
 #define CONFIG_USE_REG0 1
 #define CONFIG_CC_O2 1
 #define CONFIG_CC_OPT "-O2"

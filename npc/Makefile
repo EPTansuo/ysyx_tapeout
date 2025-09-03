@@ -88,7 +88,7 @@ INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS)
 CXXFLAGS += $(CFLAGS)
 CXXFLAGS += -fmacro-prefix-map=$(NPC_HOME)=npc
-CXXFLAGS += -D_FORTIFY_SOURCE=0 
+CXXFLAGS += -fno-stack-protector
 CXXFLAGS += -Wall $(INCFLAGS) -g -DTOP_NAME="\"V$(TOPNAME)\"" -fpermissive
 ifeq ($(USE_SOC),y)
 	CXXFLAGS += -DUSE_SOC=1
