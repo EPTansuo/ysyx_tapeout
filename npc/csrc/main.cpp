@@ -16,49 +16,38 @@
 #include <verilator.h>
 
 
-#include <execinfo.h>
+
+// backtrace_hook.h
+#pragma once
 #include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <execinfo.h>
 #include <unistd.h>
+#include <cstdio>
+#include <cstdlib>
 
-#define BT_BUF_SIZE 100
-
-void print_backtrace(void) {
-    void *buffer[BT_BUF_SIZE];
-    char **strings;
-    
-    int nptrs = backtrace(buffer, BT_BUF_SIZE);
-    printf("Backtrace (%d frames):\n", nptrs);
-    
-    strings = backtrace_symbols(buffer, nptrs);
-    if (strings == NULL) {
-        perror("backtrace_symbols");
-        return;
-    }
-    
-    for (int j = 0; j < nptrs; j++)
-        printf("%s\n", strings[j]);
-    
-    free(strings);
+static void _bt_handler(int sig) {
+  void* frames[128];
+  int n = backtrace(frames, 128);
+  const char* name =
+      sig==SIGABRT? "SIGABRT" :
+      sig==SIGSEGV? "SIGSEGV" :
+      sig==SIGBUS ? "SIGBUS"  :
+      sig==SIGILL ? "SIGILL"  : "SIG";
+  fprintf(stderr, "\n===== %s detected; backtrace (%d frames) =====\n", name, n);
+  backtrace_symbols_fd(frames, n, STDERR_FILENO);
+  _exit(128 + sig); // 避免再次跑析构
+}
+static inline void install_bt_handler() {
+  signal(SIGABRT, _bt_handler);
+  signal(SIGSEGV, _bt_handler);
+  signal(SIGBUS,  _bt_handler);
+  signal(SIGILL,  _bt_handler);
 }
 
-void signal_handler(int sig) {
-    fprintf(stderr, "\n=== Received signal %d (%s) ===\n", sig, strsignal(sig));
-    print_backtrace();
-    
-    // 恢复默认处理并重新引发信号
-    signal(sig, SIG_DFL);
-    raise(sig);
-}
 
-void setup_signal_handlers(void) {
-    signal(SIGSEGV, signal_handler);  // 段错误
-    signal(SIGABRT, signal_handler);  // 中止信号
-    signal(SIGILL, signal_handler);   // 非法指令
-    signal(SIGFPE, signal_handler);   // 浮点异常
-    signal(SIGBUS, signal_handler);   // 总线错误
-}
+
+
+
 
 
 extern  char img[131072];
@@ -75,7 +64,7 @@ void stop_sim();
 
 int main(int argc, char **argv)
 {
-	setup_signal_handlers();
+  install_bt_handler();
 	Verilated::commandArgs(argc, argv);
 	init_monitor(argc, argv);
 	engine_start();
