@@ -3,7 +3,6 @@
     "CONFIG_ISA": "\"riscv32\"",
     "CONFIG_RVE": "y",
     "CONFIG_USE_BPU": "y",
-    "CONFIG_PERF_CNT": "y",
     "CONFIG_USE_REG0": "y",
     "CONFIG_CC_O2": "y",
     "CONFIG_CC_OPT": "\"-O2\"",
