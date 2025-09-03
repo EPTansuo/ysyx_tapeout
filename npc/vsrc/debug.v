@@ -2,7 +2,7 @@
 //`ifdef VERILATOR
 import "DPI-C" function void npc_ebreak();
 import "DPI-C" function void inst_invalid();
-import "DPI-C" function void axi_error(input byte unsigned errno, input byte unsigned isRead);//读错误还是写错误
+//import "DPI-C" function void axi_error(input byte unsigned errno, input byte unsigned isRead);//读错误还是写错误
 //`endif
 `endif
 (* keep_hierarchy = 1 *)
