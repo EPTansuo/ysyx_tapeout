@@ -26,17 +26,6 @@ ifneq ($(strip $(CI)),)
 	override BATCH := 1
 endif
 
-# 2) 本地仍可通过 BATCH=1 开启
-BATCH ?= 0
-ifeq ($(BATCH),1)
-	NPCFLAGS += -b
-endif
-
-# use batch mode in CI
-ifneq ($(USER),han)
-  BATCH := 1
-endif
-
 ifeq ($(BATCH), 1)
   NPCFLAGS += -b
 endif
