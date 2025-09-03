@@ -17,8 +17,6 @@
 
 
 
-// backtrace_hook.h
-#pragma once
 #include <signal.h>
 #include <execinfo.h>
 #include <unistd.h>
