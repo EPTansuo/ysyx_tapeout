@@ -14,7 +14,7 @@
 ***************************************************************************************/
 
 #include <common.h>
-#include <utils.h>
+#include <utils/utils.h>
 #include <autoconf.h>
 #include <device/alarm.h>
 #ifndef CONFIG_TARGET_AM
