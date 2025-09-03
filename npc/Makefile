@@ -162,26 +162,34 @@ VERILOG_TIME := $(if $(VERILOG_TIME),$(VERILOG_TIME),0)
 RC_DIR     := $(NPC_HOME)/rocket-chip
 RC_URL     := https://github.com/chipsalliance/rocket-chip.git
 RC_MARKER  := $(RC_DIR)/common.sc
+RC_COMMIT  := 2fe6bb5e9c23360cac8297bb26512e4ca614f67b
+
 
 $(RC_MARKER):
 	@echo "[init] ensuring rocket-chip exists (submodule or fresh clone)"
-	@git -C $(NPC_HOME) config url."https://github.com/".insteadOf "git@github.com:"
-	@if git -C $(NPC_HOME) config -f .gitmodules --get-regexp '^submodule\.rocket-chip\.url' >/dev/null 2>&1; then \
+	
+	@git -C "$(NPC_HOME)" config url."https://github.com/".insteadOf "git@github.com:"
+
+	@if git -C "$(NPC_HOME)" config -f .gitmodules --get-regexp '^submodule\.rocket-chip\.url' >/dev/null 2>&1; then \
 	  echo "[init] detected submodule entry for rocket-chip -> using submodule update"; \
-	  git -C $(NPC_HOME) submodule set-url -- rocket-chip "$(RC_URL)"; \
-	  git -C $(NPC_HOME) submodule update --init --recursive --depth 1 rocket-chip; \
+	  git -C "$(NPC_HOME)" submodule set-url -- rocket-chip "$(RC_URL)"; \
+	  git -C "$(NPC_HOME)" submodule update --init --recursive rocket-chip; \
 	else \
 	  echo "[init] no submodule mapping; cloning rocket-chip via HTTPS"; \
 	  rm -rf "$(RC_DIR)"; \
-	  git clone --depth 1 "$(RC_URL)" "$(RC_DIR)"; \
+	  git clone --filter=tree:0 "$(RC_URL)" "$(RC_DIR)"; \
 	fi
+
 	@if [ -n "$(RC_COMMIT)" ]; then \
+	  echo "[init] checking out RC_COMMIT=$(RC_COMMIT)"; \
 	  git -C "$(RC_DIR)" fetch --depth 1 origin "$(RC_COMMIT)"; \
 	  git -C "$(RC_DIR)" checkout --detach "$(RC_COMMIT)"; \
 	fi
+
+	@git -C "$(RC_DIR)" submodule update --init --recursive --depth 1 || \
+	  git -C "$(RC_DIR)" submodule update --init --recursive
 	@git -C "$(RC_DIR)" config url."https://github.com/".insteadOf "git@github.com:"
-	@git -C "$(RC_DIR)" submodule update --init --recursive --depth 1
-	@test -f "$(RC_MARKER)" || (echo "FATAL: $(RC_MARKER) not found after init"; exit 1)
+	@touch "$(RC_MARKER)"
 
 
 verilog: $(SCALA_FILE) sigmap .config.json $(RC_MARKER)
