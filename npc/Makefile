@@ -23,8 +23,7 @@ else
 USE_NVBOARD = n
 endif 
 
-
-
+ 
 OBJ_DIR := $(BUILD_DIR)/OBJ_DIR
 ifeq ($(USE_SOC),y)
 OBJ_DIR := $(BUILD_DIR)/OBJ_DIR_SOC
@@ -100,6 +99,9 @@ CXXFLAGS += -fno-stack-protector
 CXXFLAGS += -Wall $(INCFLAGS) -g -DTOP_NAME="\"V$(TOPNAME)\"" -fpermissive
 ifeq ($(USE_SOC),y)
 	CXXFLAGS += -DUSE_SOC=1
+endif
+ifeq ($(USE_NVBOARD),y)
+CXXFLAGS += -DUSE_NVBOARD=1
 endif
 #CXXFLAGS += $(shell llvm-config --cxxflags)
 LDFLAGS += $(shell  llvm-config --ldflags --libs --system-libs) -fPIE
