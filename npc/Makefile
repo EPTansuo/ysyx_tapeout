@@ -17,11 +17,8 @@ else
 USE_SOC = n
 endif 
 
-USE_NVBOARD ?= n
+USE_NVBOARD ?= y
 ifeq ($(USE_SOC),y)
-ifeq ($(USE_NVBOARD),n)
-USE_NVBOARD := y
-endif
 else
 USE_NVBOARD := n 
 endif 
