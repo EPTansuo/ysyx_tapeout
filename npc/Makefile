@@ -18,8 +18,7 @@ USE_SOC = n
 endif 
 
 USE_NVBOARD ?= y
-ifeq ($(USE_SOC),y)
-else
+ifneq ($(USE_SOC),y)
 USE_NVBOARD := n 
 endif 
 
@@ -100,7 +99,7 @@ ifeq ($(USE_SOC),y)
 	CXXFLAGS += -DUSE_SOC=1
 endif
 
-ifneq ($(USE_NVBOARD),n)
+ifeq ($(USE_NVBOARD),y)
   CXXFLAGS += -DUSE_NVBOARD=1
 endif
 $(info USE_NVBOARD=$(USE_NVBOARD))
