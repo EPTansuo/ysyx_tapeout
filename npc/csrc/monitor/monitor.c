@@ -104,7 +104,9 @@ void init_monitor(int argc, char** argv){
   init_sim(argc, argv);
   init_mem();
   init_sig();
+#ifndef USE_SOC
   IFDEF(CONFIG_DEVICE, init_device());
+#endif
   IFDEF(CONFIG_PC_TRACE, init_pc_trace());
   cpu_reset(13);
   long img_size = load_img();
