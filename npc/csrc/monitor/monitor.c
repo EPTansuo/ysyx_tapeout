@@ -43,6 +43,7 @@ void init_pc_trace();
 // }
 
 static void welcome() {
+  IFDEF(USE_NVBOARD, Log("USE Nvboard for Simulation."));
   Log("Trace: %s", MUXDEF(CONFIG_TRACE, ANSI_FMT("ON", ANSI_FG_GREEN), ANSI_FMT("OFF", ANSI_FG_RED)));
   // IFDEF(CONFIG_TRACE, Log("If trace is enabled, a log file will be generated "
   //       "to record the trace. This may lead to a large log file. "
@@ -104,7 +105,9 @@ void init_monitor(int argc, char** argv){
   init_sim(argc, argv);
   init_mem();
   init_sig();
+#ifndef USE_SOC
   IFDEF(CONFIG_DEVICE, init_device());
+#endif
   IFDEF(CONFIG_PC_TRACE, init_pc_trace());
   cpu_reset(13);
   long img_size = load_img();

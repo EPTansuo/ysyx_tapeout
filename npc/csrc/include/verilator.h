@@ -81,7 +81,7 @@
 #include <verilated_fst_c.h>
 #endif 
 
-#ifdef CONFIG_USE_NVBOARD
+#ifdef USE_NVBOARD
 #include <nvboard.h>
 #endif 
 
