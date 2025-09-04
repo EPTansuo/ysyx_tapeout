@@ -17,10 +17,9 @@ else
 USE_SOC = n
 endif 
 
-USE_NVBOARD?=y 
-ifeq ($(USE_SOC),y)
-else 
-USE_NVBOARD:=n
+USE_NVBOARD ?= y 
+ifneq ($(USE_SOC),y)
+USE_NVBOARD := n
 endif 
 
 $(info USE_NVBOARD = $(USE_NVBOARD))
@@ -103,7 +102,7 @@ ifeq ($(USE_SOC),y)
 	CXXFLAGS += -DUSE_SOC=1
 endif
 ifeq ($(USE_NVBOARD),y)
-	CXXFLAGS += -DUSE_NVBOARD=1
+  CXXFLAGS += -DUSE_NVBOARD=1
 endif
 #CXXFLAGS += $(shell llvm-config --cxxflags)
 LDFLAGS += $(shell  llvm-config --ldflags --libs --system-libs) -fPIE
