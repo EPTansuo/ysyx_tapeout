@@ -17,6 +17,14 @@ else
 USE_SOC = n
 endif 
 
+USE_NVBOARD ?= y 
+ifeq ($(USE_SOC),y)
+else 
+USE_NVBOARD = n
+endif 
+
+
+
 OBJ_DIR := $(BUILD_DIR)/OBJ_DIR
 ifeq ($(USE_SOC),y)
 OBJ_DIR := $(BUILD_DIR)/OBJ_DIR_SOC
@@ -120,7 +128,7 @@ SYN_ADDITION_FILES += $(NPC_HOME)/vsrc/mem.v
 endif
 
 # constraint file
-ifeq ($(CONFIG_USE_NVBOARD),y)
+ifeq ($(USE_NVBOARD),y)
 SRC_AUTO_BIND = $(abspath $(BUILD_DIR)/auto_bind.cpp)
 $(SRC_AUTO_BIND): $(NXDC_FILES)
 		python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
