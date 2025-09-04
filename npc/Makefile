@@ -17,13 +17,14 @@ else
 USE_SOC = n
 endif 
 
-USE_NVBOARD ?= y 
-ifneq ($(USE_SOC),y)
-USE_NVBOARD := n
+USE_NVBOARD ?= n
+ifeq ($(USE_SOC),y)
+ifeq ($(USE_NVBOARD),n)
+USE_NVBOARD := y
+endif
+else
+USE_NVBOARD := n 
 endif 
-
-$(info USE_NVBOARD = $(USE_NVBOARD))
-
 
 OBJ_DIR := $(BUILD_DIR)/OBJ_DIR
 ifeq ($(USE_SOC),y)
@@ -98,15 +99,13 @@ CXXFLAGS += $(CFLAGS)
 CXXFLAGS += -fmacro-prefix-map=$(NPC_HOME)=npc
 CXXFLAGS += -fno-stack-protector
 CXXFLAGS += -Wall $(INCFLAGS) -g -DTOP_NAME="\"V$(TOPNAME)\"" -fpermissive
-
-ifeq ($(USE_NVBOARD),y)
-  CXXFLAGS += -DUSE_NVBOARD=1
-endif
-
 ifeq ($(USE_SOC),y)
 	CXXFLAGS += -DUSE_SOC=1
 endif
 
+ifneq ($(USE_NVBOARD),n)
+  CXXFLAGS += -DUSE_NVBOARD=1
+endif
 $(info USE_NVBOARD=$(USE_NVBOARD))
 $(info CXXFLAGS=$(CXXFLAGS))
 #CXXFLAGS += $(shell llvm-config --cxxflags)
