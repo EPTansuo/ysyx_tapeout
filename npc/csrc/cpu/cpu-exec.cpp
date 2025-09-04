@@ -108,25 +108,23 @@ void inline cpu_single_cycle(){
 #endif 
 }
 
-void inline cpu_single_inst(){
-#ifdef CONFIG_WAVE_DUMP
+
+void inline cpu_single_inst() {
   size_t cycles = 0;
-  do{
-    if(cycles++ > 10000){
+
+  do {
+    if (cycles++ > 10000) {
       printf("************************************\n");
       printf(L_RED "Single Inst Time out!\n" COLOR_NONE);
-      printf( "************************************\n");
+      printf("************************************\n");
       npc_state.state = NPC_ABORT;
       return;
     }
     cpu_single_cycle();
-  }while(!WBU_VALID);
-#else
-  do{
-    cpu_single_cycle();
-  }while(!WBU_VALID);
-#endif 
+  } while (!WBU_VALID);
 }
+
+
 
 void cpu_reset(int n){
 	top->reset = RESET_ENABLE;
