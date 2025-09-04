@@ -17,10 +17,10 @@ else
 USE_SOC = n
 endif 
 
-USE_NVBOARD ?= y 
+USE_NVBOARD?=y 
 ifeq ($(USE_SOC),y)
 else 
-USE_NVBOARD = n
+USE_NVBOARD:=n
 endif 
 
 $(info USE_NVBOARD = $(USE_NVBOARD))
