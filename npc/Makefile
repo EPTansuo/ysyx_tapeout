@@ -24,6 +24,14 @@ else
 OBJ_DIR := $(BUILD_DIR)/OBJ_DIR_NPC
 endif
 
+USE_NVBOARD ?= n
+ifeq ($(USE_SOC),y)
+ifeq ($(USE_NVBOARD),n)
+USE_NVBOARD := y
+endif
+else
+USE_NVBOARD := n 
+endif 
 
 ifeq ($(USE_SOC),y)
 IMG = "$(YSYX_HOME)/am-kernels/tests/cpu-tests/build/sum-riscv32e-ysyxsoc.bin"
@@ -93,6 +101,9 @@ CXXFLAGS += -Wall $(INCFLAGS) -g -DTOP_NAME="\"V$(TOPNAME)\"" -fpermissive
 ifeq ($(USE_SOC),y)
 	CXXFLAGS += -DUSE_SOC=1
 endif
+ifeq ($(USE_NVBOARD),y)
+	CXXFLAGS += -DUSE_NVBOARD=1
+endif
 #CXXFLAGS += $(shell llvm-config --cxxflags)
 LDFLAGS += $(shell  llvm-config --ldflags --libs --system-libs) -fPIE
 LDFLAGS += -lreadline
@@ -120,7 +131,7 @@ SYN_ADDITION_FILES += $(NPC_HOME)/vsrc/mem.v
 endif
 
 # constraint file
-ifeq ($(CONFIG_USE_NVBOARD),y)
+ifeq ($(USE_NVBOARD),y)
 SRC_AUTO_BIND = $(abspath $(BUILD_DIR)/auto_bind.cpp)
 $(SRC_AUTO_BIND): $(NXDC_FILES)
 		python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@

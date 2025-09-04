@@ -103,7 +103,7 @@ void inline cpu_single_cycle(){
 		cpu_eval_dump();
 	}
   g_nr_guest_cycle++;
-#ifdef CONFIG_USE_NVBOARD
+#ifdef USE_NVBOARD
   nvboard_update();
 #endif 
 }
