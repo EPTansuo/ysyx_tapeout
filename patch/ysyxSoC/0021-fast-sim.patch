@@ -1,25 +1,40 @@
-From d8842e01e4a05aa9de42733d106b275ad3f88bcf Mon Sep 17 00:00:00 2001
+From fb76cb516fdc8277734f8160f07871885a44492a Mon Sep 17 00:00:00 2001
 From: EPTansuo <eptansuo@163.com>
-Date: Mon, 16 Dec 2024 20:53:30 +0800
-Subject: [PATCH 16/24] USE Fast FLASH
+Date: Mon, 30 Dec 2024 22:46:12 +0800
+Subject: [PATCH 21/24] fast sim
 
 ---
  perip/spi/rtl/spi_top_apb.v | 2 +-
+ src/amba/APBDelayer.scala   | 2 +-
  src/device/SPI.scala        | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ 3 files changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/perip/spi/rtl/spi_top_apb.v b/perip/spi/rtl/spi_top_apb.v
-index 92d37516c..a745423c0 100644
+index 3caf0ea55..fb5d56ed9 100644
 --- a/perip/spi/rtl/spi_top_apb.v
 +++ b/perip/spi/rtl/spi_top_apb.v
-@@ -1,6 +1,6 @@
+@@ -1,7 +1,7 @@
  // define this macro to enable fast behavior simulation
  // for flash by skipping SPI transfers
+ // 如果启用FAST_FALSH 还需要在src/device/SPI.scala中将XIP_en 设置为false
 -//`define FAST_FLASH
 +`define FAST_FLASH
  
  module spi_top_apb #(
    parameter flash_addr_start = 32'h30000000,
+diff --git a/src/amba/APBDelayer.scala b/src/amba/APBDelayer.scala
+index ce57cc3a5..7067456b4 100644
+--- a/src/amba/APBDelayer.scala
++++ b/src/amba/APBDelayer.scala
+@@ -93,7 +93,7 @@ class APBDelayerWrapper(implicit p: Parameters) extends LazyModule {
+   lazy val module = new Impl
+   class Impl extends LazyModuleImp(this) {
+     (node.in zip node.out) foreach { case ((in, edgeIn), (out, edgeOut)) =>
+-      val delayer = Module(new APBDelayerChisel)
++      val delayer = Module(new apb_delayer)
+       delayer.io.clock := clock
+       delayer.io.reset := reset
+       delayer.io.in <> in
 diff --git a/src/device/SPI.scala b/src/device/SPI.scala
 index dfd38fa50..b21d28720 100644
 --- a/src/device/SPI.scala

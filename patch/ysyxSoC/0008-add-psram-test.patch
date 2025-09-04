@@ -1,7 +1,7 @@
 From 04cdd40431e5521b4517520dd4c6c30fee4e673b Mon Sep 17 00:00:00 2001
 From: EPTansuo <eptansuo@163.com>
 Date: Sat, 7 Dec 2024 20:18:50 +0800
-Subject: [PATCH 08/23] add psram test
+Subject: [PATCH 08/24] add psram test
 
 ---
  src/SoC.scala          |   2 +-
@@ -191,5 +191,5 @@ index 09d889e4f..ebdbe4df8 100644
  
  class APBPSRAM(address: Seq[AddressSet])(implicit p: Parameters) extends LazyModule {
 -- 
-2.50.1
+2.51.0
 

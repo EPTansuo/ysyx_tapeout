@@ -1,7 +1,7 @@
 From 88e8ba60fd30d7b93906febf74c4f38406234fef Mon Sep 17 00:00:00 2001
 From: EPTansuo <eptansuo@163.com>
 Date: Mon, 16 Dec 2024 16:10:56 +0800
-Subject: [PATCH 15/23] finish SDRAM
+Subject: [PATCH 15/24] finish SDRAM
 
 ---
  perip/sdram/core_sdram_axi4/sdram_axi.v      |   8 +-
@@ -428,5 +428,5 @@ index 5bea4d647..ff6a824be 100644
  
    io.in.pready := true.B
 -- 
-2.50.1
+2.51.0
 

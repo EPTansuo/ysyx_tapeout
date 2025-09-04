@@ -1,7 +1,7 @@
 From 59cfb52e1b48df83c8aad8fc311be1468fd178ac Mon Sep 17 00:00:00 2001
 From: EPTansuo <eptansuo@163.com>
 Date: Fri, 22 Nov 2024 11:08:44 +0800
-Subject: [PATCH 02/23] add stu. ID
+Subject: [PATCH 02/24] add stu. ID
 
 ---
  src/CPU.scala | 4 ++--
@@ -30,5 +30,5 @@ index 7559195f5..6e895de6b 100644
      cpu.io.reset := reset
      cpu.io.io_interrupt := interrupt
 -- 
-2.50.1
+2.51.0
 

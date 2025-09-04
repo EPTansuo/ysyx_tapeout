@@ -1,7 +1,7 @@
 From a414a051859f624d7d3b25274e7c231787b2d877 Mon Sep 17 00:00:00 2001
 From: EPTansuo <eptansuo@163.com>
 Date: Mon, 16 Dec 2024 10:20:39 +0800
-Subject: [PATCH 12/23] enable fast flash and support keyboard
+Subject: [PATCH 12/24] enable fast flash and support keyboard
 
 ---
  perip/sdram/core_sdram_axi4/sdram_axi_core.v |  32 ++--
@@ -341,5 +341,5 @@ index 5c6942126..f430639da 100644
  /*
      mspi.io.in.psel := 0.U
 -- 
-2.50.1
+2.51.0
 
