@@ -24,14 +24,6 @@ else
 OBJ_DIR := $(BUILD_DIR)/OBJ_DIR_NPC
 endif
 
-USE_NVBOARD ?= n
-ifeq ($(USE_SOC),y)
-ifeq ($(USE_NVBOARD),n)
-USE_NVBOARD := y
-endif
-else
-USE_NVBOARD := n 
-endif 
 
 ifeq ($(USE_SOC),y)
 IMG = "$(YSYX_HOME)/am-kernels/tests/cpu-tests/build/sum-riscv32e-ysyxsoc.bin"
@@ -101,9 +93,6 @@ CXXFLAGS += -Wall $(INCFLAGS) -g -DTOP_NAME="\"V$(TOPNAME)\"" -fpermissive
 ifeq ($(USE_SOC),y)
 	CXXFLAGS += -DUSE_SOC=1
 endif
-ifeq ($(USE_NVBOARD),y)
-	CXXFLAGS += -DUSE_NVBOARD=1
-endif
 #CXXFLAGS += $(shell llvm-config --cxxflags)
 LDFLAGS += $(shell  llvm-config --ldflags --libs --system-libs) -fPIE
 LDFLAGS += -lreadline
@@ -131,7 +120,7 @@ SYN_ADDITION_FILES += $(NPC_HOME)/vsrc/mem.v
 endif
 
 # constraint file
-ifeq ($(USE_NVBOARD),y)
+ifeq ($(CONFIG_USE_NVBOARD),y)
 SRC_AUTO_BIND = $(abspath $(BUILD_DIR)/auto_bind.cpp)
 $(SRC_AUTO_BIND): $(NXDC_FILES)
 		python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
@@ -205,17 +194,6 @@ $(RC_MARKER):
 
 
 verilog: $(SCALA_FILE) sigmap .config.json $(RC_MARKER)
-	
-ifeq ($(CHECK_SCALA),1)
-	@if [ "$(SCALA_TIME)" -gt "$(VERILOG_TIME)" ]; then \
-		echo "Scala directory changed or Verilog directory missing, generating Verilog..."; \
-		($(MILLENV) ./mill -i $(NPC_TOPNAME).runMain $(MAIN) -td $(VERILOG_DIR) $(MILLFLAGS)); \
-	else \
-		echo "No changes detected in Scala directory, skipping Verilog generation."; \
-	fi
-else
-	($(MILLENV) ./mill -i $(NPC_TOPNAME).runMain $(MAIN) -td $(VERILOG_DIR) $(MILLFLAGS));
-endif
 
 	#@if [ "$(SCALA_TIME)" -gt "$(VERILOG_TIME)" ]; then \
 	#	echo "Scala directory changed or Verilog directory missing, generating Verilog..."; \
@@ -223,7 +201,7 @@ endif
 	#else \
 	#	echo "No changes detected in Scala directory, skipping Verilog generation."; \
 	#fi
-	#($(MILLENV) ./mill -i $(NPC_TOPNAME).runMain $(MAIN) -td $(VERILOG_DIR) $(MILLFLAGS)); \
+	($(MILLENV) ./mill -i $(NPC_TOPNAME).runMain $(MAIN) -td $(VERILOG_DIR) $(MILLFLAGS)); \
 	# add prefix 
 	sed -i 's/\<regs_16x32\>/ysyx_23060246_regs_16x32/g' $(NPC_HOME)/build/verilog/$(NPC_TOPNAME).sv
 	sed -i 's/\<regs_15x32\>/ysyx_23060246_regs_15x32/g' $(NPC_HOME)/build/verilog/$(NPC_TOPNAME).sv

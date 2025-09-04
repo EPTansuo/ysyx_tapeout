@@ -5,7 +5,7 @@
 #include <string>
 
 
-#ifdef USE_NVBOARD
+#ifdef CONFIG_USE_NVBOARD
 void nvboard_bind_all_pins(VTOP_NAME* top);
 #endif 
 
@@ -41,7 +41,7 @@ void init_sim(int argc, char** argv){
 	//Verilated::commandArgs(argc, argv);
 	std::srand(std::time(0));
 	top = new VTOP_NAME;
-#ifdef USE_NVBOARD
+#ifdef CONFIG_USE_NVBOARD
 	nvboard_bind_all_pins(top);
 	nvboard_init();
 #endif 
