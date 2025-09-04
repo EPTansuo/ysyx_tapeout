@@ -98,12 +98,17 @@ CXXFLAGS += $(CFLAGS)
 CXXFLAGS += -fmacro-prefix-map=$(NPC_HOME)=npc
 CXXFLAGS += -fno-stack-protector
 CXXFLAGS += -Wall $(INCFLAGS) -g -DTOP_NAME="\"V$(TOPNAME)\"" -fpermissive
-ifeq ($(USE_SOC),y)
-	CXXFLAGS += -DUSE_SOC=1
-endif
+
 ifeq ($(USE_NVBOARD),y)
   CXXFLAGS += -DUSE_NVBOARD=1
 endif
+
+ifeq ($(USE_SOC),y)
+	CXXFLAGS += -DUSE_SOC=1
+endif
+
+$(info USE_NVBOARD=$(USE_NVBOARD))
+$(info CXXFLAGS=$(CXXFLAGS))
 #CXXFLAGS += $(shell llvm-config --cxxflags)
 LDFLAGS += $(shell  llvm-config --ldflags --libs --system-libs) -fPIE
 LDFLAGS += -lreadline
