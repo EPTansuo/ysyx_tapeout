@@ -23,7 +23,9 @@ else
 USE_NVBOARD = n
 endif 
 
- 
+$(info USE_NVBOARD = $(USE_NVBOARD))
+
+
 OBJ_DIR := $(BUILD_DIR)/OBJ_DIR
 ifeq ($(USE_SOC),y)
 OBJ_DIR := $(BUILD_DIR)/OBJ_DIR_SOC
