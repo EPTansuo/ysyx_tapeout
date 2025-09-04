@@ -47,6 +47,7 @@ static void welcome() {
   // IFDEF(CONFIG_TRACE, Log("If trace is enabled, a log file will be generated "
   //       "to record the trace. This may lead to a large log file. "
   //       "If it is not necessary, you can disable it in menuconfig"));
+  IFDEF(USE_NVBOARD, Log("USE Nvboard for Simulation."));
   Log("Dump Wave: %s", MUXDEF(CONFIG_WAVE_DUMP, ANSI_FMT("ON", ANSI_FG_GREEN), ANSI_FMT("OFF", ANSI_FG_RED)));
   MUXDEF(CONFIG_WAVE_DUMP, Log("Dump File Type: %s", MUXDEF(CONFIG_WAVE_VCD, "VCD", "FST")),);
   Log("Build time: %s, %s", __TIME__, __DATE__);
