@@ -117,7 +117,7 @@ class ysyx_23060246_IFU(config: NPCConfig) extends Module {
     inst := io.imem.r.bits.data
   }
 
-  when(io.imem.r.bits.data === insts.fencei){
+  when(inst === insts.fencei){
     io.fencei := io.out.valid
   }.otherwise{
     io.fencei := false.B
