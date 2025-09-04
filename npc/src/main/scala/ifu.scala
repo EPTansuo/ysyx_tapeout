@@ -45,7 +45,7 @@ class ysyx_23060246_IFU(config: NPCConfig) extends Module {
     s_wait_ready -> Mux(io.out.ready, s_idle, s_wait_ready)
   ))
 
- when(io.flush){
+ when(io.flush || io.fencei){
     flush := true.B
   }.elsewhen(state === s_idle){
     flush := false.B
@@ -117,7 +117,7 @@ class ysyx_23060246_IFU(config: NPCConfig) extends Module {
     inst := io.imem.r.bits.data
   }
 
-  when(io.imem.r.bits.data === insts.fencei){
+  when(inst === insts.fencei){
     io.fencei := io.out.valid
   }.otherwise{
     io.fencei := false.B
