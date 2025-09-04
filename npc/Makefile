@@ -194,6 +194,17 @@ $(RC_MARKER):
 
 
 verilog: $(SCALA_FILE) sigmap .config.json $(RC_MARKER)
+	
+ifeq ($(CHECK_SCALA),1)
+	@if [ "$(SCALA_TIME)" -gt "$(VERILOG_TIME)" ]; then \
+		echo "Scala directory changed or Verilog directory missing, generating Verilog..."; \
+		($(MILLENV) ./mill -i $(NPC_TOPNAME).runMain $(MAIN) -td $(VERILOG_DIR) $(MILLFLAGS)); \
+	else \
+		echo "No changes detected in Scala directory, skipping Verilog generation."; \
+	fi
+else
+	($(MILLENV) ./mill -i $(NPC_TOPNAME).runMain $(MAIN) -td $(VERILOG_DIR) $(MILLFLAGS));
+endif
 
 	#@if [ "$(SCALA_TIME)" -gt "$(VERILOG_TIME)" ]; then \
 	#	echo "Scala directory changed or Verilog directory missing, generating Verilog..."; \
@@ -201,7 +212,7 @@ verilog: $(SCALA_FILE) sigmap .config.json $(RC_MARKER)
 	#else \
 	#	echo "No changes detected in Scala directory, skipping Verilog generation."; \
 	#fi
-	($(MILLENV) ./mill -i $(NPC_TOPNAME).runMain $(MAIN) -td $(VERILOG_DIR) $(MILLFLAGS)); \
+	#($(MILLENV) ./mill -i $(NPC_TOPNAME).runMain $(MAIN) -td $(VERILOG_DIR) $(MILLFLAGS)); \
 	# add prefix 
 	sed -i 's/\<regs_16x32\>/ysyx_23060246_regs_16x32/g' $(NPC_HOME)/build/verilog/$(NPC_TOPNAME).sv
 	sed -i 's/\<regs_15x32\>/ysyx_23060246_regs_15x32/g' $(NPC_HOME)/build/verilog/$(NPC_TOPNAME).sv
