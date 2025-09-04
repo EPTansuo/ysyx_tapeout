@@ -103,7 +103,7 @@ ifeq ($(USE_SOC),y)
 	CXXFLAGS += -DUSE_SOC=1
 endif
 ifeq ($(USE_NVBOARD),y)
-CXXFLAGS += -DUSE_NVBOARD=1
+	CXXFLAGS += -DUSE_NVBOARD=1
 endif
 #CXXFLAGS += $(shell llvm-config --cxxflags)
 LDFLAGS += $(shell  llvm-config --ldflags --libs --system-libs) -fPIE
