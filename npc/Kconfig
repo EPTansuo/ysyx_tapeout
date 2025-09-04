@@ -169,7 +169,7 @@ config ITRACE_COND
 config MTRACE
   depends on TRACE
   bool "Enable memory tracer"
-  default y
+  default n
 
 config MTRACE_RANGE_COND
   depends on MTRACE
