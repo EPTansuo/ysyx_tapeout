@@ -164,6 +164,14 @@ ICacheEntry  icache[ICACHE_SIZE] PG_ALIGN =  {0};
 uint64_t icache_hit = 0;
 uint64_t icache_miss = 0;
 
+#ifdef CONFIG_USE_ICACHE
+void fencei(){
+	for(int i=0; i<ICACHE_SIZE; i++){
+		icache[i].pc = 0;
+	}
+}
+#endif 
+
 static int decode_exec(Decode *s) {
   int rd = 0;
   word_t src1 = 0, src2 = 0, imm = 0;
@@ -313,9 +321,10 @@ static int decode_exec(Decode *s) {
   INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall  , N, ECALL(s->dnpc));
   INSTPAT("0011000 00010 00000 000 00000 11100 11", mret   , N, MRET());
 
+
+	 INSTPAT("0000000 00000 00000 001 00000 00011 11", fence.i, N, MUXDEF(CONFIG_USE_ICACHE,fencei(),R(0)=0)); // fence.i
    INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak , N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
    INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv    , N, INV(s->pc));
-
 
 
 #ifdef CONFIG_USE_ICACHE
