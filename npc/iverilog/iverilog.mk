@@ -6,23 +6,36 @@ BIN_IVG = $(BIN)_ivg
 
 IVG_TOP = top
 
+
+ifneq ($(CONFIG_WAVE_DUMP),)
+IVG_FLAGS += -DCONFIG_WAVE_DUMP
+endif 
+
+ifeq ($(CONFIG_WAVE_VCD),y)
+IVG_FLAGS += -DCONFIG_WAVE_VCD
+else ifeq ($(CONFIG_WAVE_FST),y)
+IVG_FLAGS += -DCONFIG_WAVE_FST
+VVP_FLAGS += -fst
+endif 
+
+
 iverilog_build: verilog $(SIM_IVG_VSRCS)
-	iverilog  -g2012 -s $(IVG_TOP) -DSMALL_MEM -DIMG_PATH=\"$(IMG).mem\" \
+	iverilog  -g2012 -s $(IVG_TOP) -DSMALL_MEM -DIMG_PATH=\"$(IMG).mem\" $(IVG_FLAGS) \
 		 $(DUT_IVG_VSRCS) $(SIM_IVG_VSRCS) -o $(BIN_IVG)
 
 iverilog_sim: bin2mem iverilog_build
-	vvp $(BIN_IVG)
+	vvp $(BIN_IVG) $(VVP_FLAGS) 
 
 
 # NETLIST 仿真还不行
 VSRC_NETLIST = $(shell find $(abspath $(YOSYSSTA_PATH)/result/$(NPC_TOPNAME)-$(CLK_FREQ_MHZ)MHz) -name "*.netlist.syn.v")
 VSRC_CELL = $(YOSYSSTA_PATH)/nangate45/sim/cells.v
 iverilog_build_netlist:
-	iverilog -g2012 -s $(IVG_TOP) -DSMALL_MEM -DIMG_PATH=\"$(IMG).mem\" \
+	iverilog -g2012 -s $(IVG_TOP) -DSMALL_MEM -DIMG_PATH=\"$(IMG).mem\" $(IVG_FLAGS)\
 		 $(VSRC_NETLIST) $(VSRC_CELL) $(SIM_IVG_VSRCS) -o $(BIN_IVG)
 
 iverilog_sim_netlist: iverilog_build_netlist bin2mem
-	vvp $(BIN_IVG)
+	vvp $(BIN_IVG) $(VVP_FLAGS)
 
 
 sim-iverilog: iverilog_sim

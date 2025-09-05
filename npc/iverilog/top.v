@@ -46,10 +46,24 @@ wire [1:0]  rresp;
 wire        rlast;
 
 
-// initial begin
-//     $dumpfile("wave.vcd");
-//     $dumpvars(0, top);
-// end
+`ifdef CONFIG_WAVE_DUMP
+initial begin
+`ifdef CONFIG_WAVE_FST
+        $display("Dumping FST wave file...");
+        $dumpfile("wave.fst");
+        $dumpvars(0, top);
+      // 如果是 VCD
+`elsif CONFIG_WAVE_VCD
+        $display("Dumping VCD wave file...");
+        $dumpfile("wave.vcd");
+        $dumpvars(0, top);
+`else
+        $display("Unsupported WAVE_FILE_TYPE");
+`endif
+end
+`endif
+
+
 
 initial begin
     clock = 1'b0;

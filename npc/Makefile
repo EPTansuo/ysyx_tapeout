@@ -29,11 +29,13 @@ else
 OBJ_DIR := $(BUILD_DIR)/OBJ_DIR_NPC
 endif
 
-
+IMG ?=
+ifeq ($(IMG),)
 ifeq ($(USE_SOC),y)
 IMG = "$(YSYX_HOME)/am-kernels/tests/cpu-tests/build/sum-riscv32e-ysyxsoc.bin"
 else
 IMG = "$(YSYX_HOME)/am-kernels/tests/cpu-tests/build/sum-riscv32e-npc.bin"
+endif
 endif
 
 ifeq ($(USE_SOC),y)
