@@ -31,28 +31,38 @@ void putch(char ch) {
 #define UART_BASE 0x10000000L
 #define UART_TX   (*(volatile uint8_t *)(UART_BASE + 0))
 #ifndef ONE_STAGE_BL
-extern char _text_start, _data_start, _data_end, _text_src, _bss_start, _bss_end;
+extern char _text_start, _data_start, _data_end,
+_data_src, _text_src, _text_end, _bss_start, _bss_end;
 
 void __attribute__((section(".bootloader"))) bootloader(){
   char *src = &_text_src;
   char *dst = &_text_start;
-  char *p = &_bss_start;
 
 
 #ifdef ALIGNED
-  while (dst <= &_data_end) {
-    *((uintptr_t *)dst) = *((uintptr_t *)src);  
+  // 1. copy .text
+  while (dst < &_text_end) {
+    *((uintptr_t *)dst) = *((uintptr_t *)src);
     dst += 4;
     src += 4;
-    // if( ((int)(&_data_end) - (int)dst)%0x4000==0){
-    //   UART_TX='c';
-    // }
   }
-  //UART_TX='d';
-  while (p <= &_bss_end) {
-    *((uintptr_t *)p) = 0; 
-    p += 4;
+
+  // 2. copy .data
+  src = &_data_src;
+  dst = &_data_start;
+  while (dst < &_data_end) {
+    *((uintptr_t *)dst) = *((uintptr_t *)src);
+    dst += 4;
+    src += 4;
   }
+
+  // 3. clear .bss
+  dst = &_bss_start;
+  while (dst < &_bss_end) {
+    *((uintptr_t *)dst) = 0;
+    dst += 4;
+  }
+
 #else
   // 处理开头的不对齐
   while ((uintptr_t)dst % 4 != 0 && dst < &_data_end) {
