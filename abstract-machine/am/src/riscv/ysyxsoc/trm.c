@@ -55,7 +55,7 @@ void __attribute__((section(".bootloader"))) bootloader(){
 #ifdef ALIGNED
   // 1) .text
   copy_section(&_text_start,   &_text_end,   &_text_src);
-  // 2) .rodata  —— 之前缺这步
+  // 2) .rodata
   copy_section(&_rodata_start, &_rodata_end, &_rodata_src);
   // 3) .data
   copy_section(&_data_start,   &_data_end,   &_data_src);
@@ -105,6 +105,9 @@ void __attribute__((section(".fsbl"))) _fsbl_init(){
     dst += 4;
     src += 4;
   }
+    asm volatile("fence rw, rw");
+  asm volatile("fence.i");
+
 #else
   while ((uintptr_t)dst % 4 != 0 && dst < &_eiflash_ssbl) {
     *dst++ = *src++; 
