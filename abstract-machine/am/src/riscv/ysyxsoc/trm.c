@@ -42,16 +42,20 @@ void __attribute__((section(".bootloader"))) bootloader(){
 
 
 #ifdef ALIGNED
-  // 1. copy .text
-  while (dst < &_text_end) {
-    *((uintptr_t *)dst) = *((uintptr_t *)src);
+
+
+   while (dst <= &_data_end) {
+    *((uintptr_t *)dst) = *((uintptr_t *)src);  
     dst += 4;
     src += 4;
+    // if( ((int)(&_data_end) - (int)dst)%0x4000==0){
+    //   UART_TX='c';
+    // }
   }
 
 
 
-  // 2. copy .data
+  // copy .data
   src = &_data_src;
   dst = &_data_start;
   while (dst < &_data_end) {
@@ -60,7 +64,7 @@ void __attribute__((section(".bootloader"))) bootloader(){
     src += 4;
   }
 
-  // 2.5 copy .rodata
+  // copy .rodata
   src = &_rodata_src;
   dst = &_rodata_start;
   while (dst < &_rodata_end) {
@@ -69,7 +73,7 @@ void __attribute__((section(".bootloader"))) bootloader(){
     src += 4;
   }
 
-  // 3. clear .bss
+  // clear .bss
   dst = &_bss_start;
   while (dst < &_bss_end) {
     *((uintptr_t *)dst) = 0;
