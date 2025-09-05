@@ -33,15 +33,6 @@ void putch(char ch) {
 #ifndef ONE_STAGE_BL
 extern char _text_start, _data_start, _data_end,
 _data_src, _text_src, _text_end, _bss_start, _bss_end;
-extern char _rodata_start, _rodata_end, _rodata_src;
-
-static inline void copy_section(char *dst, char *end, char *src) {
-  // 段都 ALIGN(8)，可直接按 4 字节搬；若想更保险，可先处理不对齐与尾巴
-  while (dst < end) {
-    *(uint32_t *)dst = *(const uint32_t *)src;
-    dst += 4; src += 4;
-  }
-}
 
 void __attribute__((section(".bootloader"))) bootloader(){
   char *src = &_text_src;
@@ -50,7 +41,11 @@ void __attribute__((section(".bootloader"))) bootloader(){
 
 #ifdef ALIGNED
   // 1. copy .text
-  copy_section(&_text_start, &_text_end, &_text_src);
+  while (dst < &_text_end) {
+    *((uintptr_t *)dst) = *((uintptr_t *)src);
+    dst += 4;
+    src += 4;
+  }
 
   // 2. copy .data
   src = &_data_src;
