@@ -44,17 +44,28 @@ static inline void copy_section(char *dst, char *end, char *src) {
 }
 
 void __attribute__((section(".bootloader"))) bootloader(){
+  char *src = &_text_src;
+  char *dst = &_text_start;
+
 
 #ifdef ALIGNED
-  // 1) .text
-  copy_section(&_text_start,   &_text_end,   &_text_src);
-  // 2) .rodata
-  copy_section(&_rodata_start, &_rodata_end, &_rodata_src);
-  // 3) .data
-  copy_section(&_data_start,   &_data_end,   &_data_src);
-  // 4) .bss 清零
-  for (char *p = &_bss_start; p < &_bss_end; p += 4) {
-    *(uint32_t *)p = 0;
+  // 1. copy .text
+  copy_section(&_text_start, &_text_end, &_text_src);
+
+  // 2. copy .data
+  src = &_data_src;
+  dst = &_data_start;
+  while (dst < &_data_end) {
+    *((uintptr_t *)dst) = *((uintptr_t *)src);
+    dst += 4;
+    src += 4;
+  }
+
+  // 3. clear .bss
+  dst = &_bss_start;
+  while (dst < &_bss_end) {
+    *((uintptr_t *)dst) = 0;
+    dst += 4;
   }
 
 #else
