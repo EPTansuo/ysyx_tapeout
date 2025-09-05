@@ -88,25 +88,7 @@ void __attribute__((section(".bootloader"))) bootloader(){
     dst += 4;
     src += 4;
   }
-
-  src = &_rodata_src;
-  dst = &_rodata_start;
-
-  while ((uintptr_t)dst % 4 != 0 && dst < &_rodata_end) {
-    *dst++ = *src++; 
-  }
-  while (dst + 4 <= &_rodata_end) {
-    *((uintptr_t *)dst) = *((uintptr_t *)src);  
-    dst += 4;
-    src += 4;
-  }
-  while (dst + 4 <= &_rodata_end) {
-    *((uintptr_t *)dst) = *((uintptr_t *)src);  // 处理最后的不对齐
-    dst += 4;
-    src += 4;
-  }
   
-
   char *p = &_bss_start;
 
   while ((uintptr_t)p % 4 != 0 && p < &_bss_end) {
