@@ -90,7 +90,6 @@ void __attribute__((section(".bootloader"))) bootloader(){
   }
   
   char *p = &_bss_start;
-
   while ((uintptr_t)p % 4 != 0 && p < &_bss_end) {
     *p++ = 0;  
   }
