@@ -31,37 +31,36 @@ void putch(char ch) {
 #define UART_BASE 0x10000000L
 #define UART_TX   (*(volatile uint8_t *)(UART_BASE + 0))
 #ifndef ONE_STAGE_BL
-extern char _text_start, _data_start, _data_end,
-_data_src, _text_src, _text_end, _bss_start, _bss_end;
+
+
+extern char _text_start,   _text_end,   _text_src;
+extern char _rodata_start, _rodata_end, _rodata_src;
+extern char _data_start,   _data_end,   _data_src;
+extern char _bss_start,    _bss_end;
+
+
+static inline void copy_section(char *dst, char *end, char *src) {
+  while (dst < end) {                // 注意 <
+    *(uint32_t *)dst = *(const uint32_t *)src;
+    dst += 4; src += 4;
+  }
+}
+
 
 void __attribute__((section(".bootloader"))) bootloader(){
-  char *src = &_text_src;
-  char *dst = &_text_start;
+  // char *src = &_text_src;
+  // char *dst = &_text_start;
 
 
 #ifdef ALIGNED
-  // 1. copy .text
-  while (dst < &_text_end) {
-    *((uintptr_t *)dst) = *((uintptr_t *)src);
-    dst += 4;
-    src += 4;
-  }
-
-  // 2. copy .data
-  src = &_data_src;
-  dst = &_data_start;
-  while (dst < &_data_end) {
-    *((uintptr_t *)dst) = *((uintptr_t *)src);
-    dst += 4;
-    src += 4;
-  }
-
-  // 3. clear .bss
-  dst = &_bss_start;
-  while (dst < &_bss_end) {
-    *((uintptr_t *)dst) = 0;
-    dst += 4;
-  }
+  // 1) .text
+  copy_section(&_text_start,   &_text_end,   &_text_src);
+  // 2) .rodata  —— 之前缺这步
+  copy_section(&_rodata_start, &_rodata_end, &_rodata_src);
+  // 3) .data
+  copy_section(&_data_start,   &_data_end,   &_data_src);
+  // 4) .bss 清零
+  for (char *p = &_bss_start; p < &_bss_end; p += 4) *(uint32_t *)p = 0;
 
 #else
   // 处理开头的不对齐
@@ -101,7 +100,7 @@ void __attribute__((section(".fsbl"))) _fsbl_init(){
   char *dst = &_siflash_ssbl;     // VMA, psram
 
 #ifdef ALIGNED
-  while (dst <= &_eiflash_ssbl) {
+  while (dst < &_eiflash_ssbl) {
     *((uintptr_t *)dst) = *((uintptr_t *)src);  
     dst += 4;
     src += 4;

@@ -37,7 +37,6 @@ SECTIONS {
   } > sram AT> flash : bootloader
 
 . = ALIGN(8);
-  _text_src = LOADADDR(.text);
 
   .text : {
   . = ALIGN(8);
@@ -47,7 +46,7 @@ SECTIONS {
     . = ALIGN(8);
   } > sdram AT> flash : text
 
-
+  _text_src = LOADADDR(.text);
 
 . = ALIGN(8);
   etext = .;
@@ -65,7 +64,6 @@ SECTIONS {
   _rodata_src = LOADADDR(.rodata);
 
 . = ALIGN(8);
-  _data_src = LOADADDR(.data);
 
   .data : {
   . = ALIGN(8);
@@ -75,6 +73,9 @@ SECTIONS {
     _data_end = .;
     . = ALIGN(8);
   } > sdram AT>flash : data
+
+  _data_src = LOADADDR(.data);
+
 
   edata = .;
   _data = .;
@@ -89,8 +90,8 @@ SECTIONS {
     _bss_end = .;
   } > sdram AT> flash : bss
 
-  _text_src = LOADADDR(.text);
-  _data_src = LOADADDR(.data);
+  
+  
   
   _stack_top = ORIGIN(sram);
 
