@@ -58,6 +58,14 @@ void __attribute__((section(".bootloader"))) bootloader(){
     src += 4;
   }
 
+  src = &_rodata_src;
+  dst = &_rodata_start;
+  while (dst < &_rodata_end) {
+    *((uintptr_t *)dst) = *((uintptr_t *)src);
+    dst += 4;
+    src += 4;
+  }
+
   // 3. clear .bss
   dst = &_bss_start;
   while (dst < &_bss_end) {
