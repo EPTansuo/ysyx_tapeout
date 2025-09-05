@@ -10,7 +10,7 @@ module ysyx_23060246_InstInvalid(
 //`ifdef VERILATOR
 always @(*) begin
     if(!isvalid)begin
-            $display("Inst Invalid!");
+            $display("\33[1;31mInst Invalid!\33[0m");
 						$finish;
     end
 end
@@ -27,7 +27,7 @@ module ysyx_23060246_Ebreak(
 `ifndef SYNTHESIS
 always @(*) begin
     if(isebreak)begin
-	  	  $display("EBreak!");
+	  	  $display("\33[1;34mEBreak!\33[0m");
 		    $finish;
     end
 end
