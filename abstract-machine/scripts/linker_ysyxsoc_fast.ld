@@ -53,13 +53,17 @@ SECTIONS {
   etext = .;
   _etext = .;
 
+  _rodata_src = LOADADDR(.rodata);
+
   .rodata : {
   . = ALIGN(8);
+  _rodata_start = .;
     *(.rodata*)
     *(.srodata*)
     . = ALIGN(8);
+  _rodata_end = .;
   } > sdram AT> flash : rodata
-
+  
 
 . = ALIGN(8);
   _data_src = LOADADDR(.data);
