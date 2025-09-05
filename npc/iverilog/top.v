@@ -564,7 +564,10 @@ logic [31:0] pmem   [0:PMEM_WORDS-1];
 `define PMEM_SIZE PMEM_BYTES
 
 `define SERIAL_BASE 32'ha000_03f8
-`define SERIAL_SIZE 8
+`define SERIAL_SIZE 4
+
+`define VGACTRL_BASE 32'ha000_0100
+`define VGACTRL_SIZE 8
 
 initial begin
   $readmemh(`IMG_PATH, pmem);
@@ -596,6 +599,9 @@ always_ff @(posedge clock) begin
     end
     else if (in_range(waddr, `SERIAL_BASE, `SERIAL_SIZE)) begin
       $write("%c", wdata[7:0]); $fflush();
+    end
+    else if (in_range(waddr, `VGACTRL_BASE, `VGACTRL_SIZE)) begin
+      // do nothing
     end
     else begin 
       $display("\33[1;31mERROR: write to unmapped address %h, pmem: [%h - %h]\33[0m",
