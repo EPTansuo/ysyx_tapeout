@@ -53,17 +53,13 @@ SECTIONS {
   etext = .;
   _etext = .;
 
-  _rodata_src = LOADADDR(.rodata);
-
   .rodata : {
   . = ALIGN(8);
-  _rodata_start = .;
     *(.rodata*)
     *(.srodata*)
     . = ALIGN(8);
-  _rodata_end = .;
   } > sdram AT> flash : rodata
-  
+
 
 . = ALIGN(8);
   _data_src = LOADADDR(.data);
@@ -90,11 +86,13 @@ SECTIONS {
     _bss_end = .;
   } > sdram AT> flash : bss
 
+  _text_src = LOADADDR(.text);
+  _data_src = LOADADDR(.data);
+  
   _stack_top = ORIGIN(sram);
 
   _stack_pointer = ORIGIN(sram) + LENGTH(sram);
-
-
+  
   . = ORIGIN(psram);
   _heap_start = .;
   . = ORIGIN(psram) + LENGTH(psram);
