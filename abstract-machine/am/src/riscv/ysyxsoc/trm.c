@@ -26,7 +26,7 @@ void putch(char ch) {
 }
 
 
-#define ALIGNED   // 段对齐
+//#define ALIGNED   // 段对齐
 //#define ONE_STAGE_BL 
 #define UART_BASE 0x10000000L
 #define UART_TX   (*(volatile uint8_t *)(UART_BASE + 0))
@@ -48,9 +48,6 @@ static inline void copy_section(char *dst, char *end, char *src) {
 
 
 void __attribute__((section(".bootloader"))) bootloader(){
-  // char *src = &_text_src;
-  // char *dst = &_text_start;
-
 
 #ifdef ALIGNED
   // 1) .text
@@ -64,6 +61,10 @@ void __attribute__((section(".bootloader"))) bootloader(){
     asm volatile("fence rw, rw");
   asm volatile("fence.i");
 #else
+  char *src = &_text_src;
+  char *dst = &_text_start;
+
+
   // 处理开头的不对齐
   while ((uintptr_t)dst % 4 != 0 && dst < &_data_end) {
     *dst++ = *src++; 
@@ -78,6 +79,7 @@ void __attribute__((section(".bootloader"))) bootloader(){
     dst += 4;
     src += 4;
   }
+  char *p = &_bss_start;
   while ((uintptr_t)p % 4 != 0 && p < &_bss_end) {
     *p++ = 0;  
   }
