@@ -1,7 +1,7 @@
 From fbe330bbedb5dcecbe7c9d331869f5e5a9b37926 Mon Sep 17 00:00:00 2001
 From: EPTansuo <eptansuo@163.com>
 Date: Thu, 19 Dec 2024 15:02:15 +0800
-Subject: [PATCH 20/24] USE XIP
+Subject: [PATCH 20/23] USE XIP
 
 ---
  perip/spi/rtl/spi_top_apb.v | 4 ++--

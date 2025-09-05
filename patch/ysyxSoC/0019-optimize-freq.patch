@@ -1,7 +1,7 @@
 From 405ce159660127389004aebbf796f27e11e5648d Mon Sep 17 00:00:00 2001
 From: EPTansuo <eptansuo@163.com>
 Date: Wed, 18 Dec 2024 16:32:11 +0800
-Subject: [PATCH 19/24] optimize freq
+Subject: [PATCH 19/23] optimize freq
 
 ---
  src/amba/APBDelayer.scala | 2 +-

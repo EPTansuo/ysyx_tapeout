@@ -1,7 +1,7 @@
 From 52a5362dd223d6ac9346464420cd3138f103002b Mon Sep 17 00:00:00 2001
 From: EPTansuo <eptansuo@163.com>
 Date: Mon, 16 Dec 2024 13:41:37 +0800
-Subject: [PATCH 14/24] optimize XIP
+Subject: [PATCH 14/23] optimize XIP
 
 ---
  perip/spi/rtl/spi_top_apb.v | 2 +-

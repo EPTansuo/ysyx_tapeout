@@ -1,7 +1,7 @@
 From d8842e01e4a05aa9de42733d106b275ad3f88bcf Mon Sep 17 00:00:00 2001
 From: EPTansuo <eptansuo@163.com>
 Date: Mon, 16 Dec 2024 20:53:30 +0800
-Subject: [PATCH 16/24] USE Fast FLASH
+Subject: [PATCH 16/23] USE Fast FLASH
 
 ---
  perip/spi/rtl/spi_top_apb.v | 2 +-

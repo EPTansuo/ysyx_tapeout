@@ -1,7 +1,7 @@
 From 3ea316365714cc72efed6b54601a4b9e69dc2ae5 Mon Sep 17 00:00:00 2001
 From: EPTansuo <eptansuo@163.com>
 Date: Mon, 16 Dec 2024 12:59:17 +0800
-Subject: [PATCH 13/24] add VGA
+Subject: [PATCH 13/23] add VGA
 
 ---
  src/device/VGA.scala | 63 +++++++++++++++++++++++++++++++++++++++++++-

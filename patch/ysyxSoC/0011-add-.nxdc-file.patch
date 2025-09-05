@@ -1,7 +1,7 @@
 From 2e3a046ae417b44455f7bd8bc83f6dca03c383a4 Mon Sep 17 00:00:00 2001
 From: EPTansuo <eptansuo@163.com>
 Date: Thu, 12 Dec 2024 21:14:53 +0800
-Subject: [PATCH 11/24] add .nxdc file
+Subject: [PATCH 11/23] add .nxdc file
 
 ---
  perip/sdram/core_sdram_axi4/sdram_axi_core.v |  30 ++--

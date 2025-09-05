@@ -1,7 +1,7 @@
 From 1b205c8df116a8ee414b05763d05e1c4df39fb2b Mon Sep 17 00:00:00 2001
 From: EPTansuo <eptansuo@163.com>
 Date: Wed, 4 Dec 2024 15:06:53 +0800
-Subject: [PATCH 03/24] add bitrev but not tested
+Subject: [PATCH 03/23] add bitrev but not tested
 
 ---
  .gitignore                         |  5 +++++

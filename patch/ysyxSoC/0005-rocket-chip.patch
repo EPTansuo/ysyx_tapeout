@@ -1,7 +1,7 @@
 From ae8517759a1dab84c2055c5d26dcf50e95a092d6 Mon Sep 17 00:00:00 2001
 From: EPTansuo <eptansuo@163.com>
 Date: Thu, 5 Dec 2024 15:40:30 +0800
-Subject: [PATCH 05/24] rocket chip
+Subject: [PATCH 05/23] rocket chip
 
 ---
  rocket-chip | 2 +-

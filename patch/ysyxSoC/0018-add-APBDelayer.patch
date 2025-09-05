@@ -1,7 +1,7 @@
 From 933903004eed7bdb64ee363ecd7e2ec53e079e23 Mon Sep 17 00:00:00 2001
 From: EPTansuo <eptansuo@163.com>
 Date: Wed, 18 Dec 2024 12:21:02 +0800
-Subject: [PATCH 18/24] add APBDelayer
+Subject: [PATCH 18/23] add APBDelayer
 
 ---
  src/amba/APBDelayer.scala | 68 +++++++++++++++++++++++++++++++++++++--

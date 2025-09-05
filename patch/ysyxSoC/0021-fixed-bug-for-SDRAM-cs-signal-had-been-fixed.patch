@@ -1,7 +1,7 @@
 From 1db4760feec8521562a6f5eb1c27fcb033ff7f77 Mon Sep 17 00:00:00 2001
 From: EPTansuo <eptansuo@163.com>
 Date: Wed, 19 Feb 2025 11:22:10 +0800
-Subject: [PATCH 22/24] fixed bug for SDRAM: cs signal had been fixed
+Subject: [PATCH 21/23] fixed bug for SDRAM: cs signal had been fixed
 
 ---
  perip/sdram/core_sdram_axi4/sdram_axi_core.v | 3 ++-
