@@ -381,6 +381,20 @@ module SoCMem(
   output logic [31:0] rdata
 );
 
+// ---- 地址命中判断 ----
+function automatic bit in_range(
+  input logic [31:0] a,
+  input logic [31:0] base,
+  input logic [31:0] size
+);
+  logic [31:0] hi;
+  hi = base + size - 1;
+  return ($unsigned(a) >= $unsigned(base)) &&
+         ($unsigned(a) <= $unsigned(hi));
+endfunction
+
+
+`ifdef USE_SOC
   // ---- 每区容量（字节）→ 仿真容量（字） ----
   localparam int unsigned ROM_BYTES   =
       (`FLASH_SIZE > `MROM_SIZE) ? `FLASH_SIZE : `MROM_SIZE; // 共用一份ROM，取较大值
@@ -427,10 +441,7 @@ module SoCMem(
     $readmemh(`IMG_PATH, rom_mem);  // 建议用 objcopy --adjust-vma 把起始平移到 0
   end
 
-  // ---- 地址命中判断 ----
-  function automatic bit in_range(input logic [31:0] a, input logic [31:0] base, input logic [31:0] size);
-    return (a >= base) && (a < base + size);
-  endfunction
+
   logic [31:0] data;
   // ---- 组合读：按片上地址选择 ----
   logic [3:0] in_mem;
@@ -535,5 +546,71 @@ module SoCMem(
       // 其它区域：忽略或断言
     end
   end
+
+`else 
+
+`ifdef SMALL_MEM
+  localparam int unsigned PMEM_BYTES = 128*1024;
+`else
+  localparam int unsigned PMEM_BYTES = 1024*1024;
+`endif 
+
+  localparam int unsigned PMEM_WORDS = PMEM_BYTES >> 2;
+
+
+logic [31:0] pmem   [0:PMEM_WORDS-1];
+
+`define PMEM_BASE 32'h8000_0000
+`define PMEM_SIZE PMEM_BYTES
+
+`define SERIAL_BASE 32'ha000_03f8
+`define SERIAL_SIZE 4
+
+`define VGACTRL_BASE 32'ha000_0100
+`define VGACTRL_SIZE 8
+
+initial begin
+  $readmemh(`IMG_PATH, pmem);
+end
+
+logic [31:0] data;
+logic [31:0] idx_r;
+always_comb begin
+  data = 32'h0;
+  idx_r = 32'h0;
+  if (in_range(raddr, `PMEM_BASE, `PMEM_SIZE)) begin
+    idx_r = (raddr - `PMEM_BASE) >> 2;
+    if (idx_r < PMEM_WORDS) data = pmem[idx_r];
+  end
+  rdata = reset ? 32'h0 : data;
+end
+
+logic [31:0] idx_w;
+always_ff @(posedge clock) begin
+  if (!reset && we) begin
+    if (in_range(waddr, `PMEM_BASE, `PMEM_SIZE)) begin
+      idx_w = (waddr - `PMEM_BASE) >> 2;
+      if (idx_w < PMEM_WORDS) begin
+        if (wmask[0]) pmem[idx_w][7:0]   <= wdata[7:0];
+        if (wmask[1]) pmem[idx_w][15:8]  <= wdata[15:8];
+        if (wmask[2]) pmem[idx_w][23:16] <= wdata[23:16];
+        if (wmask[3]) pmem[idx_w][31:24] <= wdata[31:24];
+      end
+    end
+    else if (in_range(waddr, `SERIAL_BASE, `SERIAL_SIZE)) begin
+      $write("%c", wdata[7:0]); $fflush();
+    end
+    else if (in_range(waddr, `VGACTRL_BASE, `VGACTRL_SIZE)) begin
+      // do nothing
+    end
+    else begin 
+      $display("\33[1;31mERROR: write to unmapped address %h, pmem: [%h - %h]\33[0m",
+               waddr, `PMEM_BASE, `PMEM_BASE + `PMEM_SIZE - 1);
+      $finish;
+    end
+  end
+end
+
+`endif 
 
 endmodule

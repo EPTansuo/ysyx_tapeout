@@ -19,6 +19,11 @@ VVP_FLAGS += -fst
 endif 
 
 
+ifeq ($(USE_SOC),y)
+IVG_FLAGS += -DUSE_SOC
+endif 
+
+
 iverilog_build: verilog $(SIM_IVG_VSRCS)
 	iverilog  -g2012 -s $(IVG_TOP) -DSMALL_MEM -DIMG_PATH=\"$(IMG).mem\" $(IVG_FLAGS) \
 		 $(DUT_IVG_VSRCS) $(SIM_IVG_VSRCS) -o $(BIN_IVG)
