@@ -111,5 +111,5 @@ index f770e96a5..e9547471b 100644
      mgpio.io.reset := reset
      mgpio.io.in <> in
 -- 
-2.50.1
+2.51.0
 
