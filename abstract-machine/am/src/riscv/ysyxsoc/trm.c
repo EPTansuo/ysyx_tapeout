@@ -26,7 +26,7 @@ void putch(char ch) {
 }
 
 
-//#define ALIGNED   // 段对齐
+#define ALIGNED   // 段对齐
 //#define ONE_STAGE_BL 
 #define UART_BASE 0x10000000L
 #define UART_TX   (*(volatile uint8_t *)(UART_BASE + 0))
@@ -42,31 +42,12 @@ void __attribute__((section(".bootloader"))) bootloader(){
 
 
 #ifdef ALIGNED
-  // 1. copy .text
-  while (dst < &_text_end) {
-    *((uintptr_t *)dst) = *((uintptr_t *)src);
-    dst += 4;
-    src += 4;
-  }
-
-  src = &_rodata_src;
-  dst = &_rodata_start;
-  while (dst < &_rodata_end) {
-    *((uintptr_t *)dst) = *((uintptr_t *)src);
-    dst += 4;
-    src += 4;
-  }
-  
-  // 2. copy .data
-  src = &_data_src;
-  dst = &_data_start;
   while (dst < &_data_end) {
     *((uintptr_t *)dst) = *((uintptr_t *)src);
     dst += 4;
     src += 4;
   }
 
-  // 3. clear .bss
   dst = &_bss_start;
   while (dst < &_bss_end) {
     *((uintptr_t *)dst) = 0;
@@ -88,14 +69,10 @@ void __attribute__((section(".bootloader"))) bootloader(){
     dst += 4;
     src += 4;
   }
-  
+
   char *p = &_bss_start;
   while ((uintptr_t)p % 4 != 0 && p < &_bss_end) {
     *p++ = 0;  
-  }
-  while (p + 4 <= &_bss_end) {
-    *((uintptr_t *)p) = 0; 
-    p += 4;
   }
   while (p + 4 <= &_bss_end) {
     *((uintptr_t *)p) = 0; 
