@@ -1,0 +1,27 @@
+From b5ecae724eada8c538e505d4caa202948bc31b17 Mon Sep 17 00:00:00 2001
+From: EPTansuo <eptansuo@163.com>
+Date: Fri, 5 Sep 2025 14:11:39 +0800
+Subject: [PATCH 10/10] add help default command
+
+---
+ bsp/abstract-machine/src/uart.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/bsp/abstract-machine/src/uart.c b/bsp/abstract-machine/src/uart.c
+index e82c7219aa..16bc190a80 100644
+--- a/bsp/abstract-machine/src/uart.c
++++ b/bsp/abstract-machine/src/uart.c
+@@ -39,8 +39,9 @@ static int _uart_putc(struct rt_serial_device *serial, char c) {
+ 
+ static int _uart_getc(struct rt_serial_device *serial) {
+   //static const char *p = "help\ndate\nversion\nfree\nps\npwd\nls\nmemtrace\nmemcheck\nutest_list\n";
++	static const char *p = "help\n";
+   //return (*p != '\0' ? *(p ++) : -1);
+-  static const char *p = "";
++  //static const char *p = "";
+   return (*p != '\0' ? *(p ++) : io_read(AM_UART_RX).data);
+ }
+ 
+-- 
+2.51.0
+
