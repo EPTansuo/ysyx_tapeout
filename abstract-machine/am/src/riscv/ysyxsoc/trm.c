@@ -26,7 +26,7 @@ void putch(char ch) {
 }
 
 
-#define ALIGNED   // 段对齐
+//#define ALIGNED   // 段对齐
 //#define ONE_STAGE_BL 
 #define UART_BASE 0x10000000L
 #define UART_TX   (*(volatile uint8_t *)(UART_BASE + 0))
