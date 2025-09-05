@@ -51,6 +51,17 @@ void __attribute__((section(".bootloader"))) bootloader(){
     // }
   }
 
+
+
+  // 2. copy .data
+  src = &_data_src;
+  dst = &_data_start;
+  while (dst < &_data_end) {
+    *((uintptr_t *)dst) = *((uintptr_t *)src);
+    dst += 4;
+    src += 4;
+  }
+
   // 2.5 copy .rodata
   src = &_rodata_src;
   dst = &_rodata_start;
