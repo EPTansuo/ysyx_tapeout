@@ -49,18 +49,18 @@ void __attribute__((section(".bootloader"))) bootloader(){
     src += 4;
   }
 
-  // 2. copy .data
-  src = &_data_src;
-  dst = &_data_start;
-  while (dst < &_data_end) {
+  src = &_rodata_src;
+  dst = &_rodata_start;
+  while (dst < &_rodata_end) {
     *((uintptr_t *)dst) = *((uintptr_t *)src);
     dst += 4;
     src += 4;
   }
-
-  src = &_rodata_src;
-  dst = &_rodata_start;
-  while (dst < &_rodata_end) {
+  
+  // 2. copy .data
+  src = &_data_src;
+  dst = &_data_start;
+  while (dst < &_data_end) {
     *((uintptr_t *)dst) = *((uintptr_t *)src);
     dst += 4;
     src += 4;
