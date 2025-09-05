@@ -61,7 +61,8 @@ void __attribute__((section(".bootloader"))) bootloader(){
   copy_section(&_data_start,   &_data_end,   &_data_src);
   // 4) .bss 清零
   for (char *p = &_bss_start; p < &_bss_end; p += 4) *(uint32_t *)p = 0;
-
+    asm volatile("fence rw, rw");
+  asm volatile("fence.i");
 #else
   // 处理开头的不对齐
   while ((uintptr_t)dst % 4 != 0 && dst < &_data_end) {
