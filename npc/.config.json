@@ -2,7 +2,6 @@
     "CONFIG_ISA_riscv": "y",
     "CONFIG_ISA": "\"riscv32\"",
     "CONFIG_RVE": "y",
-    "CONFIG_USE_BPU": "y",
     "CONFIG_CC_O2": "y",
     "CONFIG_CC_OPT": "\"-O2\"",
     "CONFIG_WAVE_FILE_TYPE": "\"none\"",
