@@ -34,6 +34,8 @@ void putch(char ch) {
 extern char _text_start, _data_start, _data_end,
 _data_src, _text_src, _text_end, _bss_start, _bss_end;
 
+extern char _rodata_start, _rodata_end, _rodata_src;
+
 void __attribute__((section(".bootloader"))) bootloader(){
   char *src = &_text_src;
   char *dst = &_text_start;
@@ -47,10 +49,21 @@ void __attribute__((section(".bootloader"))) bootloader(){
     src += 4;
   }
 
+
+
   // 2. copy .data
   src = &_data_src;
   dst = &_data_start;
   while (dst < &_data_end) {
+    *((uintptr_t *)dst) = *((uintptr_t *)src);
+    dst += 4;
+    src += 4;
+  }
+
+  // 2.5 copy .rodata
+  src = &_rodata_src;
+  dst = &_rodata_start;
+  while (dst < &_rodata_end) {
     *((uintptr_t *)dst) = *((uintptr_t *)src);
     dst += 4;
     src += 4;
