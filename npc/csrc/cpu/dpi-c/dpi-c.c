@@ -150,7 +150,7 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask){
 #ifdef CONFIG_HAS_SERIAL
       if(waddr == CONFIG_SERIAL_MMIO) {
           //printf(L_PURPLE "%c" COLOR_NONE "", wdata);
-          putchar(wdata);
+					//putchar(wdata);
           fflush(stdout);      
           //setbuf(stdout,NULL);
           //printf("%c",wdata);
