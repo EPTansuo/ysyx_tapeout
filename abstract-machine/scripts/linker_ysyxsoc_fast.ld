@@ -55,11 +55,14 @@ SECTIONS {
 
   .rodata : {
   . = ALIGN(8);
+    _rodata_start = .;
     *(.rodata*)
     *(.srodata*)
+    _rodata_end = .;
     . = ALIGN(8);
+    
   } > sdram AT> flash : rodata
-
+  _rodata_src = LOADADDR(.rodata);
 
 . = ALIGN(8);
   _data_src = LOADADDR(.data);
