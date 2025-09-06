@@ -52,7 +52,7 @@ class ysyx_23060246_ALU(val width: Int) extends Module{
 }
 
 
-class ALU_AREA(val width: Int) extends Module{
+class ysyx_23060246_ALU_AREA(val width: Int) extends Module{
   val io = IO(new ALUIO(width))
   val sum = io.A + Mux(io.aluop(0), ~io.B + 1.U, io.B) // for add and sub
   val shamt = if(width == 32) io.B(4,0).asUInt else io.B(5,0).asUInt
