@@ -24,7 +24,8 @@ class ysyx_23060246_EXU(config: NPCConfig) extends Module{
         val rd_addr = Output(UInt(5.W))
     })
     val xlen = config.XLEN
-    val alu = Module(new ysyx_23060246_ALU(xlen))
+    //val alu = Module(new ysyx_23060246_ALU(xlen))
+    val alu = Module(new ysyx_23060246_ALU_AREA(xlen))
     val immGen = Module(new ysyx_23060246_ImmGen(xlen))
 
 
