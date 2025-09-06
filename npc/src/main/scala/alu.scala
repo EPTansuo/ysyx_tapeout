@@ -62,7 +62,7 @@ class ysyx_23060246_ALU_AREA(val width: Int) extends Module{
     Mux(io.aluop(1), io.B(width - 1), io.A(width - 1)))
 
   val shin = Mux(io.aluop(3), io.A, Reverse(io.A))
-  val shiftr = (Cat(io.aluop(1) & shin(width - 1), shin).asSInt >> shamt)(width - 1, 0)
+  val shiftr = (Cat(io.aluop(0) & shin(width - 1), shin).asSInt >> shamt)(width - 1, 0)
   val shiftl = Reverse(shiftr)
 
   val out = Mux (io.aluop === aluop.ALU_ADD || io.aluop === aluop.ALU_SUB, sum,
