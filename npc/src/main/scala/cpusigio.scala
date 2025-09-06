@@ -52,7 +52,7 @@ class SigIO_IDU_EXU(xlen: Int) extends Bundle{
 class SigIO_EXU_LSU(xlen: Int) extends Bundle{
     val lsu = new Sig_LSU(xlen)
     val wbu = new Sig_WBU(xlen)
-    val inst = Input(UInt(32.W))
+    //val inst = Input(UInt(32.W))
     val pc = Input(UInt(xlen.W))
     val alu_out = Input(UInt(xlen.W))
     val src1 = Input(UInt(xlen.W))
@@ -64,7 +64,7 @@ class SigIO_EXU_LSU(xlen: Int) extends Bundle{
 
 class SigIO_LSU_WBU(xlen: Int) extends Bundle{
     val wbu = new Sig_WBU(xlen)
-    val inst = Input(UInt(32.W))
+    //val inst = Input(UInt(32.W))
     val pc = Input(UInt(xlen.W))
     val alu_out = Input(UInt(xlen.W))
     val ld_data = Input(UInt(xlen.W))

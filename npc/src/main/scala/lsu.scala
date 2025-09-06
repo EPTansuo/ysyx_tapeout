@@ -43,7 +43,7 @@ class ysyx_23060246_LSU(config: NPCConfig) extends Module {
     val load_en = ctrlsig.ld_sel =/= LD_XX
 */
     val pc = io.in.bits.pc
-    val inst = io.in.bits.inst
+   // val inst = io.in.bits.inst
     val ctrlsig = io.in.bits.lsu
     val src1 = io.in.bits.src1
     val src2 = io.in.bits.src2 
@@ -306,7 +306,7 @@ val s_idle :: s_exe :: s_read :: s_wait_read :: s_read_2 :: s_wait_read_2 :: s_w
     io.dmem.w.bits.strb := wmask
     io.dmem.b.ready := (state === s_wait_write || state === s_wait_write_2) && io.dmem.b.valid
 
-    io.out.bits.inst := inst
+    //io.out.bits.inst := inst
     io.out.bits.pc := pc
     io.out.bits.alu_out := alu_out
     io.out.bits.rd_addr := rd_addr

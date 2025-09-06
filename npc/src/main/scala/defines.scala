@@ -105,8 +105,8 @@ object csr_addr {
 }
 
 object valid {
-  val INST_VALID   = 0.U(1.W)
-  val INST_INVALID = 1.U(1.W)
+  val INST_VALID   = 1.U(1.W)
+  val INST_INVALID = 0.U(1.W)
 }
 
 object inst_type {
