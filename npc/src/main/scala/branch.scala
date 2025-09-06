@@ -29,26 +29,3 @@ class  ysyx_23060246_Branch(xlen:Int) extends Module{
     BR_GEU -> geu
   ))
 }
-
-
-class ysyx_23060246_Branch_AREA(xlen:Int) extends Module{
-  val io = IO(new BranchIO(xlen))
-
-  val sub = io.src1 - io.src2
-  val neq = sub.orR
-  val eq = !sub
-  val samesign = !(io.src1(xlen-1) ^ io.src2(xlen-1))
-  val lt = Mux(samesign, sub(xlen-1), io.src1(xlen-1))
-  val ltu = Mux(samesign, sub(xlen-1), io.src2(xlen-1))
-  val ge = !lt
-  val geu = !ltu
-
-  io.taken := MuxLookup(io.br_sel, false.B)(Seq(
-    BR_EQ -> eq,
-    BR_NE -> neq,
-    BR_LT -> lt,
-    BR_GE -> ge,
-    BR_LTU -> ltu,
-    BR_GEU -> geu
-  ))
-}

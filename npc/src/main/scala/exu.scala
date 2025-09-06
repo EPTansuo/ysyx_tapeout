@@ -104,8 +104,7 @@ class ysyx_23060246_EXU(config: NPCConfig) extends Module{
     csr.io.update_enable := RegNext(io.out.valid)
     dontTouch(csr.io)  //任何时候都不优化
 
-    //val branch = Module(new ysyx_23060246_Branch(xlen))
-    val branch = Module(new ysyx_23060246_Branch_AREA(xlen))
+    val branch = Module(new ysyx_23060246_Branch(xlen))
     branch.io.br_sel := ctrlsig.br_sel
     branch.io.src1 := src1
     branch.io.src2 := src2

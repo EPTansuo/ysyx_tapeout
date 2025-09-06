@@ -46,8 +46,16 @@ class ysyx_23060246_CSR(config: NPCConfig) extends Module{
  
 // lookup 更适用于查找表结构（如 ROM、RAM 或其他数据存储结构），尤其是表项较少的情况。
 // muxlookup 更适用于需要选择不同值的情况，特别是在较高效的硬件实现中，它能利用 MUX 逻辑来减少资源消耗。
-  io.out := Lookup(addr, 0.U, csr_regs).asUInt
-  
+  //io.out := Lookup(addr, 0.U, csr_regs).asUInt
+
+  io.out := MuxLookup(addr, 0.U(xlen.W))(Seq(
+    CSR_MSTATUS -> mstatus,
+    CSR_MTVEC -> mtvec,
+    CSR_MEPC -> mepc,
+    CSR_MCAUSE -> mcause,
+    CSR_VENDORID -> 0x79737978.U,
+    CSR_MARCHID -> 23060246.U
+))
 
   // ebreak 在 control.scal 由dpi-c实现
   //val is_ecall = io.inst === insts.ecall  // INFO 这里还可以优化很多地方
