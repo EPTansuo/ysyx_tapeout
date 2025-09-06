@@ -42,6 +42,8 @@ void __attribute__((section(".bootloader"))) bootloader(){
 
 
 #ifdef ALIGNED
+
+
    while (dst <= &_data_end) {
     *((uintptr_t *)dst) = *((uintptr_t *)src);  
     dst += 4;
@@ -53,7 +55,7 @@ void __attribute__((section(".bootloader"))) bootloader(){
 
 
 
-  // 2. copy .data
+  // copy .data
   src = &_data_src;
   dst = &_data_start;
   while (dst < &_data_end) {
@@ -62,7 +64,7 @@ void __attribute__((section(".bootloader"))) bootloader(){
     src += 4;
   }
 
-  // 2.5 copy .rodata
+  // copy .rodata
   src = &_rodata_src;
   dst = &_rodata_start;
   while (dst < &_rodata_end) {
@@ -71,7 +73,7 @@ void __attribute__((section(".bootloader"))) bootloader(){
     src += 4;
   }
 
-  // 3. clear .bss
+  // clear .bss
   dst = &_bss_start;
   while (dst < &_bss_end) {
     *((uintptr_t *)dst) = 0;

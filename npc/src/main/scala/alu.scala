@@ -5,15 +5,15 @@ import chisel3.util._
 
 object aluop {
   val ALU_ADD     = 0.U(4.W)
-  val ALU_SUB     = 1.U(4.W)
+  val ALU_SUB     = 1.U(4.W)  // odd 
   val ALU_AND     = 2.U(4.W)
   val ALU_OR      = 3.U(4.W)
   val ALU_XOR     = 4.U(4.W)
-  val ALU_SLL     = 5.U(4.W)
-  val ALU_SRL     = 6.U(4.W)
-  val ALU_SRA     = 7.U(4.W)
-  val ALU_SLT     = 8.U(4.W)
-  val ALU_SLTU    = 9.U(4.W)
+  val ALU_SLT     = 5.U(4.W)  // odd
+  val ALU_SLL     = 6.U(4.W)
+  val ALU_SLTU    = 7.U(4.W)  // odd
+  val ALU_SRL     = 8.U(4.W)
+  val ALU_SRA     = 9.U(4.W)
   val ALU_COPY_A  = 10.U(4.W)
   val ALU_COPY_B  = 11.U(4.W)
 }
@@ -50,6 +50,34 @@ class ysyx_23060246_ALU(val width: Int) extends Module{
     )
 
 }
+
+
+class ALU_AREA(val width: Int) extends Module{
+  val io = IO(new ALUIO(width))
+  val sum = io.A + Mux(io.aluop(0), ~io.B + 1.U, io.B) // for add and sub
+  val shamt = if(width == 32) io.B(4,0).asUInt else io.B(5,0).asUInt
+  
+  val cmp =
+    Mux(io.A(width - 1) === io.B(width - 1), sum(width - 1), 
+    Mux(io.aluop(1), io.B(width - 1), io.A(width - 1)))
+
+  val shin = Mux(io.aluop(3), io.A, Reverse(io.A))
+  val shiftr = (Cat(io.aluop(1) & shin(width - 1), shin).asSInt >> shamt)(width - 1, 0)
+  val shiftl = Reverse(shiftr)
+
+  val out = Mux (io.aluop === aluop.ALU_ADD || io.aluop === aluop.ALU_SUB, sum,
+            Mux(io.aluop === aluop.ALU_SLT || io.aluop === aluop.ALU_SLTU, cmp,
+            Mux(io.aluop === aluop.ALU_OR, io.A | io.B,
+            Mux(io.aluop === aluop.ALU_XOR, io.A ^ io.B,
+            Mux(io.aluop === aluop.ALU_SRA || io.aluop === aluop.ALU_SRL, shiftr,
+            Mux(io.aluop === aluop.ALU_SLL, shiftl,
+            Mux(io.aluop === aluop.ALU_AND, io.A & io.B,
+            Mux(io.aluop === aluop.ALU_COPY_A, io.A, io.B,
+            ))))))))
+  io.out := out 
+
+}
+
 
 // Carry-Lookahead Adder
 class CLA(w: Int) extends Module {
