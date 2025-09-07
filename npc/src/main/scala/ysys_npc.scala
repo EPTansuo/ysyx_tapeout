@@ -69,7 +69,8 @@ class ysyx_23060246_npc(config: NPCConfig) extends Module {
     val ifu = Module(new ysyx_23060246_IFU(config))
     val idu = Module(new ysyx_23060246_IDU(config))
     val exu = Module(new ysyx_23060246_EXU(config))
-    val lsu = Module(new ysyx_23060246_LSU(config))
+    //val lsu = Module(new ysyx_23060246_LSU(config))
+    val lsu = Module(new ysyx_23060246_LSU_AREA(config))
     val wbu = Module(new ysyx_23060246_WBU(config))
 
     // Control Hazard
