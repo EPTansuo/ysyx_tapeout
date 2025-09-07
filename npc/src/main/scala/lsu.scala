@@ -400,7 +400,8 @@ class ysyx_23060246_LSU_AREA(config: NPCConfig) extends Module {
 
 
     // READ
-    val r_need2_lh = ((ctrlsig.ld_sel === LD_LH || ctrlsig.ld_sel === LD_LHU) && (alu_out(1,0) === "b11".U))
+    val r_need2_lh = (ctrlsig.ld_sel === LD_LH || ctrlsig.ld_sel === LD_LHU) &&
+                 (alu_out(0) === 1.U) &&  (alu_out(1,0) === "b11".U)
     val r_need2_lw = ((ctrlsig.ld_sel === LD_LW) && (alu_out(1, 0) =/= 0.U))
     r_twice :=  r_need2_lh || r_need2_lw
 
@@ -475,15 +476,16 @@ class ysyx_23060246_LSU_AREA(config: NPCConfig) extends Module {
     val byteOff = alu_out(1,0)
     val mask8   = (((1.U(8.W) << bytes) - 1.U) << byteOff)(7,0)
 
-    val wwin64 = (st_raw.asUInt ## 0.U(32.W)) << Cat(byteOff, 0.U(3.W))
+    val st64    = Cat(0.U(32.W), st_raw(31,0))           // 明确 64b
+    val wwin64  = (st64) << Cat(byteOff, 0.U(3.W))       // 64b << {off,3'b000}
     val wdata_lo = wwin64(31,0)
-    val wdata_hi = wwin64(63,32)    
+    val wdata_hi = wwin64(63,32)
     val wstrb_lo = mask8(3,0)
     val wstrb_hi = mask8(7,4)
 
-    def popcount4(x: UInt):UInt = (
-        (x(0) +& x(1)) +& (x(2) +& x(3))
-    )
+    // def popcount4(x: UInt):UInt = (
+    //     (x(0) +& x(1)) +& (x(2) +& x(3))
+    // )
     def sizeEnc(n:UInt): UInt = MuxLookup(n, 0.U(2.W))(Seq(
         1.U -> 0.U,
         2.U -> 1.U,
@@ -491,8 +493,14 @@ class ysyx_23060246_LSU_AREA(config: NPCConfig) extends Module {
         4.U -> 2.U
     ))
 
-    val bytes_1 = popcount4(wstrb_lo)
-    val bytes_2 = popcount4(wstrb_hi)
+    def popcount4_3(x: UInt): UInt = (x(0) +& x(1) +& x(2) +& x(3))  // 3-bit: 0..4
+    val bytes_1_raw = popcount4_3(wstrb_lo) // 0..4
+    val bytes_2_raw = popcount4_3(wstrb_hi)
+
+    def clamp4(n: UInt): UInt = Mux(n > 3.U, 4.U, n)
+
+    val bytes_1 = clamp4(bytes_1_raw)
+    val bytes_2 = clamp4(bytes_2_raw)
     val wsize_1 = sizeEnc(bytes_1)
     val wsize_2 = sizeEnc(bytes_2)
 
