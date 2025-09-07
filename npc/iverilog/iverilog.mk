@@ -33,11 +33,14 @@ iverilog_sim: bin2mem iverilog_build
 
 
 # NETLIST 仿真还不行
-VSRC_NETLIST = $(shell find $(abspath $(YOSYSSTA_PATH)/result/$(NPC_TOPNAME)-$(CLK_FREQ_MHZ)MHz) -name "*.netlist.syn.v")
-VSRC_CELL = $(YOSYSSTA_PATH)/nangate45/sim/cells.v
+#VSRC_NETLIST = $(shell find $(abspath $(YOSYSSTA_PATH)/result/$(NPC_TOPNAME)-$(CLK_FREQ_MHZ)MHz) -name "*.netlist.syn.v")
+NETLIST = ?
+#VSRC_CELL = $(YOSYSSTA_PATH)/nangate45/sim/cells.v
+CELLS = ?
+
 iverilog_build_netlist:
 	iverilog -g2012 -s $(IVG_TOP) -DSMALL_MEM -DIMG_PATH=\"$(IMG).mem\" $(IVG_FLAGS)\
-		 $(VSRC_NETLIST) $(VSRC_CELL) $(SIM_IVG_VSRCS) -o $(BIN_IVG)
+		 $(NETLIST) $(CELLS) $(SIM_IVG_VSRCS) -o $(BIN_IVG)
 
 iverilog_sim_netlist: iverilog_build_netlist bin2mem
 	vvp $(BIN_IVG) $(VVP_FLAGS)

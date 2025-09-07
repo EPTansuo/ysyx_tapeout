@@ -128,9 +128,6 @@ CSRCS = $(shell find $(abspath ./csrc) \( -path $(abspath ./csrc/device) \-prune
 		-o \( -name "*.c" -or -name "*.cc" -or -name "*.cpp" \) -print)
 
 SYN_ADDITION_FILES = $(NPC_HOME)/vsrc/debug.v
-ifeq ($(USE_SOC),y)
-SYN_ADDITION_FILES += $(NPC_HOME)/vsrc/mem.v
-endif
 
 # constraint file
 ifeq ($(USE_NVBOARD),y)
