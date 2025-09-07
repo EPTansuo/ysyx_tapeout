@@ -11,7 +11,7 @@ class ysyx_23060246_CLINT(params: AXI4BundleParameters) extends Module {
         val axi = Flipped(new AXI4Bundle(params))
     })
 
-    val mtime = RegInit(0.U(64.W))
+    val mtime = RegInit(0.U(60.W))
     mtime := mtime + 1.U
 
     val s_idle :: s_wait_ready :: Nil = Enum(2)
@@ -24,7 +24,7 @@ class ysyx_23060246_CLINT(params: AXI4BundleParameters) extends Module {
     io.axi.ar.ready := state === s_idle
     io.axi.r.valid := state === s_wait_ready
 
-    val rdata = Mux(io.axi.ar.bits.addr(3,0) === 0x8L.U, mtime(31,0), mtime(63,32))
+    val rdata = Mux(io.axi.ar.bits.addr(3,0) === 0x8L.U, mtime(31,0), Cat(0.U(4.W), mtime(59,32)))
     io.axi.r.bits.data := rdata 
     io.axi.r.bits.resp := 0.U
 
