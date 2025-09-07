@@ -139,7 +139,7 @@ class ysyx_23060246_EXU(config: NPCConfig) extends Module{
     io.out.bits.src2 := src2_reg 
     io.out.bits.alu_out := alu.io.out
     io.out.bits.pc := pc
-    //io.out.bits.inst := inst
+    io.out.bits.inst := inst
 /*
     io.out.bits.wbu <> in_reg.bits.wbu
     io.out.bits.lsu <> in_reg.bits.lsu

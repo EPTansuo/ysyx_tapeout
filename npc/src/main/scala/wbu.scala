@@ -63,7 +63,7 @@ class ysyx_23060246_WBU(config: NPCConfig) extends Module {
     dontTouch(wbu_valid) // Used for simulation
     dontTouch(pc)
     dontTouch(npc)
-    //dontTouch(io.in.bits.inst)
+    dontTouch(io.in.bits.inst)
 
     io.reg_write.addr := rd_addr
     io.reg_write.en := ctrlsig.wb_sel =/= WB_XX //&& io.out.valid; 
@@ -83,16 +83,14 @@ class ysyx_23060246_WBU(config: NPCConfig) extends Module {
     dontTouch(io.in.bits.pc)
     io.inst_type := ctrlsig.inst_type
     
-    // to optimize the area, I move it to idu stage
-
-    // val ebreak_ = Module(new ysyx_23060246_Ebreak)
-    // val isebreak = RegInit(false.B)
-    // when(io.in.bits.inst === insts.ebreak){
-    //     isebreak := true.B
-    // }.otherwise{
-    //     isebreak := false.B
-    // }
-    // ebreak_.io.isebreak := isebreak
+    val ebreak_ = Module(new ysyx_23060246_Ebreak)
+    val isebreak = RegInit(false.B)
+    when(io.in.bits.inst === insts.ebreak){
+        isebreak := true.B
+    }.otherwise{
+        isebreak := false.B
+    }
+    ebreak_.io.isebreak := isebreak
 
 
     if(config.PERF_CNT){
