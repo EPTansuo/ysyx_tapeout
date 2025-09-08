@@ -124,10 +124,10 @@ ysyx_23060246 cpu (	// src/CPU.scala:38:21
     .io_slave_awlen    (8'h0),	// src/CPU.scala:36:19, :38:21
     .io_slave_awsize   (3'h0),	// src/CPU.scala:36:19, :38:21
     .io_slave_awburst  (2'h0),	// src/CPU.scala:36:19, :38:21
-    .io_slave_awlock   (1'h0),	// src/CPU.scala:35:23, :36:19, :38:21
-    .io_slave_awcache  (4'h0),	// src/CPU.scala:36:19, :38:21
-    .io_slave_awprot   (3'h0),	// src/CPU.scala:36:19, :38:21
-    .io_slave_awqos    (4'h0),	// src/CPU.scala:36:19, :38:21
+    // .io_slave_awlock   (1'h0),	// src/CPU.scala:35:23, :36:19, :38:21
+    // .io_slave_awcache  (4'h0),	// src/CPU.scala:36:19, :38:21
+    // .io_slave_awprot   (3'h0),	// src/CPU.scala:36:19, :38:21
+    // .io_slave_awqos    (4'h0),	// src/CPU.scala:36:19, :38:21
     .io_slave_wready        (/* unused */),
     .io_slave_wvalid        (1'h0),	// src/CPU.scala:35:23, :36:19, :38:21
     .io_slave_wdata    (32'h0),	// src/CPU.scala:36:19, :38:21
@@ -144,10 +144,10 @@ ysyx_23060246 cpu (	// src/CPU.scala:38:21
     .io_slave_arlen    (8'h0),	// src/CPU.scala:36:19, :38:21
     .io_slave_arsize   (3'h0),	// src/CPU.scala:36:19, :38:21
     .io_slave_arburst  (2'h0),	// src/CPU.scala:36:19, :38:21
-    .io_slave_arlock   (1'h0),	// src/CPU.scala:35:23, :36:19, :38:21
-    .io_slave_arcache  (4'h0),	// src/CPU.scala:36:19, :38:21
-    .io_slave_arprot   (3'h0),	// src/CPU.scala:36:19, :38:21
-    .io_slave_arqos    (4'h0),	// src/CPU.scala:36:19, :38:21
+    // .io_slave_arlock   (1'h0),	// src/CPU.scala:35:23, :36:19, :38:21
+    // .io_slave_arcache  (4'h0),	// src/CPU.scala:36:19, :38:21
+    // .io_slave_arprot   (3'h0),	// src/CPU.scala:36:19, :38:21
+    // .io_slave_arqos    (4'h0),	// src/CPU.scala:36:19, :38:21
     .io_slave_rready        (1'h0),	// src/CPU.scala:35:23, :36:19, :38:21
     .io_slave_rvalid        (/* unused */),
     .io_slave_rid      (/* unused */),
