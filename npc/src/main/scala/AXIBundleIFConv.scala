@@ -20,10 +20,10 @@ class ysyx_23060246_AXI4BundleIFConv(addrWidthBits:Int, dataWidthBits:Int) exten
   io.out.awlen := io.in.aw.bits.len
   io.out.awsize := io.in.aw.bits.size
   io.out.awburst := io.in.aw.bits.burst
-  io.out.awlock := io.in.aw.bits.lock
-  io.out.awcache := io.in.aw.bits.cache
-  io.out.awprot := io.in.aw.bits.prot
-  io.out.awqos := io.in.aw.bits.qos
+  // io.out.awlock := io.in.aw.bits.lock
+  // io.out.awcache := io.in.aw.bits.cache
+  // io.out.awprot := io.in.aw.bits.prot
+  // io.out.awqos := io.in.aw.bits.qos
 
   io.out.wvalid := io.in.w.valid
   io.out.wdata  := io.in.w.bits.data
@@ -38,10 +38,10 @@ class ysyx_23060246_AXI4BundleIFConv(addrWidthBits:Int, dataWidthBits:Int) exten
   io.out.arlen   := io.in.ar.bits.len
   io.out.arsize  := io.in.ar.bits.size
   io.out.arburst := io.in.ar.bits.burst
-  io.out.arlock  := io.in.ar.bits.lock
-  io.out.arcache := io.in.ar.bits.cache
-  io.out.arprot  := io.in.ar.bits.prot
-  io.out.arqos   := io.in.ar.bits.qos
+  // io.out.arlock  := io.in.ar.bits.lock
+  // io.out.arcache := io.in.ar.bits.cache
+  // io.out.arprot  := io.in.ar.bits.prot
+  // io.out.arqos   := io.in.ar.bits.qos
 
   io.out.rready  := io.in.r.ready  
   //----
