@@ -573,12 +573,23 @@ initial begin
   $readmemh(`IMG_PATH, pmem);
 end
 
+function automatic logic [31:0] jump_stub_instr(input logic [31:0] addr);
+  unique case (addr)
+    32'h3000_0000: jump_stub_instr = 32'h8000_02B7; // LUI x5, 0x80000
+    32'h3000_0004: jump_stub_instr = 32'h0002_8067; // JALR x0, 0(x5)
+    default:        jump_stub_instr = 32'h0000_0013; // NOP (ADDI x0,x0,0)
+  endcase
+endfunction
+
 logic [31:0] data;
 logic [31:0] idx_r;
 always_comb begin
   data = 32'h0;
   idx_r = 32'h0;
-  if (in_range(raddr, `PMEM_BASE, `PMEM_SIZE)) begin
+  if (in_range(raddr, 32'h3000_0000, 32)) begin
+    data = jump_stub_instr(raddr);
+  end
+  else if (in_range(raddr, `PMEM_BASE, `PMEM_SIZE)) begin
     idx_r = (raddr - `PMEM_BASE) >> 2;
     if (idx_r < PMEM_WORDS) data = pmem[idx_r];
   end

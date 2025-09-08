@@ -7,8 +7,8 @@ SDC_FILE = $(NPC_HOME)/scripts/top.sdc
 
 -include .config
 
-USE_SOC ?= n
-ifeq ($(ARCH),riscv32e-ysyxsoc)
+USE_SOC ?= y
+ifneq ($(ARCH),riscv32e-npc)
 USE_SOC = y
 $(info ***************************)
 $(info * Use SoC for Simulation! *)

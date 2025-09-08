@@ -19,9 +19,9 @@ VVP_FLAGS += -fst
 endif 
 
 
-ifeq ($(USE_SOC),y)
-IVG_FLAGS += -DUSE_SOC
-endif 
+# ifeq ($(USE_SOC),y)
+# IVG_FLAGS += -DUSE_SOC
+# endif 
 
 
 iverilog_build: verilog $(SIM_IVG_VSRCS)
