@@ -63,7 +63,17 @@ initial begin
 end
 `endif
 
+`ifdef NETLIST
+wire isebreak = cpu.\cpu_npc.wbu.isebreak ;
 
+always @(posedge clock) begin
+  if (!reset && isebreak) begin
+    $display("EBreak at time %0t", $time);
+    $finish;
+  end
+end
+
+`endif
 
 initial begin
     clock = 1'b0;
