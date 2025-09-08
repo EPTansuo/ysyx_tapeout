@@ -29,7 +29,7 @@ iverilog_build: verilog $(SIM_IVG_VSRCS)
 		 $(DUT_IVG_VSRCS) $(SIM_IVG_VSRCS) -o $(BIN_IVG)
 
 iverilog_sim: bin2mem iverilog_build
-	vvp $(BIN_IVG) $(VVP_FLAGS) 
+	stdbuf -o0 -e0 vvp $(BIN_IVG) $(VVP_FLAGS) 
 
 
 # NETLIST 仿真还不行
@@ -43,7 +43,7 @@ iverilog_build_netlist:
 		 $(NETLIST) $(CELLS) $(SIM_IVG_VSRCS) -o $(BIN_IVG)
 
 iverilog_sim_netlist: iverilog_build_netlist bin2mem
-	vvp $(BIN_IVG) $(VVP_FLAGS)
+	stdbuf -o0 -e0 vvp $(BIN_IVG) $(VVP_FLAGS)
 
 
 sim-iverilog: iverilog_sim
