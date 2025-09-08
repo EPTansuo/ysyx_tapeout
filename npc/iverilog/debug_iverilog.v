@@ -2,8 +2,6 @@
 //`ifdef VERILATOR
 //`endif
 `endif
-(* keep_hierarchy = 1 *)
-(* keep = 1 *)
 module ysyx_23060246_InstInvalid(
     input isvalid
 );
@@ -21,8 +19,7 @@ end
 
 endmodule
 
-(* keep_hierarchy = 1 *)
-(* keep = 1 *)
+
 module ysyx_23060246_Ebreak(
     input isebreak
 );

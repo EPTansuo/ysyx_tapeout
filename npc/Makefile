@@ -173,7 +173,7 @@ VERILOG_TIME := $(if $(VERILOG_TIME),$(VERILOG_TIME),0)
 RC_DIR     := $(NPC_HOME)/rocket-chip
 RC_URL     := https://github.com/chipsalliance/rocket-chip.git
 RC_MARKER  := $(RC_DIR)/common.sc
-RC_COMMIT  := 2fe6bb5e9c23360cac8297bb26512e4ca614f67b
+RC_COMMIT  := d0c6b50fdefcdbe121e9788433ea51f7efaf1d32
 
 
 $(RC_MARKER):

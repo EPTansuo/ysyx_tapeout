@@ -24,7 +24,7 @@ class ysyx_23060246(config: NPCConfig) extends Module {
   val cpu_npc = Module(new ysyx_23060246_npc(config))
   val clint = Module(new ysyx_23060246_CLINT(config.axiparams))
 
-
+  
   val xbar = Module(new ysyx_23060246_AXIXbar(2, 
                         Array((0L,0xFFFFFFFFL),(config.CLINT_BASE,config.CLINT_END)) ,
                         config.axiparams))
@@ -61,7 +61,19 @@ class ysyx_23060246(config: NPCConfig) extends Module {
   // axierror.io.ren := io.master.arvalid
 
 
-  io.slave <> DontCare 
+  //io.slave <> DontCare 
+  io.slave.awready := false.B 
+  io.slave.wready := false.B
+  io.slave.bvalid := false.B
+  io.slave.bresp := 0.U
+  io.slave.bid := 0.U
+  io.slave.arready := false.B
+  io.slave.rvalid := false.B
+  io.slave.rresp := 0.U
+  io.slave.rdata := 0.U
+  io.slave.rlast := false.B
+  io.slave.rid := 0.U
+
   dontTouch(io.slave)
   dontTouch(io.interrupt)
   dontTouch(io.master)

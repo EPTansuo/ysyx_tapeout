@@ -63,17 +63,7 @@ initial begin
 end
 `endif
 
-`ifdef NETLIST
-wire isebreak = cpu.\cpu_npc.wbu.isebreak ;
 
-always @(posedge clock) begin
-  if (!reset && isebreak) begin
-    $display("EBreak at time %0t", $time);
-    $finish;
-  end
-end
-
-`endif
 
 initial begin
     clock = 1'b0;
@@ -97,10 +87,10 @@ ysyx_23060246 cpu (	// src/CPU.scala:38:21
     .io_master_awlen   (awlen),
     .io_master_awsize  (awsize),
     .io_master_awburst (awburst),
-    .io_master_awlock  (),
-    .io_master_awcache (),
-    .io_master_awprot  (),
-    .io_master_awqos   (),
+    // .io_master_awlock  (),
+    // .io_master_awcache (),
+    // .io_master_awprot  (),
+    // .io_master_awqos   (),
     .io_master_wready       (wready),
     .io_master_wvalid       (wvalid),
     .io_master_wdata   (wdata),
@@ -117,10 +107,10 @@ ysyx_23060246 cpu (	// src/CPU.scala:38:21
     .io_master_arlen   (arlen),
     .io_master_arsize  (arsize),
     .io_master_arburst (arburst),
-    .io_master_arlock  (),
-    .io_master_arcache (),
-    .io_master_arprot  (),
-    .io_master_arqos   (),
+    // .io_master_arlock  (),
+    // .io_master_arcache (),
+    // .io_master_arprot  (),
+    // .io_master_arqos   (),
     .io_master_rready       (rready),
     .io_master_rvalid       (rvalid),
     .io_master_rid     (4'b0),

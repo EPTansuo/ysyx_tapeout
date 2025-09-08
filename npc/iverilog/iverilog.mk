@@ -39,7 +39,7 @@ NETLIST = ?
 CELLS = ?
 
 iverilog_build_netlist:
-	iverilog -g2012 -s $(IVG_TOP) -DNETLIST -DSMALL_MEM -DIMG_PATH=\"$(IMG).mem\" $(IVG_FLAGS)\
+	iverilog -g2012 -s $(IVG_TOP) -DSMALL_MEM -DIMG_PATH=\"$(IMG).mem\" $(IVG_FLAGS)\
 		 $(NETLIST) $(CELLS) $(SIM_IVG_VSRCS) -o $(BIN_IVG)
 
 iverilog_sim_netlist: iverilog_build_netlist bin2mem
