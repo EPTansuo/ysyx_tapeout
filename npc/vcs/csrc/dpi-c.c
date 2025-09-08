@@ -120,14 +120,14 @@ void npc_ebreak(){
 	//
 	//
   printf("EBREAK!\n");
-#ifndef NETLIST
-  int isgood = !strcmp("00000000",get_reg(10));
-  if(isgood){
-  	printf("npc: " L_GREEN  "HIT GOOD TRAP" COLOR_NONE " at pc = 0x%s\n" , get_pc());
-  }else{
-  	printf("npc: " L_RED    "HIT BAD TRAP" COLOR_NONE " at pc = 0x%s\n" , get_pc());
-  }
-#endif
+//#ifndef NETLIST
+//  int isgood = !strcmp("00000000",get_reg(10));
+//  if(isgood){
+//  	printf("npc: " L_GREEN  "HIT GOOD TRAP" COLOR_NONE " at pc = 0x%s\n" , get_pc());
+//  }else{
+//  	printf("npc: " L_RED    "HIT BAD TRAP" COLOR_NONE " at pc = 0x%s\n" , get_pc());
+//  }
+//#endif
   fflush(stdout);
   vpi_control(vpiFinish, 1);
   exit(0);
