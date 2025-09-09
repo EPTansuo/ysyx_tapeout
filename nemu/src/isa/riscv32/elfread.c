@@ -118,7 +118,7 @@ inline const char* get_section_type_name(ElfN_Word sh_type) {
 		case SHT_HIPROC: return "HIPROC";
 		case SHT_LOUSER: return "LOUSER";
 		case SHT_HIUSER: return "HIUSER";
-		case PT_RISCV_ATTRIBUTES: return "RISCV_ATTRIBUTE";
+		//case PT_RISCV_ATTRIBUTES: return "RISCV_ATTRIBUTE";
 		default: return "UNKNOWN";
 	}
 }
@@ -131,7 +131,8 @@ char* get_section_header_name(FILE *fp, char *dest, const ElfN_Ehdr* elf_header,
 	fseek(fp, strtab_hdr->sh_offset + section_headers[index].sh_name, SEEK_SET);
 	do
 	{
-		fread(&ch, sizeof(char), 1, fp);
+		size_t _nread = fread(&ch, sizeof(char), 1, fp);
+		(void)_nread;
 		dest[idx++] = ch;
 	} while (ch);
 	dest[idx] = '\0';
@@ -199,7 +200,8 @@ char* get_symtab_entry_name(FILE *fp, char *dest, const ElfN_Shdr *strtab_hdr, c
 	fseek(fp, strtab_hdr->sh_offset + symtab->st_name, SEEK_SET);
 	do
 	{
-		fread(&ch, sizeof(char), 1, fp);
+		size_t _nread = fread(&ch, sizeof(char), 1, fp);
+		(void)_nread;
 		dest[idx++] = ch;
 		if(idx >= 16){
 			strcpy(dest+idx, "[...]");
@@ -277,19 +279,22 @@ void print_symtab(FILE* fp, const ElfN_Sym* symtab, const ElfN_Shdr* strtab_hdr,
 
 ElfN_Ehdr* read_elf_header(FILE* fp, ElfN_Ehdr* dest) {
 	fseek(fp, 0, SEEK_SET);
-	fread(dest, sizeof(ElfN_Ehdr), 1, fp);
+	size_t _nread = fread(dest, sizeof(ElfN_Ehdr), 1, fp);
+	(void)_nread;
 	return dest;
 }
 
 ElfN_Shdr* read_section_header(FILE* fp,  ElfN_Shdr* dest, const ElfN_Ehdr* elf_header, int index) {
 	fseek(fp, elf_header->e_shoff + index * sizeof(ElfN_Shdr), SEEK_SET);
-	fread(dest, sizeof(ElfN_Shdr), 1, fp);
+	size_t _nread = fread(dest, sizeof(ElfN_Shdr), 1, fp);
+	(void)_nread;
 	return dest;
 }
 
 ElfN_Sym* read_symtab(FILE* fp, ElfN_Sym* dest, const ElfN_Shdr* symtab_hdr) {
 	fseek(fp, symtab_hdr->sh_offset ,SEEK_SET);
-	fread(dest, sizeof(ElfN_Sym), symtab_hdr->sh_size / symtab_hdr->sh_entsize, fp);
+	size_t _nread = fread(dest, sizeof(ElfN_Sym), symtab_hdr->sh_size / symtab_hdr->sh_entsize, fp);
+	(void)_nread;
 	return dest;
 }
 
