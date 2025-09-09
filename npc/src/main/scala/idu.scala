@@ -122,7 +122,8 @@ class ysyx_23060246_IDU(config: NPCConfig) extends Module {
     //invaild instruction
     val instInvalid = Module(new ysyx_23060246_InstInvalid)
     instInvalid.io.isvalid := Mux(io.out.valid, control.io.out.inst_valid === valid.INST_VALID, true.B)
-
+    instInvalid.io.clock := clock
+    instInvalid.io.reset := reset
 
 
     if(config.PERF_CNT){
