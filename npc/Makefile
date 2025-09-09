@@ -222,7 +222,7 @@ endif
 
 	# CI needs SV file in the build/
 	cp $(NPC_HOME)/build/verilog/$(NPC_TOPNAME).sv $(NPC_HOME)/build/$(NPC_TOPNAME).sv
-	cat $(NPC_HOME)/vsrc/debug.v >> $(NPC_HOME)/build/$(NPC_TOPNAME).sv
+	cat $(NPC_HOME)/iverilog/debug_iverilog.v >> $(NPC_HOME)/build/$(NPC_TOPNAME).sv
 	
 	
 
