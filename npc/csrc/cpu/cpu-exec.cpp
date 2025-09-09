@@ -128,8 +128,23 @@ void inline cpu_single_inst(){
 #endif 
 }
 
+void inline cpu_temp_test(){
+	int i = 2;
+	while((i--))
+	{
+		top->clock = 1;
+		cpu_eval_dump();
+	}
+  g_nr_guest_cycle++;
+#ifdef USE_NVBOARD
+  nvboard_update();
+#endif 
+}
+
+
 void cpu_reset(int n){
 	top->reset = RESET_ENABLE;
+	for(int i=30; i<0; i--) cpu_temp_test();
 	while(n--){cpu_single_cycle();}
 	top->reset = RESET_DISABLE;
 }
