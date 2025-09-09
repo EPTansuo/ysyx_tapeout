@@ -62,7 +62,7 @@ V_INCPATH+=$(abspath $(YSYX_HOME)/npc/vsrc)
 V_INCPATH+=$(shell find $(YSYX_HOME)/ysyxSoC/perip -type f -name '*defines*.v' -exec dirname {} \;)
 V_INCFLAGS=$(addprefix -I, $(V_INCPATH))
 VERILATOR_FLAGS = -MMD --build -cc --public \
-				--x-assign fast --x-initial fast --noassert \
+				--x-assign unique --x-initial unique --noassert \
 				$(V_INCFLAGS) --threads 1 --autoflush --trace-underscore    --trace-max-array 2048 \
 				 --trace-max-width 128
 

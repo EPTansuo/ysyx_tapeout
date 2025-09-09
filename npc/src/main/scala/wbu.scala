@@ -91,8 +91,7 @@ class ysyx_23060246_WBU(config: NPCConfig) extends Module {
         isebreak := false.B
     }
     ebreak_.io.isebreak := isebreak
-    ebreak_.io.clock := clock
-    ebreak_.io.reset := reset
+
 
     if(config.PERF_CNT){
         val inst_cnt = RegInit(0.U(64.W))

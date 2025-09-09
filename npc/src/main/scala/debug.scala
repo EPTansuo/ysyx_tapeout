@@ -5,33 +5,25 @@ import chisel3.util._
 
 /*
 module ysyx_23060246_InstInvalid(
-    input isvalid,
-    input clock,
-    input reset
+    input isvalid
 );
 */
 
 class ysyx_23060246_InstInvalid extends BlackBox with HasBlackBoxPath {
   val io = IO(new Bundle {
     val isvalid = Input(Bool())
-    val clock = Input(Clock())
-    val reset = Input(Bool())
   })
 }
 
 
 /* 
 module Ebreak(
-    input isebreak,
-    input clock,
-    input reset
+    input isebreak
 );
  */
 class ysyx_23060246_Ebreak extends BlackBox with HasBlackBoxPath {
   val io = IO(new Bundle {
     val isebreak = Input(Bool())
-    val clock = Input(Clock())
-    val reset = Input(Bool())
   })
 }
 

@@ -8,16 +8,14 @@ import "DPI-C" function void inst_invalid();
 (* keep_hierarchy = 1 *)
 (* keep = 1 *)
 module ysyx_23060246_InstInvalid(
-    input isvalid,
-    input clock,
-    input reset
+    input isvalid
 );
 
 `ifndef SYNTHESIS
 //`ifdef VERILATOR
-always @(posedge clock) begin
-    if(!isvalid & !reset)begin
-        inst_invalid();
+always @(*) begin
+    if(!isvalid)begin
+            inst_invalid();
     end
 end
 //`endif
@@ -29,16 +27,14 @@ endmodule
 (* keep_hierarchy = 1 *)
 (* keep = 1 *)
 module ysyx_23060246_Ebreak(
-    input isebreak,
-    input clock,
-    input reset
+    input isebreak
 );
 
 `ifndef SYNTHESIS
 //`ifdef VERILATOR
-always @(posedge clock) begin
-    if(isebreak & !reset)begin
-        npc_ebreak();
+always @(*) begin
+    if(isebreak)begin
+            npc_ebreak();
     end
 end
 //`endif
