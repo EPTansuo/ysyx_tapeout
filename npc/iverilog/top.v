@@ -569,7 +569,12 @@ logic [31:0] pmem   [0:PMEM_WORDS-1];
 `define VGACTRL_BASE 32'ha000_0100
 `define VGACTRL_SIZE 8
 
+// initial begin
+//   $readmemh(`IMG_PATH, pmem);
+// end
 initial begin
+  for (int i = 0; i < PMEM_WORDS; i++)
+    pmem[i] = 32'h0;
   $readmemh(`IMG_PATH, pmem);
 end
 
