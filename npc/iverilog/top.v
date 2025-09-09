@@ -66,6 +66,7 @@ end
 
 
 initial begin
+		#100
     clock = 1'b0;
     reset = 1'b1;
     #100 reset = 1'b0;
