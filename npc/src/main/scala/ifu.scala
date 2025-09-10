@@ -57,18 +57,12 @@ class ysyx_23060246_IFU(config: NPCConfig) extends Module {
   })
 
 
-
-
-  // === 仅在复位结束后检查 ===
 when (!reset.asBool) {
-
-  // 1) 取指地址必须 4B 对齐（在发起读请求时检查）
   when (io.imem.ar.valid) {
     assert(io.imem.ar.bits.addr(1,0) === 0.U,
       "IFU: unaligned instruction fetch address")
   }
 
-  // 2) ARVALID 保持 & ARADDR 在等待期必须稳定
   val arWait     = RegInit(false.B)
   val arAddrHold = Reg(io.imem.ar.bits.addr.cloneType)
 
@@ -85,23 +79,22 @@ when (!reset.asBool) {
     arWait := false.B
   }
 
-  // 3) R 通道：有返回就应该准备好接收（你的 IFU 固定 r.ready := true.B，这里顺便约束）
   when (io.imem.r.valid) {
     assert(io.imem.r.ready, "IFU: RVALID seen but RREADY is low")
   }
 }
 
-// 仅复位释放后检查
+
 when (!reset.asBool) {
   val xchk_araddr = Module(new XChecker(32))
   xchk_araddr.io.sig := io.imem.ar.bits.addr
-  xchk_araddr.io.en  := io.imem.ar.valid // 只有发请求时检测
+  xchk_araddr.io.en  := io.imem.ar.valid 
 }
-// 仅复位释放后检查
+
 when (!reset.asBool) {
   val xchk_araddr = Module(new XChecker(32))
   xchk_araddr.io.sig := io.imem.ar.bits.addr
-  xchk_araddr.io.en  := io.imem.ar.valid // 只有发请求时检测
+  xchk_araddr.io.en  := io.imem.ar.valid 
 }
   // val stall = io.stall
   val isFirst = RegInit(true.B)

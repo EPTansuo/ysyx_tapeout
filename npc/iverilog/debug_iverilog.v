@@ -3,15 +3,17 @@
 //`endif
 `endif
 module ysyx_23060246_InstInvalid(
-    input isvalid
+    input isvalid,
+    input clock,
+    input reset
 );
 
 `ifndef SYNTHESIS
 //`ifdef VERILATOR
-always @(*) begin
-    if(!isvalid)begin
-            $display("\33[1;31mInst Invalid!\33[0m");
-						$finish;
+always @(posedge clock) begin
+    if(!isvalid & !reset)begin
+        $display("\33[1;31mInst Invalid!\33[0m");
+		$finish;
     end
 end
 //`endif
@@ -21,14 +23,16 @@ endmodule
 
 
 module ysyx_23060246_Ebreak(
-    input isebreak
+    input isebreak,
+    input clock,
+    input reset
 );
 
 `ifndef SYNTHESIS
-always @(*) begin
-    if(isebreak)begin
-	  	  $display("\33[1;34mEBreak!\33[0m");
-		    $finish;
+always @(posedge clock) begin
+    if(isebreak & !reset)begin
+	  	$display("\33[1;34mEBreak!\33[0m");
+		$finish;
     end
 end
 `endif
