@@ -172,7 +172,7 @@ when (!reset.asBool) {
   io.pc.bits := pc 
 
 
-  val arAddrReg = Reg(UInt(config.XLEN.W))
+  val arAddrReg = RegInit(config.PC_INIT.U)
   when (state === s_idle && in_valid && io.out.ready) {
     arAddrReg := pc
   }
