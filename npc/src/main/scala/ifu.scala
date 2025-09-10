@@ -78,8 +78,8 @@ when (!reset.asBool) {
       arAddrHold := io.imem.ar.bits.addr
     } .otherwise {
       assert(io.imem.ar.valid, "IFU: ARVALID dropped before ARREADY")
-   //   assert(io.imem.ar.bits.addr === arAddrHold,
-   //     "IFU: ARADDR changed before ARREADY")
+     assert(io.imem.ar.bits.addr === arAddrHold,
+       "IFU: ARADDR changed before ARREADY")
     }
   } .otherwise {
     arWait := false.B
@@ -177,6 +177,13 @@ when (!reset.asBool) {
 
   io.pc.valid := true.B 
   io.pc.bits := pc 
+
+
+  val arAddrReg = Reg(UInt(config.XLEN.W))
+  when (state === s_idle && in_valid && io.out.ready) {
+    arAddrReg := pc
+  }
+  io.imem.ar.bits.addr := arAddrReg
 
   io.imem.ar.valid := state === s_read
   io.imem.ar.bits.addr := pc
