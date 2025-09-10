@@ -214,6 +214,7 @@ ifeq ($(CHECK_SCALA),1)
 else
 	($(MILLENV) ./mill -i $(NPC_TOPNAME).runMain $(MAIN) -td $(VERILOG_DIR) $(MILLFLAGS)); 
 endif
+	sed -i '/firrtl_black_box_resource_files.f/, $$d' $(NPC_HOME)/build/verilog/$(NPC_TOPNAME).sv
 	# add prefix 
 	sed -i 's/\<regs_16x32\>/ysyx_23060246_regs_16x32/g' $(NPC_HOME)/build/verilog/$(NPC_TOPNAME).sv
 	sed -i 's/\<regs_15x32\>/ysyx_23060246_regs_15x32/g' $(NPC_HOME)/build/verilog/$(NPC_TOPNAME).sv
