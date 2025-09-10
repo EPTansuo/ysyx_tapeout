@@ -183,10 +183,9 @@ when (!reset.asBool) {
   when (state === s_idle && in_valid && io.out.ready) {
     arAddrReg := pc
   }
-  io.imem.ar.bits.addr := arAddrReg
 
   io.imem.ar.valid := state === s_read
-  io.imem.ar.bits.addr := pc
+  io.imem.ar.bits.addr := arAddrReg
   io.imem.ar.bits.prot := 0.U
   io.imem.r.ready := true.B
   io.imem.ar.bits.id := 0.U
