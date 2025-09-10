@@ -17,7 +17,7 @@ class ysyx_23060246_XChecker(width: Int) extends BlackBox(Map("WIDTH" -> width))
   setInline("XChecker.sv",
     s"""
     |// X/Z runtime checker (simulation-only)
-    |module XChecker #(
+    |module ysyx_23060246_XChecker #(
     |  parameter integer WIDTH = 1
     |)(
     |  input  wire [WIDTH-1:0] sig,
