@@ -8,6 +8,38 @@ import AXI4._
 import freechips.rocketchip.amba.axi4._
 
 
+class XChecker(width: Int) extends BlackBox(Map("WIDTH" -> width)) with HasBlackBoxInline {
+  val io = IO(new Bundle {
+    val sig = Input(UInt(width.W)) // 要检查的信号
+    val en  = Input(Bool())        // 使能：仅在为真时检查
+  })
+
+  setInline("XChecker.sv",
+    s"""
+    |// X/Z runtime checker (simulation-only)
+    |module XChecker #(
+    |  parameter integer WIDTH = 1
+    |)(
+    |  input  wire [WIDTH-1:0] sig,
+    |  input  wire             en
+    |);
+    |  // 在综合时去掉，仿真时启用
+    |`ifndef SYNTHESIS
+    |  always @* begin
+    |    if (en) begin
+    |      if ($$isunknown(sig)) begin
+    |        // 你也可以改成 $${display} + $${stop}
+    |        $$fatal(1, "XChecker: signal has X/Z at time %0t", $$time);
+    |      end
+    |    end
+    |  end
+    |`endif
+    |endmodule
+    |""".stripMargin
+  )
+}
+
+
 class ysyx_23060246_IFU(config: NPCConfig) extends Module {
   val io = IO(new Bundle { 
     val in = Flipped(Decoupled(new SigIO_WBU_IFU(config.XLEN)))
@@ -24,6 +56,53 @@ class ysyx_23060246_IFU(config: NPCConfig) extends Module {
     // val stall = Input(Bool())
   })
 
+
+
+
+  // === 仅在复位结束后检查 ===
+when (!reset.asBool) {
+
+  // 1) 取指地址必须 4B 对齐（在发起读请求时检查）
+  when (io.imem.ar.valid) {
+    assert(io.imem.ar.bits.addr(1,0) === 0.U,
+      "IFU: unaligned instruction fetch address")
+  }
+
+  // 2) ARVALID 保持 & ARADDR 在等待期必须稳定
+  val arWait     = RegInit(false.B)
+  val arAddrHold = Reg(io.imem.ar.bits.addr.cloneType)
+
+  when (io.imem.ar.valid && !io.imem.ar.ready) {
+    when (!arWait) {
+      arWait     := true.B
+      arAddrHold := io.imem.ar.bits.addr
+    } .otherwise {
+      assert(io.imem.ar.valid, "IFU: ARVALID dropped before ARREADY")
+      assert(io.imem.ar.bits.addr === arAddrHold,
+        "IFU: ARADDR changed before ARREADY")
+    }
+  } .otherwise {
+    arWait := false.B
+  }
+
+  // 3) R 通道：有返回就应该准备好接收（你的 IFU 固定 r.ready := true.B，这里顺便约束）
+  when (io.imem.r.valid) {
+    assert(io.imem.r.ready, "IFU: RVALID seen but RREADY is low")
+  }
+}
+
+// 仅复位释放后检查
+when (!reset.asBool) {
+  val xchk_araddr = Module(new XChecker(32))
+  xchk_araddr.io.sig := io.imem.ar.bits.addr
+  xchk_araddr.io.en  := io.imem.ar.valid // 只有发请求时检测
+}
+// 仅复位释放后检查
+when (!reset.asBool) {
+  val xchk_araddr = Module(new XChecker(32))
+  xchk_araddr.io.sig := io.imem.ar.bits.addr
+  xchk_araddr.io.en  := io.imem.ar.valid // 只有发请求时检测
+}
   // val stall = io.stall
   val isFirst = RegInit(true.B)
   when(isFirst){
