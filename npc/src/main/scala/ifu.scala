@@ -164,7 +164,7 @@ when (!reset.asBool) {
   
 
 
-  when(flush){
+  when(flush && state === s_idle){
     pc := io.exu_pc_sig.bits.npc
   }
 
@@ -172,13 +172,8 @@ when (!reset.asBool) {
   io.pc.bits := pc 
 
 
-  val arAddrReg = RegInit(config.PC_INIT.U)
-  when (state === s_idle && in_valid && io.out.ready) {
-    arAddrReg := pc
-  }
-
   io.imem.ar.valid := state === s_read
-  io.imem.ar.bits.addr := arAddrReg
+  io.imem.ar.bits.addr := pc
   io.imem.ar.bits.prot := 0.U
   io.imem.r.ready := true.B
   io.imem.ar.bits.id := 0.U
