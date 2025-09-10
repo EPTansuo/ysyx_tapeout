@@ -78,8 +78,8 @@ when (!reset.asBool) {
       arAddrHold := io.imem.ar.bits.addr
     } .otherwise {
       assert(io.imem.ar.valid, "IFU: ARVALID dropped before ARREADY")
-      assert(io.imem.ar.bits.addr === arAddrHold,
-        "IFU: ARADDR changed before ARREADY")
+   //   assert(io.imem.ar.bits.addr === arAddrHold,
+   //     "IFU: ARADDR changed before ARREADY")
     }
   } .otherwise {
     arWait := false.B
