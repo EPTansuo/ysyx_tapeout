@@ -8,7 +8,7 @@ import AXI4._
 import freechips.rocketchip.amba.axi4._
 
 
-class XChecker(width: Int) extends BlackBox(Map("WIDTH" -> width)) with HasBlackBoxInline {
+class ysyx_23060246_XChecker(width: Int) extends BlackBox(Map("WIDTH" -> width)) with HasBlackBoxInline {
   val io = IO(new Bundle {
     val sig = Input(UInt(width.W)) // 要检查的信号
     val en  = Input(Bool())        // 使能：仅在为真时检查
@@ -17,7 +17,7 @@ class XChecker(width: Int) extends BlackBox(Map("WIDTH" -> width)) with HasBlack
   setInline("XChecker.sv",
     s"""
     |// X/Z runtime checker (simulation-only)
-    |module XChecker #(
+    |module ysyx_23060246_XChecker #(
     |  parameter integer WIDTH = 1
     |)(
     |  input  wire [WIDTH-1:0] sig,
@@ -86,13 +86,13 @@ when (!reset.asBool) {
 
 
 when (!reset.asBool) {
-  val xchk_araddr = Module(new XChecker(32))
+  val xchk_araddr = Module(new ysyx_23060246_XChecker(32))
   xchk_araddr.io.sig := io.imem.ar.bits.addr
   xchk_araddr.io.en  := io.imem.ar.valid 
 }
 
 when (!reset.asBool) {
-  val xchk_araddr = Module(new XChecker(32))
+  val xchk_araddr = Module(new ysyx_23060246_XChecker(32))
   xchk_araddr.io.sig := io.imem.ar.bits.addr
   xchk_araddr.io.en  := io.imem.ar.valid 
 }
