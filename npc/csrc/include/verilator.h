@@ -40,8 +40,8 @@
 #include "VysyxSoCFull_ysyx_23060246_IFU.h"
 #include "VysyxSoCFull_CPU.h"
 #ifdef CONFIG_USE_ICACHE
-#error "You need to solve prefix problem first!"
-#include "VysyxSoCFull_ICache.h"
+//#error "You need to solve prefix problem first!"
+//#include "VysyxSoCFull_ICache.h"
 #endif 
 #else
 #include "VnpcSimTop.h"
@@ -71,7 +71,7 @@
 #include "VnpcSimTop_ysyx_23060246_IDU.h"
 #include "VnpcSimTop_ysyx_23060246_IFU.h"
 #ifdef CONFIG_USE_ICACHE
-#include "VnpcSimTop_ICache.h"
+//#include "VnpcSimTop_ICache.h"
 #endif 
 //#include "Vysyx_23060246_CPU.h"
 #endif 

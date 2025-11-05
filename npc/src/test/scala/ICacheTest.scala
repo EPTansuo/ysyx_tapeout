@@ -42,7 +42,7 @@ class ICacheFormalTestBench(config: NPCConfig) extends Module {
         val pc = (Decoupled((UInt(config.XLEN.W))))
     })
 
-    val icache = Module(new ICache(config))
+    val icache = Module(new ysyx_23060246_ICache(config))
 
     val ifu_dut = Module(new ysyx_23060246_IFU(config))
     val ifu_ref = Module(new ysyx_23060246_IFU(config))
