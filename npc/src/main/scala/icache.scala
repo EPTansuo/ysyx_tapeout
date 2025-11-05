@@ -13,7 +13,7 @@ class ICacheIO(axiparams: AXI4BundleParameters) extends Bundle {
 
 
 
-class ICache(config: NPCConfig) extends Module{
+class ysyx_23060246_ICache(config: NPCConfig) extends Module{
     val io = IO(new ICacheIO(config.axiparams))
     val cacheparams = config.icacheparams
     val tagBits = cacheparams.tagBits

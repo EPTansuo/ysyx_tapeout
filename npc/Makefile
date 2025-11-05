@@ -129,6 +129,13 @@ CSRCS = $(shell find $(abspath ./csrc) \( -path $(abspath ./csrc/device) \-prune
 
 SYN_ADDITION_FILES = $(NPC_HOME)/vsrc/debug.v
 
+
+BIN = $(BUILD_DIR)/$(TOPNAME)
+NPC_EXEC := $(BIN)
+
+default: all 
+all: $(BIN)
+
 # constraint file
 ifeq ($(USE_NVBOARD),y)
 SRC_AUTO_BIND = $(abspath $(BUILD_DIR)/auto_bind.cpp)
@@ -138,14 +145,6 @@ $(SRC_AUTO_BIND): $(NXDC_FILES)
 CSRCS += $(SRC_AUTO_BIND)
 endif
 include $(NPC_HOME)/csrc/device/filelist.mk
-
-
-
-BIN = $(BUILD_DIR)/$(TOPNAME)
-NPC_EXEC := $(BIN)
-
-default: all 
-all: $(BIN)
 
 $(OBJ_DIR)/disasm.o: $(abspath csrc/utils/disasm.cc)
 	@mkdir -p $(OBJ_DIR)
@@ -302,7 +301,7 @@ clean_mill:
 
 clean_all: clean clean_mill
 
-.PHONY: clean clean_all clean_mill srun run sim verilog
+.PHONY: clean clean_all clean_mill srun run sim verilog all default
 
 include ../Makefile
 

@@ -201,7 +201,7 @@ class ysyx_23060246_npc(config: NPCConfig) extends Module {
                                                
 
     // ICache
-    val icache = if(config.USE_ICACHE) Some(Module(new ICache(config))) else None
+    val icache = if(config.USE_ICACHE) Some(Module(new ysyx_23060246_ICache(config))) else None
     icache.map { cache =>
         ifu.io.imem <> cache.io.ifu
         cache.io.fencei := ifu.io.fencei

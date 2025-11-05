@@ -1,3 +1,4 @@
+`include "defines.v"
 module Mem(
         input clock,
         input reset,
